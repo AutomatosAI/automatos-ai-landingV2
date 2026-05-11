@@ -174,7 +174,7 @@
 
     const body = el('div', { class: 'body' });
 
-    const meta = el('div', { class: 'meta' }, [
+    const bodyMeta = el('div', { class: 'meta' }, [
       el('span', null, [ el('b', { text: `Field Note · ${pad2(fnNum)}` }) ]),
       el('span', { text: post.category || 'Field notes' }),
       el('span', { text: post.reading_time_minutes ? `${post.reading_time_minutes} min read` : '' }),
@@ -192,7 +192,7 @@
     ]);
     const read = el('a', { class: 'read', href: `/blog/${encodeURIComponent(post.slug)}`, text: 'Read the note →' });
 
-    body.appendChild(meta);
+    body.appendChild(bodyMeta);
     body.appendChild(h2);
     body.appendChild(dek);
     body.appendChild(spacer);
