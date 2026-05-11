@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos OG card render</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* Automatos v2 OG card — 1200x630 */
+  :root, body[data-mood="bone"] {
+    --bg:#F2EDE4; --fg:#0F1411; --muted:#6E6960;
+    --rule:#B6AE99; --accent:#5B7C68;
+  }
+  body[data-mood="pitch"] {
+    --bg:#0E1311; --fg:#EFE9DD; --muted:#8A857C;
+    --rule:#3A4138; --accent:#C7B27A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: "Geist", -apple-system, sans-serif;
+    position: relative;
+  }
+  .photo {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: brightness(0.62) saturate(0.85);
+  }
+  .scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg,
+      rgba(14,19,17,0.85) 0%,
+      rgba(14,19,17,0.55) 40%,
+      rgba(14,19,17,0.40) 70%,
+      rgba(14,19,17,0.78) 100%);
+  }
+  body[data-mood="bone"] .scrim {
+    background: linear-gradient(135deg,
+      rgba(242,237,228,0.92) 0%,
+      rgba(242,237,228,0.70) 50%,
+      rgba(242,237,228,0.92) 100%);
+  }
+  .frame {
+    position: absolute; inset: 32px;
+    border: 1px solid rgba(239,233,221,0.22);
+  }
+  body[data-mood="bone"] .frame { border-color: rgba(15,20,17,0.22); }
+  .corner { position: absolute; width: 22px; height: 22px; }
+  .corner::before, .corner::after {
+    content: ""; position: absolute; background: rgba(239,233,221,0.65);
+  }
+  body[data-mood="bone"] .corner::before,
+  body[data-mood="bone"] .corner::after { background: rgba(15,20,17,0.55); }
+  .corner.tl { top: 32px; left: 32px; }
+  .corner.tl::before { left: 0; top: 0; width: 22px; height: 1px; }
+  .corner.tl::after  { left: 0; top: 0; width: 1px; height: 22px; }
+  .corner.br { bottom: 32px; right: 32px; }
+  .corner.br::before { right: 0; bottom: 0; width: 22px; height: 1px; }
+  .corner.br::after  { right: 0; bottom: 0; width: 1px; height: 22px; }
+  .head {
+    position: absolute; top: 72px; left: 72px; right: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "Geist Mono", monospace;
+    font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  body[data-mood="pitch"] .head { color: rgba(239,233,221,0.78); }
+  body[data-mood="bone"] .head { color: rgba(15,20,17,0.72); }
+  .brand {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: "Instrument Serif", Georgia, serif;
+    font-size: 28px; letter-spacing: -0.01em; text-transform: none;
+  }
+  body[data-mood="pitch"] .brand { color: #EFE9DD; }
+  body[data-mood="bone"] .brand { color: #0F1411; }
+  .brand em { font-style: italic; opacity: 0.65; }
+  .brand-mark {
+    width: 30px; height: 30px;
+    background: url("images/automatos-mark-white.png") center/contain no-repeat;
+  }
+  body[data-mood="bone"] .brand-mark {
+    background-image: url("images/automatos-mark-black.png");
+  }
+  .eye { padding: 6px 14px; border: 1px solid currentColor; border-radius: 999px; }
+  .title-wrap { position: absolute; left: 72px; right: 72px; bottom: 110px; }
+  h1 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-weight: 400; font-size: 78px; line-height: 1.0;
+    letter-spacing: -0.025em; text-wrap: balance; max-width: 26ch;
+  }
+  body[data-mood="pitch"] h1 { color: #F8F3E7; }
+  body[data-mood="bone"] h1 { color: #0F1411; }
+  h1 em { font-style: italic; opacity: 0.72; }
+  .foot {
+    position: absolute; left: 72px; right: 72px; bottom: 64px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "Geist Mono", monospace;
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(239,233,221,0.65);
+  }
+  body[data-mood="bone"] .foot { color: rgba(15,20,17,0.55); }
+  .foot .url::before { content: "↗  "; }
+  .foot .stamp { padding: 4px 10px; border: 1px solid currentColor; }
+</style>
+</head>
+<body data-mood="pitch">
+  <div class="photo"></div>
+  <div class="scrim"></div>
+  <div class="frame"></div>
+  <span class="corner tl"></span>
+  <span class="corner br"></span>
+  <div class="head">
+    <span class="brand"><span class="brand-mark"></span>Automatos<em>·ai</em></span>
+    <span class="eye" id="og-eye">Operating system · v2</span>
+  </div>
+  <div class="title-wrap">
+    <h1 id="og-title">An operating system for <em>autonomous</em> agent teams.</h1>
+  </div>
+  <div class="foot">
+    <span class="url">automatos.app</span>
+    <span class="stamp" id="og-stamp">Vol. 19 · 2026</span>
+  </div>
+<script>
+  (function () {
+    var p = new URLSearchParams(window.location.search);
+    var title = p.get('title');
+    var eye   = p.get('eye');
+    var img   = p.get('img') || 'images/ship.jpeg';
+    var stamp = p.get('stamp');
+    var theme = p.get('theme') === 'bone' ? 'bone' : 'pitch';
+    document.body.setAttribute('data-mood', theme);
+    if (title) {
+      var h = document.getElementById('og-title');
+      while (h.firstChild) h.removeChild(h.firstChild);
+      var re = /<em>([^<]+)<\/em>|([^<]+)/g;
+      var m;
+      while ((m = re.exec(title)) !== null) {
+        if (m[1]) {
+          var e = document.createElement('em');
+          e.textContent = m[1];
+          h.appendChild(e);
+        } else if (m[2]) {
+          h.appendChild(document.createTextNode(m[2]));
+        }
+      }
+    }
+    if (eye)   document.getElementById('og-eye').textContent = eye;
+    if (stamp) document.getElementById('og-stamp').textContent = stamp;
+    var photo = document.querySelector('.photo');
+    photo.style.backgroundImage = 'url("' + img + '")';
+    Promise.all([
+      document.fonts ? document.fonts.ready : Promise.resolve(),
+      new Promise(function (resolve) {
+        var probe = new Image();
+        probe.onload = probe.onerror = resolve;
+        probe.src = img;
+      })
+    ]).then(function () {
+      setTimeout(function () { window.__ogReady = true; }, 250);
+    });
+  })();
+</script>
+</body>
+</html>
