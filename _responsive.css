@@ -194,6 +194,126 @@
   /* Section meta strips — collapse 3-col → 2-col */
   .section-meta { grid-template-columns: 1fr 1fr !important; }
   .section-meta > div:nth-child(3) { display: none; }
+
+  /* ── Index — Plate · 004 / Docs (3-col meta + 3-col card grid) ── */
+  .plate-docs-meta { grid-template-columns: 1fr 1fr !important; }
+  .plate-docs-meta > div { padding: 14px var(--gutter) !important; }
+  .plate-docs-meta > div:nth-child(3) { display: none !important; }
+  .plate-docs-grid { grid-template-columns: 1fr !important; }
+  .plate-docs-grid .doc-card {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    min-height: auto !important;
+    padding: 40px var(--gutter) !important;
+  }
+  .plate-docs-grid .doc-card:last-child { border-bottom: 0; }
+
+  /* ── Index — Plate · 005 / Start CTA band (280px label | body[1.2/1]) ── */
+  .plate-start { grid-template-columns: 1fr !important; }
+  .plate-start-label {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 36px var(--gutter) !important;
+  }
+  .plate-start-body {
+    grid-template-columns: 1fr !important;
+    padding: 48px var(--gutter) !important;
+    gap: 32px !important;
+    align-items: start !important;
+  }
+  .plate-start-h { font-size: clamp(40px, 6.5vw, 56px) !important; }
+  .plate-start-side { gap: 22px !important; }
+
+  /* ── Index — Chapter 02 Router schematic flow rows ── */
+  .flow-row { grid-template-columns: 1fr auto 1fr auto 1fr !important; gap: 10px !important; }
+  .flow-node { padding: 10px 12px !important; font-size: 10.5px !important; }
+  .flow-node b { font-size: 16px !important; }
+  /* 3-col chips stay 3-col on tablet — easy to read */
+  .flow-stack { grid-template-columns: 1fr 1fr 1fr !important; }
+
+  /* ── Index — Chapter 03 Feature grid (200px label | 3 cells) ── */
+  .fgrid { grid-template-columns: 1fr !important; }
+  .fgrid > .chapter-side {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 32px var(--gutter) !important;
+  }
+  .fgrid-cell {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 36px var(--gutter) 40px !important;
+    gap: 20px !important;
+  }
+  .fgrid-cell:last-child { border-bottom: 0; }
+  .fgrid-h { font-size: clamp(28px, 4.5vw, 36px) !important; }
+
+  /* ── Index — Quote band (200/1fr/240) ── */
+  .quote {
+    grid-template-columns: 1fr !important;
+    padding: 64px var(--gutter) 60px !important;
+    gap: 28px !important;
+  }
+  .quote-body { font-size: clamp(36px, 5.6vw, 48px) !important; }
+
+  /* ── Index — Chapter list (2-col → 1-col tighter) ── */
+  .chapter-list { grid-template-columns: 1fr !important; }
+  .chapter-list-item {
+    padding: 16px 0 !important;
+    border-left: 0 !important;
+  }
+  .chapter-list-item:nth-child(odd),
+  .chapter-list-item:nth-child(even) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-left: 0 !important;
+  }
+
+  /* ── Index — Chapter num oversized serif (84px → smaller on tablet) ── */
+  .chapter-num { font-size: 56px !important; }
+
+  /* ── Index — Closer changelog stays in same column on tablet ── */
+  .cl-item { grid-template-columns: 64px 1fr !important; gap: 14px !important; }
+
+  /* ── Marketplace — toolbar (search | filter | sort) + channels grid ── */
+  .toolbar { grid-template-columns: 1fr !important; }
+  .toolbar > * { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
+  .toolbar > *:last-child { border-bottom: 0; }
+  .channels { grid-template-columns: repeat(4, 1fr) !important; }
+  .channels .channel { border-bottom: 1px solid var(--rule-c); }
+  .channels .channel:nth-child(4n) { border-right: 0; }
+  /* Inline-styled featured/agent grids that use repeat(3,1fr) inline */
+  [style*="repeat(3, 1fr)"], [style*="repeat(3,1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* ── Pricing — 4 tiers → 2 cols on tablet, FAQ 2 → 1, CTA strip stack ── */
+  .tiers { grid-template-columns: 1fr 1fr !important; }
+  .tier { border-right: 0 !important; }
+  .tier:nth-child(odd) { border-right: 1px solid var(--rule-c) !important; }
+  .tier { border-bottom: 1px solid var(--rule-c); }
+  .compare { overflow-x: auto; }
+  .compare > div { white-space: nowrap; }
+  .faq { grid-template-columns: 1fr !important; }
+  .cta-strip { grid-template-columns: 1fr !important; gap: 28px !important; padding: 56px var(--gutter) !important; }
+  .cta-h { font-size: clamp(40px, 6.5vw, 56px) !important; }
+
+  /* ── Field-notes — sub-strip footer ── */
+  .sub-strip { grid-template-columns: 1fr !important; gap: 28px !important; padding: 48px var(--gutter) !important; }
+
+  /* ── Terms — title block ── */
+  .title-block { grid-template-columns: 1fr !important; gap: 28px !important; }
+
+  /* ── Pitch-mode page — every band is 1.x fr / 1fr or 5-col ── */
+  .pg-pitch .hero-content,
+  .hero-content { grid-template-columns: 1fr !important; gap: 36px !important; }
+  /* pitch-mode .chapter is split — give it space */
+  .chapter:not(.field-note) { grid-template-columns: 1fr !important; gap: 40px !important; padding: 56px var(--gutter) !important; }
+  .chapter h2 { font-size: clamp(40px, 6vw, 56px) !important; }
+  .fnote { grid-template-columns: 1fr !important; gap: 32px !important; padding: 56px var(--gutter) !important; }
+  .cta { grid-template-columns: 1fr !important; gap: 32px !important; padding: 64px var(--gutter) !important; }
+
+  /* ── 404 — main grid stacks ── */
+  main { grid-template-columns: 1fr !important; }
 }
 
 
@@ -232,12 +352,16 @@
     padding: 40px var(--gutter) !important;
   }
   .hero-h, h1.hero-h, .hero h1, .hero .hero-headline, .hero-headline {
-    font-size: clamp(30px, 8.5vw, 52px) !important;
-    line-height: 1.02 !important;
+    font-size: clamp(28px, 7.6vw, 48px) !important;
+    line-height: 1.03 !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     max-width: none !important;
+    text-wrap: balance !important;
+    hyphens: auto;
   }
+  /* The index hero hardcodes <br /> + &nbsp; for desktop typesetting — break them on mobile */
+  .hero-headline br { display: none !important; }
   .hero-headline em { overflow-wrap: anywhere !important; }
   /* Hide non-essential utility buttons on mobile — only brand + hamburger remain */
   .utilities .util.solid { display: none !important; }
@@ -409,6 +533,269 @@
   .wl-submit-row { flex-direction: column; align-items: stretch; gap: 14px !important; }
   .wl-note { text-align: left !important; }
   .wl-stamp { width: 80px !important; height: 80px !important; top: 60px !important; right: 14px !important; font-size: 8px !important; }
+
+  /* ════════════════════════════════════════════════════════════════
+     INDEX-SPECIFIC MOBILE — overrides for sections only on index.html
+     ════════════════════════════════════════════════════════════════ */
+
+  /* Plate · 004 / Docs — meta strip stacks, doc cards stack */
+  .plate-docs-meta {
+    grid-template-columns: 1fr !important;
+  }
+  .plate-docs-meta > div {
+    padding: 12px var(--gutter) !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    justify-content: flex-start !important;
+  }
+  .plate-docs-meta > div:last-child { border-bottom: 0; justify-content: flex-start !important; }
+  .plate-docs-grid { grid-template-columns: 1fr !important; }
+  .plate-docs-grid .doc-card {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    min-height: auto !important;
+    padding: 32px var(--gutter) !important;
+  }
+  .plate-docs-grid .doc-card:last-child { border-bottom: 0; }
+  .doc-card-h { font-size: 26px !important; }
+  .doc-card-lead { font-size: 13.5px !important; }
+  .doc-diagram { padding: 18px 14px !important; font-size: 10px !important; }
+
+  /* Plate · 005 / Start CTA band */
+  .plate-start { grid-template-columns: 1fr !important; }
+  .plate-start-label {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 28px var(--gutter) !important;
+    gap: 18px !important;
+  }
+  .plate-start-body {
+    grid-template-columns: 1fr !important;
+    padding: 36px var(--gutter) 40px !important;
+    gap: 24px !important;
+    align-items: start !important;
+  }
+  .plate-start-h { font-size: clamp(34px, 9vw, 48px) !important; }
+  .plate-start-side { gap: 18px !important; }
+  .plate-start-sub { font-size: 14.5px !important; max-width: none !important; }
+  .plate-start-action { gap: 10px !important; }
+  .plate-start-foot { gap: 12px !important; font-size: 9.5px !important; }
+
+  /* Chapter 02 — Router schematic flow rows
+     Desktop: [in] → [router] → [agent]  (horizontal arrows)
+     Mobile : single column, arrows rotate to point down. */
+  .schematic-body { padding: 20px var(--gutter) !important; gap: 14px !important; }
+  .schematic-head, .schematic-foot { padding: 10px var(--gutter) !important; font-size: 9.5px !important; }
+  .flow-row {
+    grid-template-columns: 1fr !important;
+    grid-auto-flow: row !important;
+    gap: 8px !important;
+    justify-items: stretch;
+  }
+  .flow-node {
+    padding: 12px 14px !important;
+    font-size: 10.5px !important;
+    min-height: auto !important;
+    justify-items: center;
+    text-align: center;
+  }
+  .flow-node b { font-size: 17px !important; }
+  /* Rotate the horizontal arrow to vertical */
+  .flow-arrow {
+    width: 1px !important;
+    height: 18px !important;
+    background: var(--rule-strong);
+    justify-self: center;
+  }
+  .flow-arrow::after {
+    right: auto !important;
+    top: auto !important;
+    bottom: -1px !important;
+    left: -3px !important;
+    border-left: 3px solid transparent !important;
+    border-right: 3px solid transparent !important;
+    border-top: 6px solid var(--rule-strong) !important;
+    border-bottom: 0 !important;
+  }
+  /* 3-col chip stack → 2-col on mobile (legible without huge stretch) */
+  .flow-stack { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .flow-chip { padding: 7px 8px !important; font-size: 9px !important; }
+
+  /* Chapter 03 — Feature grid (200px label + 3 cells → stack) */
+  .fgrid { grid-template-columns: 1fr !important; }
+  .fgrid > .chapter-side {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 28px var(--gutter) !important;
+  }
+  .fgrid-cell {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 32px var(--gutter) 36px !important;
+    gap: 18px !important;
+  }
+  .fgrid-cell:last-child { border-bottom: 0; }
+  .fgrid-h { font-size: clamp(26px, 7.5vw, 36px) !important; }
+  .fgrid-body { font-size: 13.5px !important; }
+  .fgrid-vis { height: 110px !important; }
+  .vis-bars { padding: 12px !important; gap: 4px !important; }
+
+  /* Quote band — collapse 3-col to single editorial column */
+  .quote {
+    grid-template-columns: 1fr !important;
+    padding: 48px var(--gutter) 52px !important;
+    gap: 22px !important;
+    align-items: start !important;
+  }
+  .quote-meta { font-size: 10px !important; }
+  .quote-body {
+    font-size: clamp(26px, 7.2vw, 36px) !important;
+    line-height: 1.15 !important;
+    max-width: none !important;
+    text-wrap: pretty !important;
+    overflow-wrap: break-word !important;
+  }
+  .quote-attr {
+    font-size: 10px !important;
+    align-self: start !important;
+  }
+  .quote-attr b { font-size: 18px !important; }
+
+  /* Chapter list — 2-col internal → 1-col stack */
+  .chapter-list { grid-template-columns: 1fr !important; margin-top: 28px !important; }
+  .chapter-list-item {
+    padding: 14px 0 !important;
+    grid-template-columns: 28px 1fr !important;
+    gap: 12px !important;
+    border-left: 0 !important;
+  }
+  .chapter-list-item:nth-child(odd),
+  .chapter-list-item:nth-child(even) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-left: 0 !important;
+  }
+  .chapter-list-item .label { font-size: 13px !important; }
+  .chapter-list-item .label span { font-size: 12px !important; }
+
+  /* Chapter num — oversized serif (84px) at mobile is too loud */
+  .chapter-num { font-size: 44px !important; }
+  .chapter-num small { font-size: 10px !important; margin-top: 8px !important; }
+
+  /* Closer changelog cl-item (80px date col → 60px) */
+  .cl-item { grid-template-columns: 60px 1fr !important; gap: 12px !important; }
+  .cl-h { font-size: 19px !important; }
+  .cl-body { font-size: 12.5px !important; }
+
+  /* ════════════════════════════════════════════════════════════════
+     PAGES-WIDE MOBILE — marketplace, pricing, pitch-mode, 404
+     ════════════════════════════════════════════════════════════════ */
+
+  /* Marketplace toolbar — search/filter/sort all stack */
+  .toolbar { grid-template-columns: 1fr !important; }
+  .toolbar > * {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c) !important;
+    padding: 14px var(--gutter) !important;
+  }
+  .toolbar > *:last-child { border-bottom: 0 !important; }
+  .search { gap: 10px !important; }
+
+  /* Marketplace channels grid — 8-col → 2-col */
+  .channels { grid-template-columns: repeat(2, 1fr) !important; }
+  .channels .channel {
+    border-right: 1px solid var(--rule-c) !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 20px 12px !important;
+    font-size: 14px !important;
+  }
+  .channels .channel:nth-child(2n) { border-right: 0 !important; }
+
+  /* Any inline-styled repeat(3,1fr) on marketplace stacks fully */
+  [style*="repeat(3, 1fr)"], [style*="repeat(3,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pricing — tiers stack, CTA strip stack */
+  .tiers { grid-template-columns: 1fr !important; }
+  .tier { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 32px var(--gutter) !important; }
+  .tier:last-child { border-bottom: 0; }
+
+  /* Pricing compare — keep horizontal scroll, narrow font */
+  .compare {
+    overflow-x: auto;
+    grid-template-columns: 1.6fr repeat(4, minmax(110px, 1fr)) !important;
+    min-width: 540px;
+  }
+  .compare > div { white-space: normal !important; padding: 12px 14px !important; font-size: 12.5px !important; }
+
+  /* FAQ */
+  .faq { grid-template-columns: 1fr !important; }
+  .faq > div { padding: 24px var(--gutter) !important; }
+  .faq-q { font-size: 18px !important; }
+  .faq-a { font-size: 13.5px !important; }
+
+  /* Shared CTA strip used on marketplace/pricing/field-notes */
+  .cta-strip {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 48px var(--gutter) 56px !important;
+    align-items: start !important;
+  }
+  .cta-h { font-size: clamp(36px, 8.5vw, 52px) !important; }
+  .cta-actions { flex-direction: column; align-items: stretch; gap: 8px !important; }
+  .cta-actions .btn { justify-content: center; }
+
+  /* Sub strip (field-notes footer) */
+  .sub-strip {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 40px var(--gutter) !important;
+  }
+
+  /* Terms — title block */
+  .title-block {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding: 40px var(--gutter) 28px !important;
+  }
+  .title-block h1 { font-size: clamp(38px, 10vw, 60px) !important; }
+
+  /* Pitch-mode — every 2-col band stacks */
+  .pg-pitch .hero-content,
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  .chapter:not(.field-note) {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+    padding: 40px var(--gutter) !important;
+  }
+  .chapter h2 { font-size: clamp(34px, 9vw, 52px) !important; }
+  .chapter p { font-size: 15px !important; max-width: none !important; }
+  .fnote {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+    padding: 40px var(--gutter) !important;
+  }
+  .cta {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 48px var(--gutter) !important;
+  }
+
+  /* 404 — main 2-col stacks */
+  main {
+    grid-template-columns: 1fr !important;
+  }
+  main > * { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 32px var(--gutter) !important; }
+  main > *:last-child { border-bottom: 0; }
+  .where a { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; padding: 12px 0 !important; font-size: 10.5px !important; }
+
+  /* Marketplace pack — desktop has multi-row grid template, keep but tighten gap */
+  .pack { grid-template-rows: auto !important; gap: 16px !important; }
+  .pack-includes .row { grid-template-columns: 60px 1fr !important; gap: 8px !important; font-size: 11px !important; }
 }
 
 
