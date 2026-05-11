@@ -75,7 +75,7 @@ body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-ma
 .title-block h1 em { font-style: italic; color: var(--muted); }
 .title-block .dek { font-size: 19px; line-height: 1.55; color: var(--fg-2); max-width: 56ch; }
 
-/* COVER PLATE */
+/* COVER — either a photo or a plate */
 .cover {
   border-top: 1px solid var(--rule-c);
   border-bottom: 1px solid var(--rule-c);
@@ -85,9 +85,11 @@ body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-ma
   position: relative;
 }
 .cover.is-empty {
-  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 10px, transparent 10px 20px);
-  display: grid; place-items: center;
+  background: transparent;
+  display: grid;
+  aspect-ratio: auto; max-height: none;
 }
+.cover.is-empty .plate { min-height: 480px; border: 0; }
 .cover .cap {
   position: absolute; left: var(--gutter); bottom: 16px; right: var(--gutter);
   display: flex; justify-content: space-between;
@@ -95,7 +97,7 @@ body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-ma
   text-transform: uppercase; color: var(--muted);
   text-shadow: 0 1px 8px rgba(0,0,0,.45);
 }
-.cover.is-empty .cap { text-shadow: none; }
+.cover.is-empty .cap { display: none; }
 
 /* ARTICLE BODY */
 .post-body {
@@ -197,7 +199,8 @@ body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-ma
 .err h1 { font-family: var(--serif); font-size: 56px; font-style: italic; }
 .err p { color: var(--muted); font-size: 15px; max-width: 48ch; line-height: 1.5; }
 </style>
-<link rel="stylesheet" href="_responsive.css?v=20260511f">
+<link rel="stylesheet" href="plates.css?v=20260511p">
+<link rel="stylesheet" href="_responsive.css?v=20260511p">
 </head>
 <body data-mood="bone">
 
@@ -259,10 +262,10 @@ body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-ma
 <!-- DOMPurify to sanitize CMS HTML before injection (replaces v1's DOMPurify pattern) -->
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" defer></script>
 
-<script src="_theme.js?v=20260511d" defer></script>
-<script src="_config.js?v=20260511d" defer></script>
-<script src="_nav.js?v=20260511d" defer></script>
-<script src="_waitlist.js?v=20260511d" defer></script>
-<script src="_chat.js?v=20260511d" defer></script>
-<script src="_blogpost.js?v=20260511d" defer></script>
+<script src="_theme.js?v=20260511p" defer></script>
+<script src="_config.js?v=20260511p" defer></script>
+<script src="_nav.js?v=20260511p" defer></script>
+<script src="_waitlist.js?v=20260511p" defer></script>
+<script src="_chat.js?v=20260511p" defer></script>
+<script src="_blogpost.js?v=20260511p" defer></script>
 </body></html>

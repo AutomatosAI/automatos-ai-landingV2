@@ -74,6 +74,7 @@
   }
 
   // Sanitise HTML, parse into nodes, append to target — never assigns innerHTML directly.
+  // SVG profile is enabled so inline editorial plates (cutaway) survive.
   function appendSanitisedHTML(target, html) {
     if (!html) return;
     if (!window.DOMPurify) {
@@ -83,10 +84,52 @@
       return;
     }
     const clean = window.DOMPurify.sanitize(html, {
-      USE_PROFILES: { html: true },
+      USE_PROFILES: { html: true, svg: true, svgFilters: true },
       RETURN_DOM_FRAGMENT: true,
     });
     target.appendChild(clean);
+  }
+
+  // Build a field-note plate as a fallback cover. Uses the post excerpt or
+  // (when missing) the title as the quote — leans into the editorial vocabulary.
+  function buildCoverPlate(post) {
+    const plate = document.createElement('div');
+    plate.className = 'plate plate-fieldnote';
+
+    const fmtPlateDate = (iso) => {
+      if (!iso) return '';
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return '';
+      return `${String(d.getDate()).padStart(2,'0')} · ${String(d.getMonth()+1).padStart(2,'0')} · ${String(d.getFullYear()).slice(-2)}`;
+    };
+
+    const meta = document.createElement('div');
+    meta.className = 'fn-meta';
+    const metaL = document.createElement('span');
+    metaL.textContent = `Field note / ${post.category || 'Field note'}`;
+    const metaR = document.createElement('span');
+    metaR.textContent = fmtPlateDate(post.published_at);
+    meta.appendChild(metaL); meta.appendChild(metaR);
+
+    const quote = document.createElement('div');
+    quote.className = 'fn-quote';
+    const quoteText = post.excerpt || post.title || '';
+    const words = String(quoteText).trim().split(/\s+/);
+    if (words.length >= 2) {
+      quote.appendChild(document.createTextNode(words.slice(0, -1).join(' ') + ' '));
+      const em = document.createElement('em');
+      em.textContent = words[words.length - 1];
+      quote.appendChild(em);
+    } else {
+      quote.textContent = quoteText;
+    }
+
+    const attr = document.createElement('div');
+    attr.className = 'fn-attr';
+    attr.textContent = `— ${post.author_name || 'Automatos'} · vol. 01`;
+
+    plate.appendChild(meta); plate.appendChild(quote); plate.appendChild(attr);
+    return plate;
   }
 
   function renderPost(post) {
@@ -121,12 +164,16 @@
       if (post.cover_image_url) {
         cover.classList.remove('is-empty');
         cover.style.backgroundImage = `url("${post.cover_image_url}")`;
+        setText('bpCoverFig', `Fig. — ${post.category || 'Field note'}`);
+        setText('bpCoverPlate', 'FN / ' + (post.slug || '—').slice(0, 8).toUpperCase());
       } else {
+        // No cover image — drop in a field-note plate as the figure.
         cover.classList.add('is-empty');
+        // Wipe any prior children (skeleton/cap) before injecting the plate.
+        while (cover.firstChild) cover.removeChild(cover.firstChild);
+        cover.appendChild(buildCoverPlate(post));
       }
     }
-    setText('bpCoverFig', `Fig. — ${post.category || 'Field note'}`);
-    setText('bpCoverPlate', 'FN / ' + (post.slug || '—').slice(0, 8).toUpperCase());
 
     waitForPurify(() => {
       const body = document.getElementById('bpBody');
