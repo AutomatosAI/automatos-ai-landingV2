@@ -16,6 +16,23 @@
   const PER_PAGE   = 12;
   const CATEGORY   = 'Research';
 
+  // Hand-coded papers that aren't in the CMS. Merged into page-1 results
+  // and de-duped against API posts by slug (so when one of these eventually
+  // lands in the CMS, the API version wins).
+  const STATIC_POSTS = [
+    {
+      title: 'From Tool Lists to Operating Graphs',
+      slug: 'from-tool-lists-to-operating-graphs',
+      excerpt: "Why the next bottleneck in AI agents isn't tool use — it's tool selection at scale. The pre-prompt intelligence layer that decides what deserves to enter the prompt at all.",
+      cover_image_url: '/images/tool-routing-operating-graphs-cover.png',
+      tags: ['Tool Routing', 'Attention Budget', 'Operating Graphs', 'Prompt Engineering', 'Agent Architecture'],
+      author_name: 'Gerard Kavanagh',
+      published_at: '2026-05-02T00:00:00Z',
+      reading_time_minutes: 15,
+      category: 'Research',
+    },
+  ];
+
   let currentPage = 1;
 
   function $grid()      { return document.querySelector('.index-grid'); }
@@ -59,7 +76,19 @@
     }
     const json = await r.json();
     console.log('[research] papers received:', json.total ?? (json.posts || []).length, 'total');
-    return json;
+    return mergeStatic(json, page);
+  }
+
+  function mergeStatic(data, page) {
+    if (page !== 1) return data;
+    const apiSlugs = new Set((data.posts || []).map(p => p.slug));
+    const extras = STATIC_POSTS.filter(p => !apiSlugs.has(p.slug));
+    if (extras.length === 0) return data;
+    return {
+      ...data,
+      posts: [...extras, ...(data.posts || [])],
+      total: (data.total ?? (data.posts || []).length) + extras.length,
+    };
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────
@@ -263,10 +292,23 @@
       renderCount(gridPosts.length + (currentPage === 1 ? 1 : 0), total);
       renderPagination(currentPage, totalPages);
     } catch (err) {
-      console.warn('[research] fetch failed:', err && err.message ? err.message : err);
-      revealFeaturedSection(false);
-      showEmptyGrid('Papers are loading from the lab. Check back in a moment.');
-      renderCount(0, 0);
+      console.warn('[research] fetch failed; falling back to static posts:', err && err.message ? err.message : err);
+      // Render the static-only set so at least the hand-coded papers stay visible.
+      if (STATIC_POSTS.length > 0 && currentPage === 1) {
+        const base = STATIC_POSTS.length;
+        renderFeatured(STATIC_POSTS[0], base);
+        revealFeaturedSection(true);
+        const grid = $grid();
+        while (grid.firstChild) grid.removeChild(grid.firstChild);
+        STATIC_POSTS.slice(1).forEach((post, i) => {
+          grid.appendChild(renderPaperCard(post, base - 1 - i));
+        });
+        renderCount(STATIC_POSTS.length, STATIC_POSTS.length);
+      } else {
+        revealFeaturedSection(false);
+        showEmptyGrid('Papers are loading from the lab. Check back in a moment.');
+        renderCount(0, 0);
+      }
     } finally {
       grid.style.opacity = '';
     }
