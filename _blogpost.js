@@ -165,17 +165,29 @@
 
     const cover = document.getElementById('bpCover');
     if (cover) {
-      if (post.cover_image_url) {
-        cover.classList.remove('is-empty');
-        cover.style.backgroundImage = `url("${post.cover_image_url}")`;
-        setText('bpCoverFig', `Fig. — ${post.category || 'Field note'}`);
-        setText('bpCoverPlate', 'FN / ' + (post.slug || '—').slice(0, 8).toUpperCase());
-      } else {
-        // No cover image — drop in a field-note plate as the figure.
+      const url = post.cover_image_url;
+      const usePlate = () => {
         cover.classList.add('is-empty');
-        // Wipe any prior children (skeleton/cap) before injecting the plate.
         while (cover.firstChild) cover.removeChild(cover.firstChild);
         cover.appendChild(buildCoverPlate(post));
+      };
+      if (url) {
+        // Preload the image — only show it if it actually loads. Otherwise
+        // fall back to the field-note plate so we never leave an empty box.
+        const probe = new Image();
+        probe.onload = () => {
+          cover.classList.remove('is-empty');
+          cover.style.backgroundImage = `url("${url}")`;
+          setText('bpCoverFig', `Fig. — ${post.category || 'Field note'}`);
+          setText('bpCoverPlate', 'FN / ' + (post.slug || '—').slice(0, 8).toUpperCase());
+        };
+        probe.onerror = () => {
+          console.warn('[blogpost] cover image failed to load:', url, '— falling back to plate');
+          usePlate();
+        };
+        probe.src = url;
+      } else {
+        usePlate();
       }
     }
 
