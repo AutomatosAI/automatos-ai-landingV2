@@ -129,39 +129,27 @@
   }
 
   // ── Render: featured (post 0) ────────────────────────────────────────
+  // Always render a plate — CMS-driven cover photos are intentionally
+  // ignored on field-notes until the CMS has plate metadata. The
+  // editorial vocabulary is the visual; photos can come back as the
+  // primary figure once `plate_type` is part of the schema.
   function renderFeatured(post, fnNum) {
     const feat = $featured();
     if (!feat) return;
 
     const photo = el('div', { class: 'photo' });
-    if (post.cover_image_url) {
-      // Real cover image — use it.
-      photo.style.backgroundImage = `url("${post.cover_image_url}")`;
-      photo.style.backgroundSize = 'cover';
-      photo.style.backgroundPosition = 'center';
-      const phCap = el('div', {
-        class: 'ph-cap',
-        style: 'position:absolute;bottom:16px;left:20px;right:20px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);'
-      }, [
-        el('span', { text: `Fig. ${pad2(fnNum)} — ${post.category || 'Field note'}` }),
-        el('span', { text: `FN / ${pad2(fnNum)}` }),
-      ]);
-      photo.appendChild(phCap);
-    } else {
-      // No cover image — render a field-note plate as the figure.
-      const plate = el('div', { class: 'plate plate-fieldnote' });
-      const meta = el('div', { class: 'fn-meta' }, [
-        el('span', { text: `FN · ${pad2(fnNum)} / ${post.category || 'Field note'}` }),
-        el('span', { text: fmtPlateDate(post.published_at) }),
-      ]);
-      const quote = el('div', { class: 'fn-quote' });
-      titleNodes(post.title).forEach(n => quote.appendChild(n));
-      const attr = el('div', { class: 'fn-attr', text: `— ${post.author_name || 'Automatos'} · vol. 01` });
-      plate.appendChild(meta);
-      plate.appendChild(quote);
-      plate.appendChild(attr);
-      photo.appendChild(plate);
-    }
+    const plate = el('div', { class: 'plate plate-fieldnote' });
+    const meta = el('div', { class: 'fn-meta' }, [
+      el('span', { text: `FN · ${pad2(fnNum)} / ${post.category || 'Field note'}` }),
+      el('span', { text: fmtPlateDate(post.published_at) }),
+    ]);
+    const quote = el('div', { class: 'fn-quote' });
+    titleNodes(post.title).forEach(n => quote.appendChild(n));
+    const attr = el('div', { class: 'fn-attr', text: `— ${post.author_name || 'Automatos'} · vol. 01` });
+    plate.appendChild(meta);
+    plate.appendChild(quote);
+    plate.appendChild(attr);
+    photo.appendChild(plate);
 
     const body = el('div', { class: 'body' });
 
@@ -289,10 +277,10 @@
       // Numbering: highest FN.NN for the first (most recent) post on page 1
       const baseNum = total - ((currentPage - 1) * PER_PAGE);
 
-      // Featured = first post on page 1; otherwise leave the static featured alone
-      if (currentPage === 1) {
-        renderFeatured(posts[0], baseNum);
-      }
+      // Featured: keep the hand-built static plate. When the CMS gains
+      // `plate_type` + `plate_data`, restore the call:
+      //   if (currentPage === 1) renderFeatured(posts[0], baseNum);
+      // For now the editorial cutaway is the showpiece.
 
       // Grid: all but the featured on page 1; all posts on later pages
       const gridPosts = currentPage === 1 ? posts.slice(1) : posts;
