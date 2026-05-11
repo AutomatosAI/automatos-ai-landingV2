@@ -20,9 +20,13 @@
 
   function getSlug() {
     const path = window.location.pathname.replace(/\/+$/, '');
-    const m = path.match(/^\/blog\/(.+)$/);
+    const m = path.match(/^\/(?:blog|research)\/(.+)$/);
     if (!m) return null;
     return decodeURIComponent(m[1]);
+  }
+
+  function isResearch() {
+    return /^\/research\//.test(window.location.pathname);
   }
 
   function fmtDate(iso) {
@@ -189,7 +193,20 @@
     setText('bpAuthorMeta', meta.length ? '· ' + meta.join(' · ') : '');
   }
 
+  function adoptResearchContext() {
+    if (!isResearch()) return;
+    const fn = document.getElementById('bpNavFieldNotes');
+    const rs = document.getElementById('bpNavResearch');
+    if (fn) fn.classList.remove('is-current');
+    if (rs) rs.classList.add('is-current');
+    const idx = document.getElementById('bpIndexLink');
+    if (idx) { idx.href = '/research'; }
+    const back = document.getElementById('bpBackLink');
+    if (back) { back.href = '/research'; back.textContent = '← Back to Research'; }
+  }
+
   async function load() {
+    adoptResearchContext();
     const slug = getSlug();
     if (!slug) { fail('No post specified.'); return; }
     if (!WORKSPACE) { fail('Blog config missing.'); return; }

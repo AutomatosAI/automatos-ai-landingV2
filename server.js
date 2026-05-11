@@ -115,6 +115,19 @@ app.get(/^\/blog\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
   res.sendFile(resolve(__dirname, "blog-post.html"));
 });
 
+// ── Research paper route: /research/{slug} → blog-post.html ──────────
+// Same API shape (the post is just categorised "Research"), same renderer.
+app.get(/^\/research\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.sendFile(resolve(__dirname, "blog-post.html"));
+});
+
+// ── Research index: /research → research.html ────────────────────────
+app.get(/^\/research\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.sendFile(resolve(__dirname, "research.html"));
+});
+
 // ── Static files ──────────────────────────────────────────────────────
 // Cache strategy:
 //   .html / _config.js  → no-cache (must revalidate every request)
