@@ -132,10 +132,46 @@
   .index-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .note { padding: 28px var(--gutter) !important; }
 
-  /* Field-notes article body */
+  /* Field-notes article body (blog-post template) */
   .title-block { padding: 56px var(--gutter) 36px !important; }
   .title-block h1 { font-size: clamp(48px, 7vw, 72px) !important; }
   .post-body { padding: 0 var(--gutter); margin: 40px auto 56px; font-size: 16px; }
+
+  /* Field-notes longform article (field-notes-five-tiers): 3-col body → stack */
+  .body {
+    grid-template-columns: 1fr !important;
+    padding: 48px var(--gutter) 64px !important;
+    gap: 28px !important;
+  }
+  .marginalia {
+    position: static !important;
+    padding: 16px var(--gutter) !important;
+    margin: 0 calc(-1 * var(--gutter)) 24px !important;
+    background: var(--bg-2);
+    border-top: 1px solid var(--rule-c);
+    border-bottom: 1px solid var(--rule-c);
+    display: flex !important; flex-wrap: wrap; gap: 4px 14px !important;
+  }
+  .marginalia .row { border-bottom: 0 !important; padding: 0 !important; }
+  .prose { max-width: none !important; font-size: 16px !important; }
+  .prose h2 { font-size: 28px !important; margin: 36px 0 16px !important; }
+  .prose .dropcap::first-letter { font-size: 64px !important; padding: 6px 10px 0 0 !important; }
+  .prose blockquote { font-size: 20px !important; margin: 20px 0 !important; padding: 14px 0 14px 18px !important; }
+  .footnotes {
+    grid-template-columns: 1fr !important;
+    padding: 28px var(--gutter) !important;
+    gap: 14px !important;
+  }
+  .related-meta { grid-template-columns: 1fr !important; }
+  .related-meta > div { padding: 12px var(--gutter) !important; border-right: 0 !important; border-bottom: 1px solid var(--rule-c); justify-content: flex-start !important; }
+  .related { grid-template-columns: 1fr !important; }
+  .related .note { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 28px var(--gutter) !important; min-height: auto !important; }
+  .cta-strip {
+    grid-template-columns: 1fr !important;
+    padding: 48px var(--gutter) !important;
+    gap: 28px !important;
+  }
+  .cta-h { font-size: clamp(36px, 9vw, 56px) !important; }
 
   /* Masthead */
   .masthead { grid-template-columns: 1fr 1fr !important; }
