@@ -277,10 +277,12 @@
       // Numbering: highest FN.NN for the first (most recent) post on page 1
       const baseNum = total - ((currentPage - 1) * PER_PAGE);
 
-      // Featured: keep the hand-built static plate. When the CMS gains
-      // `plate_type` + `plate_data`, restore the call:
-      //   if (currentPage === 1) renderFeatured(posts[0], baseNum);
-      // For now the editorial cutaway is the showpiece.
+      // Featured = most recent post on page 1. renderFeatured always emits
+      // a plate now (no photo override), so it stays in the new vocabulary
+      // and shows the operator's real featured post.
+      if (currentPage === 1) {
+        renderFeatured(posts[0], baseNum);
+      }
 
       // Grid: all but the featured on page 1; all posts on later pages
       const gridPosts = currentPage === 1 ? posts.slice(1) : posts;
