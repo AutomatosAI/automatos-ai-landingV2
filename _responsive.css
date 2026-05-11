@@ -86,10 +86,24 @@
   /* Photo / sketch plates — shorter on tablet */
   .photo-card, .sketch-card, .plate { min-height: 320px; }
 
-  /* Architecture row — 3/4-col → 2-col */
-  .arch-row { grid-template-columns: repeat(2, 1fr) !important; }
-  .arch-col { border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); }
-  .arch-col:nth-child(2n) { border-right: 0; }
+  /* Plate · 003 — System / end-to-end (chapter-02 architecture plate)
+     Desktop: [280px label | 3-col arch-grid]
+     Tablet : single column — label on top, then 2-col arch-grid */
+  .plate-arch { grid-template-columns: 1fr !important; }
+  .plate-arch-label {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 32px var(--gutter) !important;
+  }
+  .plate-arch-label-h { font-size: clamp(24px, 4vw, 32px) !important; }
+  .plate-arch-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .arch-col {
+    border-right: 1px solid var(--rule-c) !important;
+    border-bottom: 1px solid var(--rule-c);
+    padding: 28px var(--gutter) !important;
+  }
+  .arch-col:nth-child(2n) { border-right: 0 !important; }
+  .arch-col:last-child { border-right: 0 !important; }
 
   /* Doc cards row — 3-col → 1-col on tablet for legibility */
   .doc-row { grid-template-columns: 1fr !important; }
@@ -270,9 +284,18 @@
   /* Hero photo aspect on mobile: portrait friendly */
   .hero-photo { aspect-ratio: 4/5; min-height: 320px; }
 
-  /* Architecture — 3/4-col → 1-col */
-  .arch-row { grid-template-columns: 1fr !important; }
-  .arch-col { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 28px var(--gutter) !important; }
+  /* Plate · 003 — System: stack everything */
+  .plate-arch { grid-template-columns: 1fr !important; }
+  .plate-arch-label { padding: 28px var(--gutter) !important; gap: 14px !important; }
+  .plate-arch-label-h { font-size: 24px !important; }
+  .plate-arch-grid { grid-template-columns: 1fr !important; }
+  .arch-col { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 24px var(--gutter) !important; }
+  .arch-col-head { padding-bottom: 12px !important; margin-bottom: 12px !important; }
+  .arch-col-name { font-size: 19px !important; }
+  .arch-col-lead { font-size: 12.5px !important; max-width: none !important; }
+  .arch-rows { font-size: 10.5px !important; }
+  /* Keep .arch-row's internal grid (38px ix | 1fr name | auto meta) — DON'T override columns */
+  .arch-row { padding: 7px 0 !important; gap: 10px !important; }
 
   /* Doc cards — single col */
   .doc-row { grid-template-columns: 1fr !important; }
