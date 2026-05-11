@@ -1,0 +1,30 @@
+{
+  "id": "apothicare-lisbon",
+  "slug": "apothicare-lisbon",
+  "name": "Apothicare — Lisbon Apothecary",
+  "description": "Old-world apothecary register meets modern clinical authority. Parchment-warm palette with deep botanical green anchor and brass accent — built for INFARMED-licensed Portuguese medical-cannabis practices that want to feel like a clinic, not a dispensary.",
+  "category": "medical",
+  "tags": [
+    "medical",
+    "clinical",
+    "portugal",
+    "infarmed",
+    "apothecary",
+    "editorial",
+    "warm",
+    "doctor-led",
+    "patient-first",
+    "eu-gmp"
+  ],
+  "features": [
+    "HeroFramed left-frame hero on botanical photography — distinctive opener vs the usual split layouts",
+    "TextMarquee credentials band (INFARMED · EU-GMP · Doctor Prescribed) breaks the page rhythm with a dark serif italic strip",
+    "TabsShowcase conditions matrix — chronic pain, sleep, anxiety, neurology — with per-tab evidence-based copy",
+    "Dark botanical About anchor with stat counters (1,400+ patients, 94% retention) for trust without bombast",
+    "Cormorant Garamond display + Inter body + Caveat script accent — apothecary type system",
+    "Dark-scoped Footer and Newsletter for clean light/dark rhythm; brass headers on botanical ground",
+    "WCAG 2.2 AA contrast pairs verified · prefers-reduced-motion honoured · focus-visible accent ring"
+  ],
+  "author": "BudStacks Platform",
+  "version": "1.0.0"
+}

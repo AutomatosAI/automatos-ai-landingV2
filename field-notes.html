@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos · Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+  --gutter: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+
+/* TOPBAR */
+.topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 16px var(--gutter); border-bottom: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.brand { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; text-transform: none; color: var(--fg); display: inline-flex; align-items: center; }
+.brand em { font-style: italic; color: var(--muted); }
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav { display: flex; gap: 28px; justify-content: center; }
+.topbar nav a:hover, .topbar nav a.is-current { color: var(--fg); }
+.topbar > :last-child { text-align: right; display: flex; gap: 16px; justify-content: flex-end; align-items: center; }
+.topbar .cta { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* HERO */
+.hero { padding: 88px var(--gutter) 64px; border-bottom: 1px solid var(--rule-c); display: grid; grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: end; }
+.hero-eye { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+.hero-h { font-family: var(--serif); font-size: 88px; line-height: 0.98; letter-spacing: -0.025em; text-wrap: balance; }
+.hero-h em { font-style: italic; color: var(--muted); }
+.hero-meta { display: grid; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.hero-meta b { color: var(--fg); font-weight: 500; }
+
+/* SECTION META */
+.section { border-bottom: 1px solid var(--rule-c); }
+.section-meta { display: grid; grid-template-columns: 240px 1fr 1fr; border-bottom: 1px solid var(--rule-c); }
+.section-meta > div { padding: 18px 28px; border-right: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.section-meta > div:last-child { border-right: 0; justify-content: flex-end; }
+.section-meta b { color: var(--fg); font-weight: 500; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 999px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); }
+.pill.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* FEATURED FIELD NOTE */
+.featured { display: grid; grid-template-columns: 1.1fr 1fr; }
+.featured .photo {
+  background: var(--bg-3);
+  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 8px, transparent 8px 16px);
+  display: grid; place-items: center;
+  border-right: 1px solid var(--rule-c);
+  min-height: 540px;
+  position: relative;
+}
+.featured .photo .ph-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.featured .photo .ph-cap { position: absolute; bottom: 16px; left: 20px; right: 20px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.featured .body { padding: 56px 48px; display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 26px; }
+.featured .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 18px; align-items: center; }
+.featured .meta b { color: var(--fg); font-weight: 500; }
+.featured h2 { font-family: var(--serif); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; text-wrap: balance; }
+.featured h2 em { font-style: italic; color: var(--muted); }
+.featured .dek { font-size: 17px; line-height: 1.55; color: var(--fg-2); max-width: 50ch; }
+.featured .author { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 18px; align-items: center; padding-top: 18px; border-top: 1px solid var(--rule-c); }
+.featured .author b { color: var(--fg); font-family: var(--serif); font-style: normal; font-size: 16px; letter-spacing: -0.01em; text-transform: none; font-weight: 500; }
+.featured a.read { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; align-self: start; }
+
+/* INDEX GRID */
+.index-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+.note {
+  border-right: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+  padding: 32px 28px 28px;
+  display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 18px;
+  min-height: 360px;
+  transition: background .15s;
+}
+.note:nth-child(3n) { border-right: 0; }
+.note:hover { background: var(--bg-2); }
+.note .top { display: flex; justify-content: space-between; align-items: baseline; }
+.note .id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.note .cat { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.note h3 { font-family: var(--serif); font-size: 28px; line-height: 1.1; letter-spacing: -0.01em; }
+.note h3 em { font-style: italic; color: var(--muted); }
+.note .desc { font-size: 13.5px; line-height: 1.55; color: var(--fg-2); max-width: 38ch; }
+.note .foot { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px dashed var(--rule-c); padding-top: 12px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.note .foot b { color: var(--fg); font-weight: 500; }
+.note .read { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 1px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; }
+
+/* FILTER STRIP */
+.filter-strip { display: grid; grid-template-columns: 1fr auto; align-items: center; border-bottom: 1px solid var(--rule-c); }
+.filter-strip .filters { display: flex; }
+.filter-strip .filters a { padding: 18px 24px; border-right: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.filter-strip .filters a.is-on { color: var(--fg); background: var(--bg-2); }
+.filter-strip .count { padding: 18px 28px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.filter-strip .count b { color: var(--fg); }
+
+/* SUBSCRIBE */
+.sub-strip { padding: 64px var(--gutter); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: end; }
+.sub-h { font-family: var(--serif); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; text-wrap: balance; }
+.sub-h em { font-style: italic; color: var(--muted); }
+.sub-form { display: flex; gap: 0; border: 1px solid var(--rule-strong); }
+.sub-form input { flex: 1; appearance: none; background: transparent; border: 0; outline: none; padding: 16px 18px; font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; color: var(--fg); }
+.sub-form input::placeholder { color: var(--muted); font-style: italic; }
+.sub-form button { padding: 16px 22px; background: var(--fg); color: var(--bg); border: 0; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
+.sub-stamp { margin-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+.foot { padding: 36px var(--gutter); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style>
+</head>
+<body data-mood="bone" data-screen-label="Field Notes — Index">
+
+<header class="topbar">
+  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="#" class="is-current">Field notes</a>
+  </nav>
+  <div>
+    <a href="https://ui.automatos.app/sign-in">Sign in</a>
+    <a data-waitlist href="#" class="cta">Sign up free →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-eye">Field notes · Volume 01 · 12 entries</div>
+    <h1 class="hero-h">
+      Notes from<br />
+      the <em>field.</em><br />
+      What we see<br />
+      <em>routing</em>.
+    </h1>
+  </div>
+  <div class="hero-meta">
+    <div><b>Cadence</b> — weekly, plus or minus.</div>
+    <div><b>Voice</b> — operator-first. No hype.</div>
+    <div><b>Subjects</b> — router, missions, memory, the field.</div>
+    <div><b>Authors</b> — the team and our pilot operators.</div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section" data-comment-anchor="fn-feat">
+  <div class="section-meta">
+    <div><span class="pill accent">FN.&nbsp;12</span> Featured · this week</div>
+    <div>The longest piece this volume — read it first.</div>
+    <div>↗&nbsp;&nbsp;Published 09 May 2026</div>
+  </div>
+  <div class="featured">
+    <div class="photo">
+      <span class="ph-tag">photo · workshop bench · 4:5</span>
+      <div class="ph-cap"><span>Fig. 12 — Workshop</span><span>FN&nbsp;/&nbsp;12</span></div>
+    </div>
+    <div class="body">
+      <div class="meta">
+        <span><b>Field Note · 12</b></span>
+        <span>Architecture</span>
+        <span>14 min read</span>
+      </div>
+      <h2>Why the router is <em>five tiers</em>, and not four.</h2>
+      <p class="dek">The semantic tier was a late addition. We almost shipped without it. This is the story of the week we changed our minds — and what the cache hit rate looked like before and after.</p>
+      <div></div>
+      <div class="author">
+        <span><b>Yann L.</b></span>
+        <span>Co-founder · routing</span>
+      </div>
+      <a class="read" href="field-notes-five-tiers.html">Read the note →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FILTERS -->
+<section class="section" data-comment-anchor="fn-filter">
+  <div class="filter-strip">
+    <div class="filters">
+      <a class="is-on" href="#">All</a>
+      <a href="#">Architecture</a>
+      <a href="#">Field reports</a>
+      <a href="#">Engineering</a>
+      <a href="#">Operator notes</a>
+      <a href="#">Research</a>
+    </div>
+    <div class="count">Showing <b>11</b> of 11</div>
+  </div>
+
+  <!-- INDEX -->
+  <div class="index-grid">
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;11</span><span class="cat">Architecture</span></div>
+      <h3>The mission engine, in <em>one diagram.</em></h3>
+      <p class="desc">A tour of how a natural-language goal becomes a directed acyclic graph of tasks, and why we keep the coordinator stateless.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 02 May</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;10</span><span class="cat">Operator notes</span></div>
+      <h3>Two months running an <em>inventory sentinel.</em></h3>
+      <p class="desc">A pilot operator's diary — what changed, what broke, what they wish we'd built first. Honest about the boring parts.</p>
+      <div></div>
+      <div class="foot"><span><b>Maren K.</b> · 28 Apr</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;09</span><span class="cat">Engineering</span></div>
+      <h3>Memory, in <em>five layers.</em></h3>
+      <p class="desc">Focus, working, short-term, long-term, knowledge — what each one is for, and the one we still get wrong.</p>
+      <div></div>
+      <div class="foot"><span><b>Priya R.</b> · 21 Apr</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;08</span><span class="cat">Field reports</span></div>
+      <h3>The week our pilot's <em>Slack went quiet.</em></h3>
+      <p class="desc">A four-day silence wasn't a failure — it was the sign things had crossed. What we learned about absence as a metric.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 14 Apr</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;07</span><span class="cat">Architecture</span></div>
+      <h3>Why <em>cheap</em> models route most of our traffic.</h3>
+      <p class="desc">Cache + rules carry 78% of decisions. The expensive models are reserved for the hard ones. The numbers, broken down.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 07 Apr</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;06</span><span class="cat">Engineering</span></div>
+      <h3>Skills are <em>not</em> tools. Here's the difference.</h3>
+      <p class="desc">A tool is a verb. A skill is a hire-able trait that bundles tools, prompts, and policy. Why we drew the line where we did.</p>
+      <div></div>
+      <div class="foot"><span><b>Priya R.</b> · 31 Mar</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;05</span><span class="cat">Research</span></div>
+      <h3>Rereading the <em>tool-use</em> literature.</h3>
+      <p class="desc">A short-list of the papers that shaped our orchestrator, with the parts we agreed and the parts we didn't.</p>
+      <div></div>
+      <div class="foot"><span><b>Priya R.</b> · 24 Mar</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;04</span><span class="cat">Operator notes</span></div>
+      <h3>What "in production" <em>actually</em> means here.</h3>
+      <p class="desc">A working definition we use internally — and what doesn't count, even when it looks like it does.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 17 Mar</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;03</span><span class="cat">Field reports</span></div>
+      <h3>Three rooms, three <em>shapes</em>.</h3>
+      <p class="desc">Three early pilots run wildly different agent rooms. Patterns we saw — and the one we didn't expect.</p>
+      <div></div>
+      <div class="foot"><span><b>Maren K.</b> · 10 Mar</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;02</span><span class="cat">Architecture</span></div>
+      <h3>The <em>coordinator</em> ticks every five seconds.</h3>
+      <p class="desc">Why we picked five — and what changed when we briefly tried three, then thirty.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 03 Mar</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+    <article class="note">
+      <div class="top"><span class="id">FN.&nbsp;01</span><span class="cat">Manifesto</span></div>
+      <h3>What we're <em>building</em>, and what we aren't.</h3>
+      <p class="desc">A short note on why we're not building a model, not building a chat UI, and not building a no-code tool.</p>
+      <div></div>
+      <div class="foot"><span><b>Yann L.</b> · 24 Feb</span><a class="read" href="#">Read →</a></div>
+    </article>
+
+  </div>
+</section>
+
+<!-- SUBSCRIBE -->
+<section class="sub-strip">
+  <h2 class="sub-h">A note in your<br />inbox, <em>weekly.</em></h2>
+  <div>
+    <form class="sub-form" onsubmit="event.preventDefault();">
+      <input type="email" placeholder="you@operator.eu" />
+      <button type="submit">Subscribe →</button>
+    </form>
+    <div class="sub-stamp">No tracking pixels. Unsubscribe in one click.</div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+  <span>Field notes · v1.36.04</span>
+</footer>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body>
+</html>

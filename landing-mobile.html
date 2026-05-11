@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos · Landing — Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  width: 100%;
+}
+body { display: grid; place-items: start center; padding: 24px 0; gap: 32px; min-height: 100vh; background: #1f1d18; }
+a { color: inherit; text-decoration: none; }
+
+/* Two device columns */
+.devices { display: flex; gap: 36px; align-items: flex-start; padding: 0 24px; flex-wrap: wrap; justify-content: center; }
+.device { background: var(--bg); box-shadow: 0 30px 80px rgba(0,0,0,0.35); }
+.device .label {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: #b9b3a3;
+  text-align: center; padding: 14px 0; background: #1f1d18;
+  display: block;
+}
+
+/* mobile sizes */
+.m375 { width: 375px; }
+.m768 { width: 768px; }
+
+/* ───────────── shared phone styles ───────────── */
+.pg { display: block; }
+.pg .topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pg .brand { font-family: var(--serif); font-size: 18px; letter-spacing: -0.01em; color: var(--fg); display: inline-flex; align-items: center; text-transform: none; }
+.pg .brand em { font-style: italic; color: var(--muted); }
+.pg .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.pg .menu { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); }
+.pg .menu-icon { display: inline-block; width: 18px; height: 12px; position: relative; vertical-align: middle; margin-left: 8px; }
+.pg .menu-icon::before, .pg .menu-icon::after {
+  content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--fg);
+}
+.pg .menu-icon::before { top: 0; }
+.pg .menu-icon::after { bottom: 0; }
+
+/* meta strip */
+.pg .meta-strip {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pg .meta-strip > div { padding: 10px 16px; border-right: 1px solid var(--rule-c); }
+.pg .meta-strip > div:last-child { border-right: 0; text-align: right; }
+.pg .meta-strip b { color: var(--fg); font-weight: 500; }
+
+/* hero */
+.pg .hero { padding: 36px 20px 28px; border-bottom: 1px solid var(--rule-c); }
+.pg .hero .eye { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.pg .hero h1 { font-family: var(--serif); font-size: 56px; line-height: 0.96; letter-spacing: -0.02em; text-wrap: balance; }
+.m768 .pg .hero h1 { font-size: 88px; }
+.pg .hero h1 em { font-style: italic; color: var(--muted); }
+.pg .hero .lead { margin-top: 22px; font-size: 15px; line-height: 1.55; color: var(--fg-2); max-width: 36ch; }
+.m768 .pg .hero .lead { font-size: 17px; max-width: 56ch; }
+.pg .hero .actions { display: flex; gap: 10px; margin-top: 26px; flex-wrap: wrap; }
+
+/* photo card */
+.pg .photo {
+  border-bottom: 1px solid var(--rule-c);
+  background: var(--bg-3);
+  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 8px, transparent 8px 16px);
+  aspect-ratio: 4/5;
+  display: grid; place-items: center;
+  position: relative;
+}
+.m768 .pg .photo { aspect-ratio: 16/9; }
+.pg .photo .ph-tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pg .photo-cap {
+  display: flex; justify-content: space-between;
+  padding: 10px 20px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--rule-c);
+}
+
+/* section */
+.pg .section { border-bottom: 1px solid var(--rule-c); }
+.pg .section-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pg .section-meta > div { padding: 10px 16px; border-right: 1px solid var(--rule-c); display: flex; align-items: center; gap: 8px; }
+.pg .section-meta > div:last-child { border-right: 0; justify-content: flex-end; }
+.pg .section-meta b { color: var(--fg); font-weight: 500; }
+.pg .pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--fg);
+}
+.pg .pill.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pg .pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* chapter body */
+.pg .chapter { padding: 36px 20px 32px; }
+.pg .chapter h2 { font-family: var(--serif); font-size: 36px; line-height: 1.05; letter-spacing: -0.015em; }
+.m768 .pg .chapter h2 { font-size: 56px; }
+.pg .chapter h2 em { font-style: italic; color: var(--muted); }
+.pg .chapter p { margin-top: 18px; font-size: 14.5px; line-height: 1.55; color: var(--fg-2); }
+.m768 .pg .chapter p { font-size: 16px; }
+.pg .chapter .footnote { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--rule-c); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; color: var(--muted); }
+
+/* schematic — stacks on mobile */
+.pg .schematic {
+  margin: 18px 0 6px;
+  border: 1px solid var(--rule-c);
+  background: var(--bg);
+  padding: 18px;
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.7;
+  position: relative;
+}
+.pg .schematic::before {
+  content: attr(data-fig);
+  position: absolute; top: -1px; left: -1px;
+  background: var(--bg-2); color: var(--muted);
+  padding: 3px 8px; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  border: 1px solid var(--rule-c);
+}
+.pg .schematic .row { display: grid; grid-template-columns: 32px 1fr auto; gap: 8px; padding: 2px 0; }
+.pg .schematic .ix { color: var(--muted); }
+.pg .schematic .nm { color: var(--fg); text-transform: uppercase; letter-spacing: 0.08em; }
+.pg .schematic .meta { color: var(--muted); font-size: 9.5px; }
+.pg .schematic .sep { height: 1px; background: var(--rule-c); margin: 6px 0; }
+
+/* metric stack */
+.pg .metrics { display: grid; }
+.m768 .pg .metrics { grid-template-columns: repeat(2, 1fr); }
+.pg .metric { padding: 24px 20px; border-top: 1px solid var(--rule-c); }
+.m768 .pg .metric { border-right: 1px solid var(--rule-c); }
+.m768 .pg .metric:nth-child(2n) { border-right: 0; }
+.pg .metric .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pg .metric .val { font-family: var(--serif); font-size: 48px; line-height: 1; letter-spacing: -0.02em; margin-top: 12px; }
+.pg .metric .val em { font-style: italic; color: var(--muted); }
+.pg .metric .note { font-size: 12.5px; line-height: 1.45; color: var(--fg-2); margin-top: 10px; max-width: 36ch; }
+
+/* packs row — stacked */
+.pg .packs { display: grid; }
+.m768 .pg .packs { grid-template-columns: repeat(2, 1fr); }
+.pg .pack { padding: 24px 20px; border-top: 1px solid var(--rule-c); }
+.m768 .pg .pack { border-right: 1px solid var(--rule-c); }
+.m768 .pg .pack:nth-child(2n) { border-right: 0; }
+.pg .pack .head { display: flex; justify-content: space-between; align-items: baseline; }
+.pg .pack .id { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pg .pack .tag { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.pg .pack h3 { font-family: var(--serif); font-size: 28px; line-height: 1.05; letter-spacing: -0.01em; margin-top: 12px; }
+.pg .pack h3 em { font-style: italic; color: var(--muted); }
+.pg .pack .desc { font-size: 13.5px; line-height: 1.5; color: var(--fg-2); margin-top: 10px; max-width: 36ch; }
+.pg .pack .row { font-family: var(--mono); font-size: 10.5px; line-height: 1.6; color: var(--fg); margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--rule-c); }
+.pg .pack .row .k { color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9.5px; display: block; }
+
+/* field note */
+.pg .field-note { padding: 32px 20px; border-bottom: 1px solid var(--rule-c); }
+.pg .field-note .meta { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+.pg .field-note .quote { font-family: var(--serif); font-style: italic; font-size: 24px; line-height: 1.25; color: var(--fg); text-wrap: balance; }
+.m768 .pg .field-note .quote { font-size: 32px; }
+.pg .field-note .attr { margin-top: 20px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pg .field-note .attr b { color: var(--fg); font-family: var(--serif); font-style: normal; font-size: 14px; letter-spacing: -0.01em; text-transform: none; font-weight: 500; }
+
+/* CTA */
+.pg .cta { padding: 40px 20px; border-bottom: 1px solid var(--rule-c); }
+.pg .cta .eye { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.pg .cta h2 { font-family: var(--serif); font-size: 40px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance; }
+.m768 .pg .cta h2 { font-size: 64px; }
+.pg .cta h2 em { font-style: italic; color: var(--muted); }
+.pg .cta p { margin-top: 16px; font-size: 14.5px; line-height: 1.5; color: var(--fg-2); max-width: 40ch; }
+.pg .cta .actions { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+.pg .cta .stamp { margin-top: 18px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.pg .cta .stamp .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule-strong); color: var(--fg);
+  background: transparent;
+}
+.btn.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn .arrow { font-family: var(--serif); font-size: 13px; }
+
+/* foot */
+.pg .foot {
+  padding: 22px 20px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* sticky bottom CTA bar (mobile only) */
+.pg .stickybar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--rule-c);
+  background: var(--bg-2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.pg .stickybar a { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 1px; }
+
+/* page heading */
+.page-h {
+  font-family: "Geist Mono", ui-monospace, monospace;
+  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #b9b3a3; text-align: center; padding: 0 24px;
+  display: flex; align-items: center; gap: 16px; justify-content: center;
+}
+.page-h::before, .page-h::after {
+  content: ""; flex: 0 1 80px; height: 1px; background: rgba(255,255,255,0.15);
+}
+.page-h em { color: #f2ede4; font-style: italic; font-family: "Instrument Serif", Georgia, serif; font-size: 18px; letter-spacing: -0.01em; text-transform: none; margin: 0 4px; }
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style>
+</head>
+<body data-mood="bone" data-screen-label="Landing — Mobile / Tablet">
+
+<div class="page-h"><em>Automatos · Landing</em> — responsive breakpoints · 375 / 768</div>
+
+<div class="devices">
+
+  <!-- ───────────── 375 PHONE ───────────── -->
+  <div>
+    <div class="device m375">
+      <span class="label">375 · iPhone</span>
+      <div class="pg">
+
+        <header class="topbar">
+          <a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a>
+          <span class="menu">Menu<span class="menu-icon"></span></span>
+        </header>
+
+        <div class="meta-strip">
+          <div><b>v1.36.04</b> · 10 May 26</div>
+          <div>Open · Apache 2.0</div>
+        </div>
+
+        <!-- TRUE HERO (above Ch.01) -->
+        <section class="hero">
+          <div class="eye">Build · 1.36.04 · Operational</div>
+          <h1>An operating system<br />for <em>autonomous</em><br />agent teams.</h1>
+          <p class="lead">Automatos is the open platform for AI workforces — specialised agents with skills, tools and knowledge, scheduled missions, and one command centre to watch them work.</p>
+          <div class="actions">
+            <a class="btn solid" href="#">Start building <span class="arrow">→</span></a>
+            <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs <span class="arrow">→</span></a>
+          </div>
+        </section>
+
+        <div class="photo-cap"><span>Fig. 00 — Hero</span><span>Plate&nbsp;/&nbsp;000</span></div>
+        <div class="photo"><span class="ph-tag">photo · forest</span></div>
+
+        <!-- Chapter 01 — Workforce -->
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill">Ch.&nbsp;01</span> Workforce</div>
+            <div>↗&nbsp;the&nbsp;premise</div>
+          </div>
+          <div class="chapter">
+            <h2>Hire the agents. <em>Equip</em> them with skills.</h2>
+            <p>Design specialised agents, schedule their work, and run the room from one command centre. Apache 2.0 — self-host or hosted.</p>
+          </div>
+        </section>
+
+        <!-- Chapter 02 — Router -->
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill">Ch.&nbsp;02</span> Router</div>
+            <div>↗&nbsp;routing/engine.py</div>
+          </div>
+          <div class="chapter">
+            <h2>Decisions, in <em>tiers.</em></h2>
+            <p>Every request walks five tiers, top to bottom. The cheapest competent answer wins. Each tier knows what it costs and is logged.</p>
+            <div class="schematic" data-fig="Fig. 02 · routing.py">
+              <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
+              <div class="sep"></div>
+              <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user</span></div>
+              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">~5ms</span></div>
+              <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern</span></div>
+              <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">≥0.95</span></div>
+              <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify</span></div>
+              <div class="sep"></div>
+              <div class="row"><span class="ix">↓</span><span class="nm">Decision</span><span class="meta">logged</span></div>
+            </div>
+            <div class="footnote">¹ orchestrator/core/routing/engine.py · 5-second tick</div>
+          </div>
+        </section>
+
+        <!-- Metrics -->
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill">Plate&nbsp;/&nbsp;M</span> Ledger</div>
+            <div>Pilot · last 30d</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Marketplace agents available now.</div></div>
+            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">150<em>+</em></div><div class="note">Portable capability packs.</div></div>
+            <div class="metric"><div class="lbl">M.03 — Channels</div><div class="val">20<em>+</em></div><div class="note">Slack, Gmail, GitHub, Linear…</div></div>
+            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host or hosted.</div></div>
+          </div>
+        </section>
+
+        <!-- Packs -->
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill accent">Packs</span> One-click stacks</div>
+            <div>3 of 12</div>
+          </div>
+          <div class="packs">
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;01</span><span class="tag">Most installed</span></div>
+              <h3>Shopify <em>Ops</em></h3>
+              <p class="desc">Watches inventory, triages orders, drafts refunds, posts the daily standup.</p>
+              <div class="row"><span class="k">Includes</span>Inventory Sentinel · Order Triage · Refund Reviewer · Daily Scribe</div>
+            </article>
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;02</span><span class="tag">New</span></div>
+              <h3>Growth <em>Strategy</em></h3>
+              <p class="desc">Scrapes your category weekly, drafts experiment briefs, ships the top three to Linear.</p>
+              <div class="row"><span class="k">Includes</span>Market Scribe · Experiment Drafter · Metric Scorer · Ship Coordinator</div>
+            </article>
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;03</span><span class="tag">Editor's pick</span></div>
+              <h3>Social <em>Management</em></h3>
+              <p class="desc">Drafts in your voice, schedules across LinkedIn, X and Instagram, watches replies.</p>
+              <div class="row"><span class="k">Includes</span>Voice Drafter · Scheduler · Reply Watcher · Escalation Router</div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Field note -->
+        <div class="field-note">
+          <div class="meta"><span>Field&nbsp;Note · 03 / 12</span><span>Operator · EU</span></div>
+          <p class="quote">"It stopped being something I prompted and started being something the team checked in with."</p>
+          <div class="attr"><b>Maren K.</b> · ops lead, 40-person legal team</div>
+        </div>
+
+        <!-- CTA -->
+        <section class="cta">
+          <div class="eye">Get started · Apache 2.0</div>
+          <h2>Hire your<br />first agent in<br /><em>ten minutes.</em></h2>
+          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — and put it on a schedule. The first run is on us.</p>
+          <div class="actions">
+            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host</a>
+          </div>
+          <div class="stamp"><span class="dot"></span>OpenRouter-native · EU residency</div>
+        </section>
+
+        <!-- Foot -->
+        <footer class="foot">
+          <span>© 2026 Automatos&nbsp;Labs</span>
+          <span>v1.36.04</span>
+        </footer>
+
+        <!-- Sticky bottom -->
+        <div class="stickybar">
+          <span>Mobile · 375</span>
+          <a data-waitlist href="#">Sign up free →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────── 768 TABLET (truncated showcase: hero + one chapter + metrics + packs + cta) ───────────── -->
+  <div>
+    <div class="device m768">
+      <span class="label">768 · iPad portrait</span>
+      <div class="pg">
+
+        <header class="topbar">
+          <a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a>
+          <div style="display:flex; gap: 24px; align-items:center;">
+            <a href="#">Platform</a>
+            <a href="#">Marketplace</a>
+            <a href="#">Pricing</a>
+            <a data-waitlist href="#" style="color:var(--fg); border-bottom:1px solid var(--fg); padding-bottom:1px;">Sign up →</a>
+          </div>
+        </header>
+
+        <div class="meta-strip">
+          <div><b>v1.36.04</b> · 10 May 26</div>
+          <div>Open · Apache 2.0</div>
+        </div>
+
+        <section class="hero">
+          <div class="eye">Workforce / 001 · Open · Apache 2.0</div>
+          <h1>Hire the agents.<br /><em>Equip</em> them with skills.<br />Run the <em>room.</em></h1>
+          <p class="lead">Automatos is the open platform for AI workforces — design specialised agents, equip them with skills and knowledge, schedule their work, and run the whole room from one command centre.</p>
+          <div class="actions">
+            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
+            <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs</a>
+          </div>
+        </section>
+
+        <div class="photo-cap"><span>Fig. 01 — Workforce</span><span>Plate&nbsp;/&nbsp;001</span></div>
+        <div class="photo"><span class="ph-tag">photo · forest · 16:9</span></div>
+
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill">Ch.&nbsp;02</span> Router · mission engine</div>
+            <div>↗&nbsp;orchestrator/core/routing/engine.py</div>
+          </div>
+          <div class="chapter">
+            <h2>Decisions,<br />in <em>tiers.</em></h2>
+            <p>Every request walks five tiers, top to bottom. The cheapest competent answer wins. Each tier knows what it costs and is logged for replay.</p>
+            <div class="schematic" data-fig="Fig. 02 · routing.py">
+              <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
+              <div class="sep"></div>
+              <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user</span></div>
+              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">redis · ~5ms</span></div>
+              <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern</span></div>
+              <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">cosine ≥ 0.95</span></div>
+              <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify</span></div>
+              <div class="sep"></div>
+              <div class="row"><span class="ix">↓</span><span class="nm">RoutingDecision</span><span class="meta">logged</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill">Plate&nbsp;/&nbsp;M</span> Ledger · pilot, 30d</div>
+            <div>↗&nbsp;Honest pilot numbers</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Marketplace agents available now.</div></div>
+            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">150<em>+</em></div><div class="note">Portable capability packs.</div></div>
+            <div class="metric"><div class="lbl">M.03 — Channels</div><div class="val">20<em>+</em></div><div class="note">Slack, Gmail, GitHub, Linear…</div></div>
+            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host or hosted.</div></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-meta">
+            <div><span class="pill accent">Packs</span> One-click stacks</div>
+            <div>↗&nbsp;3 of 12</div>
+          </div>
+          <div class="packs">
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;01</span><span class="tag">Most installed</span></div>
+              <h3>Shopify <em>Ops</em></h3>
+              <p class="desc">A four-agent room that watches inventory, triages orders, drafts refunds, and posts the daily standup to Slack.</p>
+              <div class="row"><span class="k">Includes</span>Inventory Sentinel · Order Triage · Refund Reviewer · Daily Scribe</div>
+            </article>
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;02</span><span class="tag">New</span></div>
+              <h3>Growth <em>Strategy</em></h3>
+              <p class="desc">A research-and-ideation room that drafts experiment briefs and ships the top three to Linear weekly.</p>
+              <div class="row"><span class="k">Includes</span>Market Scribe · Experiment Drafter · Metric Scorer · Ship Coordinator</div>
+            </article>
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;03</span><span class="tag">Editor's pick</span></div>
+              <h3>Social <em>Management</em></h3>
+              <p class="desc">A cross-channel social room — drafts in your voice, schedules everywhere, watches replies, escalates anything sensitive.</p>
+              <div class="row"><span class="k">Includes</span>Voice Drafter · Scheduler · Reply Watcher · Escalation Router</div>
+            </article>
+            <article class="pack">
+              <div class="head"><span class="id">Pack&nbsp;/&nbsp;04</span><span class="tag">View all</span></div>
+              <h3>+ 9 <em>more</em></h3>
+              <p class="desc">Inbox Triage · Engineering Hygiene · Customer Sentinel · Research Desk · Recruiter's Room · Compliance Watch — and more.</p>
+              <div class="row"><span class="k">See</span><a href="marketplace.html" style="color:var(--fg); border-bottom: 1px solid var(--fg);">Marketplace →</a></div>
+            </article>
+          </div>
+        </section>
+
+        <div class="field-note">
+          <div class="meta"><span>Field&nbsp;Note · 03 / 12</span><span>Operator · EU · 2026-04</span></div>
+          <p class="quote">"It stopped being something I prompted and started being something the team checked in with. That was the day it crossed."</p>
+          <div class="attr"><b>Maren K.</b> · ops lead, 40-person legal team</div>
+        </div>
+
+        <section class="cta">
+          <div class="eye">Get started · Apache 2.0 · OpenRouter-native</div>
+          <h2>Hire your first agent in <em>ten minutes.</em></h2>
+          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — give it a knowledge base, and put it on a schedule. The first run is on us.</p>
+          <div class="actions">
+            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
+            <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs</a>
+          </div>
+          <div class="stamp"><span class="dot"></span>OpenRouter-native · 20+ channels via Composio · EU residency</div>
+        </section>
+
+        <footer class="foot">
+          <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+          <span>Tablet · 768</span>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body>
+</html>

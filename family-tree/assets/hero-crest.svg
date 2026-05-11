@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="600" height="700">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#1a3829"></stop>
+      <stop offset="100%" stop-color="#11271c"></stop>
+    </radialGradient>
+    <linearGradient id="brassWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4a85a"></stop>
+      <stop offset="50%" stop-color="#b08840"></stop>
+      <stop offset="100%" stop-color="#8a6a32"></stop>
+    </linearGradient>
+    <filter id="emboss" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1"></feGaussianBlur>
+      <feSpecularLighting result="lit" specularConstant="1.5" specularExponent="20" lighting-color="#fff5d8">
+        <feDistantLight azimuth="135" elevation="35"></feDistantLight>
+      </feSpecularLighting>
+      <feComposite in="lit" in2="SourceGraphic" operator="in" result="litGraphic"></feComposite>
+      <feComposite in="SourceGraphic" in2="litGraphic" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"></feComposite>
+    </filter>
+  </defs>
+  <rect width="600" height="700" fill="url(#bg)"></rect>
+  
+  <rect x="40" y="40" width="520" height="620" fill="none" stroke="#b08840" stroke-width="0.8" opacity="0.5"></rect>
+  <rect x="48" y="48" width="504" height="604" fill="none" stroke="#b08840" stroke-width="0.4" opacity="0.4"></rect>
+
+  
+  <g transform="translate(300,330)">
+    
+    <path d="M 0 -180 L 140 -130 L 140 40 Q 140 130 0 200 Q -140 130 -140 40 L -140 -130 Z" fill="none" stroke="url(#brassWash)" stroke-width="2.5"></path>
+    <path d="M 0 -168 L 130 -122 L 130 38 Q 130 124 0 188 Q -130 124 -130 38 L -130 -122 Z" fill="none" stroke="#b08840" stroke-width="0.6" opacity="0.6"></path>
+
+    
+    <path d="M 0 -100 L 0 100" stroke="url(#brassWash)" stroke-width="3" stroke-linecap="round"></path>
+    
+    <g stroke="url(#brassWash)" stroke-width="1.6" fill="none" stroke-linecap="round">
+      <path d="M 0 -80 Q -40 -70 -60 -40"></path>
+      <path d="M 0 -80 Q 40 -70 60 -40"></path>
+      <path d="M 0 -50 Q -55 -40 -85 0"></path>
+      <path d="M 0 -50 Q 55 -40 85 0"></path>
+      <path d="M 0 -20 Q -70 -10 -100 50"></path>
+      <path d="M 0 -20 Q 70 -10 100 50"></path>
+      <path d="M 0 10 Q -80 25 -110 90"></path>
+      <path d="M 0 10 Q 80 25 110 90"></path>
+    </g>
+    
+    <g fill="#d4a85a">
+      <circle cx="-60" cy="-40" r="3"></circle>
+      <circle cx="60" cy="-40" r="3"></circle>
+      <circle cx="-85" cy="0" r="3"></circle>
+      <circle cx="85" cy="0" r="3"></circle>
+      <circle cx="-100" cy="50" r="3"></circle>
+      <circle cx="100" cy="50" r="3"></circle>
+      <circle cx="-110" cy="90" r="3"></circle>
+      <circle cx="110" cy="90" r="3"></circle>
+    </g>
+    
+    <g stroke="url(#brassWash)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.85">
+      <path d="M 0 100 Q -25 130 -50 150"></path>
+      <path d="M 0 100 Q 25 130 50 150"></path>
+      <path d="M 0 100 Q -10 145 -25 170"></path>
+      <path d="M 0 100 Q 10 145 25 170"></path>
+    </g>
+    
+    <g transform="translate(0,40)" stroke="#d4a85a" stroke-width="0.8" fill="none">
+      <path d="M -8 -10 Q 0 -5 8 -10 Q 0 -2 -8 -10 Z"></path>
+      <path d="M -8 0 Q 0 5 8 0"></path>
+    </g>
+  </g>
+
+  
+  <g transform="translate(300,120)">
+    <path d="M -160 0 L 160 0 L 150 30 L -150 30 Z" fill="#8a6a32"></path>
+    <path d="M -158 2 L 158 2 L 149 28 L -149 28 Z" fill="none" stroke="#d4a85a" stroke-width="0.5"></path>
+    <text x="0" y="21" text-anchor="middle" font-family="Marcellus, serif" font-size="18" letter-spacing="6" fill="#f4ecdc">FAMILY TREE</text>
+  </g>
+
+  
+  <g transform="translate(300,580)">
+    <path d="M -130 0 L 130 0 L 120 24 L -120 24 Z" fill="#8a6a32"></path>
+    <text x="0" y="17" text-anchor="middle" font-family="Marcellus, serif" font-size="11" letter-spacing="3.5" fill="#f4ecdc">EST. MMXXIV · LISBOA</text>
+  </g>
+
+  
+  <g fill="#b08840" opacity="0.7">
+    <circle cx="60" cy="60" r="2"></circle>
+    <circle cx="540" cy="60" r="2"></circle>
+    <circle cx="60" cy="640" r="2"></circle>
+    <circle cx="540" cy="640" r="2"></circle>
+  </g>
+
+  
+  <g transform="translate(80,620)">
+    <text x="0" y="0" font-family="DM Sans, sans-serif" font-size="9" letter-spacing="2" fill="#b08840" opacity="0.7">MEMBER NO.</text>
+    <text x="0" y="18" font-family="JetBrains Mono, monospace" font-size="14" fill="#d4a85a">FT-0001 / 340</text>
+  </g>
+</svg>

@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Petit+Formal+Script&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================
+ * Family Tree — Members' Practice
+ * Heritage members'-club register · evergreen · brass · bone
+ * Embossed Marcellus crest · DM Sans body · Petit script accent
+ * ============================================================= */
+
+:root {
+  /* Tenant color tokens — raw HSL channels */
+  --tenant-color-primary: 42 55% 52%;        /* brass */
+  --tenant-color-secondary: 155 35% 16%;     /* evergreen */
+  --tenant-color-accent: 5 50% 32%;          /* oxblood */
+  --tenant-color-background: 42 28% 92%;     /* bone */
+  --tenant-color-surface: 42 22% 88%;        /* aged bone */
+  --tenant-color-text: 155 25% 14%;          /* ink */
+  --tenant-color-heading: 155 35% 10%;       /* deep ink */
+  --tenant-color-border: 42 22% 78%;         /* warm hairline */
+
+  /* Typography */
+  --tenant-font-base: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tenant-font-heading: 'Marcellus', 'Trajan Pro', 'Times New Roman', Georgia, serif;
+  --tenant-font-accent: 'Petit Formal Script', 'Brush Script MT', cursive;
+  --tenant-font-mono: 'JetBrains Mono', 'Menlo', monospace;
+
+  /* Glass / blur */
+  --tenant-blur-sm: 6px;
+  --tenant-blur-md: 12px;
+  --tenant-blur-lg: 20px;
+
+  /* Brand-tinted shadows */
+  --shadow-card: 0 1px 2px rgba(20, 35, 28, 0.05), 0 8px 24px -10px rgba(20, 35, 28, 0.10);
+  --shadow-elegant: 0 14px 44px -14px rgba(20, 35, 28, 0.16);
+  --shadow-frame: 0 24px 60px -20px rgba(15, 30, 22, 0.40);
+  --shadow-embossed: inset 0 1px 0 rgba(255,240,210,0.25), inset 0 -1px 0 rgba(0,0,0,0.20), 0 1px 2px rgba(20,35,28,0.20);
+}
+
+/* =============================================================
+ * Global type treatment
+ * ============================================================= */
+
+.template-family-tree {
+  font-family: var(--tenant-font-base);
+  font-feature-settings: "kern", "liga", "calt", "ss01";
+  letter-spacing: -0.005em;
+  color: hsl(var(--tenant-color-text));
+  background: hsl(var(--tenant-color-background));
+}
+
+.template-family-tree h1,
+.template-family-tree h2,
+.template-family-tree h3,
+.template-family-tree h4 {
+  font-family: var(--tenant-font-heading);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1.1;
+  color: hsl(var(--tenant-color-heading));
+}
+
+/* Script accent inside headings — use <em> to mark passages of script */
+.template-family-tree h1 em,
+.template-family-tree h2 em {
+  font-family: var(--tenant-font-accent);
+  font-style: normal;
+  font-weight: 400;
+  color: hsl(var(--tenant-color-primary));
+  letter-spacing: 0;
+  font-size: 1.05em;
+}
+
+/* Eyebrow label (small caps register, brass, tracked) */
+.template-family-tree .eyebrow,
+.template-family-tree #hero h2 + p,
+.template-family-tree #hero [class*="subtitle"] {
+  font-family: var(--tenant-font-base);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: hsl(var(--tenant-color-primary));
+}
+
+/* Member numbers, batch IDs, dates */
+.template-family-tree .member-no,
+.template-family-tree .batch-id {
+  font-family: var(--tenant-font-mono);
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  color: hsl(var(--tenant-color-primary));
+}
+
+/* =============================================================
+ * Section rhythm — bone / evergreen alternation
+ * ============================================================= */
+
+/* Light sections — default bone */
+.template-family-tree #pillars,
+.template-family-tree #drops,
+.template-family-tree #journal,
+.template-family-tree #artists,
+.template-family-tree #members,
+.template-family-tree #join,
+.template-family-tree #faq {
+  background: hsl(var(--tenant-color-background));
+}
+
+/* Aged-bone surfaces (visual rhythm between two light sections) */
+.template-family-tree #drops,
+.template-family-tree #members {
+  background: hsl(var(--tenant-color-surface));
+}
+
+/* Dark anchor — Practice (About) section */
+.template-family-tree #practice {
+  --tenant-color-background: 155 35% 14%;
+  --tenant-color-surface: 155 30% 19%;
+  --tenant-color-heading: 42 35% 90%;
+  --tenant-color-text: 42 22% 80%;
+  --tenant-color-primary: 42 55% 60%;
+  --tenant-color-border: 42 30% 30%;
+  background: hsl(var(--tenant-color-background));
+}
+.template-family-tree #practice .stat-value,
+.template-family-tree #practice [class*="text-3xl"],
+.template-family-tree #practice [class*="text-4xl"] {
+  color: hsl(var(--tenant-color-primary));
+  font-family: var(--tenant-font-heading);
+}
+
+/* Dark band — credentials marquee */
+.template-family-tree #credentials {
+  --tenant-color-background: 155 35% 12%;
+  --tenant-color-text: 42 35% 80%;
+  --tenant-color-border: 42 30% 35%;
+  background: hsl(var(--tenant-color-background));
+  border-top: 1px solid hsl(var(--tenant-color-border) / 0.4);
+  border-bottom: 1px solid hsl(var(--tenant-color-border) / 0.4);
+}
+.template-family-tree #credentials .marquee-text {
+  font-family: var(--tenant-font-heading);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+/* Dark band — newsletter (The Letter) */
+.template-family-tree #letter {
+  --tenant-color-background: 155 35% 14%;
+  --tenant-color-surface: 155 30% 19%;
+  --tenant-color-heading: 42 35% 90%;
+  --tenant-color-text: 42 22% 80%;
+  --tenant-color-primary: 42 55% 60%;
+  --tenant-color-border: 42 30% 30%;
+  background: hsl(var(--tenant-color-background));
+}
+
+/* Footer — evergreen, brass headers */
+.template-family-tree footer {
+  --tenant-color-background: 155 38% 11%;
+  --tenant-color-surface: 155 35% 14%;
+  --tenant-color-heading: 42 55% 60%;
+  --tenant-color-text: 42 20% 75%;
+  --tenant-color-border: 42 30% 28%;
+  background: hsl(var(--tenant-color-background));
+}
+.template-family-tree footer h3,
+.template-family-tree footer h4 {
+  font-family: var(--tenant-font-heading);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--tenant-color-heading));
+}
+
+/* =============================================================
+ * Component treatments
+ * ============================================================= */
+
+/* Hero — split layout, embossed crest visual on the right */
+.template-family-tree #hero {
+  background: linear-gradient(180deg, hsl(42 28% 94%) 0%, hsl(42 22% 88%) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.template-family-tree #hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 88% 50%, hsl(42 55% 52% / 0.08) 0%, transparent 35%),
+    radial-gradient(circle at 12% 80%, hsl(155 35% 16% / 0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+.template-family-tree #hero img {
+  filter: drop-shadow(0 20px 40px rgba(15, 30, 22, 0.20));
+}
+
+/* Buttons — brass primary with embossed feel, ink ghost */
+.template-family-tree .btn-primary,
+.template-family-tree button[class*="primary"],
+.template-family-tree a[class*="primary"] {
+  background: linear-gradient(180deg, hsl(42 60% 56%) 0%, hsl(42 60% 46%) 100%);
+  color: hsl(155 35% 10%);
+  font-family: var(--tenant-font-base);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  transition: transform 220ms ease, box-shadow 220ms ease, filter 220ms ease;
+  box-shadow: var(--shadow-embossed);
+}
+.template-family-tree .btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: var(--shadow-embossed), 0 6px 14px -2px rgba(20, 35, 28, 0.20);
+}
+
+/* Cards — bone with hairline, brass top-edge accent on hover */
+.template-family-tree .card,
+.template-family-tree [class*="rounded-2xl"],
+.template-family-tree [class*="rounded-xl"] {
+  background: hsl(var(--tenant-color-background));
+  border: 1px solid hsl(var(--tenant-color-border));
+  box-shadow: var(--shadow-card);
+  border-radius: 0.75rem;
+  position: relative;
+  transition: box-shadow 240ms ease, transform 240ms ease;
+}
+.template-family-tree .card:hover {
+  box-shadow: var(--shadow-elegant);
+}
+
+/* Membership pillar icons — brass medallion */
+.template-family-tree #pillars .icon-wrap {
+  background: radial-gradient(circle at 35% 30%, hsl(42 65% 62%) 0%, hsl(42 55% 44%) 100%);
+  color: hsl(155 35% 10%);
+  border: 1px solid hsl(42 50% 38%);
+  box-shadow: var(--shadow-embossed);
+  border-radius: 9999px;
+}
+
+/* Tabs — drawer-pull register, serif labels */
+.template-family-tree #drops .tab-trigger {
+  font-family: var(--tenant-font-heading);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+  padding: 0.875rem 1rem;
+}
+.template-family-tree #drops .tab-trigger[data-state="active"] {
+  color: hsl(var(--tenant-color-primary));
+  border-bottom: 2px solid hsl(var(--tenant-color-primary));
+}
+
+/* Journal cards — magazine register */
+.template-family-tree #journal article h3,
+.template-family-tree #journal .card h3 {
+  font-family: var(--tenant-font-heading);
+  font-size: 1.4rem;
+  line-height: 1.2;
+  margin-top: 0.75rem;
+}
+.template-family-tree #journal .meta,
+.template-family-tree #journal time,
+.template-family-tree #journal [class*="text-xs"] {
+  font-family: var(--tenant-font-base);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--tenant-color-primary));
+}
+
+/* Gallery — masonry, brass bottom-rule on captions */
+.template-family-tree #artists figure {
+  border-bottom: 1px solid hsl(var(--tenant-color-primary) / 0.4);
+  padding-bottom: 0.75rem;
+}
+.template-family-tree #artists figcaption {
+  font-family: var(--tenant-font-accent);
+  font-size: 1.1rem;
+  color: hsl(var(--tenant-color-text));
+  padding-top: 0.5rem;
+}
+
+/* Member quotes — calligraphic open-quote, italic serif body */
+.template-family-tree #members blockquote,
+.template-family-tree #members .quote {
+  font-family: var(--tenant-font-heading);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: hsl(var(--tenant-color-heading));
+}
+.template-family-tree #members blockquote::before {
+  content: "\201C";
+  font-family: var(--tenant-font-accent);
+  font-size: 4rem;
+  line-height: 0.6;
+  color: hsl(var(--tenant-color-primary));
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* Process — engraved roman numerals (we keep arabic but treat large) */
+.template-family-tree #join .step-number {
+  font-family: var(--tenant-font-heading);
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: hsl(var(--tenant-color-primary));
+  font-feature-settings: "lnum", "tnum";
+}
+
+/* FAQ — heritage accordion, serif questions */
+.template-family-tree #faq .accordion-item {
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+}
+.template-family-tree #faq .accordion-trigger {
+  font-family: var(--tenant-font-heading);
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  padding: 1.5rem 0;
+}
+
+/* Newsletter heading — script accent */
+.template-family-tree #letter h2,
+.template-family-tree #letter h3 {
+  font-family: var(--tenant-font-heading);
+}
+
+/* =============================================================
+ * Section padding
+ * ----------------------------------------------------------------
+ * INTENTIONALLY EMPTY. The BudStacks render engine reads
+ * `settings.sectionPadding` from layout.json and applies the
+ * vertical rhythm itself. Re-declaring `section { padding-* }`
+ * here doubles the spacing and produces visible empty bands
+ * between every section. Do not add padding rules here.
+ * ============================================================= */
+
+/* =============================================================
+ * Accessibility — WCAG 2.2 AA
+ * ============================================================= */
+
+.template-family-tree *:focus-visible {
+  outline: 2px solid hsl(var(--tenant-color-primary));
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-family-tree *,
+  .template-family-tree *::before,
+  .template-family-tree *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .template-family-tree .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+.template-family-tree main:focus { outline: none; }

@@ -1,0 +1,1859 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Budstacks Admin · Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ========================================================
+     BUDSTACKS ADMIN — DESIGN SYSTEM TOKENS
+     Mirror of the canonical tokens. Single source of truth.
+     ======================================================== */
+  :root {
+    /* Surface / chrome */
+    --bs-bg:           #07090A;       /* page background */
+    --bs-bg-smoke:     #050a07;       /* deep variant */
+    --bs-card:         #151A1C;       /* card / panel fill */
+    --bs-input:        #0F1517;       /* input fill */
+    --bs-hover:        #1A2123;       /* hover surface */
+    --bs-step-200:     #222A2C;       /* slate step-up / border default */
+    --bs-step-300:     #2F3A3D;       /* slate step-up / ghost border */
+    --bs-border:       #222A2C;
+    --bs-border-100:   #1c2326;       /* subtle inner divider */
+
+    /* Text */
+    --bs-fg:           #F5F6F4;       /* high-contrast cream (titles) */
+    --bs-fg-2:         #F2F4F2;       /* alt title */
+    --bs-fg-body:      #C6CCC8;       /* body cream-grey */
+    --bs-fg-body-2:    #EAEEEA;
+    --bs-fg-muted:     #8A938F;       /* muted secondary */
+    --bs-fg-muted-2:   #8A928E;
+
+    /* Brand greens */
+    --bs-green:        #52D97A;       /* primary brand green */
+    --bs-green-deep:   #2FB560;       /* CTA fill */
+    --bs-green-soft:   #8CF0A4;       /* chip text */
+    --bs-green-tint:   rgba(82,217,122,0.06);
+    --bs-green-tint-5: rgba(82,217,122,0.05);
+    --bs-green-ring:   rgba(82,217,122,0.30);
+    --bs-green-glow:   rgba(82,217,122,0.40);
+
+    /* Cream gold */
+    --bs-gold:         #D9BC82;       /* eyebrow gold */
+    --bs-gold-soft:    #E8D19E;       /* secondary badge text */
+    --bs-gold-cream:   #fcfcbc;       /* big metric cream-gold */
+    --bs-gold-tint:    rgba(231,219,184,0.14);
+    --bs-gold-ring:    rgba(231,219,184,0.30);
+
+    /* Semantic (derived) */
+    --bs-danger:       #F87171;
+    --bs-danger-tint:  rgba(248,113,113,0.08);
+    --bs-danger-ring:  rgba(248,113,113,0.32);
+
+    --bs-warn:         #F5C26B;
+    --bs-warn-tint:    rgba(245,194,107,0.08);
+    --bs-warn-ring:    rgba(245,194,107,0.32);
+
+    --bs-info:         #7DB7FF;
+    --bs-info-tint:    rgba(125,183,255,0.08);
+    --bs-info-ring:    rgba(125,183,255,0.30);
+
+    /* Radii */
+    --bs-r-sm:  6px;
+    --bs-r-md:  10px;
+    --bs-r-lg:  16px;       /* cards */
+    --bs-r-xl:  20px;
+    --bs-r-pill: 999px;
+
+    /* Shadows */
+    --bs-shadow-card:
+      0 1px 0 rgba(255,255,255,0.04) inset,
+      0 20px 60px -30px rgba(0,0,0,0.7);
+    --bs-shadow-card-hover:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 0 0 1px rgba(82,217,122,0.18),
+      0 24px 70px -28px rgba(0,0,0,0.8);
+    --bs-glow-green:
+      0 0 0 1px rgba(82,217,122,0.30),
+      0 10px 30px -10px rgba(82,217,122,0.40);
+    --bs-glow-green-hover:
+      0 0 0 1px rgba(82,217,122,0.50),
+      0 14px 40px -8px rgba(82,217,122,0.55);
+
+    /* Type families */
+    --bs-font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+    --bs-font-sans:    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bs-font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+    /* Spacing scale (4px base) */
+    --bs-s-1: 4px;
+    --bs-s-2: 8px;
+    --bs-s-3: 12px;
+    --bs-s-4: 16px;
+    --bs-s-5: 20px;
+    --bs-s-6: 24px;
+    --bs-s-8: 32px;
+    --bs-s-10: 40px;
+    --bs-s-12: 48px;
+    --bs-s-16: 64px;
+    --bs-s-20: 80px;
+  }
+
+  /* ========================================================
+     PAGE / DOC SHELL (this style guide itself)
+     ======================================================== */
+  *,*::before,*::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bs-bg);
+    color: var(--bs-fg-body);
+    font-family: var(--bs-font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .doc {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 32px 120px;
+  }
+
+  .doc-eyebrow {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bs-gold);
+    border: 1px solid var(--bs-gold-ring);
+    background: var(--bs-gold-tint);
+    border-radius: var(--bs-r-pill);
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .doc-title {
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 64px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--bs-fg);
+    margin: 18px 0 14px;
+  }
+  .doc-lede {
+    font-size: 17px;
+    color: var(--bs-fg-body);
+    max-width: 720px;
+  }
+
+  .doc-section {
+    margin-top: 88px;
+    padding-top: 28px;
+    border-top: 1px solid var(--bs-border);
+  }
+  .doc-section-eyebrow {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bs-gold);
+    margin-bottom: 12px;
+  }
+  .doc-section-title {
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 1.1;
+    color: var(--bs-fg);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .doc-section-desc {
+    color: var(--bs-fg-body);
+    max-width: 760px;
+    margin-bottom: 32px;
+  }
+
+  h3.doc-h3 {
+    font-family: var(--bs-font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-fg-muted);
+    margin: 36px 0 14px;
+  }
+
+  /* Sub-card / cell used to lay out spec items inside the guide */
+  .cell {
+    background: var(--bs-card);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    padding: 24px;
+    box-shadow: var(--bs-shadow-card);
+  }
+  .cell + .cell { margin-top: 16px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 880px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  .label-mono {
+    font-family: var(--bs-font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bs-gold-soft);
+  }
+
+  /* Code block styling */
+  pre.code, code.inline {
+    font-family: var(--bs-font-mono);
+    font-size: 12.5px;
+    color: #D8E3DD;
+  }
+  pre.code {
+    background: var(--bs-input);
+    border: 1px solid var(--bs-border-100);
+    border-radius: var(--bs-r-md);
+    padding: 16px 18px;
+    overflow: auto;
+    line-height: 1.55;
+    margin: 0;
+  }
+  code.inline {
+    background: var(--bs-input);
+    border: 1px solid var(--bs-border-100);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--bs-gold-soft);
+  }
+
+  /* ========================================================
+     CANONICAL COMPONENT STYLES (.bs-*)
+     These are the actual component styles, demonstrated in
+     the guide AND copy-pasteable into the app.
+     ======================================================== */
+
+  /* ---------- Eyebrow + page header ---------- */
+  .bs-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--bs-gold);
+    border: 1px solid var(--bs-gold-ring);
+    background: var(--bs-gold-tint);
+    border-radius: var(--bs-r-pill);
+    padding: 6px 14px;
+  }
+  .bs-page-title {
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--bs-fg);
+    margin: 14px 0 8px;
+  }
+  .bs-page-subtitle {
+    color: var(--bs-fg-body);
+    font-size: 15px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .bs-page-header-centered {
+    text-align: center;
+    padding: 56px 24px 40px;
+  }
+  .bs-page-header-centered .bs-page-subtitle { margin: 0 auto; }
+
+  .bs-page-header-compact {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 28px 0 20px;
+    border-bottom: 1px solid var(--bs-border-100);
+    margin-bottom: 24px;
+  }
+  .bs-page-header-compact .bs-page-title { font-size: 28px; margin: 6px 0 4px; }
+  .bs-page-header-compact .bs-page-subtitle { font-size: 14px; margin: 0; }
+
+  /* ---------- Cards ---------- */
+  .bs-card {
+    background: var(--bs-card);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    box-shadow: var(--bs-shadow-card);
+    transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease;
+  }
+  .bs-card:hover {
+    box-shadow: var(--bs-shadow-card-hover);
+  }
+  .bs-card-pad   { padding: 24px; }
+  .bs-card-pad-lg{ padding: 28px 28px; }
+
+  .bs-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .bs-card-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: rgba(82,217,122,0.10);
+    color: var(--bs-green);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(82,217,122,0.18);
+  }
+  .bs-card-icon.gold {
+    background: rgba(217,188,130,0.10);
+    color: var(--bs-gold);
+    border-color: rgba(217,188,130,0.22);
+  }
+  .bs-card-title {
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--bs-fg);
+    line-height: 1.2;
+    margin: 2px 0 4px;
+  }
+  .bs-card-desc {
+    color: var(--bs-fg-muted);
+    font-size: 13.5px;
+    margin: 0;
+  }
+
+  /* ---------- Stat card (canonical) ---------- */
+  .bs-stat {
+    background: var(--bs-card);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    box-shadow: var(--bs-shadow-card);
+    padding: 22px 22px 20px;
+    display: flex; flex-direction: column;
+    min-height: 132px;
+    transition: box-shadow .25s ease, border-color .25s ease;
+  }
+  .bs-stat:hover { box-shadow: var(--bs-shadow-card-hover); }
+  .bs-stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .bs-stat-label {
+    font-family: var(--bs-font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bs-gold-soft);
+  }
+  .bs-stat-icon {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    background: rgba(82,217,122,0.08);
+    color: var(--bs-green);
+  }
+  .bs-stat-value {
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--bs-gold-cream);
+    letter-spacing: -0.01em;
+  }
+  .bs-stat-delta {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--bs-fg-muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .bs-stat-delta.up    { color: var(--bs-green-soft); }
+  .bs-stat-delta.down  { color: var(--bs-danger); }
+
+  /* ---------- Buttons ---------- */
+  .bs-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 40px;
+    padding: 0 22px;
+    border-radius: var(--bs-r-pill);
+    font-family: var(--bs-font-sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.005em;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s, box-shadow .25s, transform .15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .bs-btn:active { transform: translateY(1px); }
+
+  /* Primary — emerald pill */
+  .bs-btn-green {
+    background: var(--bs-green-deep);
+    color: #07090A;
+    box-shadow: var(--bs-glow-green);
+  }
+  .bs-btn-green:hover {
+    background: var(--bs-green);
+    box-shadow: var(--bs-glow-green-hover);
+  }
+
+  /* Secondary — ghost pill */
+  .bs-btn-ghost {
+    background: transparent;
+    border-color: var(--bs-step-300);
+    color: var(--bs-fg);
+  }
+  .bs-btn-ghost:hover {
+    background: var(--bs-card);
+    border-color: var(--bs-fg-muted-2);
+  }
+
+  /* Tertiary — text only */
+  .bs-btn-text {
+    background: transparent;
+    color: var(--bs-fg-body);
+    padding: 0 8px;
+    height: 32px;
+  }
+  .bs-btn-text:hover { color: var(--bs-fg); }
+
+  /* Destructive (use sparingly — only when no undo) */
+  .bs-btn-danger {
+    background: transparent;
+    border-color: var(--bs-danger-ring);
+    color: var(--bs-danger);
+  }
+  .bs-btn-danger:hover {
+    background: var(--bs-danger-tint);
+    border-color: var(--bs-danger);
+  }
+
+  .bs-btn-sm { height: 32px; padding: 0 14px; font-size: 13px; }
+
+  /* ---------- Chips / Badges ---------- */
+  .bs-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--bs-r-pill);
+    border: 1px solid;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .bs-chip .dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .bs-chip-green {
+    color: var(--bs-green-soft);
+    background: var(--bs-green-tint-5);
+    border-color: var(--bs-green-ring);
+  }
+  .bs-chip-gold {
+    color: var(--bs-gold-soft);
+    background: rgba(201,169,110,0.05);
+    border-color: rgba(201,169,110,0.35);
+  }
+  .bs-chip-danger {
+    color: var(--bs-danger);
+    background: var(--bs-danger-tint);
+    border-color: var(--bs-danger-ring);
+  }
+  .bs-chip-warn {
+    color: var(--bs-warn);
+    background: var(--bs-warn-tint);
+    border-color: var(--bs-warn-ring);
+  }
+  .bs-chip-info {
+    color: var(--bs-info);
+    background: var(--bs-info-tint);
+    border-color: var(--bs-info-ring);
+  }
+  .bs-chip-muted {
+    color: var(--bs-fg-muted);
+    background: rgba(138,147,143,0.06);
+    border-color: rgba(138,147,143,0.25);
+  }
+
+  /* ---------- Inputs ---------- */
+  .bs-input {
+    width: 100%;
+    height: 40px;
+    background: var(--bs-input);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-md);
+    padding: 0 14px;
+    color: var(--bs-fg);
+    font-family: var(--bs-font-sans);
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .bs-input::placeholder { color: var(--bs-fg-muted); }
+  .bs-input:focus {
+    outline: none;
+    border-color: var(--bs-green-ring);
+    box-shadow: 0 0 0 3px rgba(82,217,122,0.10);
+  }
+
+  .bs-label {
+    display: block;
+    font-size: 13px;
+    color: var(--bs-fg-body-2);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .bs-help {
+    font-size: 12px;
+    color: var(--bs-fg-muted);
+    margin-top: 6px;
+  }
+
+  /* Search-style input with leading icon */
+  .bs-search {
+    position: relative;
+    max-width: 320px;
+  }
+  .bs-search .bs-input { padding-left: 38px; }
+  .bs-search svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--bs-fg-muted);
+  }
+
+  /* Toggle */
+  .bs-toggle {
+    width: 44px; height: 24px;
+    background: var(--bs-step-200);
+    border-radius: 999px;
+    position: relative;
+    cursor: pointer;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .bs-toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: var(--bs-fg);
+    border-radius: 999px;
+    top: 3px; left: 3px;
+    transition: transform .2s;
+  }
+  .bs-toggle.on { background: var(--bs-green); }
+  .bs-toggle.on::after { transform: translateX(20px); background: #07090A; }
+
+  /* ---------- Tables ---------- */
+  .bs-table-wrap {
+    background: var(--bs-card);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    box-shadow: var(--bs-shadow-card);
+    overflow: hidden;
+  }
+  .bs-table-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--bs-border-100);
+  }
+  .bs-table-toolbar-title {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--bs-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--bs-fg);
+  }
+  .bs-table-toolbar-title .count {
+    font-family: var(--bs-font-mono);
+    font-size: 12px;
+    color: var(--bs-fg-muted);
+  }
+  .bs-table-toolbar-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+  table.bs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  table.bs-table thead th {
+    text-align: left;
+    font-family: var(--bs-font-sans);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--bs-fg-muted);
+    padding: 12px 22px;
+    background: rgba(255,255,255,0.015);
+    border-bottom: 1px solid var(--bs-border-100);
+  }
+  table.bs-table tbody td {
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--bs-border-100);
+    color: var(--bs-fg-body);
+    vertical-align: middle;
+  }
+  table.bs-table tbody tr:last-child td { border-bottom: none; }
+  table.bs-table tbody tr {
+    transition: background .15s;
+  }
+  table.bs-table tbody tr:hover {
+    background: rgba(82,217,122,0.025);
+  }
+  table.bs-table .num,
+  table.bs-table .mono {
+    font-family: var(--bs-font-mono);
+    font-size: 12.5px;
+    color: var(--bs-fg-body-2);
+  }
+  table.bs-table .strong { color: var(--bs-fg); font-weight: 500; }
+
+  /* Drag handle for reorderable rows */
+  .bs-drag {
+    color: var(--bs-fg-muted);
+    cursor: grab;
+    opacity: 0.6;
+  }
+  .bs-drag:hover { opacity: 1; color: var(--bs-fg); }
+
+  /* Avatar */
+  .bs-avatar {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    background: rgba(82,217,122,0.18);
+    color: var(--bs-green-soft);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--bs-font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- Dropdown trigger ---------- */
+  .bs-select {
+    display: inline-flex; align-items: center; gap: 10px;
+    height: 36px;
+    padding: 0 14px;
+    background: var(--bs-input);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-md);
+    color: var(--bs-fg-body);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .bs-select .count-pill {
+    background: var(--bs-step-200);
+    color: var(--bs-fg);
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    border-radius: 999px;
+    padding: 1px 7px;
+  }
+
+  /* ---------- Banner / inline note ---------- */
+  .bs-banner {
+    border: 1px solid var(--bs-green-ring);
+    background: var(--bs-green-tint);
+    border-radius: var(--bs-r-md);
+    padding: 12px 16px;
+    color: var(--bs-fg-body-2);
+    font-size: 13.5px;
+  }
+  .bs-banner strong { color: var(--bs-green-soft); font-weight: 600; }
+
+  /* =========== guide-only swatches and demos =========== */
+  .swatch {
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--bs-card);
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-md);
+    overflow: hidden;
+  }
+  .swatch-chip { height: 76px; }
+  .swatch-meta {
+    padding: 10px 12px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .swatch-name {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--bs-fg);
+    text-transform: uppercase;
+  }
+  .swatch-hex {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    color: var(--bs-fg-muted);
+  }
+
+  .palette-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .palette-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  @media (max-width: 800px) {
+    .palette-grid, .palette-grid-6 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .type-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 32px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--bs-border-100);
+    align-items: baseline;
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { color: var(--bs-fg-muted); font-size: 12.5px; }
+  .type-meta .name { color: var(--bs-gold-soft); font-family: var(--bs-font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+  .scale-row {
+    display: flex; align-items: baseline; gap: 18px;
+    padding: 8px 0;
+  }
+  .scale-row .scale-num {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    color: var(--bs-gold-soft);
+    width: 80px;
+  }
+  .scale-row .scale-bar {
+    background: var(--bs-step-200);
+    height: 18px;
+    border-radius: 4px;
+  }
+
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 880px) { .do-dont { grid-template-columns: 1fr; } }
+  .do, .dont {
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    padding: 22px;
+    background: var(--bs-card);
+  }
+  .do    { border-left: 3px solid var(--bs-green); }
+  .dont  { border-left: 3px solid var(--bs-danger); opacity: 0.94; }
+  .do-dont .label {
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .do .label   { color: var(--bs-green-soft); }
+  .dont .label { color: var(--bs-danger); }
+  .do-dont .why {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--bs-border);
+    color: var(--bs-fg-muted);
+    font-size: 12.5px;
+  }
+
+  .toc {
+    position: sticky; top: 0;
+    z-index: 10;
+    background: rgba(7,9,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--bs-border-100);
+    padding: 14px 32px;
+  }
+  .toc-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap;
+    font-family: var(--bs-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .toc-brand {
+    color: var(--bs-fg);
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600;
+    margin-right: auto;
+  }
+  .toc-brand .mark {
+    width: 10px; height: 10px;
+    background: var(--bs-green);
+    box-shadow: 0 0 12px var(--bs-green);
+    border-radius: 2px;
+  }
+  .toc a {
+    color: var(--bs-fg-muted);
+    text-decoration: none;
+    transition: color .15s;
+  }
+  .toc a:hover { color: var(--bs-fg); }
+
+  .demo-bg {
+    background: var(--bs-bg);
+    border: 1px solid var(--bs-border-100);
+    border-radius: var(--bs-r-lg);
+    padding: 28px;
+    margin-top: 16px;
+  }
+  .demo-bg.smoke { background: var(--bs-bg-smoke); }
+
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  /* page-template mini mockups */
+  .mini-frame {
+    border: 1px solid var(--bs-border);
+    border-radius: var(--bs-r-lg);
+    overflow: hidden;
+    background: var(--bs-bg);
+    box-shadow: var(--bs-shadow-card);
+  }
+  .mini-chrome {
+    height: 28px;
+    background: var(--bs-bg-smoke);
+    border-bottom: 1px solid var(--bs-border-100);
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 12px;
+  }
+  .mini-chrome .dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--bs-step-300);
+  }
+
+  /* Spec table */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .spec-table td, .spec-table th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--bs-border-100);
+    vertical-align: top;
+  }
+  .spec-table th {
+    font-weight: 500;
+    color: var(--bs-fg-muted);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .spec-table td:first-child {
+    font-family: var(--bs-font-mono);
+    color: var(--bs-gold-soft);
+    font-size: 12px;
+    width: 32%;
+  }
+
+  /* Decorative figure for token-anatomy callouts */
+  .anat {
+    background: var(--bs-bg);
+    border: 1px solid var(--bs-border-100);
+    border-radius: var(--bs-r-md);
+    padding: 18px;
+    font-family: var(--bs-font-mono);
+    font-size: 12px;
+    color: var(--bs-fg-muted);
+  }
+  .anat strong { color: var(--bs-gold-soft); font-weight: 500; }
+
+  /* Print niceties */
+  @media print {
+    .toc { display: none; }
+    body { background: #fff; color: #111; }
+    .doc { padding: 24px; }
+    .bs-card, .cell, .demo-bg, .mini-frame { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     STICKY NAV
+     ========================================================= -->
+<nav class="toc">
+  <div class="toc-inner">
+    <div class="toc-brand"><span class="mark"></span> BUDSTACKS · ADMIN DESIGN SYSTEM</div>
+    <a href="#principles">Principles</a>
+    <a href="#tokens">Tokens</a>
+    <a href="#type">Type</a>
+    <a href="#components">Components</a>
+    <a href="#templates">Templates</a>
+    <a href="#do-dont">Do / Don't</a>
+    <a href="#handoff">Handoff</a>
+  </div>
+</nav>
+
+<div class="doc">
+
+  <!-- ========== HERO ========== -->
+  <header style="padding: 32px 0 8px;">
+    <span class="doc-eyebrow">◆ V1.0 · Tenant + Super Admin</span>
+    <h1 class="doc-title">Admin Design System</h1>
+    <p class="doc-lede">
+      A single source of truth for tenant-admin and super-admin pages. Use this document
+      to align every screen — settings, dashboards, lists, detail views — to the same
+      tokens, components and templates. Hand it directly to Claude Code (or any engineer)
+      to roll out across the codebase.
+    </p>
+
+    <div class="row" style="margin-top: 24px;">
+      <span class="bs-chip bs-chip-green"><span class="dot"></span> Tenant Admin</span>
+      <span class="bs-chip bs-chip-green"><span class="dot"></span> Super Admin</span>
+      <span class="bs-chip bs-chip-gold">Dark · Premium · Operational</span>
+    </div>
+  </header>
+
+  <!-- ========== PRINCIPLES ========== -->
+  <section class="doc-section" id="principles">
+    <div class="doc-section-eyebrow">§ 01 — North Star</div>
+    <h2 class="doc-section-title">Principles</h2>
+    <p class="doc-section-desc">
+      Five rules. Every design decision should pass all five.
+    </p>
+
+    <div class="grid-2">
+      <div class="cell">
+        <div class="label-mono">01 · Premium, not playful</div>
+        <h3 style="font-family: var(--bs-font-display); font-weight:500; font-size:24px; color:var(--bs-fg); margin: 8px 0 8px;">Serif headlines, mono details, cream-gold accents</h3>
+        <p style="margin:0; color: var(--bs-fg-body);">The product is a regulated B2B platform for licensed operators. Every surface should feel like a premium console — not a consumer app. Lean on the serif display face for moments of importance; the mono treatment for technical truth.</p>
+      </div>
+
+      <div class="cell">
+        <div class="label-mono">02 · Dark by default — always</div>
+        <h3 style="font-family: var(--bs-font-display); font-weight:500; font-size:24px; color:var(--bs-fg); margin: 8px 0 8px;">No more cream-background pages</h3>
+        <p style="margin:0; color: var(--bs-fg-body);">Every admin page renders on <code class="inline">--bs-bg</code> (#07090A). The smoky variant <code class="inline">--bs-bg-smoke</code> is reserved for hero sections and modal scrims. The cream/parchment background on Analytics is retired.</p>
+      </div>
+
+      <div class="cell">
+        <div class="label-mono">03 · One green. One gold. Two roles.</div>
+        <h3 style="font-family: var(--bs-font-display); font-weight:500; font-size:24px; color:var(--bs-fg); margin: 8px 0 8px;">Green = action. Gold = identity.</h3>
+        <p style="margin:0; color: var(--bs-fg-body);">Brand green (<code class="inline">#52D97A</code>) signals affordance and success — primary buttons, "in stock", success badges, focus rings. Cream-gold (<code class="inline">#D9BC82</code> family) signals identity and labels — eyebrows, metric numbers, secondary badges. Never swap roles.</p>
+      </div>
+
+      <div class="cell">
+        <div class="label-mono">04 · Hairline, not heavy</div>
+        <h3 style="font-family: var(--bs-font-display); font-weight:500; font-size:24px; color:var(--bs-fg); margin: 8px 0 8px;">1px borders, soft shadows, calm hover</h3>
+        <p style="margin:0; color: var(--bs-fg-body);">Density comes from typography and spacing, not from heavy strokes or saturated fills. Card borders are 1px hairlines, shadows are diffused and downward, hover adds a soft green ring — never a solid colour shift.</p>
+      </div>
+
+      <div class="cell" style="grid-column: 1 / -1;">
+        <div class="label-mono">05 · Two page rhythms — pick the right one</div>
+        <h3 style="font-family: var(--bs-font-display); font-weight:500; font-size:24px; color:var(--bs-fg); margin: 8px 0 8px;">Centered serif header for "settings &amp; landing" — compact left header for "data &amp; lists"</h3>
+        <p style="margin:0; color: var(--bs-fg-body);">Settings, dashboards and overview pages use the centered eyebrow + serif headline + descriptive subtitle. Heavy data-table pages (Audit Logs, Customers when filtered, etc) use a compact left-aligned header so the table can breathe. Both are documented in <a href="#templates" style="color: var(--bs-green-soft);">Page Templates</a>.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== TOKENS ========== -->
+  <section class="doc-section" id="tokens">
+    <div class="doc-section-eyebrow">§ 02 — Tokens</div>
+    <h2 class="doc-section-title">Color Tokens</h2>
+    <p class="doc-section-desc">
+      Every colour in the admin must come from this palette. Hand-picked hexes are not allowed in component code — use the CSS variable or Tailwind utility.
+    </p>
+
+    <h3 class="doc-h3">Surfaces &amp; chrome</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-chip" style="background:#07090A;"></div><div class="swatch-meta"><span class="swatch-name">bs-bg</span><span class="swatch-hex">#07090A · page</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#050a07;"></div><div class="swatch-meta"><span class="swatch-name">bs-bg-smoke</span><span class="swatch-hex">#050a07 · hero / scrim</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#151A1C;"></div><div class="swatch-meta"><span class="swatch-name">bs-card</span><span class="swatch-hex">#151A1C · cards / panels</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#0F1517;"></div><div class="swatch-meta"><span class="swatch-name">bs-input</span><span class="swatch-hex">#0F1517 · inputs / pre</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#1A2123;"></div><div class="swatch-meta"><span class="swatch-name">bs-hover</span><span class="swatch-hex">#1A2123 · hover surface</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#222A2C;"></div><div class="swatch-meta"><span class="swatch-name">bs-step-200</span><span class="swatch-hex">#222A2C · border default</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#2F3A3D;"></div><div class="swatch-meta"><span class="swatch-name">bs-step-300</span><span class="swatch-hex">#2F3A3D · ghost border</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#1c2326;"></div><div class="swatch-meta"><span class="swatch-name">bs-border-100</span><span class="swatch-hex">#1c2326 · subtle divider</span></div></div>
+    </div>
+
+    <h3 class="doc-h3">Text</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-chip" style="background:#F5F6F4;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg</span><span class="swatch-hex">#F5F6F4 · titles</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#F2F4F2;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg-2</span><span class="swatch-hex">#F2F4F2 · alt title</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#C6CCC8;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg-body</span><span class="swatch-hex">#C6CCC8 · body</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#EAEEEA;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg-body-2</span><span class="swatch-hex">#EAEEEA · body bright</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#8A938F;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg-muted</span><span class="swatch-hex">#8A938F · muted</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#8A928E;"></div><div class="swatch-meta"><span class="swatch-name">bs-fg-muted-2</span><span class="swatch-hex">#8A928E · muted alt</span></div></div>
+    </div>
+
+    <h3 class="doc-h3">Brand greens · "Action &amp; success"</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-chip" style="background:#52D97A;"></div><div class="swatch-meta"><span class="swatch-name">bs-green</span><span class="swatch-hex">#52D97A · primary</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#2FB560;"></div><div class="swatch-meta"><span class="swatch-name">bs-green-deep</span><span class="swatch-hex">#2FB560 · CTA fill</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#8CF0A4;"></div><div class="swatch-meta"><span class="swatch-name">bs-green-soft</span><span class="swatch-hex">#8CF0A4 · chip text</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:rgba(82,217,122,0.06); border:1px solid rgba(82,217,122,0.30);"></div><div class="swatch-meta"><span class="swatch-name">bs-green-tint</span><span class="swatch-hex">rgba · chip bg</span></div></div>
+    </div>
+
+    <h3 class="doc-h3">Cream gold · "Identity &amp; labels"</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-chip" style="background:#D9BC82;"></div><div class="swatch-meta"><span class="swatch-name">bs-gold</span><span class="swatch-hex">#D9BC82 · eyebrow</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#E8D19E;"></div><div class="swatch-meta"><span class="swatch-name">bs-gold-soft</span><span class="swatch-hex">#E8D19E · secondary badge</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#fcfcbc;"></div><div class="swatch-meta"><span class="swatch-name">bs-gold-cream</span><span class="swatch-hex">#fcfcbc · big metric</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:rgba(231,219,184,0.14); border:1px solid rgba(231,219,184,0.30);"></div><div class="swatch-meta"><span class="swatch-name">bs-gold-tint</span><span class="swatch-hex">rgba · pill bg</span></div></div>
+    </div>
+
+    <h3 class="doc-h3">Semantic (derived for status only)</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-chip" style="background:#52D97A;"></div><div class="swatch-meta"><span class="swatch-name">success</span><span class="swatch-hex">use bs-green family</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#F87171;"></div><div class="swatch-meta"><span class="swatch-name">danger</span><span class="swatch-hex">#F87171</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#F5C26B;"></div><div class="swatch-meta"><span class="swatch-name">warn</span><span class="swatch-hex">#F5C26B</span></div></div>
+      <div class="swatch"><div class="swatch-chip" style="background:#7DB7FF;"></div><div class="swatch-meta"><span class="swatch-name">info</span><span class="swatch-hex">#7DB7FF</span></div></div>
+    </div>
+
+    <!-- Spacing / radius / shadow -->
+    <h3 class="doc-h3" style="margin-top:48px;">Spacing scale (4px base)</h3>
+    <div class="cell">
+      <div class="scale-row"><span class="scale-num">s-1 · 4</span><span class="scale-bar" style="width:4px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-2 · 8</span><span class="scale-bar" style="width:8px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-3 · 12</span><span class="scale-bar" style="width:12px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-4 · 16</span><span class="scale-bar" style="width:16px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-5 · 20</span><span class="scale-bar" style="width:20px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-6 · 24</span><span class="scale-bar" style="width:24px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-8 · 32</span><span class="scale-bar" style="width:32px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-10 · 40</span><span class="scale-bar" style="width:40px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-12 · 48</span><span class="scale-bar" style="width:48px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-16 · 64</span><span class="scale-bar" style="width:64px"></span></div>
+      <div class="scale-row"><span class="scale-num">s-20 · 80</span><span class="scale-bar" style="width:80px"></span></div>
+      <p style="color: var(--bs-fg-muted); font-size: 13px; margin: 16px 0 0;">Use these for every gap, padding, and margin. No arbitrary values.</p>
+    </div>
+
+    <h3 class="doc-h3">Radii</h3>
+    <div class="grid-4">
+      <div class="cell" style="text-align:center;"><div style="width:80px;height:80px;background:var(--bs-step-200);border-radius:6px;margin:0 auto 12px;"></div><div class="label-mono">r-sm · 6px</div><div style="color:var(--bs-fg-muted);font-size:12px;margin-top:4px;">inputs (small)</div></div>
+      <div class="cell" style="text-align:center;"><div style="width:80px;height:80px;background:var(--bs-step-200);border-radius:10px;margin:0 auto 12px;"></div><div class="label-mono">r-md · 10px</div><div style="color:var(--bs-fg-muted);font-size:12px;margin-top:4px;">inputs / selects</div></div>
+      <div class="cell" style="text-align:center;"><div style="width:80px;height:80px;background:var(--bs-step-200);border-radius:16px;margin:0 auto 12px;"></div><div class="label-mono">r-lg · 16px</div><div style="color:var(--bs-fg-muted);font-size:12px;margin-top:4px;">cards / tables</div></div>
+      <div class="cell" style="text-align:center;"><div style="width:80px;height:40px;background:var(--bs-step-200);border-radius:999px;margin:20px auto 12px;"></div><div class="label-mono">r-pill · 999px</div><div style="color:var(--bs-fg-muted);font-size:12px;margin-top:4px;">buttons / chips</div></div>
+    </div>
+
+    <h3 class="doc-h3">Shadows &amp; glow</h3>
+    <div class="grid-2">
+      <div class="cell">
+        <div class="label-mono">shadow-card</div>
+        <div style="height:80px;background:var(--bs-card);border:1px solid var(--bs-border);border-radius:var(--bs-r-lg); box-shadow: var(--bs-shadow-card); margin: 14px 0 12px;"></div>
+        <code class="inline" style="font-size:11px;">0 1px 0 rgba(255,255,255,.04) inset, 0 20px 60px -30px rgba(0,0,0,.7)</code>
+      </div>
+      <div class="cell">
+        <div class="label-mono">shadow-card-hover</div>
+        <div style="height:80px;background:var(--bs-card);border:1px solid var(--bs-border);border-radius:var(--bs-r-lg); box-shadow: var(--bs-shadow-card-hover); margin: 14px 0 12px;"></div>
+        <code class="inline" style="font-size:11px;">+ 0 0 0 1px rgba(82,217,122,.18)</code>
+      </div>
+      <div class="cell">
+        <div class="label-mono">glow-green (button)</div>
+        <div style="margin:14px 0 12px;"><span class="bs-btn bs-btn-green">Primary CTA</span></div>
+        <code class="inline" style="font-size:11px;">0 0 0 1px rgba(82,217,122,.30), 0 10px 30px -10px rgba(82,217,122,.40)</code>
+      </div>
+      <div class="cell">
+        <div class="label-mono">glow-green-hover</div>
+        <div style="margin:14px 0 12px;"><span class="bs-btn bs-btn-green" style="box-shadow: var(--bs-glow-green-hover); background: var(--bs-green);">Primary CTA · hover</span></div>
+        <code class="inline" style="font-size:11px;">0 0 0 1px rgba(82,217,122,.50), 0 14px 40px -8px rgba(82,217,122,.55)</code>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== TYPOGRAPHY ========== -->
+  <section class="doc-section" id="type">
+    <div class="doc-section-eyebrow">§ 03 — Typography</div>
+    <h2 class="doc-section-title">Type System</h2>
+    <p class="doc-section-desc">
+      Three families. Each has one job. Don't blend them.
+    </p>
+
+    <div class="cell">
+      <div class="grid-3" style="gap:24px;">
+        <div>
+          <div class="label-mono" style="margin-bottom:8px;">Display</div>
+          <div style="font-family: var(--bs-font-display); font-weight: 500; font-size: 38px; color: var(--bs-fg); line-height: 1.1;">Cormorant Garamond</div>
+          <div style="color: var(--bs-fg-muted); font-size: 12.5px; margin-top: 6px;">Page titles, card titles, big metric numbers. Weight 500. Italics allowed for emphasis only.</div>
+        </div>
+        <div>
+          <div class="label-mono" style="margin-bottom:8px;">Sans</div>
+          <div style="font-family: var(--bs-font-sans); font-weight: 500; font-size: 24px; color: var(--bs-fg);">Inter</div>
+          <div style="color: var(--bs-fg-muted); font-size: 12.5px; margin-top: 6px;">All UI text — body, buttons, labels, table cells. Weights 400 / 500 / 600.</div>
+        </div>
+        <div>
+          <div class="label-mono" style="margin-bottom:8px;">Mono</div>
+          <div style="font-family: var(--bs-font-mono); font-weight: 500; font-size: 22px; color: var(--bs-gold-soft);">JetBrains Mono</div>
+          <div style="color: var(--bs-fg-muted); font-size: 12.5px; margin-top: 6px;">Eyebrows, chip labels, IDs, IP addresses, timestamps, code, exact numbers in tables.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3" style="margin-top: 36px;">Type scale</h3>
+    <div class="cell" style="padding: 12px 28px;">
+      <div class="type-row">
+        <div class="type-meta"><span class="name">PAGE TITLE / display-xl</span>Cormorant 500 · 48px · 1.05 · -0.01em</div>
+        <div style="font-family: var(--bs-font-display); font-weight: 500; font-size: 48px; color: var(--bs-fg); line-height: 1.05; letter-spacing: -0.01em;">Cookie &amp; Privacy Settings</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">SECTION TITLE / display-lg</span>Cormorant 500 · 32px · 1.1</div>
+        <div style="font-family: var(--bs-font-display); font-weight: 500; font-size: 32px; color: var(--bs-fg); line-height: 1.1;">Operating console</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">CARD TITLE / display-md</span>Cormorant 500 · 22px · 1.2</div>
+        <div style="font-family: var(--bs-font-display); font-weight: 500; font-size: 22px; color: var(--bs-fg); line-height: 1.2;">Domain Configuration</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">METRIC / display-num</span>Cormorant 500 · 36px · cream-gold</div>
+        <div style="font-family: var(--bs-font-display); font-weight: 500; font-size: 36px; color: var(--bs-gold-cream); line-height: 1; letter-spacing: -0.01em;">€15,859.23</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">BODY / sans-md</span>Inter 400 · 15px · 1.55</div>
+        <div style="font-family: var(--bs-font-sans); font-weight: 400; font-size: 15px; color: var(--bs-fg-body); line-height: 1.55;">Configure how cookies are managed on your storefront. Based on your country (ZA), we automatically apply the appropriate consent model.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">UI / sans-sm</span>Inter 500 · 14px · 1.4</div>
+        <div style="font-family: var(--bs-font-sans); font-weight: 500; font-size: 14px; color: var(--bs-fg);">Custom Banner Message</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">META / sans-xs</span>Inter 400 · 12px · muted</div>
+        <div style="font-family: var(--bs-font-sans); font-weight: 400; font-size: 12px; color: var(--bs-fg-muted);">Leave empty to use the default message for your region</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">EYEBROW / mono-eyebrow</span>JetBrains 500 · 11px · 0.20em · upper · gold</div>
+        <div style="font-family: var(--bs-font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--bs-gold);">◆ Privacy</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">CHIP / mono-chip</span>JetBrains 500 · 11px · 0.10em · upper</div>
+        <div style="font-family: var(--bs-font-mono); font-weight: 500; font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--bs-green-soft);">In Stock</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><span class="name">DATA-MONO / mono-cell</span>JetBrains 400 · 12.5px · body</div>
+        <div style="font-family: var(--bs-font-mono); font-weight: 400; font-size: 12.5px; color: var(--bs-fg-body-2);">#320-DKB7  ·  Mar 03, 21:17:28  ·  176.78.129.158</div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3">Hierarchy rules</h3>
+    <table class="spec-table">
+      <tr><td>Page title</td><td>Always Cormorant. Centered for landing/settings, left-aligned compact for data-tables.</td></tr>
+      <tr><td>Card title</td><td>Always Cormorant 22px. Never Inter.</td></tr>
+      <tr><td>Big numbers</td><td>Always Cormorant in <code class="inline">--bs-gold-cream</code>. Never Inter for metrics.</td></tr>
+      <tr><td>Eyebrows / labels above titles</td><td>Always JetBrains Mono uppercase, gold. Wrapped in a thin gold-tint pill.</td></tr>
+      <tr><td>Status / tag chips</td><td>Always JetBrains Mono uppercase 11px. Never Inter.</td></tr>
+      <tr><td>IDs, IPs, timestamps, JSON snippets</td><td>Always JetBrains Mono.</td></tr>
+      <tr><td>Everything else</td><td>Inter.</td></tr>
+    </table>
+  </section>
+
+
+  <!-- ========== COMPONENTS ========== -->
+  <section class="doc-section" id="components">
+    <div class="doc-section-eyebrow">§ 04 — Components</div>
+    <h2 class="doc-section-title">Component Library</h2>
+    <p class="doc-section-desc">
+      The full set of building blocks. Live demos below — every example is built from the canonical CSS at the bottom of this doc.
+    </p>
+
+    <!-- ========== Buttons ========== -->
+    <h3 class="doc-h3">Buttons — three roles, one shape</h3>
+    <div class="cell">
+      <div class="row" style="gap: 14px;">
+        <button class="bs-btn bs-btn-green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.5 0 4.78 1 6.42 2.58"/><path d="M21 3v6h-6"/></svg>
+          Sync from Dr Green
+        </button>
+        <button class="bs-btn bs-btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export records
+        </button>
+        <button class="bs-btn bs-btn-text">View details →</button>
+        <button class="bs-btn bs-btn-danger">Delete tenant</button>
+      </div>
+
+      <table class="spec-table" style="margin-top: 24px;">
+        <tr><th style="width:32%;">Variant</th><th>When to use</th></tr>
+        <tr><td>bs-btn-green</td><td><strong style="color:var(--bs-fg);">Primary action only — one per view.</strong> Save, Apply, Sync, Create, Confirm. Replaces the teal-cyan "Export records" gradient.</td></tr>
+        <tr><td>bs-btn-ghost</td><td>Secondary actions. Cancel, Export, alternate flows. Pairs with primary in a button row.</td></tr>
+        <tr><td>bs-btn-text</td><td>Tertiary / inline ("View", "Edit", "Show more"). No padding, no border, just text + chevron.</td></tr>
+        <tr><td>bs-btn-danger</td><td>Destructive only when there is no undo. Always confirm in a modal first.</td></tr>
+        <tr><td>Sizes</td><td>Default 40px tall. <code class="inline">.bs-btn-sm</code> = 32px tall (use inside dense table toolbars only).</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== Chips ========== -->
+    <h3 class="doc-h3">Status chips — one system, semantic colours</h3>
+    <div class="cell">
+      <div class="row" style="gap:10px; margin-bottom: 16px;">
+        <span class="bs-chip bs-chip-green"><span class="dot"></span> In Stock</span>
+        <span class="bs-chip bs-chip-green"><span class="dot"></span> Active</span>
+        <span class="bs-chip bs-chip-green"><span class="dot"></span> Template Created</span>
+        <span class="bs-chip bs-chip-warn"><span class="dot"></span> Pending</span>
+        <span class="bs-chip bs-chip-warn"><span class="dot"></span> Pending Sync</span>
+        <span class="bs-chip bs-chip-info"><span class="dot"></span> Processing</span>
+        <span class="bs-chip bs-chip-danger"><span class="dot"></span> Template Deleted</span>
+        <span class="bs-chip bs-chip-danger"><span class="dot"></span> Out of Stock</span>
+        <span class="bs-chip bs-chip-gold">Hybrid</span>
+        <span class="bs-chip bs-chip-gold">Indica</span>
+        <span class="bs-chip bs-chip-muted">N/A</span>
+      </div>
+
+      <p style="color: var(--bs-fg-body); font-size: 13.5px; margin: 0 0 12px;"><strong style="color:var(--bs-fg);">Chips replace all of:</strong> the solid-green/red Audit log pills, the outlined order pills, the cream-fill product strain badges, the bold "PENDING_SYNC" tags. Same shape, same type treatment, only the colour role changes.</p>
+
+      <table class="spec-table">
+        <tr><th>Role</th><th>When to use</th></tr>
+        <tr><td>chip-green (success)</td><td>"In Stock", "Active", "Created", "Synced", positive end-states.</td></tr>
+        <tr><td>chip-warn</td><td>"Pending", "Pending Sync", "Needs Attention", waiting on user.</td></tr>
+        <tr><td>chip-info</td><td>"Processing", "In Progress", system-side work in flight.</td></tr>
+        <tr><td>chip-danger</td><td>"Deleted", "Out of Stock", "Failed", "Error".</td></tr>
+        <tr><td>chip-gold</td><td>Identity / category labels — strain types, plan tier, role. Not status.</td></tr>
+        <tr><td>chip-muted</td><td>"N/A", "Empty", neutral placeholder values.</td></tr>
+      </table>
+    </div>
+
+    <!-- ========== Cards ========== -->
+    <h3 class="doc-h3">Cards — one container, two heads</h3>
+    <div class="grid-2" style="margin-top:8px;">
+      <div class="bs-card bs-card-pad">
+        <div class="bs-card-head">
+          <div class="bs-card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div>
+            <div class="bs-card-title">Domain Configuration</div>
+            <div class="bs-card-desc">Manage your store's domain settings</div>
+          </div>
+        </div>
+
+        <label class="bs-label">Default Subdomain</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input class="bs-input" value="healingbuds" />
+          <span style="font-family: var(--bs-font-mono); font-size:13px; color: var(--bs-fg-muted); white-space:nowrap;">.budstacks.io</span>
+        </div>
+        <div class="bs-help">This is your permanent subdomain</div>
+      </div>
+
+      <div class="bs-card bs-card-pad">
+        <div class="bs-card-head">
+          <div class="bs-card-icon gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/><path d="M12 22V12"/><path d="M4 7l8 5 8-5"/></svg>
+          </div>
+          <div>
+            <div class="bs-card-title">NFT License</div>
+            <div class="bs-card-desc">Your store license information</div>
+          </div>
+        </div>
+        <label class="bs-label">NFT Token ID</label>
+        <input class="bs-input" placeholder="Not set" />
+        <div class="bs-help">This NFT verifies your license to operate on BudStacks.io</div>
+      </div>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Anatomy</strong> · 1px <code class="inline">#222A2C</code> border · <code class="inline">#151A1C</code> fill · 16px radius · soft inset highlight + 60px downward shadow · on hover, add a 1px <code class="inline">rgba(82,217,122,0.18)</code> ring (no border colour change). Padding 24px standard, 28px for hero-feeling cards. Header pattern: 36px icon tile (green tint default, gold for "identity" / license-style cards) + Cormorant 22px title + muted Inter description.
+    </div>
+
+    <!-- ========== Stat cards ========== -->
+    <h3 class="doc-h3">Stat cards — the canonical KPI tile</h3>
+    <div class="grid-4">
+      <div class="bs-stat">
+        <div class="bs-stat-row">
+          <span class="bs-stat-label">Total Revenue</span>
+          <span class="bs-stat-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+        </div>
+        <div class="bs-stat-value">€15,859</div>
+        <div class="bs-stat-delta up">▲ +12.5% vs prev</div>
+      </div>
+      <div class="bs-stat">
+        <div class="bs-stat-row">
+          <span class="bs-stat-label">Total Orders</span>
+          <span class="bs-stat-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+          </span>
+        </div>
+        <div class="bs-stat-value">26</div>
+        <div class="bs-stat-delta">+0 this period</div>
+      </div>
+      <div class="bs-stat">
+        <div class="bs-stat-row">
+          <span class="bs-stat-label">Customers</span>
+          <span class="bs-stat-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </span>
+        </div>
+        <div class="bs-stat-value">1,284</div>
+        <div class="bs-stat-delta up">▲ +42 new</div>
+      </div>
+      <div class="bs-stat">
+        <div class="bs-stat-row">
+          <span class="bs-stat-label">Avg Order Value</span>
+          <span class="bs-stat-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </span>
+        </div>
+        <div class="bs-stat-value">€609.97</div>
+        <div class="bs-stat-delta">7 products</div>
+      </div>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Anatomy</strong> · Always: <strong>mono uppercase eyebrow</strong> in <code class="inline">gold-soft</code> top-left · <strong>green-tint icon tile</strong> top-right · <strong>Cormorant 36px metric</strong> in <code class="inline">gold-cream</code> · optional delta line at the bottom (mono or small sans). Replaces the mixed treatments seen on Analytics, Orders and Customers today — they all now look identical.
+    </div>
+
+    <!-- ========== Inputs ========== -->
+    <h3 class="doc-h3">Form controls</h3>
+    <div class="grid-2">
+      <div class="cell">
+        <label class="bs-label">Custom Banner Message (Optional)</label>
+        <input class="bs-input" placeholder="We use cookies to enhance your experience…" />
+        <div class="bs-help">Leave empty to use the default message for your region</div>
+
+        <div style="height:18px;"></div>
+
+        <label class="bs-label">Cookie Policy URL (Optional)</label>
+        <input class="bs-input" placeholder="/cookies or https://yoursite.com/cookie-policy" />
+        <div class="bs-help">Link to your detailed cookie policy page</div>
+      </div>
+
+      <div class="cell">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 12px 0;">
+          <div>
+            <div style="color: var(--bs-fg); font-weight: 500;">Enable Cookie Banner</div>
+            <div style="color: var(--bs-fg-muted); font-size: 12.5px; margin-top: 2px;">Show cookie consent banner to visitors</div>
+          </div>
+          <div class="bs-toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+
+        <div style="height: 1px; background: var(--bs-border-100); margin: 8px 0 16px;"></div>
+
+        <label class="bs-label">Search products</label>
+        <div class="bs-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="bs-input" placeholder="Search products…" />
+        </div>
+
+        <div style="height:18px;"></div>
+
+        <div class="row">
+          <button class="bs-select"><span>All Categories</span><span class="count-pill">7</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="bs-select"><span>All Stock</span><span class="count-pill">7</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== Banner ========== -->
+    <h3 class="doc-h3">Inline notes / banners</h3>
+    <div class="cell">
+      <div class="bs-banner">
+        <strong>Opt-In Required:</strong> Users must give explicit consent before non-essential cookies are set.
+      </div>
+      <p style="color: var(--bs-fg-muted); font-size: 13px; margin: 12px 0 0;">Use the green banner only for <em>compliant / informational</em> notes. For warnings use <code class="inline">--bs-warn-tint</code>+<code class="inline">--bs-warn-ring</code>; for errors use <code class="inline">--bs-danger-tint</code>+<code class="inline">--bs-danger-ring</code>. Never stack banners — show one at a time.</p>
+    </div>
+
+    <!-- ========== Table ========== -->
+    <h3 class="doc-h3">Data tables</h3>
+    <div class="bs-table-wrap">
+      <div class="bs-table-toolbar">
+        <div class="bs-table-toolbar-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bs-green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          All Products <span class="count">(7)</span>
+        </div>
+        <div class="bs-table-toolbar-right">
+          <div class="bs-search" style="max-width: 240px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="bs-input bs-btn-sm" style="height:36px;" placeholder="Search products…" />
+          </div>
+          <button class="bs-select"><span>All Categories</span><span class="count-pill">7</span></button>
+          <button class="bs-btn bs-btn-ghost bs-btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export 7 records
+          </button>
+        </div>
+      </div>
+      <table class="bs-table">
+        <thead>
+          <tr>
+            <th style="width:36px;"></th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Strain</th>
+            <th>THC %</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="bs-drag">⋮⋮</span></td><td class="strong">Caribbean Breeze</td><td>Hybrid</td><td><span class="bs-chip bs-chip-gold">Hybrid</span></td><td class="num">23%</td><td class="num">R9.09</td><td class="num">8,230</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> In Stock</span></td></tr>
+          <tr><td><span class="bs-drag">⋮⋮</span></td><td class="strong">Candy Pave</td><td>Hybrid</td><td><span class="bs-chip bs-chip-gold">Hybrid</span></td><td class="num">24.5%</td><td class="num">R10.00</td><td class="num">57</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> In Stock</span></td></tr>
+          <tr><td><span class="bs-drag">⋮⋮</span></td><td class="strong">Femme Fatale</td><td>Hybrid</td><td><span class="bs-chip bs-chip-gold">Indica</span></td><td class="num">21.9%</td><td class="num">R9.09</td><td class="num">2,399</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> In Stock</span></td></tr>
+          <tr><td><span class="bs-drag">⋮⋮</span></td><td class="strong">Peanut Butter Breath</td><td>Hybrid</td><td><span class="bs-chip bs-chip-gold">Hybrid</span></td><td class="num">22.6%</td><td class="num">R10.00</td><td class="num">23</td><td><span class="bs-chip bs-chip-warn"><span class="dot"></span> Low Stock</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Anatomy</strong> · Wrap = <code class="inline">.bs-card</code> with overflow hidden · header is a 60px toolbar (Cormorant title + count + search + filters + secondary export). Rows are <strong>56px tall, single line</strong>. Headers in muted Inter 12px (not mono). Numeric columns in JetBrains Mono <code class="inline">.num</code>. Hover row tint = <code class="inline">rgba(82,217,122,0.025)</code>. Drag handle <code class="inline">⋮⋮</code> in column 1 only on user-orderable tables (Products). Status always rightmost; primary identifier always second.
+    </div>
+
+    <!-- ========== Avatars + IDs ========== -->
+    <h3 class="doc-h3">Avatars &amp; identity</h3>
+    <div class="cell">
+      <div class="row" style="gap:24px; align-items: center;">
+        <div class="row" style="gap:8px;">
+          <span class="bs-avatar">MO</span>
+          <div><div style="color:var(--bs-fg); font-weight:500;">Mayke Odendaal</div><div style="color:var(--bs-green-soft); font-family: var(--bs-font-mono); font-size:12px;">maykendaal23@gmail.com</div></div>
+        </div>
+        <div class="row" style="gap:8px;">
+          <span class="bs-avatar" style="background: rgba(217,188,130,0.18); color: var(--bs-gold-soft);">DU</span>
+          <div><div style="color:var(--bs-fg-muted); font-weight:500;">Deleted User</div><div style="color:var(--bs-fg-muted); font-family: var(--bs-font-mono); font-size:12px;">deleted-user-3ALJ4ADRp…</div></div>
+        </div>
+      </div>
+      <p style="color: var(--bs-fg-muted); font-size: 13px; margin: 14px 0 0;">Avatar = 32px circle. Initials in Inter 600 12px. Active users use green tint; deleted/disabled users use gold tint with muted name. Email addresses in JetBrains Mono <code class="inline">--bs-green-soft</code> (active) or <code class="inline">--bs-fg-muted</code> (inactive).</p>
+    </div>
+
+  </section>
+
+
+  <!-- ========== PAGE TEMPLATES ========== -->
+  <section class="doc-section" id="templates">
+    <div class="doc-section-eyebrow">§ 05 — Templates</div>
+    <h2 class="doc-section-title">Page Templates</h2>
+    <p class="doc-section-desc">
+      Three layouts cover every screen. Pick one — don't invent new ones.
+    </p>
+
+    <!-- Template A: Settings -->
+    <h3 class="doc-h3">A · Settings / Configuration page</h3>
+    <p style="color: var(--bs-fg-body); font-size: 14px; margin: -4px 0 14px;">For: Cookie Settings, Store Settings, Branding, Email Templates, SEO Manager.</p>
+    <div class="mini-frame">
+      <div class="mini-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div style="padding: 56px 64px 64px;">
+        <div class="bs-page-header-centered" style="padding:0 0 32px;">
+          <span class="bs-eyebrow">◆ Privacy</span>
+          <h1 class="bs-page-title">Cookie &amp; Privacy Settings</h1>
+          <p class="bs-page-subtitle">Configure how cookies are managed on your storefront. Based on your country (ZA), we automatically apply the appropriate consent model.</p>
+        </div>
+
+        <div class="bs-card bs-card-pad" style="margin-bottom: 16px;">
+          <div class="bs-card-head">
+            <div class="bs-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg></div>
+            <div><div class="bs-card-title">Your Compliance Region</div></div>
+          </div>
+          <div class="grid-4" style="gap: 24px; margin-top: 8px;">
+            <div><div class="label-mono">Country Code</div><div style="font-family:var(--bs-font-display); font-size:22px; color:var(--bs-fg); margin-top: 4px;">ZA</div></div>
+            <div><div class="label-mono">Consent Model</div><div style="font-family:var(--bs-font-display); font-size:22px; color:var(--bs-fg); margin-top: 4px;">Opt-In</div></div>
+            <div><div class="label-mono">GDPR Applies</div><div style="font-family:var(--bs-font-display); font-size:22px; color:var(--bs-fg); margin-top: 4px;">No</div></div>
+            <div><div class="label-mono">POPIA Applies</div><div style="font-family:var(--bs-font-display); font-size:22px; color:var(--bs-fg); margin-top: 4px;">Yes</div></div>
+          </div>
+          <div class="bs-banner" style="margin-top: 18px;"><strong>Opt-In Required:</strong> Users must give explicit consent before non-essential cookies are set.</div>
+        </div>
+
+        <div class="bs-card bs-card-pad">
+          <div class="bs-card-head">
+            <div class="bs-card-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg></div>
+            <div>
+              <div class="bs-card-title">Cookie Banner</div>
+              <div class="bs-card-desc">Configure how the cookie consent banner appears on your storefront</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding: 8px 0 16px;">
+            <div>
+              <div style="color: var(--bs-fg); font-weight: 500;">Enable Cookie Banner</div>
+              <div style="color: var(--bs-fg-muted); font-size: 12.5px;">Show cookie consent banner to visitors</div>
+            </div>
+            <div class="bs-toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <label class="bs-label">Custom Banner Message (Optional)</label>
+          <input class="bs-input" placeholder="We use cookies to enhance your experience…" />
+        </div>
+      </div>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Spec</strong> · Centered eyebrow + Cormorant 48px title + 15px Inter subtitle (max 640px). 32px gap to first card. Cards stack with 16px gap. Max content width 880px. Page padding 56px top, 32–64px sides on desktop.
+    </div>
+
+    <!-- Template B: Dashboard -->
+    <h3 class="doc-h3" style="margin-top:48px;">B · Dashboard / Overview page</h3>
+    <p style="color: var(--bs-fg-body); font-size: 14px; margin: -4px 0 14px;">For: Analytics, Overview, Orders summary, Customers summary.</p>
+    <div class="mini-frame">
+      <div class="mini-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div style="padding: 56px 64px 64px;">
+        <div class="bs-page-header-centered" style="padding:0 0 28px;">
+          <span class="bs-eyebrow">◆ Analytics</span>
+          <h1 class="bs-page-title">Store Analytics</h1>
+          <p class="bs-page-subtitle">Performance metrics for your storefront and operating console.</p>
+          <div class="row" style="justify-content:center; gap: 6px; margin-top: 18px;">
+            <button class="bs-btn bs-btn-ghost bs-btn-sm">7 Days</button>
+            <button class="bs-btn bs-btn-green bs-btn-sm">30 Days</button>
+            <button class="bs-btn bs-btn-ghost bs-btn-sm">90 Days</button>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <div class="bs-stat"><div class="bs-stat-row"><span class="bs-stat-label">Total Revenue</span><span class="bs-stat-icon">€</span></div><div class="bs-stat-value">€15,859</div><div class="bs-stat-delta up">▲ +12.5%</div></div>
+          <div class="bs-stat"><div class="bs-stat-row"><span class="bs-stat-label">Total Orders</span><span class="bs-stat-icon">⌆</span></div><div class="bs-stat-value">26</div><div class="bs-stat-delta">+0 this period</div></div>
+          <div class="bs-stat"><div class="bs-stat-row"><span class="bs-stat-label">Customers</span><span class="bs-stat-icon">◉</span></div><div class="bs-stat-value">1,284</div><div class="bs-stat-delta up">▲ +42 new</div></div>
+          <div class="bs-stat"><div class="bs-stat-row"><span class="bs-stat-label">Avg Order</span><span class="bs-stat-icon">⬡</span></div><div class="bs-stat-value">€609</div><div class="bs-stat-delta">7 products</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Spec</strong> · Same centered header as Settings. Time-range selector (if any) sits below subtitle as a pill-group of <code class="inline">.bs-btn-sm</code>. Active range is <code class="inline">.bs-btn-green</code>, others are <code class="inline">.bs-btn-ghost</code>. Stat cards always 4-up on desktop, 2-up on tablet, 1-up on mobile. Chart cards below stats use the same <code class="inline">.bs-card</code> with the same head pattern.
+    </div>
+
+    <!-- Template C: Data table -->
+    <h3 class="doc-h3" style="margin-top:48px;">C · Data table page</h3>
+    <p style="color: var(--bs-fg-body); font-size: 14px; margin: -4px 0 14px;">For: Products, Orders, Customers, Audit Logs, The Wire, Webhooks. <strong style="color: var(--bs-fg);">When the table is the page</strong>, switch to the compact left header so the table breathes.</p>
+    <div class="mini-frame">
+      <div class="mini-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+      <div style="padding: 32px 40px 40px;">
+        <div class="bs-page-header-compact">
+          <div>
+            <span class="bs-eyebrow" style="font-size:10px;">◆ Security</span>
+            <h1 class="bs-page-title">Audit Logs</h1>
+            <p class="bs-page-subtitle">Track all actions and changes in your dispensary.</p>
+          </div>
+          <div class="row">
+            <button class="bs-select"><span>Filter by action</span></button>
+            <button class="bs-select"><span>Filter by entity</span></button>
+            <button class="bs-btn bs-btn-ghost bs-btn-sm">Export</button>
+          </div>
+        </div>
+
+        <div class="bs-table-wrap">
+          <table class="bs-table">
+            <thead><tr><th>Timestamp</th><th>Action</th><th>Entity</th><th>User</th><th>IP Address</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">Mar 24, 21:17:28</td><td><span class="bs-chip bs-chip-warn">Customer Email Changed</span></td><td>User</td><td class="mono">gerard@automatos.app</td><td class="mono">N/A</td></tr>
+              <tr><td class="mono">Mar 03, 20:32:33</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> template.updated</span></td><td>TenantTemplate</td><td class="mono">gerard@automatos.app</td><td class="mono">N/A</td></tr>
+              <tr><td class="mono">Mar 03, 20:32:29</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> template.created</span></td><td>TenantTemplate</td><td class="mono">gerard@automatos.app</td><td class="mono">N/A</td></tr>
+              <tr><td class="mono">Mar 03, 20:31:56</td><td><span class="bs-chip bs-chip-danger"><span class="dot"></span> template.deleted</span></td><td>tenant_template</td><td class="mono">gerard@automatos.app</td><td class="mono">176.78.129.158</td></tr>
+              <tr><td class="mono">Mar 03, 18:41:19</td><td><span class="bs-chip bs-chip-green"><span class="dot"></span> template.updated</span></td><td>TenantTemplate</td><td class="mono">gerard@automatos.app</td><td class="mono">N/A</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="anat" style="margin-top: 16px;">
+      <strong>Spec</strong> · Compact header: small eyebrow + Cormorant 28px title + 14px subtitle, all left-aligned, with toolbar on the right. Bottom border (<code class="inline">--bs-border-100</code>) divides header from table. Table fills available width. <strong>For pages that combine summary stats <em>and</em> a table</strong> (Orders, Customers), use the centered header (Template B) followed by stat cards followed by the table — the centered framing earns the room.
+    </div>
+  </section>
+
+
+  <!-- ========== DO / DON'T ========== -->
+  <section class="doc-section" id="do-dont">
+    <div class="doc-section-eyebrow">§ 06 — Do &amp; Don't</div>
+    <h2 class="doc-section-title">Migration corrections</h2>
+    <p class="doc-section-desc">
+      Specific drift currently in the admin pages, and the canonical fix.
+    </p>
+
+    <h3 class="doc-h3">Backgrounds</h3>
+    <div class="do-dont">
+      <div class="do">
+        <div class="label">DO · Use #07090A on every page</div>
+        <div style="background:#07090A; height: 92px; border-radius: 8px; border: 1px solid var(--bs-border-100); display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:var(--bs-font-display); font-size:22px; color:var(--bs-fg);">Store Analytics</span>
+        </div>
+        <div class="why">Every admin page sits on the same near-black surface. The eye reads it as <em>one product</em>.</div>
+      </div>
+      <div class="dont">
+        <div class="label">DON'T · Cream parchment background</div>
+        <div style="background:#F5F1E5; height: 92px; border-radius: 8px; border: 1px solid var(--bs-border-100); display:flex; align-items:center; justify-content:center;">
+          <span style="font-family:var(--bs-font-display); font-size:22px; color:#9CA89A;">Store Analytics</span>
+        </div>
+        <div class="why">The Analytics page is currently on a cream background. It breaks the system. Retire it.</div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3">Primary action button</h3>
+    <div class="do-dont">
+      <div class="do">
+        <div class="label">DO · Emerald pill, dark text, soft glow</div>
+        <div style="display:flex; gap:10px; align-items:center; min-height: 60px;">
+          <button class="bs-btn bs-btn-green">Sync from Dr Green</button>
+          <button class="bs-btn bs-btn-ghost">Export records</button>
+        </div>
+        <div class="why">One primary per view. Secondary actions use the ghost pill — not a competing colour.</div>
+      </div>
+      <div class="dont">
+        <div class="label">DON'T · Mix a teal-cyan gradient as a second primary</div>
+        <div style="display:flex; gap:10px; align-items:center; min-height: 60px;">
+          <button class="bs-btn bs-btn-green">Sync from Dr Green</button>
+          <button class="bs-btn" style="background: linear-gradient(180deg, #2dd4bf, #0891b2); color: white; box-shadow: 0 8px 24px -8px #0891b2;">Export 7 records</button>
+        </div>
+        <div class="why">Currently visible on the Products / Orders / Customers pages. Two competing primary colours = no primary. Replace with <code class="inline">.bs-btn-ghost</code>.</div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3">Status badges</h3>
+    <div class="do-dont">
+      <div class="do">
+        <div class="label">DO · One chip system, semantic colour roles</div>
+        <div class="row" style="min-height: 60px; gap: 8px;">
+          <span class="bs-chip bs-chip-green"><span class="dot"></span> template.created</span>
+          <span class="bs-chip bs-chip-warn"><span class="dot"></span> Pending</span>
+          <span class="bs-chip bs-chip-danger"><span class="dot"></span> template.deleted</span>
+        </div>
+        <div class="why">Same shape, same type, only colour role changes. Reads consistently across Audit, Orders, Products.</div>
+      </div>
+      <div class="dont">
+        <div class="label">DON'T · Mix solid pills, outlined pills, cream pills</div>
+        <div class="row" style="min-height: 60px; gap: 8px;">
+          <span style="background:#22c55e; color:#06120A; font-weight:600; padding:4px 10px; border-radius:999px; font-size:11px;">template.created</span>
+          <span style="background:transparent; color:#FFB066; border:1px solid #FFB066; padding:3px 10px; border-radius:999px; font-size:11px;">PENDING</span>
+          <span style="background:#E8D19E; color:#3a2c10; padding:3px 10px; border-radius:999px; font-size:11px;">Hybrid</span>
+        </div>
+        <div class="why">Three different visual systems for the same job. The user can't tell what's a "status" vs "category" vs "warning".</div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3">Stat cards</h3>
+    <div class="do-dont">
+      <div class="do">
+        <div class="label">DO · Mono eyebrow + serif metric in cream-gold</div>
+        <div class="bs-stat" style="max-width: 280px; min-height: 0;">
+          <div class="bs-stat-row"><span class="bs-stat-label">Total Revenue</span><span class="bs-stat-icon">€</span></div>
+          <div class="bs-stat-value">€15,859.23</div>
+          <div class="bs-stat-delta up">▲ +12.5% vs prev</div>
+        </div>
+        <div class="why">The Audit / Orders style is the standard. Apply everywhere — including the Analytics page.</div>
+      </div>
+      <div class="dont">
+        <div class="label">DON'T · Sans label + sans bold number</div>
+        <div style="background:var(--bs-card); border:1px solid var(--bs-border); border-radius: 16px; padding: 22px; max-width: 280px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:var(--bs-fg); font-weight:500; font-size:14px;">Total Revenue</span><span style="color:var(--bs-fg-muted);">$</span></div>
+          <div style="font-family: var(--bs-font-sans); font-weight: 700; font-size: 30px; color: var(--bs-fg);">€15859.23</div>
+          <div style="font-size:12px; color: var(--bs-green-soft); margin-top: 4px;">+€0.00 this period</div>
+        </div>
+        <div class="why">Currently on the Analytics page. Loses brand voice — looks like a generic SaaS dashboard.</div>
+      </div>
+    </div>
+
+    <h3 class="doc-h3">Page header pattern</h3>
+    <div class="do-dont">
+      <div class="do">
+        <div class="label">DO · Eyebrow → Cormorant title → subtitle</div>
+        <div class="bs-page-header-centered" style="padding: 12px 0 0; text-align:left;">
+          <span class="bs-eyebrow">◆ Customers</span>
+          <h1 class="bs-page-title" style="font-size:32px;">Customer Management</h1>
+          <p class="bs-page-subtitle" style="margin:0;">Manage your customer base and view engagement metrics.</p>
+        </div>
+        <div class="why">Brand voice. Use on every page that isn't a pure data-table.</div>
+      </div>
+      <div class="dont">
+        <div class="label">DON'T · Header missing eyebrow / wrong font</div>
+        <div style="padding: 12px 0;">
+          <h1 style="font-family: var(--bs-font-sans); font-weight: 700; font-size: 28px; color: var(--bs-fg); margin: 0 0 4px;">Customer Management</h1>
+          <p style="color: var(--bs-fg-muted); font-size: 13px; margin: 0;">Manage your customer base.</p>
+        </div>
+        <div class="why">The Customers page currently lacks the eyebrow + Cormorant treatment used elsewhere. Make it match.</div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ========== HANDOFF ========== -->
+  <section class="doc-section" id="handoff">
+    <div class="doc-section-eyebrow">§ 07 — Handoff</div>
+    <h2 class="doc-section-title">For Claude Code</h2>
+    <p class="doc-section-desc">
+      Drop these blocks into your Tailwind setup. Everything in <code class="inline">.bs-*</code> can also be referenced as a class directly if you'd rather not hand-roll utilities.
+    </p>
+
+    <h3 class="doc-h3">tailwind.config.ts — extend theme</h3>
+    <pre class="code">// tailwind.config.ts
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  darkMode: ['class', '[data-theme="dark"]'],
+  content: ['./src/**/*.{ts,tsx,mdx}'],
+  theme: {
+    extend: {
+      colors: {
+        // Surface
+        'bs-bg':         '#07090A',
+        'bs-bg-smoke':   '#050a07',
+        'bs-card':       '#151A1C',
+        'bs-input':      '#0F1517',
+        'bs-hover':      '#1A2123',
+        'bs-step-200':   '#222A2C',
+        'bs-step-300':   '#2F3A3D',
+        'bs-border':     '#222A2C',
+        'bs-border-100': '#1c2326',
+
+        // Text
+        'bs-fg':         '#F5F6F4',
+        'bs-fg-2':       '#F2F4F2',
+        'bs-fg-body':    '#C6CCC8',
+        'bs-fg-body-2':  '#EAEEEA',
+        'bs-fg-muted':   '#8A938F',
+
+        // Brand
+        'bs-green':      '#52D97A',
+        'bs-green-deep': '#2FB560',
+        'bs-green-soft': '#8CF0A4',
+
+        // Gold
+        'bs-gold':       '#D9BC82',
+        'bs-gold-soft':  '#E8D19E',
+        'bs-gold-cream': '#fcfcbc',
+
+        // Semantic
+        'bs-danger':     '#F87171',
+        'bs-warn':       '#F5C26B',
+        'bs-info':       '#7DB7FF',
+      },
+      fontFamily: {
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      fontSize: {
+        // semantic sizes
+        'display-xl': ['48px', { lineHeight: '1.05', letterSpacing: '-0.01em' }],
+        'display-lg': ['32px', { lineHeight: '1.10' }],
+        'display-md': ['22px', { lineHeight: '1.20' }],
+        'display-num':['36px', { lineHeight: '1', letterSpacing: '-0.01em' }],
+        'mono-eyebrow':['11px', { lineHeight: '1.4', letterSpacing: '0.20em' }],
+        'mono-chip':   ['11px', { lineHeight: '1.4', letterSpacing: '0.10em' }],
+        'mono-cell':   ['12.5px',{ lineHeight: '1.4' }],
+      },
+      borderRadius: {
+        'bs-sm':   '6px',
+        'bs-md':   '10px',
+        'bs-lg':   '16px',
+        'bs-pill': '9999px',
+      },
+      boxShadow: {
+        'bs-card':       '0 1px 0 rgba(255,255,255,0.04) inset, 0 20px 60px -30px rgba(0,0,0,0.7)',
+        'bs-card-hover': '0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(82,217,122,0.18), 0 24px 70px -28px rgba(0,0,0,0.8)',
+        'bs-glow':       '0 0 0 1px rgba(82,217,122,0.30), 0 10px 30px -10px rgba(82,217,122,0.40)',
+        'bs-glow-hover': '0 0 0 1px rgba(82,217,122,0.50), 0 14px 40px -8px rgba(82,217,122,0.55)',
+      },
+      backgroundImage: {
+        'bs-green-tint': 'linear-gradient(rgba(82,217,122,0.06), rgba(82,217,122,0.06))',
+        'bs-gold-tint':  'linear-gradient(rgba(231,219,184,0.14), rgba(231,219,184,0.14))',
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+</pre>
+
+    <h3 class="doc-h3">globals.css — paste at top</h3>
+    <pre class="code">/* Required: load fonts in your root layout */
+/* &lt;link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" /&gt; */
+
+@layer base {
+  :root {
+    --bs-green-ring:   rgba(82,217,122,0.30);
+    --bs-green-tint-5: rgba(82,217,122,0.05);
+    --bs-gold-ring:    rgba(231,219,184,0.30);
+    --bs-gold-tint:    rgba(231,219,184,0.14);
+    --bs-danger-ring:  rgba(248,113,113,0.32);
+    --bs-warn-ring:    rgba(245,194,107,0.32);
+    --bs-info-ring:    rgba(125,183,255,0.30);
+  }
+  body { @apply bg-bs-bg text-bs-fg-body font-sans antialiased; }
+  h1,h2,h3 { @apply font-display text-bs-fg; font-weight: 500; }
+}
+
+@layer components {
+  /* === BUTTONS === */
+  .bs-btn        { @apply inline-flex items-center gap-2 h-10 px-[22px] rounded-bs-pill font-sans font-medium text-sm transition border whitespace-nowrap; }
+  .bs-btn-sm     { @apply h-8 px-[14px] text-[13px]; }
+  .bs-btn-green  { @apply bg-bs-green-deep text-[#07090A] border-transparent shadow-bs-glow hover:bg-bs-green hover:shadow-bs-glow-hover; }
+  .bs-btn-ghost  { @apply bg-transparent text-bs-fg border-bs-step-300 hover:bg-bs-card hover:border-bs-fg-muted; }
+  .bs-btn-text   { @apply bg-transparent text-bs-fg-body border-transparent hover:text-bs-fg px-2 h-8; }
+  .bs-btn-danger { @apply bg-transparent text-bs-danger border-bs-danger/30 hover:bg-bs-danger/10 hover:border-bs-danger; }
+
+  /* === CARDS === */
+  .bs-card     { @apply bg-bs-card border border-bs-border rounded-bs-lg shadow-bs-card transition hover:shadow-bs-card-hover; }
+  .bs-card-pad { @apply p-6; }
+
+  /* === STAT === */
+  .bs-stat       { @apply bs-card bs-card-pad flex flex-col min-h-[132px]; }
+  .bs-stat-label { @apply font-mono text-[10.5px] tracking-[0.18em] uppercase text-bs-gold-soft; }
+  .bs-stat-value { @apply font-display text-display-num text-bs-gold-cream; font-weight: 500; }
+  .bs-stat-icon  { @apply w-7 h-7 flex items-center justify-center rounded-lg bg-bs-green/10 text-bs-green; }
+
+  /* === CHIPS === */
+  .bs-chip        { @apply inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.10em] uppercase px-2.5 py-1 rounded-bs-pill border whitespace-nowrap; }
+  .bs-chip .dot   { @apply w-1.5 h-1.5 rounded-full; background: currentColor; box-shadow: 0 0 8px currentColor; }
+  .bs-chip-green  { @apply text-bs-green-soft border-bs-green/30 bg-bs-green/5; }
+  .bs-chip-gold   { @apply text-bs-gold-soft border-bs-gold/35 bg-bs-gold/5; }
+  .bs-chip-danger { @apply text-bs-danger border-bs-danger/32 bg-bs-danger/8; }
+  .bs-chip-warn   { @apply text-bs-warn border-bs-warn/32 bg-bs-warn/8; }
+  .bs-chip-info   { @apply text-bs-info border-bs-info/30 bg-bs-info/8; }
+  .bs-chip-muted  { @apply text-bs-fg-muted border-bs-fg-muted/25 bg-bs-fg-muted/6; }
+
+  /* === EYEBROW === */
+  .bs-eyebrow { @apply inline-flex items-center gap-2 font-mono text-mono-eyebrow uppercase text-bs-gold border border-bs-gold/30 bg-bs-gold/14 px-3.5 py-1.5 rounded-bs-pill; }
+
+  /* === INPUTS === */
+  .bs-input { @apply w-full h-10 bg-bs-input border border-bs-border rounded-bs-md px-3.5 text-bs-fg text-sm placeholder:text-bs-fg-muted transition focus:outline-none focus:border-bs-green/30 focus:ring-2 focus:ring-bs-green/10; }
+  .bs-label { @apply block text-[13px] text-bs-fg-body-2 font-medium mb-1.5; }
+  .bs-help  { @apply text-xs text-bs-fg-muted mt-1.5; }
+
+  /* === TABLE === */
+  .bs-table-wrap        { @apply bs-card overflow-hidden; }
+  .bs-table             { @apply w-full text-[13.5px] border-collapse; }
+  .bs-table thead th    { @apply text-left font-medium text-xs tracking-wide text-bs-fg-muted px-[22px] py-3 bg-white/[0.015] border-b border-bs-border-100; }
+  .bs-table tbody td    { @apply px-[22px] py-3.5 border-b border-bs-border-100 text-bs-fg-body align-middle; }
+  .bs-table tbody tr    { @apply transition hover:bg-bs-green/[0.025]; }
+  .bs-table .num,
+  .bs-table .mono       { @apply font-mono text-mono-cell text-bs-fg-body-2; }
+}
+</pre>
+
+    <h3 class="doc-h3">Migration checklist for Claude Code</h3>
+    <div class="cell">
+      <ol style="padding-left: 18px; line-height: 1.8; margin: 0;">
+        <li><strong style="color:var(--bs-fg);">Theme.</strong> Force <code class="inline">bg-bs-bg</code> on every <code class="inline">&lt;body&gt;</code> / app shell. Remove the cream background from <code class="inline">/admin/analytics</code>.</li>
+        <li><strong style="color:var(--bs-fg);">Page headers.</strong> Add the centered <code class="inline">.bs-eyebrow</code> + <code class="inline">.bs-page-title</code> + <code class="inline">.bs-page-subtitle</code> pattern to every page that lacks it (Customers is the worst offender).</li>
+        <li><strong style="color:var(--bs-fg);">Buttons.</strong> Find every "Export records" / cyan-gradient button. Convert to <code class="inline">.bs-btn-ghost</code>. Keep <code class="inline">.bs-btn-green</code> for primary actions only.</li>
+        <li><strong style="color:var(--bs-fg);">Chips.</strong> Replace solid-fill green/red audit pills, outlined order pills, and cream-fill product strain pills with <code class="inline">.bs-chip-*</code>. Map by role: success → green, pending → warn, processing → info, deleted/error → danger, category/role → gold.</li>
+        <li><strong style="color:var(--bs-fg);">Stat cards.</strong> Standardise on <code class="inline">.bs-stat</code>. Eyebrow in mono, metric in Cormorant cream-gold. Apply on Analytics page especially.</li>
+        <li><strong style="color:var(--bs-fg);">Tables.</strong> Wrap every list in <code class="inline">.bs-table-wrap</code> with the toolbar pattern (Cormorant title + count + search + filters). Numeric / ID / IP / timestamp cells in <code class="inline">.mono</code>.</li>
+        <li><strong style="color:var(--bs-fg);">Cards.</strong> Replace any ad-hoc dark <code class="inline">div</code> containers with <code class="inline">.bs-card.bs-card-pad</code>. Card titles must be Cormorant 22px, never Inter.</li>
+        <li><strong style="color:var(--bs-fg);">Hover.</strong> Add <code class="inline">.bs-card</code>'s green-ring hover everywhere a card is interactive — but never on read-only summary cards.</li>
+        <li><strong style="color:var(--bs-fg);">Audit.</strong> Grep the codebase for any <code class="inline">#</code> hex literal not in this token list — every one is a bug.</li>
+      </ol>
+    </div>
+
+    <p style="color: var(--bs-fg-muted); font-size: 13px; margin-top: 24px;">
+      Hand this entire HTML file (or just <a href="#handoff" style="color: var(--bs-green-soft);">§ 07</a>) to Claude Code along with the codebase. The tokens, components and migration checklist are self-contained — no external references required.
+    </p>
+  </section>
+
+  <footer style="margin-top: 96px; padding-top: 32px; border-top: 1px solid var(--bs-border); display: flex; justify-content: space-between; align-items: center; color: var(--bs-fg-muted); font-family: var(--bs-font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;">
+    <span>Budstacks · Admin Design System · v1.0</span>
+    <span>Built in Portugal · Operating Globally</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

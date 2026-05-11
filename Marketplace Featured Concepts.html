@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marketplace Featured — 3 Concepts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #0a0a0e; font-family: Inter, system-ui, sans-serif; }
+    #root { width: 100vw; height: 100vh; }
+    .ctx-card {
+      background: linear-gradient(135deg, #14110f, #0e0d12);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px 32px;
+      color: #e5e7eb;
+      width: 1100px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      box-sizing: border-box;
+    }
+    .ctx-card h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.4px; color: #f9fafb; }
+    .ctx-card .meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #64748b; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px; }
+    .ctx-card p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; margin: 0 0 12px; max-width: 820px; }
+    .ctx-card ul { color: #94a3b8; font-size: 13px; line-height: 1.65; margin: 0; padding-left: 18px; }
+    .ctx-card .accent { color: #fdba74; }
+    .note-box {
+      width: 1100px; box-sizing: border-box;
+      padding: 18px 24px;
+      background: rgba(20,17,15,0.5);
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; line-height: 1.7; color: #94a3b8;
+      letter-spacing: 0.1px;
+    }
+    .note-box strong { color: #fed7aa; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="cards/MarketplaceFeaturedShowcase.jsx"></script>
+  <script type="text/babel" src="cards/MarketplaceFeaturedModule.jsx"></script>
+  <script type="text/babel" src="cards/MarketplaceFeaturedBundle.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+
+    const App = () => (
+      <DesignCanvas title="Marketplace Featured — Concept Explorations" initialScale={0.7}>
+        <DCSection id="brief" title="Brief">
+          <DCArtboard id="ctx" label="Context" width={1164} height={300}>
+            <div style={{padding: 32}}>
+              <div className="ctx-card">
+                <div className="meta">brief · automatos · /marketplace · featured</div>
+                <h1>Featured card — 3 concepts</h1>
+                <p>
+                  1100×300 hero, replaces the current flat featured tile. Same DNA as Mission Constellation (dark, orange accents, mono tags) so they sit on the same shelf. Three different visual metaphors for "this thing is special":
+                </p>
+                <ul>
+                  <li><span className="accent">01 Showcase</span> — pedestal / vitrine; volumetric spotlight + dust</li>
+                  <li><span className="accent">02 Module Bench</span> — PCB lattice with light packets traveling traces</li>
+                  <li><span className="accent">03 Constellation Bundle</span> — hero + satellites; bundles language</li>
+                </ul>
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c1" title="01 — Showcase / Pedestal">
+          <DCArtboard id="c1-card" label="Featured · Showcase" width={1164} height={364}>
+            <div style={{padding: 32}}>
+              <MarketplaceFeaturedShowcase />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c1-note" label="Motion notes" width={1164} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <div className="note-box">
+                <strong>MOTION</strong> — spotlight cone breathes opacity 0.7→1 at 6s; floor pool of light expands rx 170→195 in lockstep. Hero tile's top sheet pulses opacity 0.7→1 at 4s. 28 dust motes drift upward 80px over 5–11s with staggered fade-in/out. Two horizontal volumetric streaks sweep the cone every 9–11s. Curated, slow, museum-quiet. Suggests <strong>this item is hand-picked</strong>.
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c2" title="02 — Module Bench">
+          <DCArtboard id="c2-card" label="Featured · Module Bench" width={1164} height={364}>
+            <div style={{padding: 32}}>
+              <MarketplaceFeaturedModule />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c2-note" label="Motion notes" width={1164} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <div className="note-box">
+                <strong>MOTION</strong> — six light packets travel orthogonal traces (3 entering left, 3 exiting right) on staggered 4.2–5.2s loops. Edge terminals on both sides pulse opacity 0.4→1 at 2.4s. Status LED on hero module glows green at 2s. Top edge bright bar pulses 3.2s. Inner glyph: two of the five circuit dots pulse independently. Reads as "this module is <strong>plugged in and live</strong>" — integration energy.
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c3" title="03 — Constellation Bundle">
+          <DCArtboard id="c3-card" label="Featured · Constellation Bundle" width={1164} height={364}>
+            <div style={{padding: 32}}>
+              <MarketplaceFeaturedBundle />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c3-note" label="Motion notes" width={1164} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <div className="note-box">
+                <strong>MOTION</strong> — hero tile's two halos pulse out of phase (4s, offset 0.5s). Top inner glyph layer pulses 3s. Four warm pulses travel hero→satellites on 3.4–5.6s loops; one cool pulse returns satellite→hero. Six satellite halos pulse independently at 3–4.8s. "BUNDLE · 6" badge LED ticks 2s. Shares the Mission Constellation visual language but inverts the hierarchy: <strong>one bright sun, dim planets</strong>.
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

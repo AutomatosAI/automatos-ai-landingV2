@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64">
+  <g fill="#0e1f17" font-family="Marcellus, &#39;Times New Roman&#39;, serif">
+    
+    <g transform="translate(8,8)">
+      <circle cx="24" cy="24" r="23" fill="#1a3829" stroke="#b08840" stroke-width="1.5"></circle>
+      <circle cx="24" cy="24" r="19" fill="none" stroke="#b08840" stroke-width="0.6" opacity="0.6"></circle>
+      
+      <path d="M24 11 L24 38" stroke="#b08840" stroke-width="1.2" stroke-linecap="round"></path>
+      <path d="M24 16 Q17 18 14 24 M24 16 Q31 18 34 24" stroke="#b08840" stroke-width="1" fill="none" stroke-linecap="round"></path>
+      <path d="M24 22 Q15 24 11 32 M24 22 Q33 24 37 32" stroke="#b08840" stroke-width="1" fill="none" stroke-linecap="round"></path>
+      <path d="M24 28 Q14 30 9 38 M24 28 Q34 30 39 38" stroke="#b08840" stroke-width="1" fill="none" stroke-linecap="round"></path>
+      
+      <circle cx="14" cy="24" r="1.4" fill="#d4a85a"></circle>
+      <circle cx="34" cy="24" r="1.4" fill="#d4a85a"></circle>
+      <circle cx="11" cy="32" r="1.4" fill="#d4a85a"></circle>
+      <circle cx="37" cy="32" r="1.4" fill="#d4a85a"></circle>
+      <circle cx="9" cy="38" r="1.4" fill="#d4a85a"></circle>
+      <circle cx="39" cy="38" r="1.4" fill="#d4a85a"></circle>
+    </g>
+    
+    <text x="64" y="28" font-size="20" letter-spacing="1.2">FAMILY TREE</text>
+    <text x="64" y="46" font-size="8" letter-spacing="3.2" fill="#8a6a32" font-family="DM Sans, sans-serif" font-weight="600">A MEMBERS&#39; PRACTICE</text>
+  </g>
+</svg>

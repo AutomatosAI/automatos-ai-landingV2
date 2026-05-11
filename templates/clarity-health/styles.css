@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   Clarity Health — medical cannabis SaaS template
+   Bright, blue-forward, evidence-led. For 40+ adults.
+   ========================================================= */
+
+:root {
+  --tenant-color-primary: 210 78% 22%;
+  --tenant-color-secondary: 205 55% 48%;
+  --tenant-color-accent: 196 75% 55%;
+  --tenant-color-background: 210 25% 98%;
+  --tenant-color-surface: 210 30% 96%;
+  --tenant-color-text: 210 20% 28%;
+  --tenant-color-heading: 210 50% 12%;
+  --tenant-color-border: 210 25% 88%;
+
+  --tenant-color-primary-50:  210 60% 97%;
+  --tenant-color-primary-100: 210 55% 92%;
+  --tenant-color-primary-500: 210 78% 22%;
+  --tenant-color-primary-700: 210 78% 14%;
+
+  --tenant-font-base: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --tenant-font-heading: 'Geist', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --tenant-blur-sm: 8px;
+  --tenant-blur-md: 16px;
+  --tenant-blur-lg: 24px;
+
+  --shadow-card: 0 1px 2px 0 rgba(15, 35, 70, 0.04), 0 4px 16px -4px rgba(15, 35, 70, 0.06);
+  --shadow-elegant: 0 12px 32px -8px rgba(15, 35, 70, 0.10);
+}
+
+/* ---------- Type ---------- */
+.template-clarity-health {
+  font-family: var(--tenant-font-base);
+  letter-spacing: -0.005em;
+  color: hsl(var(--tenant-color-text));
+}
+.template-clarity-health h1,
+.template-clarity-health h2,
+.template-clarity-health h3,
+.template-clarity-health h4 {
+  font-family: var(--tenant-font-heading);
+  letter-spacing: -0.025em;
+  color: hsl(var(--tenant-color-heading));
+}
+
+/* ---------- Buttons ---------- */
+.template-clarity-health .btn-primary {
+  background: hsl(var(--tenant-color-primary));
+  color: white;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.template-clarity-health .btn-primary:hover {
+  background: hsl(var(--tenant-color-primary) / 0.92);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -6px hsl(var(--tenant-color-primary) / 0.35);
+}
+.template-clarity-health .btn-accent {
+  background: hsl(var(--tenant-color-accent));
+  color: hsl(var(--tenant-color-primary));
+}
+
+/* ---------- Cards ---------- */
+.template-clarity-health .rounded-2xl,
+.template-clarity-health [class*="card"] {
+  border-color: hsl(var(--tenant-color-border));
+}
+.template-clarity-health .hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elegant);
+}
+
+/* ---------- Section rhythm ---------- */
+.template-clarity-health #values {
+  background: linear-gradient(180deg, hsl(var(--tenant-color-background)), hsl(var(--tenant-color-surface)));
+}
+
+/* Conditions bento on faint primary tint */
+.template-clarity-health #conditions {
+  --tenant-color-surface: 210 50% 97%;
+  background: linear-gradient(180deg, hsl(210 50% 97%), hsl(210 25% 98%));
+}
+
+/* Process steps — clean white panel above surface */
+.template-clarity-health #process {
+  background: white;
+  border-top: 1px solid hsl(var(--tenant-color-border));
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+}
+
+/* Image showcase — dark navy panel with white overlay card */
+.template-clarity-health #lab {
+  --tenant-color-surface: 210 78% 14%;
+  --tenant-color-heading: 0 0% 100%;
+  --tenant-color-text: 210 30% 88%;
+}
+.template-clarity-health #lab .rounded-2xl {
+  --tenant-color-heading: 210 50% 12%;
+  --tenant-color-text: 210 20% 28%;
+}
+
+/* Stories — soft surface */
+.template-clarity-health #stories {
+  background: hsl(var(--tenant-color-surface));
+}
+
+/* CTA split — navy gradient */
+.template-clarity-health #cta {
+  background: linear-gradient(120deg, hsl(210 78% 18%) 0%, hsl(205 55% 32%) 60%, hsl(196 75% 45%) 100%);
+  --tenant-color-heading: 0 0% 100%;
+  --tenant-color-text: 210 30% 90%;
+}
+.template-clarity-health #cta .btn-primary {
+  background: white;
+  color: hsl(var(--tenant-color-primary));
+}
+.template-clarity-health #cta .btn-primary:hover {
+  background: hsl(196 75% 92%);
+}
+
+/* ---------- Footer ---------- */
+.template-clarity-health footer {
+  --tenant-color-surface: 210 78% 10%;
+  --tenant-color-background: 210 78% 10%;
+  --tenant-color-heading: 0 0% 100%;
+  --tenant-color-text: 210 25% 78%;
+  --tenant-color-border: 210 40% 22%;
+}
+
+/* ---------- Hero treatment ---------- */
+.template-clarity-health #hero {
+  background:
+    radial-gradient(60% 60% at 90% 0%, hsl(196 75% 55% / 0.08), transparent 70%),
+    radial-gradient(50% 60% at 0% 100%, hsl(210 78% 22% / 0.06), transparent 70%),
+    hsl(var(--tenant-color-background));
+}
+.template-clarity-health #hero .badge {
+  background: hsl(var(--tenant-color-primary) / 0.06);
+  color: hsl(var(--tenant-color-primary));
+  border: 1px solid hsl(var(--tenant-color-primary) / 0.12);
+}
+
+/* ---------- Trust strip ---------- */
+.template-clarity-health #trust {
+  background: white;
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+}
+
+/* ---------- Focus & motion ---------- */
+.template-clarity-health *:focus-visible {
+  outline: 2px solid hsl(var(--tenant-color-accent));
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .template-clarity-health *,
+  .template-clarity-health *::before,
+  .template-clarity-health *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Selection */
+.template-clarity-health ::selection {
+  background: hsl(var(--tenant-color-accent) / 0.35);
+  color: hsl(var(--tenant-color-heading));
+}

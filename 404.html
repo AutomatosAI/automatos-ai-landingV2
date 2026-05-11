@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automatos · 404</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EDE4;--bg-2:#ECE6D9;--bg-3:#E2DBC9;--fg:#0F1411;--fg-2:#3A3F3A;--muted:#8A8B83;--rule-c:#D9D2C0;--rule-strong:#B6AE99;--accent:#5B7C68;--accent-ink:#F2EDE4;--serif:"Instrument Serif",Georgia,serif;--sans:"Geist",sans-serif;--mono:"Geist Mono",monospace;--gutter:60px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:16px var(--gutter);border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
+.brand em{font-style:italic;color:var(--muted)}
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav{display:flex;gap:28px;justify-content:center}
+.topbar nav a:hover{color:var(--fg)}
+.topbar > :last-child{text-align:right;display:flex;gap:16px;justify-content:flex-end;align-items:center}
+.topbar .cta{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px}
+main{flex:1;display:grid;grid-template-columns:1.3fr 1fr;border-bottom:1px solid var(--rule-c)}
+.left{padding:96px var(--gutter);border-right:1px solid var(--rule-c);display:grid;align-content:center;gap:32px}
+.glyph{font-family:var(--serif);font-size:240px;line-height:.85;letter-spacing:-.04em;color:var(--fg)}
+.glyph em{font-style:italic;color:var(--muted)}
+.eye{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--serif);font-size:48px;line-height:1.05;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:italic;color:var(--muted)}
+.lead{font-size:17px;color:var(--fg-2);max-width:48ch;line-height:1.55}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:14px;padding:14px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--rule-strong);color:var(--fg);background:transparent;cursor:pointer}
+.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn .arrow{font-family:var(--serif);font-size:14px}
+.right{padding:64px var(--gutter);background:var(--bg-2);display:grid;gap:28px;align-content:start}
+.right h3{font-family:var(--serif);font-size:28px;letter-spacing:-.01em;line-height:1.1}
+.right h3 em{font-style:italic;color:var(--muted)}
+.where{display:grid}
+.where a{display:grid;grid-template-columns:40px 1fr auto;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+.where a:last-child{border-bottom:0}
+.where a .id{color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-size:10px}
+.where a .nm{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;color:var(--fg);text-transform:none}
+.where a .nm em{font-style:italic;color:var(--muted)}
+.where a .arr{color:var(--fg)}
+.where a:hover .nm{color:var(--accent)}
+.schematic{margin-top:18px;border:1px solid var(--rule-c);background:var(--bg);padding:18px 22px;font-family:var(--mono);font-size:11px;line-height:1.7;position:relative}
+.schematic::before{content:"Fig. 404 · routing";position:absolute;top:-1px;left:-1px;background:var(--bg-2);color:var(--muted);padding:3px 8px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--rule-c)}
+.schematic .row{display:grid;grid-template-columns:32px 1fr auto;gap:8px;padding:2px 0}
+.schematic .ix{color:var(--muted)}
+.schematic .nm{color:var(--fg);text-transform:uppercase;letter-spacing:.08em}
+.schematic .meta{color:var(--muted);font-size:10px}
+.schematic .row.miss .nm{color:#B25C3F}
+.foot{padding:36px var(--gutter);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style></head><body data-mood="bone" data-screen-label="404">
+
+<header class="topbar">
+  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html">Field notes</a>
+  </nav>
+  <div><a href="https://ui.automatos.app/sign-in">Sign in</a><a data-waitlist href="#" class="cta">Sign up free →</a></div>
+</header>
+
+<main>
+  <div class="left">
+    <div class="eye">Error · 404 · cache miss</div>
+    <div class="glyph">4<em>0</em>4</div>
+    <h1>The router could not <em>route</em> this one.</h1>
+    <p class="lead">No matching cache key, no rule pattern, and the semantic tier returned nothing above the threshold. The page you're looking for either moved, never existed, or was a typo on its way somewhere else.</p>
+    <div class="actions">
+      <a class="btn solid" href="index.html">Back to landing <span class="arrow">→</span></a>
+      <a class="btn" href="field-notes.html">Read a field note <span class="arrow">→</span></a>
+    </div>
+  </div>
+  <aside class="right">
+    <div>
+      <span class="eye">Try one of these</span>
+      <h3>Common <em>destinations</em></h3>
+    </div>
+    <div class="where">
+      <a href="index.html"><span class="id">01</span><span class="nm">Platform <em>overview</em></span><span class="arr">→</span></a>
+      <a href="marketplace.html"><span class="id">02</span><span class="nm">Marketplace &amp; <em>packs</em></span><span class="arr">→</span></a>
+      <a href="pricing.html"><span class="id">03</span><span class="nm">Pricing</span><span class="arr">→</span></a>
+      <a href="field-notes.html"><span class="id">04</span><span class="nm">Field <em>notes</em></span><span class="arr">→</span></a>
+      <a href="contact.html"><span class="id">05</span><span class="nm">Contact</span><span class="arr">→</span></a>
+    </div>
+    <div class="schematic">
+      <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta">/whatever-you-typed</span></div>
+      <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">—</span></div>
+      <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">miss</span></div>
+      <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">no match</span></div>
+      <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">below 0.95</span></div>
+      <div class="row miss"><span class="ix">T3</span><span class="nm">llm · 404</span><span class="meta">return ↑</span></div>
+    </div>
+  </aside>
+</main>
+
+<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>404 · v1.36.04</span></footer>
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body></html>

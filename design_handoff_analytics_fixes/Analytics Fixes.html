@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Analytics — proposed fixes</title>
+<meta name="viewport" content="width=1600" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111114;
+    --surface-2: #15151a;
+    --border: rgba(255,255,255,0.06);
+    --border-strong: rgba(255,255,255,0.10);
+    --text: #f5f5f7;
+    --muted: #8a8a93;
+    --dim: #5a5a63;
+    --orange: #f97316;
+    --orange-2: #fb923c;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --blue: #38bdf8;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --red: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); margin: 0; font-family: 'Geist', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+
+  /* page intro */
+  .intro { max-width: 1240px; margin: 56px auto 32px; padding: 0 32px; }
+  .intro .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .intro h1 { font-size: 34px; font-weight: 600; margin: 0 0 12px; letter-spacing: -0.02em; }
+  .intro p { color: var(--muted); max-width: 720px; line-height: 1.55; margin: 0; font-size: 15px; }
+
+  /* fix legend */
+  .fixes { max-width: 1240px; margin: 0 auto 64px; padding: 0 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fixchip { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .fixchip .num { font-family: 'Geist Mono'; font-size: 11px; color: var(--orange); padding-top: 1px; }
+  .fixchip .body { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .fixchip .body b { color: var(--text); font-weight: 500; }
+
+  /* section dividers */
+  .section { max-width: 1480px; margin: 0 auto 80px; padding: 0 40px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
+  .section-head h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .section-head .tag { font-family: 'Geist Mono'; font-size: 11px; color: var(--orange); border: 1px solid rgba(249,115,22,0.4); padding: 3px 8px; border-radius: 999px; background: rgba(249,115,22,0.08); }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .compare .col-label { display: flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .compare .col-label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); }
+  .compare .after .col-label { color: var(--orange); }
+  .compare .after .col-label .dot { background: var(--orange); }
+
+  /* generic card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .card.glow { box-shadow: 0 0 0 1px rgba(249,115,22,0.18), 0 0 40px -8px rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.22); }
+
+  /* KPI tiles */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kpi { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; min-height: 92px; }
+  .kpi .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
+  .kpi .ic svg { width: 18px; height: 18px; }
+  .kpi .body { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .kpi .row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .kpi .val { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; }
+  .kpi .meta { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .kpi .lab { font-size: 12px; color: var(--muted); margin-top: 2px; letter-spacing: 0.02em; }
+  .kpi.broken .val { font-size: 22px; }
+  .kpi.broken .val.trunc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
+
+  .ic.red { background: rgba(239,68,68,0.10); color: var(--red); }
+  .ic.amber { background: rgba(245,158,11,0.10); color: var(--amber); }
+  .ic.blue { background: rgba(56,189,248,0.10); color: var(--blue); }
+  .ic.purple { background: rgba(167,139,250,0.10); color: var(--purple); }
+  .ic.green { background: rgba(34,197,94,0.10); color: var(--green); }
+
+  /* chart */
+  .chartcard { padding: 24px 26px 18px; }
+  .chartcard h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.005em; }
+  .chartcard h3 .icd { width: 18px; height: 18px; color: var(--blue); }
+  .chartcard .sub { font-size: 12px; color: var(--muted); margin: 0 0 18px; }
+
+  .chartwrap { position: relative; height: 280px; }
+  .chartwrap .y-axis { position: absolute; left: 0; top: 0; bottom: 22px; width: 56px; display: flex; flex-direction: column-reverse; justify-content: space-between; padding: 0 0 0; }
+  .chartwrap .y-axis .tick { font-family: 'Geist Mono'; font-size: 10px; color: var(--dim); text-align: right; padding-right: 10px; }
+  .chartwrap .plot { position: absolute; left: 56px; right: 0; top: 0; bottom: 22px; border-left: 1px solid var(--border); }
+  .chartwrap .plot .grid { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); }
+  .chartwrap .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .chartwrap .x-axis { position: absolute; left: 56px; right: 0; bottom: 0; display: flex; justify-content: space-between; }
+  .chartwrap .x-axis .xt { font-family: 'Geist Mono'; font-size: 10px; color: var(--dim); }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 16px; }
+  .legend .it { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .legend .it .d { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* messy chart (before) */
+  .messylabels { position: absolute; top: 6px; left: 12px; display: flex; gap: 12px; font-family: 'Geist Mono'; font-size: 11px; color: var(--muted); flex-wrap: wrap; max-width: 60%; }
+
+  /* heartbeat */
+  .heartbeat { padding: 24px 26px; }
+  .heartbeat h3 { font-size: 17px; font-weight: 600; margin: 0 0 18px; display: flex; gap: 8px; align-items: center; }
+  .heartbeat .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .hbstat { padding: 14px 16px; border-radius: 10px; }
+  .hbstat .v { font-size: 22px; font-weight: 600; }
+  .hbstat .l { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-top: 4px; }
+
+  /* before stat: plain div */
+  .hbstat.before { background: transparent; padding: 14px 0; border-radius: 0; }
+  /* after stat: card */
+  .hbstat.after { background: var(--surface-2); border: 1px solid var(--border); }
+  .hbstat.after .v.green { color: var(--green); }
+  .hbstat.after .v.dim { color: var(--dim); }
+
+  .hbrow { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 13px; }
+  .hbrow:first-of-type { border-top: 0; }
+  .hbrow .ping { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(34,197,94,0.10); flex-shrink: 0; }
+  .hbrow .name { color: var(--text); }
+  .hbrow .id { color: var(--dim); font-family: 'Geist Mono'; font-size: 12px; }
+  .hbrow .spacer { flex: 1; }
+  .hbrow .freq { font-size: 11px; color: var(--muted); padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; }
+  .hbrow .ts { color: var(--muted); font-family: 'Geist Mono'; font-size: 12px; }
+  .hbrow .spark { display: flex; gap: 2px; }
+  .hbrow .spark span { width: 3px; height: 12px; background: var(--green); opacity: 0.4; border-radius: 1px; }
+  .hbrow .spark span.lit { opacity: 1; }
+
+  /* cost by agent */
+  .agent-table { padding: 24px 26px; }
+  .agent-table h3 { font-size: 17px; font-weight: 600; margin: 0 0 18px; display: flex; gap: 8px; align-items: center; }
+  .agent-row { display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 0.9fr; gap: 16px; padding: 14px 0; border-top: 1px solid var(--border); align-items: center; }
+  .agent-row:first-of-type { border-top: 0; }
+  .agent-row.head { font-size: 11px; color: var(--dim); letter-spacing: 0.14em; text-transform: uppercase; padding: 0 0 12px; border: 0; }
+  .agent-name { font-weight: 500; font-size: 14px; letter-spacing: 0.04em; }
+  .modeltag { display: inline-block; padding: 3px 8px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--border); font-family: 'Geist Mono'; font-size: 11px; color: var(--muted); }
+  .cost-cell { display: flex; flex-direction: column; gap: 6px; }
+  .cost-cell .v { font-size: 14px; font-weight: 500; font-family: 'Geist Mono'; }
+  .cost-cell .bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.04); position: relative; overflow: hidden; }
+  .cost-cell .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+  .right { text-align: right; font-family: 'Geist Mono'; font-size: 13px; color: var(--muted); }
+
+  /* recommendations */
+  .recs { display: grid; gap: 12px; }
+  .rec { display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px; border: 1px solid; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01)); align-items: flex-start; }
+  .rec.green { border-color: rgba(34,197,94,0.18); background: linear-gradient(180deg, rgba(34,197,94,0.06), rgba(34,197,94,0.02)); }
+  .rec.amber { border-color: rgba(245,158,11,0.18); background: linear-gradient(180deg, rgba(245,158,11,0.06), rgba(245,158,11,0.02)); }
+  .rec .ic2 { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; display: grid; place-items: center; }
+  .rec .ic2 svg { width: 16px; height: 16px; }
+  .rec.green .ic2 { background: rgba(34,197,94,0.12); color: var(--green); }
+  .rec.amber .ic2 { background: rgba(245,158,11,0.12); color: var(--amber); }
+  .rec .body { flex: 1; min-width: 0; }
+  .rec h4 { margin: 0 0 4px; font-size: 14px; font-weight: 500; }
+  .rec p { margin: 0 0 12px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* before button (pill) */
+  .btn-before { display: inline-flex; align-items: center; padding: 4px 12px; font-size: 12px; color: var(--text); background: transparent; border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+  /* after button (clearer CTA) */
+  .btn-after { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 12px; font-weight: 500; color: var(--text); background: rgba(255,255,255,0.04); border: 1px solid var(--border-strong); border-radius: 8px; cursor: pointer; transition: all .15s; }
+  .btn-after:hover { background: rgba(255,255,255,0.08); }
+  .btn-after .arr { width: 11px; height: 11px; transition: transform .15s; }
+  .btn-after:hover .arr { transform: translateX(2px); }
+  .btn-after.green { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.30); color: #86efac; }
+  .btn-after.amber { background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.30); color: #fcd34d; }
+
+  .rec .x { flex-shrink: 0; color: var(--dim); cursor: pointer; padding: 4px; }
+
+  /* footer */
+  .footer { max-width: 1240px; margin: 80px auto 60px; padding: 0 32px; color: var(--dim); font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<section class="intro">
+  <div class="eyebrow">Analytics — proposed fixes</div>
+  <h1>Six small tweaks for a calmer dashboard.</h1>
+  <p>Same data, same layout, same visual language. Just resolving the issues we spotted: truncated headlines, mystery axis labels, plain-div KPIs, repeated log rows, flat tables, and ambiguous CTAs. Each fix shown as before / after.</p>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>1 · Top KPI tile no longer truncates</h2><span class="tag">FIX</span></div>
+  <div class="compare">
+    <div class="before">
+      <div class="col-label"><span class="dot"></span> Before</div>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="ic red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">$249</span><span class="meta">This period</span></div>
+            <span class="lab">Total Cost</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="ic blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">144.7M</span><span class="meta">Input + Output</span></div>
+            <span class="lab">Total Tokens</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="ic purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">$0.026</span><span class="meta">9.4K reqs</span></div>
+            <span class="lab">Cost per Request</span>
+          </div>
+        </div>
+        <div class="kpi broken">
+          <div class="ic amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val trunc">G…</span><span class="meta">$76.01 on claude-sonnet-4.6</span></div>
+            <span class="lab">Top Spender</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="after">
+      <div class="col-label"><span class="dot"></span> After</div>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="ic red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">$249</span><span class="meta">This period</span></div>
+            <span class="lab">Total Cost</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="ic blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">144.7M</span><span class="meta">In + Out</span></div>
+            <span class="lab">Total Tokens</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="ic purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">$0.026</span><span class="meta">9.4K reqs</span></div>
+            <span class="lab">Cost per Request</span>
+          </div>
+        </div>
+        <div class="kpi">
+          <div class="ic amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17.01"/></svg></div>
+          <div class="body">
+            <div class="row"><span class="val">$76.01</span><span class="meta">claude-sonnet-4.6</span></div>
+            <span class="lab">Top Spender · GA ANALYST</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fixchip" style="margin-top:14px; max-width: 720px;">
+    <span class="num">→</span>
+    <span class="body"><b>Lead with the dollar amount</b> (the actionable number) and put the agent name in the label slot. Same info, no truncation, scans faster.</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>2 · Chart axis labels make sense</h2><span class="tag">FIX</span></div>
+  <div class="compare">
+    <div class="before">
+      <div class="col-label"><span class="dot"></span> Before — unsorted floating numbers</div>
+      <div class="card chartcard">
+        <h3><svg class="icd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Cost by Model Over Time</h3>
+        <p class="sub">30 days · 22 models</p>
+        <div class="chartwrap">
+          <div class="messylabels">
+            <span>$0.895</span><span>$0.113</span><span>$1.09</span><span>$0.018</span><span>$0.351</span><span>$0.070</span><span>$0.049</span><span>$0.334</span>
+          </div>
+          <div class="plot">
+            <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+              <path d="M0,160 C40,40 80,180 120,80 C160,30 200,170 240,90 C280,140 320,50 360,170 C400,80 440,150 480,40 C520,150 560,90 600,60" stroke="#a78bfa" stroke-width="1.5" fill="none" opacity="0.8"/>
+              <path d="M0,180 C40,170 80,160 120,150 C160,140 200,130 240,120 C280,110 320,100 360,90 C400,80 440,70 480,60 C520,50 560,40 600,30" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.6"/>
+              <path d="M0,140 C60,100 120,160 180,90 C240,150 300,80 360,140 C420,90 480,160 540,100 C570,120 600,110 600,110" stroke="#f472b6" stroke-width="1.5" fill="none" opacity="0.7"/>
+              <path d="M0,100 C50,140 100,80 150,120 C200,90 250,130 300,100 C350,140 400,90 450,130 C500,100 550,140 600,110" stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="after">
+      <div class="col-label"><span class="dot"></span> After — proper Y-axis</div>
+      <div class="card chartcard">
+        <h3><svg class="icd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Cost by Model Over Time</h3>
+        <p class="sub">30 days · 22 models</p>
+        <div class="chartwrap">
+          <div class="y-axis">
+            <span class="tick">$0</span>
+            <span class="tick">$0.5</span>
+            <span class="tick">$1.0</span>
+            <span class="tick">$1.5</span>
+            <span class="tick">$2.0</span>
+          </div>
+          <div class="plot">
+            <div class="grid" style="top: 0%"></div>
+            <div class="grid" style="top: 25%"></div>
+            <div class="grid" style="top: 50%"></div>
+            <div class="grid" style="top: 75%"></div>
+            <div class="grid" style="top: 100%; bottom: 0;"></div>
+            <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+              <path d="M0,160 C40,40 80,180 120,80 C160,30 200,170 240,90 C280,140 320,50 360,170 C400,80 440,150 480,40 C520,150 560,90 600,60" stroke="#a78bfa" stroke-width="1.5" fill="none" opacity="0.85"/>
+              <path d="M0,180 C40,170 80,160 120,150 C160,140 200,130 240,120 C280,110 320,100 360,90 C400,80 440,70 480,60 C520,50 560,40 600,30" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.65"/>
+              <path d="M0,140 C60,100 120,160 180,90 C240,150 300,80 360,140 C420,90 480,160 540,100 C570,120 600,110 600,110" stroke="#f472b6" stroke-width="1.5" fill="none" opacity="0.75"/>
+              <path d="M0,100 C50,140 100,80 150,120 C200,90 250,130 300,100 C350,140 400,90 450,130 C500,100 550,140 600,110" stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.75"/>
+            </svg>
+          </div>
+          <div class="x-axis">
+            <span class="xt">Apr 09</span>
+            <span class="xt">Apr 16</span>
+            <span class="xt">Apr 23</span>
+            <span class="xt">Apr 30</span>
+            <span class="xt">May 08</span>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="it"><span class="d" style="background:#a78bfa"></span>claude-sonnet-4.6</span>
+          <span class="it"><span class="d" style="background:#22c55e"></span>gpt-5.5</span>
+          <span class="it"><span class="d" style="background:#f472b6"></span>glm-5</span>
+          <span class="it"><span class="d" style="background:#38bdf8"></span>gemini-2.5-pro</span>
+          <span class="it"><span class="d" style="background:#5a5a63"></span>+18 more</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fixchip" style="margin-top:14px; max-width: 720px;">
+    <span class="num">→</span>
+    <span class="body"><b>5 evenly-spaced ticks</b> on the Y, dates on the X, and trim the legend to top-4 + "more". Currently you're showing 22 model dots in a wall — most are noise.</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>3 · Heartbeat KPIs match the rest of the dashboard</h2><span class="tag">FIX</span></div>
+  <div class="compare">
+    <div class="before">
+      <div class="col-label"><span class="dot"></span> Before — plain divs</div>
+      <div class="card heartbeat">
+        <h3>Heartbeat Activity</h3>
+        <div class="stats">
+          <div class="hbstat before"><div class="v">16</div><div class="l">Today</div></div>
+          <div class="hbstat before"><div class="v">16</div><div class="l">Successes</div></div>
+          <div class="hbstat before"><div class="v">0</div><div class="l">Errors</div></div>
+          <div class="hbstat before"><div class="v">35,500</div><div class="l">Tokens</div></div>
+        </div>
+        <div class="hbrow"><span class="ping"></span><span class="name mono">agent</span><span class="id">89</span><span class="spacer"></span><span class="ts">19:00:36</span></div>
+        <div class="hbrow"><span class="ping"></span><span class="name mono">agent</span><span class="id">89</span><span class="spacer"></span><span class="ts">18:00:13</span></div>
+        <div class="hbrow"><span class="ping"></span><span class="name mono">agent</span><span class="id">89</span><span class="spacer"></span><span class="ts">17:01:10</span></div>
+        <div class="hbrow"><span class="ping"></span><span class="name mono">agent</span><span class="id">89</span><span class="spacer"></span><span class="ts">16:00:52</span></div>
+      </div>
+    </div>
+    <div class="after">
+      <div class="col-label"><span class="dot"></span> After — bordered cards + grouped pings</div>
+      <div class="card heartbeat">
+        <h3>Heartbeat Activity</h3>
+        <div class="stats">
+          <div class="hbstat after"><div class="v">16</div><div class="l">Today</div></div>
+          <div class="hbstat after"><div class="v green">16</div><div class="l">Successes</div></div>
+          <div class="hbstat after"><div class="v dim">0</div><div class="l">Errors</div></div>
+          <div class="hbstat after"><div class="v">35.5K</div><div class="l">Tokens</div></div>
+        </div>
+        <div class="hbrow">
+          <span class="ping"></span>
+          <span class="name mono">agent 89</span>
+          <span class="freq">4 pings · hourly</span>
+          <span class="spacer"></span>
+          <span class="spark"><span class="lit"></span><span class="lit"></span><span class="lit"></span><span class="lit"></span><span></span><span></span></span>
+          <span class="ts">last 19:00:36</span>
+        </div>
+        <div class="hbrow">
+          <span class="ping"></span>
+          <span class="name mono">orchestrator</span>
+          <span class="id">ae8320bc</span>
+          <span class="spacer"></span>
+          <span class="spark"><span class="lit"></span><span></span><span></span><span></span><span></span><span></span></span>
+          <span class="ts">16:00:16</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fixchip" style="margin-top:14px; max-width: 720px;">
+    <span class="num">→</span>
+    <span class="body"><b>Group repeated pings</b> into one row with frequency + sparkline. The timeline is implicit. A 4-row log of identical entries reads like an outage, not a heartbeat.</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>4 · Cost by Agent gets a magnitude bar</h2><span class="tag">FIX</span></div>
+  <div class="compare">
+    <div class="before">
+      <div class="col-label"><span class="dot"></span> Before — flat numbers</div>
+      <div class="card agent-table">
+        <h3>Cost by Agent</h3>
+        <div class="agent-row head"><span>Agent</span><span>Model</span><span>Tokens</span><span style="text-align:right">Cost / Reqs</span></div>
+        <div class="agent-row"><span class="agent-name">GA ANALYST</span><span><span class="modeltag">claude-sonnet-4.6</span></span><span class="mono" style="font-size:13px;color:var(--muted)">28.3M</span><span class="right">$76.01 · 1876</span></div>
+        <div class="agent-row"><span class="agent-name">ATLAS</span><span><span class="modeltag">gpt-5.4</span></span><span class="mono" style="font-size:13px;color:var(--muted)">13.7M</span><span class="right">$73.01 · 590</span></div>
+        <div class="agent-row"><span class="agent-name">FIXER</span><span><span class="modeltag">glm-5</span></span><span class="mono" style="font-size:13px;color:var(--muted)">63.6M</span><span class="right">$29.38 · —</span></div>
+        <div class="agent-row"><span class="agent-name">SOCIAL OPS</span><span><span class="modeltag">claude-haiku-4.5</span></span><span class="mono" style="font-size:13px;color:var(--muted)">13.2M</span><span class="right">$25.93 · —</span></div>
+      </div>
+    </div>
+    <div class="after">
+      <div class="col-label"><span class="dot"></span> After — inline bars show share at a glance</div>
+      <div class="card agent-table">
+        <h3>Cost by Agent</h3>
+        <div class="agent-row head"><span>Agent</span><span>Model</span><span>Cost</span><span style="text-align:right">Tokens / Reqs</span></div>
+        <div class="agent-row">
+          <span class="agent-name">GA ANALYST</span>
+          <span><span class="modeltag">claude-sonnet-4.6</span></span>
+          <div class="cost-cell"><span class="v">$76.01</span><div class="bar"><i style="width:100%; background:#a78bfa"></i></div></div>
+          <span class="right">28.3M · 1,876</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-name">ATLAS</span>
+          <span><span class="modeltag">gpt-5.4</span></span>
+          <div class="cost-cell"><span class="v">$73.01</span><div class="bar"><i style="width:96%; background:#a78bfa"></i></div></div>
+          <span class="right">13.7M · 590</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-name">FIXER</span>
+          <span><span class="modeltag">glm-5</span></span>
+          <div class="cost-cell"><span class="v">$29.38</span><div class="bar"><i style="width:39%; background:#f472b6"></i></div></div>
+          <span class="right">63.6M · —</span>
+        </div>
+        <div class="agent-row">
+          <span class="agent-name">SOCIAL OPS</span>
+          <span><span class="modeltag">claude-haiku-4.5</span></span>
+          <div class="cost-cell"><span class="v">$25.93</span><div class="bar"><i style="width:34%; background:#22c55e"></i></div></div>
+          <span class="right">13.2M · —</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fixchip" style="margin-top:14px; max-width: 720px;">
+    <span class="num">→</span>
+    <span class="body"><b>Bar color matches the model dot</b> from the chart above — same visual language across the page. The bar lets you spot outliers without reading numbers (FIXER uses 2× the tokens for ⅓ the cost, that's the story).</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>5 · Recommendations get real CTAs</h2><span class="tag">FIX</span></div>
+  <div class="compare">
+    <div class="before">
+      <div class="col-label"><span class="dot"></span> Before — pill tags</div>
+      <div class="recs">
+        <div class="rec green">
+          <div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="body">
+            <h4>$250.01 spent across 9,447 LLM requests</h4>
+            <p>Average $0.0265/request. 145M tokens used across 19 active agents.</p>
+            <button class="btn-before">Cost overview</button>
+          </div>
+          <span class="x">×</span>
+        </div>
+        <div class="rec amber">
+          <div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div>
+          <div class="body">
+            <h4>1 active agent has no skills assigned</h4>
+            <p>Auto CTO — assign skills to improve routing accuracy.</p>
+            <button class="btn-before">Better agent routing</button>
+          </div>
+          <span class="x">×</span>
+        </div>
+      </div>
+    </div>
+    <div class="after">
+      <div class="col-label"><span class="dot"></span> After — clear filled buttons</div>
+      <div class="recs">
+        <div class="rec green">
+          <div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="body">
+            <h4>$250.01 spent across 9,447 LLM requests</h4>
+            <p>Average $0.0265/request. 145M tokens used across 19 active agents.</p>
+            <button class="btn-after green">View cost overview <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          </div>
+          <span class="x">×</span>
+        </div>
+        <div class="rec amber">
+          <div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div>
+          <div class="body">
+            <h4>1 active agent has no skills assigned</h4>
+            <p>Auto CTO — assign skills to improve routing accuracy.</p>
+            <button class="btn-after amber">Assign skills <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          </div>
+          <span class="x">×</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fixchip" style="margin-top:14px; max-width: 720px;">
+    <span class="num">→</span>
+    <span class="body"><b>Verb-led button copy + arrow</b> ("Assign skills →" not "Better agent routing"). Tinted to match severity so it reads as the action, not a tag.</span>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>6 · Optional · Six-column grid for widget variety</h2><span class="tag">SYSTEM</span></div>
+  <div class="card" style="padding: 28px;">
+    <p style="margin: 0 0 18px; color: var(--muted); font-size: 14px; max-width: 720px; line-height: 1.55;">If you adopt a 6-col grid, widgets can declare a size (third / half / two-thirds / full) and you get rhythm without forcing every dashboard into a 2-up. Sketch:</p>
+    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+      <div style="grid-column: span 2; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted);">⅓ · KPI tile</div>
+      <div style="grid-column: span 2; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted);">⅓ · KPI tile</div>
+      <div style="grid-column: span 2; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted);">⅓ · KPI tile</div>
+
+      <div style="grid-column: span 6; background: var(--surface-2); border: 1px solid rgba(249,115,22,0.18); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--orange-2); height: 90px;">Full · hero chart</div>
+
+      <div style="grid-column: span 4; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted); height: 110px;">⅔ · wide table (Token Usage)</div>
+      <div style="grid-column: span 2; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted); height: 110px;">⅓ · summary list</div>
+
+      <div style="grid-column: span 3; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted); height: 80px;">½ · widget</div>
+      <div style="grid-column: span 3; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12px; color: var(--muted); height: 80px;">½ · widget</div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">Mockups only — same dark palette, Geist type, and accent orange as your live UI.</div>
+
+</body>
+</html>

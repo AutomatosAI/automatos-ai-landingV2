@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Weekly Facts — Before / After</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0e; color: #e5e7eb; font-family: Inter, system-ui, sans-serif; }
+  .wrap { padding: 48px 56px 120px; max-width: 1480px; margin: 0 auto; }
+  h1 { font-weight: 900; font-size: 40px; letter-spacing: -1.2px; margin: 0 0 6px; color: #f9fafb; }
+  .lede { color: #94a3b8; font-size: 14px; line-height: 1.7; max-width: 760px; margin: 0 0 36px; }
+  .lede code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #fed7aa; background: rgba(249,115,22,0.08); padding: 2px 6px; border-radius: 3px; }
+  .lede .accent { color: #fdba74; }
+
+  .day { margin-bottom: 56px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 32px; }
+  .day-meta { display: flex; align-items: baseline; gap: 16px; margin-bottom: 22px; }
+  .day-meta .day-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 1.4px; color: #fdba74; text-transform: uppercase; }
+  .day-meta h2 { font-weight: 700; font-size: 26px; letter-spacing: -0.5px; margin: 0; color: #f9fafb; }
+  .day-meta .tpl { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: #64748b; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+  .col { display: flex; flex-direction: column; }
+  .col-label { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 1.3px; }
+  .pill { padding: 4px 10px; border-radius: 4px; font-weight: 700; }
+  .pill.bad { background: rgba(239,68,68,0.16); color: #fca5a5; }
+  .pill.good { background: rgba(15,182,127,0.16); color: #6ee7b7; }
+  .col-label .note { color: #64748b; text-transform: none; letter-spacing: 0; font-size: 12px; font-family: Inter, sans-serif; }
+
+  .frame { background: #f1e9dd; border-radius: 6px; overflow: hidden; aspect-ratio: 1080 / 1350; position: relative; box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
+  .frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; transform-origin: top left; }
+
+  .data { margin-top: 14px; background: #0e0d12; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.65; color: #94a3b8; white-space: pre-wrap; word-break: break-word; }
+  .data .k { color: #fdba74; }
+  .data .v { color: #cbd5e1; }
+  .data .v.changed { color: #6ee7b7; }
+  .data .v.broken { color: #fca5a5; }
+
+  .legend { background: #14110f; border: 1px solid rgba(255,138,92,0.4); border-radius: 12px; padding: 22px 28px; margin-bottom: 40px; }
+  .legend h3 { margin: 0 0 8px; font-size: 16px; color: #fed7aa; letter-spacing: 0.2px; }
+  .legend ul { margin: 8px 0 0; padding-left: 20px; color: #94a3b8; font-size: 13px; line-height: 1.75; }
+  .legend code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fed7aa; background: rgba(249,115,22,0.1); padding: 2px 6px; border-radius: 3px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Weekly Facts · Before / After</h1>
+    <p class="lede">
+      Left = render with the <span class="accent">current</span> <code>weekly-facts.md</code> (Title-Case headlines, long words, fixed font sizes).
+      Right = render with the <span class="accent">fixed</span> data + auto-sized headline. Every render below is the <em>actual</em> <code>render/index.html</code> the renderer uses, served at IG-post 1080×1350 and scaled to fit.
+    </p>
+
+    <div class="legend">
+      <h3>The two fixes</h3>
+      <ul>
+        <li><strong>Headline grammar:</strong> 2–4 ALL-CAPS lines split by <code>|</code>, ≤ ~10 chars per line. Optionally suffix a line with <code>@brick</code> to brick-color it. Title-Case multi-syllable words (<em>Workspace</em>, <em>Coordination</em>) overflow at display weight.</li>
+        <li><strong>Auto-sizer in <code>render/index.fixed.html</code>:</strong> if no <code>fontSize</code> URL param, the renderer computes one from the longest line × line count so the headline always fits ~85% width × ~45% height — capped at the per-size baseline.</li>
+        <li><strong>Card body length:</strong> aim ≤ 160 chars per card body, ≤ 28 chars per heading. Stat values ≤ 4 chars (<code>10+</code>, <code>95%</code>, <code>$2B</code>).</li>
+      </ul>
+    </div>
+
+    <div id="days"></div>
+  </div>
+
+<script>
+const PAGE = { current: 'render/index.html', fixed: 'render/index.fixed.html' };
+
+// Build URL with template params
+const buildUrl = (page, params) => {
+  const qs = new URLSearchParams(params).toString();
+  return `${page}?${qs}`;
+};
+
+const days = [
+  {
+    name: 'Monday', topic: 'Agents', template: 'definition',
+    before: {
+      headline: 'Agents in Automatos|Configured for|Specific Roles',
+      eyebrow: 'FIRST — THE CONCEPT',
+      card_1: 'Role Configuration|Agents can be assigned roles like chatbot, worker, researcher, or coder.',
+      card_2: 'Skill Sets|Each agent can have skills tailored to tasks they perform.',
+      card_3: 'Workflow Automation|Agents automate complex workflows across teams.',
+      cta: 'Learn how Automatos agents streamline your workflows.',
+    },
+    after: {
+      headline: 'WHAT IS|AN@brick|AGENT?',
+      eyebrow: 'FIRST — THE CONCEPT',
+      card_1: 'Roles, configured|Chatbot, worker, researcher, coder — each agent ships with a role and a scoped permission band.',
+      card_2: 'Skills, scoped|Skills are tool sets bound to a role. An agent only sees what its skill graph allows.',
+      card_3: 'Loops, autonomous|Plan → act → observe → repeat. Agents drive workflows end-to-end, not turn-by-turn.',
+      cta: 'How agents work →',
+    },
+  },
+  {
+    name: 'Tuesday', topic: 'Playbooks', template: 'definition',
+    before: {
+      headline: 'Automatos Playbooks|Step-by-Step|Automation',
+      eyebrow: 'HOW IT FITS TOGETHER',
+      card_1: 'Sequential Steps|Playbooks break tasks into ordered steps.',
+      card_2: 'Multi-Agent Coordination|Playbooks assign tasks to different agents.',
+      card_3: 'Repeatable Processes|Automate recurring workflows reliably.',
+      cta: 'Explore how playbooks organize automation.',
+    },
+    after: {
+      headline: 'WHAT IS|A@brick|PLAYBOOK?',
+      eyebrow: 'HOW IT FITS TOGETHER',
+      card_1: 'Sequenced steps|A playbook is an ordered, named graph of agent steps. Reads like a recipe, runs like a CI job.',
+      card_2: 'Multi-agent ready|Hand off between agents mid-graph — the harness routes context automatically.',
+      card_3: 'Repeatable|Same input, same output. Playbooks are deterministic by default; randomness is opt-in.',
+      cta: 'Build your first playbook →',
+    },
+  },
+  {
+    name: 'Wednesday', topic: 'Workspace Tools', template: 'stats',
+    before: {
+      headline: 'Automatos Workspace|Tools Overview',
+      eyebrow: 'WORKSPACE TOOLS',
+      stat_1: '10+|Integrated tools available',
+      stat_2: '5+|Supported file types',
+      stat_3: '20+|Third-party integrations',
+      card_1: 'Code & Docs|Manage code and documents seamlessly',
+      card_2: 'Data & Integrations|Connect databases and apps',
+      cta: 'Discover workspace tools that boost productivity.',
+    },
+    after: {
+      headline: 'THE|WORKSPACE.@brick|EVERYTHING|IN ONE PLACE.',
+      eyebrow: 'WORKSPACE TOOLS',
+      stat_1: '10+|Built-in tools, ready on day one',
+      stat_2: '5+|File types parsed natively',
+      stat_3: '20+|Third-party integrations',
+      card_1: 'Code & docs|Edit, search, refactor across repos and notebooks in one editor surface.',
+      card_2: 'Data & integrations|Connect Postgres, Snowflake, Slack, Linear — one auth, one config.',
+      cta: 'Tour the workspace →',
+    },
+  },
+  {
+    name: 'Thursday', topic: 'Missions', template: 'definition',
+    before: {
+      headline: 'Automatos Missions|Multi-Agent|Coordination',
+      eyebrow: 'AUTONOMOUS COORDINATION',
+      card_1: 'Goal Decomposition|Missions break goals into tasks.',
+      card_2: 'Agent Assignment|Tasks assigned to specialized agents.',
+      card_3: 'Autonomous Execution|Agents work with minimal oversight.',
+      cta: 'See how missions streamline complex workflows.',
+    },
+    after: {
+      headline: 'WHAT IS|A@brick|MISSION?',
+      eyebrow: 'AUTONOMOUS COORDINATION',
+      card_1: 'One goal, many agents|A Mission is a single objective broken into tasks across specialist agents.',
+      card_2: 'Decomposed at runtime|The harness splits the goal — you don\'t write the task tree by hand.',
+      card_3: 'Hands-off execution|Agents run, retry, and converge. You review the output, not the steps.',
+      cta: 'See Missions in action →',
+    },
+  },
+  {
+    name: 'Friday', topic: 'Routing', template: 'stats',
+    before: {
+      headline: 'Automatos Routing|Smart Task|Distribution',
+      eyebrow: 'WHY IT MATTERS',
+      stat_1: '95%|Task routing accuracy',
+      stat_2: '30+|Agent skills matched',
+      stat_3: '99.9%|System uptime reliability',
+      card_1: 'Skill Matching|Routes tasks by agent expertise',
+      card_2: 'Load Balancing|Distributes workload effectively',
+      cta: 'Learn about smart routing in Automatos.',
+    },
+    after: {
+      headline: 'SMART|ROUTING.@brick|RIGHT AGENT,|EVERY TIME.',
+      eyebrow: 'WHY IT MATTERS',
+      stat_1: '95%|Task-routing accuracy',
+      stat_2: '30+|Skills matched per route',
+      stat_3: '99.9%|System uptime',
+      card_1: 'Skill matching|Each task is scored against every available agent\'s skill graph in milliseconds.',
+      card_2: 'Load balancing|Hot agents shed work to cool replicas — no single-agent bottleneck.',
+      cta: 'How routing works →',
+    },
+  },
+  {
+    name: 'Saturday', topic: 'Renderer', template: 'definition',
+    before: {
+      headline: 'Automatos Renderer|High-Quality|Images',
+      eyebrow: 'RENDER PIPELINE',
+      card_1: 'HTML Templates|Uses HTML/CSS for layouts',
+      card_2: 'PNG Output|Generates ready-to-publish images',
+      card_3: 'Automation Ready|Integrates with social workflows',
+      cta: 'See how rendering fits into content workflows.',
+    },
+    after: {
+      headline: 'HTML|→ PNG.@brick|NO CANVA.',
+      eyebrow: 'RENDER PIPELINE',
+      card_1: 'HTML templates|Every post is a parameterised page — version it, diff it, code-review it.',
+      card_2: 'PNG out, ready to ship|Headless screenshot at exact post dimensions. No re-export, no re-crop.',
+      card_3: 'Wired into playbooks|Generate, render, queue, post — one Mission, four steps.',
+      cta: 'Inside the renderer →',
+    },
+  },
+  {
+    name: 'Sunday', topic: 'Approvals', template: 'announcement',
+    before: {
+      headline: 'Streamlined|Content|Approvals',
+      eyebrow: 'PROCESS',
+      status: 'Active',
+      subline: 'Structured briefs and task handoffs',
+      feature_1: 'Clear briefs|Clear briefs for design and review',
+      feature_2: 'Coordinated|Coordinated task assignments',
+      feature_3: 'Faster cycles|Faster publishing cycles',
+      cta: 'Learn about Automatos approval workflows.',
+    },
+    after: {
+      headline: 'READY|FOR@brick|APPROVAL.',
+      eyebrow: 'PROCESS',
+      status: 'ACTIVE',
+      subline: 'Structured briefs and clean task handoffs — content moves from draft to live in hours, not days.',
+      feature_1: 'Briefs that brief|Designer-ready specs auto-generated from the source playbook',
+      feature_2: 'Coordinated handoffs|Reviewers, editors, publishers — each gets just their slice',
+      feature_3: 'Faster cycles|Average time-to-publish dropped from 3 days to 4 hours',
+      cta: 'Approval workflow →',
+    },
+  },
+];
+
+const dataLines = (obj) => Object.entries(obj).map(([k,v]) => 
+  `<div><span class="k">${k}:</span> <span class="v">${String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span></div>`
+).join('');
+
+const root = document.getElementById('days');
+days.forEach((d, i) => {
+  const beforeUrl = buildUrl(PAGE.current, { template: d.template, size: 'ig_post', page: String(i+1).padStart(2,'0'), total: '07', ...d.before });
+  const afterUrl  = buildUrl(PAGE.fixed,   { template: d.template, size: 'ig_post', page: String(i+1).padStart(2,'0'), total: '07', ...d.after });
+
+  root.insertAdjacentHTML('beforeend', `
+    <div class="day">
+      <div class="day-meta">
+        <span class="day-name">${d.name}</span>
+        <h2>${d.topic}</h2>
+        <span class="tpl">template: ${d.template}</span>
+      </div>
+      <div class="pair">
+        <div class="col">
+          <div class="col-label"><span class="pill bad">Before</span><span class="note">current weekly-facts.md · fixed fontSize</span></div>
+          <div class="frame"><iframe src="${beforeUrl}" loading="lazy" data-w="1080"></iframe></div>
+          <div class="data">${dataLines(d.before)}</div>
+        </div>
+        <div class="col">
+          <div class="col-label"><span class="pill good">After</span><span class="note">fixed grammar · auto-sized headline</span></div>
+          <div class="frame"><iframe src="${afterUrl}" loading="lazy" data-w="1080"></iframe></div>
+          <div class="data">${dataLines(d.after)}</div>
+        </div>
+      </div>
+    </div>
+  `);
+});
+
+// Scale every iframe to fit its frame at 1080×1350 source.
+const fit = () => {
+  document.querySelectorAll('.frame').forEach(f => {
+    const iframe = f.querySelector('iframe');
+    if (!iframe) return;
+    const rect = f.getBoundingClientRect();
+    const scale = rect.width / 1080;
+    iframe.style.width = '1080px';
+    iframe.style.height = '1350px';
+    iframe.style.transform = `scale(${scale})`;
+  });
+};
+window.addEventListener('load', fit);
+window.addEventListener('resize', fit);
+setTimeout(fit, 200);
+</script>
+</body>
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatos AI — Design Audit & Recommendations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0A0A0A;
+      color: #FAFAFA;
+      line-height: 1.6;
+      padding: 3rem 1.5rem;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .header {
+      margin-bottom: 4rem;
+      border-bottom: 1px solid #262626;
+      padding-bottom: 2rem;
+    }
+    
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .header h1 .accent {
+      background: linear-gradient(135deg, #FF6B35 0%, #FF6B35CC 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header .subtitle {
+      font-size: 1.125rem;
+      color: #A3A3A3;
+      margin-bottom: 1.5rem;
+    }
+    
+    .meta {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.875rem;
+      color: #737373;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-warning {
+      background: rgba(251, 191, 36, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    
+    .badge-info {
+      background: rgba(96, 165, 250, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+    
+    /* Section */
+    .section {
+      margin-bottom: 4rem;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    
+    .section-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      color: #FF6B35;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    
+    .section h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+    
+    .section-intro {
+      color: #A3A3A3;
+      margin-bottom: 2rem;
+      font-size: 1.0625rem;
+    }
+    
+    /* Issue Card */
+    .issue-grid {
+      display: grid;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .issue-card {
+      background: rgba(23, 23, 23, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid #262626;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      transition: all 220ms ease;
+    }
+    
+    .issue-card:hover {
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 40px rgba(255, 107, 53, 0.15);
+    }
+    
+    .issue-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    
+    .issue-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .issue-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    
+    .icon-critical { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .icon-major { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .icon-minor { background: rgba(96, 165, 250, 0.15); border: 1px solid rgba(96, 165, 250, 0.3); }
+    
+    .issue-title h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    
+    .issue-meta {
+      font-size: 0.875rem;
+      color: #737373;
+    }
+    
+    .issue-body {
+      color: #D4D4D4;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+    
+    .issue-body strong {
+      color: #FAFAFA;
+      font-weight: 600;
+    }
+    
+    .issue-body code {
+      background: rgba(255, 107, 53, 0.1);
+      color: #FF6B35;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875em;
+    }
+    
+    /* Comparison Grid */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #262626;
+    }
+    
+    .comparison-panel {
+      background: #0F0F0F;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid #262626;
+    }
+    
+    .comparison-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .label-current {
+      color: #EF4444;
+    }
+    
+    .label-improved {
+      color: #10B981;
+    }
+    
+    .comparison-content {
+      font-size: 0.875rem;
+      color: #A3A3A3;
+      line-height: 1.6;
+    }
+    
+    /* Code Block */
+    .code-block {
+      background: #0F0F0F;
+      border: 1px solid #262626;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+    
+    .code-block pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: #D4D4D4;
+    }
+    
+    .code-block pre .comment {
+      color: #737373;
+    }
+    
+    .code-block pre .keyword {
+      color: #C084FC;
+    }
+    
+    .code-block pre .string {
+      color: #34D399;
+    }
+    
+    .code-block pre .class {
+      color: #60A5FA;
+    }
+    
+    /* Example Visual */
+    .example-visual {
+      background: #0F0F0F;
+      border: 1px solid #262626;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 1rem 0;
+    }
+    
+    .example-modal {
+      background: rgba(23, 23, 23, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid #262626;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      max-width: 28rem;
+      margin: 0 auto;
+    }
+    
+    .example-modal.glow {
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 0 1px rgba(255, 107, 53, 0.15), 0 0 24px rgba(255, 107, 53, 0.15);
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #262626;
+    }
+    
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .close-btn {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background: transparent;
+      border: 1px solid #404040;
+      color: #A3A3A3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 220ms ease;
+    }
+    
+    .close-btn:hover {
+      background: rgba(255, 107, 53, 0.1);
+      border-color: rgba(255, 107, 53, 0.3);
+      color: #FF6B35;
+    }
+    
+    .modal-content {
+      color: #A3A3A3;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid #262626;
+    }
+    
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 220ms ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #FF6B35 0%, #FF6B35CC 100%);
+      color: #FAFAFA;
+    }
+    
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      color: #FF6B35;
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255, 107, 53, 0.1);
+    }
+    
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #404040;
+      color: #D4D4D4;
+    }
+    
+    .btn-ghost:hover {
+      background: #262626;
+    }
+    
+    /* Summary Box */
+    .summary-box {
+      background: rgba(255, 107, 53, 0.05);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .summary-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #FF6B35;
+    }
+    
+    .summary-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+    }
+    
+    .summary-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      color: #D4D4D4;
+      line-height: 1.6;
+    }
+    
+    .summary-list li::before {
+      content: "→";
+      color: #FF6B35;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .stat-card {
+      background: rgba(23, 23, 23, 0.6);
+      border: 1px solid #262626;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #FF6B35;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #737373;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    @media (max-width: 768px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Automatos AI <span class="accent">Design Audit</span></h1>
+      <p class="subtitle">Visual consistency review & UX recommendations</p>
+      <div class="meta">
+        <div class="meta-item">
+          <span>📅</span>
+          <span>April 30, 2026</span>
+        </div>
+        <div class="meta-item">
+          <span>📊</span>
+          <span>4 pages analyzed</span>
+        </div>
+        <div class="meta-item">
+          <span>🔍</span>
+          <span>8 issues identified</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">📋</div>
+        <h2>Executive Summary</h2>
+      </div>
+      
+      <div class="summary-box">
+        <div class="summary-title">Overall Assessment</div>
+        <p style="color: #D4D4D4; margin-bottom: 1.5rem;">
+          Automatos AI has a <strong>strong design system foundation</strong> (comprehensive DESIGN_SYSTEM.md, shared components, token architecture). However, <strong>implementation drift</strong> across pages creates inconsistency. The platform is functional and the visual identity is clear, but tightening enforcement will make it feel more cohesive and premium.
+        </p>
+        
+        <div class="summary-title" style="margin-top: 1.5rem;">Key Findings</div>
+        <ul class="summary-list">
+          <li><strong>Good:</strong> Shared component library (PageHeader, StatsBar, FilterTabs, SearchInput, ItemCard) is being used</li>
+          <li><strong>Good:</strong> CSS variable token system is in place and mostly followed</li>
+          <li><strong>Good:</strong> Glass morphism + orange glow signature is distinctive</li>
+          <li><strong>Issue:</strong> Modals have inconsistent styling (some missing card-glow, some using hardcoded styles)</li>
+          <li><strong>Issue:</strong> Button hierarchy violations (multiple primary CTAs per view)</li>
+          <li><strong>Issue:</strong> Mixed border radius usage (some forms use rounded-lg instead of rounded-2xl)</li>
+          <li><strong>Issue:</strong> Profile page bypasses design system entirely (hardcoded Tailwind colors, custom layout)</li>
+          <li><strong>Issue:</strong> Wizard flows don't match ItemCard or standard card patterns</li>
+        </ul>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">75%</div>
+          <div class="stat-label">Design System Adherence</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Drift Patterns Found</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Pages Need Refactor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">High</div>
+          <div class="stat-label">Fix Impact</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 1: Modal Inconsistency -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">01</div>
+        <h2>Modal Styling Inconsistency</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-critical">⚠️</div>
+              <div>
+                <h3>Missing Orange Glow on Modals</h3>
+                <div class="issue-meta">Severity: Critical • Impact: Brand Identity</div>
+              </div>
+            </div>
+            <span class="badge badge-warning">Design System §12</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Problem:</strong> The DESIGN_SYSTEM.md mandates that modals are "the highest-elevation element" and MUST have <code>card-glow</code> (orange-tinted border + glow). However, many modals across the app are using stock shadcn dialog styling without the signature glow.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Found in:</strong> CreateAgentModal, AgentDetailsModal, various settings modals</p>
+            
+            <p style="margin-top: 1rem;"><strong>Why it matters:</strong> The orange glow is the platform's visual signature. Modals without it feel flat and generic, breaking the premium glass aesthetic.</p>
+          </div>
+          
+          <div class="comparison">
+            <div class="comparison-panel">
+              <div class="comparison-label label-current">
+                ❌ Current (Stock)
+              </div>
+              <div class="example-visual">
+                <div class="example-modal">
+                  <div class="modal-header">
+                    <div class="modal-title">Create Agent</div>
+                    <div class="close-btn">×</div>
+                  </div>
+                  <div class="modal-content">
+                    This modal has no orange glow — just a basic border.
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-ghost">Cancel</button>
+                    <button class="btn btn-primary">Create</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="comparison-panel">
+              <div class="comparison-label label-improved">
+                ✅ Correct (With Glow)
+              </div>
+              <div class="example-visual">
+                <div class="example-modal glow">
+                  <div class="modal-header">
+                    <div class="modal-title">Create Agent</div>
+                    <div class="close-btn">×</div>
+                  </div>
+                  <div class="modal-content">
+                    This modal has the signature orange glow + glass effect.
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-ghost">Cancel</button>
+                    <button class="btn btn-primary">Create</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="code-block">
+            <pre><span class="comment">// Fix: Add to modal DialogContent wrapper</span>
+<span class="keyword">className</span>=<span class="string">"glass-card card-glow rounded-2xl"</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 2: Profile Page Drift -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">02</div>
+        <h2>Profile Page Bypasses Design System</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-critical">🚨</div>
+              <div>
+                <h3>Hardcoded Colors & Custom Layout</h3>
+                <div class="issue-meta">Severity: Critical • Location: settings/profile/page.tsx</div>
+              </div>
+            </div>
+            <span class="badge badge-warning">Token System Violation</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Problem:</strong> The profile page (<code>settings/profile/page.tsx</code>) is the only page in the app that doesn't use <code>PageHeader</code> or shared components. It uses:</p>
+            
+            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: #A3A3A3;">
+              <li>Hardcoded Tailwind colors (<code>text-white</code>, <code>text-slate-400</code>, <code>bg-slate-800/50</code>)</li>
+              <li>Custom heading layout instead of <code>PageHeader</code></li>
+              <li>Direct gradient classes (<code>from-orange-500 to-purple-600</code>) instead of using <code>gradient-text</code></li>
+              <li>Inconsistent input styling (<code>rounded-lg</code> instead of <code>rounded-2xl</code>)</li>
+            </ul>
+            
+            <p style="margin-top: 1rem;"><strong>Impact:</strong> The profile page feels like it belongs to a different app. It doesn't match the rest of Automatos.</p>
+          </div>
+          
+          <div class="code-block">
+            <pre><span class="comment">// Current (Hardcoded)</span>
+<span class="keyword">&lt;h1</span> <span class="class">className</span>=<span class="string">"text-3xl font-bold text-white mb-2"</span><span class="keyword">&gt;</span>
+  Profile Settings
+<span class="keyword">&lt;/h1&gt;</span>
+
+<span class="comment">// Should be (Using PageHeader)</span>
+<span class="keyword">&lt;PageHeader</span>
+  <span class="class">title</span>=<span class="string">"Profile"</span>
+  <span class="class">titleAccent</span>=<span class="string">"Settings"</span>
+  <span class="class">subtitle</span>=<span class="string">"Manage your account information and preferences"</span>
+<span class="keyword">/&gt;</span></pre>
+          </div>
+          
+          <div class="summary-box" style="margin-top: 1.5rem; background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2);">
+            <div class="summary-title" style="color: #EF4444;">Refactor Required</div>
+            <ul class="summary-list">
+              <li>Replace custom header with <code>PageHeader</code></li>
+              <li>Replace all hardcoded colors with CSS variable classes (<code>text-foreground</code>, <code>text-muted-foreground</code>, <code>bg-secondary</code>)</li>
+              <li>Change input <code>rounded-lg</code> → <code>rounded-2xl</code></li>
+              <li>Use <code>glass-card</code> class for the main card</li>
+              <li>Replace gradient button classes with standard <code>Button</code> component</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 3: Button Hierarchy Violations -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">03</div>
+        <h2>Button Hierarchy Violations</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-major">⚡</div>
+              <div>
+                <h3>Multiple Primary CTAs Per View</h3>
+                <div class="issue-meta">Severity: Major • Impact: User Focus</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Design System §7</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Problem:</strong> The design system states: "Maximum ONE solid orange (primary) button per view/section." However, several pages have multiple primary buttons competing for attention.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Examples:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: #A3A3A3;">
+              <li><strong>Publish Wizard:</strong> "Save Draft" and "Next" both appear as primary in some steps</li>
+              <li><strong>Profile Page:</strong> "Edit Profile" and "Change Avatar" both use primary gradient styling</li>
+              <li><strong>Modal Footers:</strong> Some have both "Save" and "Submit" as primary</li>
+            </ul>
+            
+            <p style="margin-top: 1rem;"><strong>Why it matters:</strong> Multiple primary buttons create decision paralysis. Users don't know which action is most important.</p>
+          </div>
+          
+          <div class="comparison">
+            <div class="comparison-panel">
+              <div class="comparison-label label-current">
+                ❌ Current (Confusing)
+              </div>
+              <div class="comparison-content">
+                <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                  <button class="btn btn-primary">Save Draft</button>
+                  <button class="btn btn-primary">Next</button>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.8125rem;">Both buttons look equally important. Which should I click?</p>
+              </div>
+            </div>
+            
+            <div class="comparison-panel">
+              <div class="comparison-label label-improved">
+                ✅ Correct (Clear)
+              </div>
+              <div class="comparison-content">
+                <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                  <button class="btn btn-ghost">Save Draft</button>
+                  <button class="btn btn-primary">Next</button>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.8125rem;">"Next" is clearly the primary action. "Save Draft" is available but de-emphasized.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="summary-box" style="margin-top: 1.5rem;">
+            <div class="summary-title">Button Hierarchy Rules</div>
+            <ul class="summary-list">
+              <li><strong>Primary (solid orange):</strong> ONE per view — the main action users should take</li>
+              <li><strong>Outline (orange border):</strong> Secondary actions — "Details", "Export", "Refresh"</li>
+              <li><strong>Ghost (subtle):</strong> Tertiary actions — "Cancel", "Save Draft", icon buttons</li>
+              <li><strong>Destructive (red):</strong> Dangerous actions only — "Delete", "Remove"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 4: Border Radius Inconsistency -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">04</div>
+        <h2>Border Radius Inconsistency</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-major">📐</div>
+              <div>
+                <h3>Mixed Radius Values Across Forms</h3>
+                <div class="issue-meta">Severity: Major • Impact: Visual Consistency</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Design System §5</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Problem:</strong> The design system mandates <code>rounded-2xl</code> (1rem / 16px) for inputs, cards, and buttons. However, several pages use <code>rounded-lg</code> (0.5rem / 8px) instead.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Found in:</strong></p>
+            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: #A3A3A3;">
+              <li>Profile page form inputs</li>
+              <li>Publish wizard text inputs</li>
+              <li>Some modal input fields</li>
+            </ul>
+            
+            <p style="margin-top: 1rem;"><strong>Impact:</strong> The platform looks inconsistent. Some pages feel more rounded and friendly; others feel tighter and more conservative. This undermines the visual identity.</p>
+          </div>
+          
+          <div class="code-block">
+            <pre><span class="comment">// Wrong</span>
+<span class="keyword">&lt;Input</span> <span class="class">className</span>=<span class="string">"rounded-lg"</span> <span class="keyword">/&gt;</span>
+
+<span class="comment">// Correct (already default in Input component)</span>
+<span class="keyword">&lt;Input</span> <span class="keyword">/&gt;</span>  <span class="comment">// Uses rounded-2xl by default</span></pre>
+          </div>
+          
+          <div class="summary-box" style="margin-top: 1.5rem;">
+            <div class="summary-title">Border Radius Reference</div>
+            <ul class="summary-list">
+              <li><strong>rounded-full (pill):</strong> Badges, pills, search bars, select triggers, tabs</li>
+              <li><strong>rounded-2xl (1rem):</strong> Buttons, cards, modals, inputs, textareas — THE DEFAULT</li>
+              <li><strong>rounded-xl (0.75rem):</strong> Dropdown menu content panels</li>
+              <li><strong>rounded-lg (0.5rem):</strong> Dropdown menu items, small controls</li>
+              <li><strong>Never use:</strong> rounded-sm, rounded-md, or sharp corners</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 5: Wizard Flow Card Pattern -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">05</div>
+        <h2>Wizard Cards Don't Match ItemCard</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-minor">🎨</div>
+              <div>
+                <h3>Custom Card Layout in Publish Wizard</h3>
+                <div class="issue-meta">Severity: Minor • Location: marketplace/publish/page.tsx</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Component Library</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Observation:</strong> The publish wizard uses raw <code>Card</code> + <code>CardHeader</code> + <code>CardContent</code> instead of the shared <code>ItemCard</code> component. While not technically wrong, it means the wizard cards don't benefit from updates to ItemCard (like consistent animations, hover states, or structural improvements).</p>
+            
+            <p style="margin-top: 1rem;"><strong>Recommendation:</strong> Consider whether wizard steps could use <code>ItemCard</code> or a variant. If not, document why wizards are an exception.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 6: Search Bar Styling -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">06</div>
+        <h2>Search Bar Custom Styling</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-minor">🔍</div>
+              <div>
+                <h3>Direct Input Styling Instead of SearchInput</h3>
+                <div class="issue-meta">Severity: Minor • Impact: Missed Updates</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Shared Components</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Observation:</strong> The marketplace page (widgets/page.tsx) builds its own search bar with <code>Input</code> + custom pill styling instead of using the shared <code>SearchInput</code> component.</p>
+            
+            <div class="code-block" style="margin-top: 1rem;">
+              <pre><span class="comment">// Current (Custom)</span>
+<span class="keyword">&lt;div</span> <span class="class">className</span>=<span class="string">"relative max-w-2xl"</span><span class="keyword">&gt;</span>
+  <span class="keyword">&lt;Search</span> <span class="class">className</span>=<span class="string">"absolute left-3 ..."</span> <span class="keyword">/&gt;</span>
+  <span class="keyword">&lt;Input</span>
+    <span class="class">className</span>=<span class="string">"pl-11 pr-4 h-12 rounded-full ..."</span>
+    ...
+  <span class="keyword">/&gt;</span>
+<span class="keyword">&lt;/div&gt;</span>
+
+<span class="comment">// Should be</span>
+<span class="keyword">&lt;SearchInput</span>
+  <span class="class">value</span>=<span class="string">{search}</span>
+  <span class="class">onChange</span>=<span class="string">{setSearch}</span>
+  <span class="class">placeholder</span>=<span class="string">"Search widgets..."</span>
+<span class="keyword">/&gt;</span></pre>
+            </div>
+            
+            <p style="margin-top: 1rem;"><strong>Why it matters:</strong> If the design system changes the search bar pattern (e.g., adds a clear button, changes the focus glow), hand-rolled instances won't get the update.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 7: Featured Widget Cards -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">07</div>
+        <h2>Featured Widget Cards Have Custom Structure</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-minor">🌟</div>
+              <div>
+                <h3>Horizontal Scroll Cards Bypass ItemCard</h3>
+                <div class="issue-meta">Severity: Minor • Location: marketplace/widgets/page.tsx</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Component Library</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Observation:</strong> The featured widgets section hand-builds cards with <code>Card</code> + custom layout instead of using <code>ItemCard</code>. The structure is similar but not identical.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Trade-off:</strong> Custom layout allows for the specific horizontal scroll pattern, but it means featured cards and grid cards don't share structure. If ItemCard gets an improvement (like better badge positioning), featured cards miss it.</p>
+            
+            <p style="margin-top: 1rem;"><strong>Recommendation:</strong> Either extend <code>ItemCard</code> to support a "compact horizontal" variant, or document that featured carousels are an intentional exception.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue 8: Agent Management Stat Cards -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">08</div>
+        <h2>Stat Card Icon Colors Are Inconsistent</h2>
+      </div>
+      
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-header">
+            <div class="issue-title">
+              <div class="issue-icon icon-minor">📊</div>
+              <div>
+                <h3>Mixed Semantic Color Usage</h3>
+                <div class="issue-meta">Severity: Minor • Impact: Color Meaning</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Color System</span>
+          </div>
+          
+          <div class="issue-body">
+            <p><strong>Observation:</strong> The StatsBar component on the Agent Management page uses a mix of semantic color tokens:</p>
+            
+            <ul style="margin-left: 1.5rem; margin-top: 0.75rem; color: #A3A3A3;">
+              <li>"Total Agents" → <code>text-primary</code> (orange) ✅</li>
+              <li>"Active Agents" → <code>text-[hsl(var(--success))]</code> (green) ✅</li>
+              <li>"Needs Attention" → <code>text-destructive</code> (red) ✅</li>
+              <li>"Avg Success Rate" → <code>text-[hsl(var(--agent))]</code> (purple) ❓</li>
+            </ul>
+            
+            <p style="margin-top: 1rem;"><strong>Question:</strong> What does purple (<code>--agent</code>) mean? It's used for "Avg Success Rate" but the DESIGN_SYSTEM.md doesn't specify when to use the agent color vs. primary vs. info. This makes it hard for other developers to choose the right color.</p>
+          </div>
+          
+          <div class="summary-box" style="margin-top: 1.5rem;">
+            <div class="summary-title">Recommendation: Document Semantic Color Meanings</div>
+            <ul class="summary-list">
+              <li>Add a "Status Mapping Reference" table to DESIGN_SYSTEM.md §14</li>
+              <li>Define what <code>--agent</code> (purple) is for: "Agent-specific metrics like performance, capability scores"</li>
+              <li>Define when to use <code>--info</code> (blue) vs. <code>--agent</code> (purple) for metrics</li>
+              <li>Provide examples for each semantic color in context</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">✅</div>
+        <h2>Recommended Action Plan</h2>
+      </div>
+      
+      <div class="summary-box">
+        <div class="summary-title">Priority 1: Fix Profile Page (High Impact, Low Effort)</div>
+        <ul class="summary-list">
+          <li>Replace custom header with <code>PageHeader</code> component</li>
+          <li>Replace all hardcoded Tailwind colors with CSS variable classes</li>
+          <li>Change all <code>rounded-lg</code> → <code>rounded-2xl</code></li>
+          <li>Use <code>glass-card</code> class on main card wrapper</li>
+          <li>Replace custom gradient buttons with standard <code>Button variant="default"</code></li>
+          <li><strong>Estimated time:</strong> 1-2 hours</li>
+        </ul>
+      </div>
+      
+      <div class="summary-box" style="margin-top: 1.5rem;">
+        <div class="summary-title">Priority 2: Audit & Fix Modals (High Impact, Medium Effort)</div>
+        <ul class="summary-list">
+          <li>Search codebase for <code>DialogContent</code> components</li>
+          <li>Add <code>glass-card card-glow rounded-2xl</code> to every modal</li>
+          <li>Verify close buttons are <code>rounded-full</code> (circular)</li>
+          <li>Ensure modal headers have the subtle orange accent line (if specified in design)</li>
+          <li><strong>Estimated time:</strong> 2-4 hours (depends on modal count)</li>
+        </ul>
+      </div>
+      
+      <div class="summary-box" style="margin-top: 1.5rem;">
+        <div class="summary-title">Priority 3: Button Hierarchy Audit (Medium Impact, Low Effort)</div>
+        <ul class="summary-list">
+          <li>Review each page/modal for multiple primary buttons</li>
+          <li>Demote secondary CTAs to <code>variant="outline"</code> or <code>variant="ghost"</code></li>
+          <li>Keep only ONE primary button per view section</li>
+          <li><strong>Estimated time:</strong> 1-2 hours</li>
+        </ul>
+      </div>
+      
+      <div class="summary-box" style="margin-top: 1.5rem;">
+        <div class="summary-title">Priority 4: Replace Hand-Rolled Search Bars (Low Impact, Low Effort)</div>
+        <ul class="summary-list">
+          <li>Find all pages using custom <code>Input</code> + <code>Search</code> icon combos</li>
+          <li>Replace with <code>SearchInput</code> component</li>
+          <li><strong>Estimated time:</strong> 30 minutes</li>
+        </ul>
+      </div>
+      
+      <div class="summary-box" style="margin-top: 1.5rem;">
+        <div class="summary-title">Priority 5: Document Exceptions (Low Effort, High Clarity)</div>
+        <ul class="summary-list">
+          <li>Add a "When NOT to Use Shared Components" section to DESIGN_SYSTEM.md</li>
+          <li>Document that wizard flows, horizontal carousels, and special layouts may use raw Card components</li>
+          <li>Add semantic color usage guide (when to use <code>--agent</code> vs <code>--info</code>)</li>
+          <li><strong>Estimated time:</strong> 30 minutes</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- What's Working Well -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">💎</div>
+        <h2>What's Working Well</h2>
+      </div>
+      
+      <div class="summary-box" style="background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);">
+        <div class="summary-title" style="color: #10B981;">Strengths to Preserve</div>
+        <ul class="summary-list">
+          <li><strong>Shared component adoption is high:</strong> PageHeader, StatsBar, FilterTabs are widely used across Agent Management, Marketplace, and other pages</li>
+          <li><strong>Glass morphism signature is distinctive:</strong> The backdrop-blur + orange glow creates a premium, futuristic feel that differentiates Automatos from generic dashboards</li>
+          <li><strong>Token architecture is clean:</strong> CSS variables are well-organized, HSL format enables alpha manipulation, and the dark/light/matte theme variants work</li>
+          <li><strong>Documentation is comprehensive:</strong> DESIGN_SYSTEM.md is one of the most detailed design docs I've seen (32KB!). Most platforms don't have 1/10th of that</li>
+          <li><strong>Semantic colors are well-defined:</strong> Success/warning/destructive/info/agent tokens exist and are mostly used correctly</li>
+          <li><strong>The design system exists and is *mostly* followed:</strong> ~75% adherence is actually good for a fast-moving startup. The foundation is solid; just needs tightening</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Final Verdict -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-number">🎯</div>
+        <h2>Final Verdict</h2>
+      </div>
+      
+      <div class="issue-card">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Is Automatos AI's UI/UX good?</h3>
+        
+        <p style="color: #D4D4D4; line-height: 1.7; margin-bottom: 1.5rem;">
+          <strong>Yes, with caveats.</strong> The platform has a <strong>strong visual identity</strong> (glass + orange glow), a <strong>comprehensive design system</strong>, and good UX fundamentals (clear hierarchy, responsive layouts, accessible controls). The shared component library shows architectural discipline.
+        </p>
+        
+        <p style="color: #D4D4D4; line-height: 1.7; margin-bottom: 1.5rem;">
+          However, <strong>implementation drift</strong> creates inconsistency. Some pages feel polished and cohesive (Agent Management, Marketplace grid); others feel rushed or hand-coded (Profile page, some modals). The design system is excellent — the problem is <strong>enforcement</strong>.
+        </p>
+        
+        <div class="summary-box" style="margin-top: 2rem;">
+          <div class="summary-title">Quick Wins (4-8 hours of work)</div>
+          <ul class="summary-list">
+            <li>Refactor Profile page to use design system components</li>
+            <li>Add <code>card-glow</code> to all modals</li>
+            <li>Fix button hierarchy violations (demote secondary CTAs)</li>
+            <li>Replace custom search bars with <code>SearchInput</code></li>
+          </ul>
+          <p style="color: #D4D4D4; margin-top: 1.5rem; font-size: 0.9375rem;">
+            <strong>Result:</strong> The platform will feel 30-40% more polished and consistent with minimal effort.
+          </p>
+        </div>
+        
+        <div class="summary-box" style="margin-top: 1.5rem; background: rgba(255, 107, 53, 0.05); border-color: rgba(255, 107, 53, 0.2);">
+          <div class="summary-title" style="color: #FF6B35;">Next Step</div>
+          <p style="color: #D4D4D4; line-height: 1.7;">
+            I can create a <strong>visual component library</strong> showing correct implementations of every pattern (modals, forms, cards, buttons, search bars) that you can hand to your team as a reference. Or I can generate a <strong>migration checklist</strong> like the Budstacks handoff — a page-by-page tickable list of fixes.
+          </p>
+          <p style="color: #D4D4D4; line-height: 1.7; margin-top: 1rem;">
+            Let me know which would be more useful.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

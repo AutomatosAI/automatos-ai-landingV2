@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg-2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8dcc4"></stop>
+      <stop offset="100%" stop-color="#c9b894"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg-2)"></rect>
+  
+  <ellipse cx="200" cy="470" rx="100" ry="7" fill="#11271c" opacity="0.3"></ellipse>
+  <path d="M 110 280 Q 100 380 130 440 Q 165 470 200 470 Q 235 470 270 440 Q 300 380 290 280 Q 280 240 200 230 Q 120 240 110 280 Z" fill="#3d2918" stroke="#0e1f17" stroke-width="0.6"></path>
+  
+  <ellipse cx="170" cy="360" rx="25" ry="60" fill="#1a0e08" opacity="0.5"></ellipse>
+  <ellipse cx="240" cy="380" rx="20" ry="50" fill="#1a0e08" opacity="0.4"></ellipse>
+  <text x="200" y="60" text-anchor="middle" font-family="Marcellus, serif" font-size="16" letter-spacing="3" fill="#11271c">VESSEL · III</text>
+
+</svg>

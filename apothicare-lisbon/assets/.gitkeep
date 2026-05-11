@@ -1,0 +1,24 @@
+# Image assets required for this template
+#
+# Drop the following images into this directory before publishing:
+#
+#   hero-apothecary.jpg     — Hero background. Editorial photography of an apothecary
+#                              interior or hands working with botanical jars. 2400×1600,
+#                              warm tone, low contrast (frame panel sits over left half).
+#
+#   condition-pain.jpg      — TabsShowcase image. Hands, soft daylight. 1600×1200.
+#   condition-sleep.jpg     — Indoor twilight, calm bedroom or window. 1600×1200.
+#   condition-anxiety.jpg   — Single figure, soft profile, daylight. 1600×1200.
+#   condition-neuro.jpg     — Clinical-warm scene (consultation, brain scan diagram). 1600×1200.
+#
+#   about-clinic.jpg        — About section. Dr Marques or the practice interior, warm
+#                              natural light, editorial register. 2000×1500.
+#
+#   logo-apothicare.svg     — Brand logo, monochrome, works on both parchment and botanical
+#                              dark grounds. Wordmark + small leaf glyph preferred.
+#
+# Photography direction:
+#   - Warm white balance (3200K–4000K)
+#   - Natural / window light, no harsh studio strobes
+#   - Real clinicians and real apothecary interiors only — no stock-photo doctors
+#   - Avoid the green-neon "weed" aesthetic entirely

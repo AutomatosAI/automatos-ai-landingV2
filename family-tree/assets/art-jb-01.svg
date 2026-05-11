@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg-1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8dcc4"></stop>
+      <stop offset="100%" stop-color="#c9b894"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg-1)"></rect>
+  
+  <ellipse cx="200" cy="470" rx="80" ry="6" fill="#11271c" opacity="0.3"></ellipse>
+  <path d="M 140 220 Q 120 280 130 380 Q 130 460 200 465 Q 270 460 270 380 Q 280 280 260 220 Q 240 200 200 200 Q 160 200 140 220 Z" fill="#f4ecdc" stroke="#11271c" stroke-width="0.6"></path>
+  <path d="M 175 200 Q 170 180 200 178 Q 230 180 225 200" fill="none" stroke="#11271c" stroke-width="0.8"></path>
+  
+  <g fill="#b08840" opacity="0.85">
+    <path d="M 200 320 Q 180 340 200 360 Q 220 340 200 320 Z"></path>
+    <path d="M 200 320 L 200 360" stroke="#8a6a32" stroke-width="0.4"></path>
+  </g>
+  <text x="200" y="60" text-anchor="middle" font-family="Marcellus, serif" font-size="16" letter-spacing="3" fill="#11271c">VESSEL · I</text>
+
+</svg>

@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automatos · States · Motion · Components</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EDE4;--bg-2:#ECE6D9;--bg-3:#E2DBC9;--fg:#0F1411;--fg-2:#3A3F3A;--muted:#8A8B83;--rule-c:#D9D2C0;--rule-strong:#B6AE99;--accent:#5B7C68;--warn:#B25C3F;--ok:#5B7C68;--accent-ink:#F2EDE4;--serif:"Instrument Serif",Georgia,serif;--sans:"Geist",sans-serif;--mono:"Geist Mono",monospace;--gutter:48px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#1f1d18;color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.page{max-width:1640px;margin:0 auto;padding:48px 32px;display:grid;gap:48px}
+.page-h{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#b9b3a3;text-align:center;display:flex;align-items:center;gap:16px;justify-content:center}
+.page-h::before,.page-h::after{content:"";flex:0 1 120px;height:1px;background:rgba(255,255,255,.15)}
+.page-h em{color:#f2ede4;font-style:italic;font-family:var(--serif);font-size:20px;letter-spacing:-.01em;text-transform:none;margin:0 6px}
+.section{background:var(--bg);border:1px solid var(--rule-c);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.sec-h{display:grid;grid-template-columns:300px 1fr 1fr;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.sec-h > div{padding:18px 28px;border-right:1px solid var(--rule-c);display:flex;align-items:center;gap:10px}
+.sec-h > div:last-child{border-right:0;justify-content:flex-end}
+.sec-h b{color:var(--fg);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg)}
+.pill.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.title-block{padding:48px var(--gutter);border-bottom:1px solid var(--rule-c)}
+.title-block h2{font-family:var(--serif);font-size:54px;line-height:1;letter-spacing:-.02em;text-wrap:balance}
+.title-block h2 em{font-style:italic;color:var(--muted)}
+.title-block .dek{margin-top:16px;font-size:16px;color:var(--fg-2);max-width:60ch}
+.grid{display:grid;gap:0}
+.grid.cols-2{grid-template-columns:1fr 1fr}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.cell{border-right:1px solid var(--rule-c);border-bottom:1px solid var(--rule-c);padding:36px 28px;position:relative;display:flex;flex-direction:column;gap:18px;min-height:220px;background:var(--bg)}
+.cell:last-child{border-right:0}
+.grid.cols-2 .cell:nth-child(2n){border-right:0}
+.grid.cols-3 .cell:nth-child(3n){border-right:0}
+.grid.cols-4 .cell:nth-child(4n){border-right:0}
+.cell .tag{position:absolute;top:-1px;left:-1px;background:var(--bg-2);color:var(--muted);padding:4px 10px;font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--rule-c)}
+.cell .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:auto}
+
+/* topbar mock */
+.topbar-mock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 24px;border:1px solid var(--rule-c);background:var(--bg);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.topbar-mock .brand{font-family:var(--serif);font-size:18px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
+.topbar-mock .brand em{font-style:italic;color:var(--muted)}
+.topbar-mock .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.topbar-mock nav{display:flex;gap:22px;justify-content:center}
+.topbar-mock nav a{color:var(--muted)}
+.topbar-mock > :last-child{display:flex;gap:14px;justify-content:flex-end}
+.topbar-mock.scrolled{padding:9px 24px;box-shadow:0 1px 0 var(--rule-c),0 8px 24px rgba(0,0,0,.06)}
+.topbar-mock.scrolled .brand{font-size:15px}
+.topbar-mock.inv{background:#0F1411;color:#8A8B83;border-color:#2A2E2A}
+.topbar-mock.inv .brand{color:#F2EDE4}
+.topbar-mock.inv .brand em{color:#8A8B83}
+.topbar-mock.inv .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+
+/* mobile drawer */
+.phone{width:280px;border:1px solid var(--rule-c);background:var(--bg);overflow:hidden;align-self:start}
+.phone .top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.phone .top .b{font-family:var(--serif);font-size:16px;color:var(--fg);text-transform:none;letter-spacing:-.01em}
+.phone .top .b em{font-style:italic;color:var(--muted)}
+.phone .top .x{font-family:var(--serif);font-size:22px;color:var(--fg);line-height:.6}
+.phone .drawer-list a{display:flex;justify-content:space-between;padding:18px 16px;border-bottom:1px solid var(--rule-c);font-family:var(--serif);font-size:22px;color:var(--fg);letter-spacing:-.01em}
+.phone .drawer-list a em{font-style:italic;color:var(--muted)}
+.phone .drawer-list a .arr{font-family:var(--mono);font-size:12px;color:var(--muted);align-self:center}
+.phone .drawer-foot{padding:16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);background:var(--bg-2)}
+.phone .drawer-foot a{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;display:block;margin-top:6px}
+
+/* form states */
+.frm{display:grid;gap:14px}
+.field{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--bg)}
+.field .l{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.field .v{font-family:var(--serif);font-size:20px;color:var(--fg);letter-spacing:-.01em}
+.field .v.placeholder{color:var(--muted);font-style:italic}
+.field.err{border-color:var(--warn);background:#F8E9DF}
+.field.err .err-msg{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--warn);text-transform:none}
+.field.ok{border-color:var(--ok);background:#E5EFE7}
+.field.focus{border-color:var(--fg);box-shadow:inset 0 -2px 0 var(--fg)}
+
+/* success card */
+.success{padding:36px 28px;background:#E5EFE7;border:1px solid var(--ok);display:grid;gap:14px;align-content:start}
+.success .ck{font-family:var(--serif);font-size:42px;color:var(--ok);line-height:.9}
+.success h3{font-family:var(--serif);font-size:32px;letter-spacing:-.015em;line-height:1.05}
+.success h3 em{font-style:italic;color:var(--muted)}
+.success p{color:var(--fg-2);max-width:42ch}
+.success .ref{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+
+/* empty state */
+.empty{padding:48px 28px;display:grid;gap:18px;text-align:center;align-content:center;min-height:280px;background:repeating-linear-gradient(45deg,transparent 0 14px,rgba(0,0,0,.025) 14px 15px)}
+.empty .gl{font-family:var(--serif);font-size:84px;line-height:.85;color:var(--muted);font-style:italic}
+.empty h3{font-family:var(--serif);font-size:28px;letter-spacing:-.01em}
+.empty h3 em{font-style:italic;color:var(--muted)}
+.empty p{color:var(--fg-2);max-width:36ch;margin:0 auto;font-size:14px}
+.empty .actions{display:flex;gap:10px;justify-content:center}
+
+/* button */
+.btn{display:inline-flex;align-items:center;gap:12px;padding:11px 14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--rule-strong);color:var(--fg);background:transparent;cursor:pointer;justify-self:start}
+.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.ghost{border-color:transparent;color:var(--fg)}
+.btn .arrow{font-family:var(--serif);font-size:13px}
+.btn.hover{background:var(--bg-2);border-color:var(--fg)}
+.btn.solid.hover{background:#2a2e2a}
+.btn.focus{outline:2px solid var(--accent);outline-offset:2px}
+.btn.active{transform:translateY(1px);background:var(--bg-3)}
+.btn.disabled{opacity:.4;cursor:not-allowed}
+.btn.loading{position:relative;color:transparent}
+.btn.loading::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border:2px solid var(--fg);border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+.btn.solid.loading::after{border-color:var(--bg);border-right-color:transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* inputs in component grid */
+.inp{display:block;padding:12px 14px;border:1px solid var(--rule-strong);background:var(--bg);font-family:var(--serif);font-size:18px;color:var(--fg);width:100%;outline:none}
+.inp.placeholder{color:var(--muted);font-style:italic}
+.inp.focus{border-color:var(--fg);box-shadow:inset 0 -2px 0 var(--fg)}
+.inp.err{border-color:var(--warn);background:#F8E9DF}
+.inp.disabled{opacity:.5;background:var(--bg-2)}
+
+/* tabs */
+.tabs{display:flex;border:1px solid var(--rule-c)}
+.tabs a{padding:12px 18px;border-right:1px solid var(--rule-c);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+.tabs a:last-child{border-right:0}
+.tabs a.on{color:var(--fg);background:var(--bg-2)}
+.tabs a.hover{color:var(--fg)}
+
+/* card */
+.card{padding:18px;border:1px solid var(--rule-c);background:var(--bg);display:grid;gap:8px}
+.card.hover{border-color:var(--rule-strong);box-shadow:0 4px 16px rgba(0,0,0,.05)}
+.card.focus{outline:2px solid var(--accent);outline-offset:-1px}
+.card .h{font-family:var(--serif);font-size:18px;letter-spacing:-.01em}
+.card .h em{font-style:italic;color:var(--muted)}
+.card .m{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* motion frames */
+.motion{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--rule-c)}
+.frame{border-right:1px solid var(--rule-c);padding:0;background:var(--bg);position:relative;display:grid;grid-template-rows:auto 1fr auto}
+.frame:last-child{border-right:0}
+.frame .fh{padding:8px 12px;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+.frame .fh b{color:var(--fg);font-weight:500}
+.frame .fb{padding:14px;font-family:var(--mono);font-size:10px;line-height:1.7}
+.frame .fb .row{display:grid;grid-template-columns:32px 1fr auto;gap:8px;padding:2px 0;color:var(--muted)}
+.frame .fb .row.act{color:var(--fg)}
+.frame .fb .row.act .nm{font-weight:500}
+.frame .fb .row .nm{text-transform:uppercase;letter-spacing:.08em}
+.frame .fn{padding:8px 12px;border-top:1px solid var(--rule-c);font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);background:var(--bg-2)}
+.frame .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+.spec-list{padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-family:var(--mono);font-size:11px;line-height:1.65;color:var(--fg-2);border-top:1px solid var(--rule-c);background:var(--bg-2)}
+.spec-list b{color:var(--fg);font-weight:500;display:block;margin-bottom:4px;font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+
+.foot{padding:24px var(--gutter);display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--rule-c)}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style></head><body data-mood="bone" data-screen-label="States · Motion · Components">
+
+<div class="page">
+
+<div class="page-h"><em>Automatos · Design Audit Pass</em> — nav states · empty/error/success · motion · component states</div>
+
+<!-- ───────── 1. NAV STATES ───────── -->
+<section class="section" data-screen-label="01 Nav States">
+  <div class="sec-h">
+    <div><span class="pill">01</span> Nav · States</div>
+    <div>Mobile drawer open · scrolled header · mood-inverted</div>
+    <div>↗ topbar.tsx</div>
+  </div>
+  <div class="title-block">
+    <h2>Nav <em>states.</em></h2>
+    <p class="dek">The chrome shifts to match the page underneath. Three states; everything else inherits from these.</p>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="cell"><span class="tag">A · Default · desktop</span>
+      <div class="topbar-mock">
+        <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
+        <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
+        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Sign up free →</a></div>
+      </div>
+      <span class="lbl">Light · 76px tall · serif wordmark · full nav</span>
+    </div>
+    <div class="cell"><span class="tag">B · Scrolled · compact</span>
+      <div class="topbar-mock scrolled">
+        <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
+        <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
+        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Sign up free →</a></div>
+      </div>
+      <span class="lbl">Reduces to 56px after 120px scroll · adds 1px rule + soft shadow</span>
+    </div>
+    <div class="cell"><span class="tag">C · Mood-inverted · over photo</span>
+      <div class="topbar-mock inv">
+        <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
+        <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
+        <div><a>Sign in</a><a style="color:#F2EDE4;border-bottom:1px solid #F2EDE4;padding-bottom:1px;">Sign up free →</a></div>
+      </div>
+      <span class="lbl">Inverts when overlapping a dark hero photo · borders desaturate</span>
+    </div>
+    <div class="cell" style="display:flex;flex-direction:row;gap:18px;align-items:flex-start;">
+      <span class="tag">D · Mobile · drawer open</span>
+      <div class="phone" style="width:240px;">
+        <div class="top"><span class="b">Automatos<em>·ai</em></span><span class="x">×</span></div>
+        <div class="drawer-list">
+          <a>Platform <span class="arr">→</span></a>
+          <a>Marketplace <span class="arr">→</span></a>
+          <a>Pricing <span class="arr">→</span></a>
+          <a>Docs <span class="arr">→</span></a>
+          <a>Field <em>notes</em> <span class="arr">→</span></a>
+          <a>Contact <span class="arr">→</span></a>
+        </div>
+        <div class="drawer-foot">v1.36.04 · Open · Apache 2.0<a>Sign up free →</a></div>
+      </div>
+      <div style="flex:1;">
+        <div class="phone">
+          <div class="top"><span class="b">Automatos<em>·ai</em></span><span style="font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;">Menu&nbsp;≡</span></div>
+          <div style="padding:24px 16px;">
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Build · 1.36.04</div>
+            <div style="font-family:var(--serif);font-size:32px;line-height:.98;letter-spacing:-.02em;">An operating system for <em style="font-style:italic;color:var(--muted);">autonomous</em> agents.</div>
+          </div>
+          <div style="padding:8px 16px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--rule-c);">Closed →</div>
+        </div>
+        <span class="lbl" style="display:block;margin-top:12px;">Closed (default) and open · slides from right · backdrop dims at 60% opacity</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 2. EMPTY · SUCCESS · ERROR ───────── -->
+<section class="section" data-screen-label="02 Empty Success Error">
+  <div class="sec-h">
+    <div><span class="pill">02</span> Empty · Success · Error</div>
+    <div>Form validation, success card, empty filters</div>
+    <div>↗ states.tsx</div>
+  </div>
+  <div class="title-block">
+    <h2>What happens when <em>nothing</em> happens.</h2>
+    <p class="dek">Three states the brief required: form-success after submit, validation/error inline on inputs, and empty results when filters return nothing.</p>
+  </div>
+
+  <div class="grid cols-3">
+    <!-- Form: validation/error -->
+    <div class="cell"><span class="tag">A · Form · validation</span>
+      <div class="frm">
+        <div class="field"><span class="l">Name</span><span class="v">Maren K.</span></div>
+        <div class="field err"><span class="l">Work email</span><span class="v">maren@</span><span class="err-msg">↗ doesn't look like a complete address</span></div>
+        <div class="field focus"><span class="l">Company</span><span class="v">Halberd Legal</span></div>
+        <div class="field"><span class="l">Message</span><span class="v placeholder">A sentence or two…</span></div>
+      </div>
+      <span class="lbl">Inline error · warm rust · doesn't block other fields · message under value</span>
+    </div>
+
+    <!-- Form: success -->
+    <div class="cell"><span class="tag">B · Form · success</span>
+      <div class="success">
+        <div class="ck">✓</div>
+        <h3>Note <em>received.</em></h3>
+        <p>Thanks, Maren. We read every one — expect a reply from a human within one business day.</p>
+        <span class="ref">REF · 2026-05-10 · #4F2A</span>
+      </div>
+      <span class="lbl">Replaces the form in place · sage tint · ref number for support</span>
+    </div>
+
+    <!-- Empty: filters -->
+    <div class="cell"><span class="tag">C · Marketplace · empty filter</span>
+      <div class="empty">
+        <div class="gl">Ø</div>
+        <h3>Nothing matches <em>"loyalty + finance"</em>.</h3>
+        <p>No agents in the marketplace fit that combination yet. Try widening the filter, or commission one — we'll route it.</p>
+        <div class="actions"><a class="btn">Clear filter <span class="arrow">→</span></a><a class="btn solid">Commission an agent <span class="arrow">→</span></a></div>
+      </div>
+      <span class="lbl">Reads as a finding, not an apology · two recovery paths</span>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <!-- Empty: field notes category -->
+    <div class="cell"><span class="tag">D · Field Notes · empty category</span>
+      <div class="empty">
+        <div class="gl">—</div>
+        <h3>No field notes filed under <em>"hardware".</em></h3>
+        <p>The room hasn't been into a hardware operator's office yet. Subscribe to be told first when it does.</p>
+        <div class="actions"><a class="btn solid">Subscribe to field notes <span class="arrow">→</span></a><a class="btn">All categories <span class="arrow">→</span></a></div>
+      </div>
+      <span class="lbl">Honest about why · turns absence into intent</span>
+    </div>
+
+    <!-- Loading -->
+    <div class="cell"><span class="tag">E · Loading · marketplace search</span>
+      <div class="empty">
+        <div class="gl"><span class="pulse" style="width:14px;height:14px;background:var(--fg);"></span></div>
+        <h3>Searching <em>118</em> agents…</h3>
+        <p style="font-family:var(--mono);font-size:11px;letter-spacing:.04em;">router · semantic match · ≥0.95 · ~120ms</p>
+      </div>
+      <span class="lbl">Shows what's happening underneath · matches the router metaphor</span>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 3. MOTION SPEC — ROUTER ───────── -->
+<section class="section" data-screen-label="03 Motion · Router">
+  <div class="sec-h">
+    <div><span class="pill accent">03</span> Motion · the breathing element</div>
+    <div>Five frames over 4.0s · loops with 1.2s pause · prefers-reduced-motion = static T0</div>
+    <div>↗ motion/router.ts</div>
+  </div>
+  <div class="title-block">
+    <h2>The router, <em>animated.</em></h2>
+    <p class="dek">The brief specified one (and only one) breathing element: the router schematic on Ch.02. Each frame walks the request down a tier; the active row pulses sage. Same five frames anywhere the schematic appears — landing, 404, mobile, field note.</p>
+  </div>
+
+  <div style="padding:24px var(--gutter);background:var(--bg);">
+    <div class="motion">
+      <div class="frame">
+        <div class="fh"><span>F.01 · t=0</span><b>request in</b></div>
+        <div class="fb">
+          <div class="row act"><span>↓</span><span class="nm"><span class="pulse"></span>RequestEnvelope</span><span></span></div>
+          <div class="row"><span>T0</span><span class="nm">override</span><span>—</span></div>
+          <div class="row"><span>T1</span><span class="nm">cache</span><span>—</span></div>
+          <div class="row"><span>T2</span><span class="nm">rules</span><span>—</span></div>
+          <div class="row"><span>T2.5</span><span class="nm">semantic</span><span>—</span></div>
+          <div class="row"><span>T3</span><span class="nm">llm</span><span>—</span></div>
+        </div>
+        <div class="fn">0.0s · ease-out</div>
+      </div>
+      <div class="frame">
+        <div class="fh"><span>F.02 · t=0.6</span><b>cache miss</b></div>
+        <div class="fb">
+          <div class="row"><span>↓</span><span class="nm">RequestEnvelope</span><span></span></div>
+          <div class="row"><span>T0</span><span class="nm">override</span><span>—</span></div>
+          <div class="row act"><span>T1</span><span class="nm"><span class="pulse"></span>cache</span><span>miss</span></div>
+          <div class="row"><span>T2</span><span class="nm">rules</span><span>—</span></div>
+          <div class="row"><span>T2.5</span><span class="nm">semantic</span><span>—</span></div>
+          <div class="row"><span>T3</span><span class="nm">llm</span><span>—</span></div>
+        </div>
+        <div class="fn">0.6s · 5ms probe</div>
+      </div>
+      <div class="frame">
+        <div class="fh"><span>F.03 · t=1.4</span><b>rules · no match</b></div>
+        <div class="fb">
+          <div class="row"><span>↓</span><span class="nm">RequestEnvelope</span><span></span></div>
+          <div class="row"><span>T0</span><span class="nm">override</span><span>—</span></div>
+          <div class="row"><span>T1</span><span class="nm">cache</span><span>miss</span></div>
+          <div class="row act"><span>T2</span><span class="nm"><span class="pulse"></span>rules</span><span>0/14</span></div>
+          <div class="row"><span>T2.5</span><span class="nm">semantic</span><span>—</span></div>
+          <div class="row"><span>T3</span><span class="nm">llm</span><span>—</span></div>
+        </div>
+        <div class="fn">1.4s · 14 patterns</div>
+      </div>
+      <div class="frame">
+        <div class="fh"><span>F.04 · t=2.4</span><b>semantic match</b></div>
+        <div class="fb">
+          <div class="row"><span>↓</span><span class="nm">RequestEnvelope</span><span></span></div>
+          <div class="row"><span>T0</span><span class="nm">override</span><span>—</span></div>
+          <div class="row"><span>T1</span><span class="nm">cache</span><span>miss</span></div>
+          <div class="row"><span>T2</span><span class="nm">rules</span><span>0/14</span></div>
+          <div class="row act"><span>T2.5</span><span class="nm"><span class="pulse"></span>semantic</span><span>0.97 ✓</span></div>
+          <div class="row"><span>T3</span><span class="nm">llm</span><span>—</span></div>
+        </div>
+        <div class="fn">2.4s · cosine ≥0.95</div>
+      </div>
+      <div class="frame">
+        <div class="fh"><span>F.05 · t=3.4</span><b>decision</b></div>
+        <div class="fb">
+          <div class="row"><span>↓</span><span class="nm">RequestEnvelope</span><span></span></div>
+          <div class="row"><span>T0</span><span class="nm">override</span><span>—</span></div>
+          <div class="row"><span>T1</span><span class="nm">cache</span><span>miss</span></div>
+          <div class="row"><span>T2</span><span class="nm">rules</span><span>0/14</span></div>
+          <div class="row"><span>T2.5</span><span class="nm">semantic</span><span>0.97 ✓</span></div>
+          <div class="row act"><span>↓</span><span class="nm"><span class="pulse"></span>Decision</span><span>logged</span></div>
+        </div>
+        <div class="fn">3.4s · hold 1.2s · loop</div>
+      </div>
+    </div>
+    <div class="spec-list">
+      <div><b>Timing</b>F.01 → F.05 over 4.0s · 0.6s/0.8s/1.0s/1.0s/0.6s · ease-out per step · 1.2s hold then loop. Inactive rows hold at 60% opacity; active row pulses sage at 1.4s ease-in-out infinite.</div>
+      <div><b>Reduced motion</b>If <code style="font-family:var(--mono);background:var(--bg);padding:1px 5px;">prefers-reduced-motion</code> = reduce, freeze on F.01, drop the pulse, keep the layout. No alternative animation, no fade.</div>
+      <div><b>Where used</b>Landing Ch.02 · 404 routing block · Mobile Ch.02 · Field Note inline figure. All four instances run the same five-frame loop in lockstep — they share a single timing source.</div>
+      <div><b>Implementation</b>Pure CSS keyframes per row + a 4.0s `@keyframes routerWalk` master. No JS unless an IntersectionObserver is needed to pause when off-screen (recommended on Field Note article).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 4. COMPONENT STATES AUDIT ───────── -->
+<section class="section" data-screen-label="04 Component States">
+  <div class="sec-h">
+    <div><span class="pill">04</span> Component States · audit</div>
+    <div>Default · hover · focus · active · disabled · loading</div>
+    <div>↗ styleguide.html</div>
+  </div>
+  <div class="title-block">
+    <h2>Every primitive, in <em>every state.</em></h2>
+    <p class="dek">The brief asked for six states across every primitive. Here they are — solid + ghost buttons, inputs, tabs, and cards.</p>
+  </div>
+
+  <!-- Solid button states -->
+  <div class="grid cols-3">
+    <div class="cell"><span class="tag">Btn solid · default</span><a class="btn solid">Sign up free <span class="arrow">→</span></a><span class="lbl">Pitch ink on bone · 1px border same as fill</span></div>
+    <div class="cell"><span class="tag">Btn solid · hover</span><a class="btn solid hover">Sign up free <span class="arrow">→</span></a><span class="lbl">Fill darkens to #2A2E2A · no shadow · cursor pointer</span></div>
+    <div class="cell"><span class="tag">Btn solid · focus</span><a class="btn solid focus">Sign up free <span class="arrow">→</span></a><span class="lbl">2px sage outline at 2px offset · keyboard only</span></div>
+    <div class="cell"><span class="tag">Btn solid · active</span><a class="btn solid active">Sign up free <span class="arrow">→</span></a><span class="lbl">1px translateY · darker fill held during press</span></div>
+    <div class="cell"><span class="tag">Btn solid · disabled</span><a class="btn solid disabled">Sign up free <span class="arrow">→</span></a><span class="lbl">40% opacity · cursor not-allowed · no hover</span></div>
+    <div class="cell"><span class="tag">Btn solid · loading</span><a class="btn solid loading">Sign up free <span class="arrow">→</span></a><span class="lbl">Label hidden · 12px spinner in bone · width preserved</span></div>
+  </div>
+
+  <!-- Ghost button states -->
+  <div class="grid cols-3">
+    <div class="cell"><span class="tag">Btn ghost · default</span><a class="btn">Read the docs <span class="arrow">→</span></a><span class="lbl">1px sand border · transparent fill</span></div>
+    <div class="cell"><span class="tag">Btn ghost · hover</span><a class="btn hover">Read the docs <span class="arrow">→</span></a><span class="lbl">Border darkens to ink · fill warms to bone-2</span></div>
+    <div class="cell"><span class="tag">Btn ghost · focus</span><a class="btn focus">Read the docs <span class="arrow">→</span></a><span class="lbl">Same sage outline rule as solid</span></div>
+  </div>
+
+  <!-- Input states -->
+  <div class="grid cols-3">
+    <div class="cell"><span class="tag">Input · default</span><input class="inp placeholder" value="maren@operator.eu" readonly><span class="lbl">Serif value · sand border · cream fill</span></div>
+    <div class="cell"><span class="tag">Input · focus</span><input class="inp focus" value="maren@operator.eu" readonly><span class="lbl">Border to ink + 2px ink underline (inset)</span></div>
+    <div class="cell"><span class="tag">Input · error</span><input class="inp err" value="maren@" readonly><span class="lbl">Rust border · #F8E9DF tint · no shake</span></div>
+    <div class="cell"><span class="tag">Input · disabled</span><input class="inp disabled" value="—" readonly><span class="lbl">50% opacity · bone-2 fill · not-allowed cursor</span></div>
+    <div class="cell"><span class="tag">Input · placeholder</span><input class="inp" placeholder="A sentence or two…" readonly><span class="lbl">Italic serif · muted color</span></div>
+    <div class="cell"><span class="tag">Input · with helper</span><div style="display:grid;gap:6px;width:100%;"><input class="inp" value="halberd-legal-ops" readonly><span style="font-family:var(--mono);font-size:10px;color:var(--muted);">slug · auto-derived from company</span></div><span class="lbl">Helper line in mono under field</span></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="grid cols-3">
+    <div class="cell"><span class="tag">Tabs · default</span><nav class="tabs"><a class="on">All</a><a>Operators</a><a>Engineering</a><a>Research</a></nav><span class="lbl">First tab on · sand bg · others muted</span></div>
+    <div class="cell"><span class="tag">Tabs · hover</span><nav class="tabs"><a class="on">All</a><a class="hover">Operators</a><a>Engineering</a><a>Research</a></nav><span class="lbl">Inactive tab darkens text on hover · no fill change</span></div>
+    <div class="cell"><span class="tag">Tabs · keyboard focus</span><nav class="tabs"><a class="on">All</a><a style="outline:2px solid var(--accent);outline-offset:-2px;color:var(--fg);">Operators</a><a>Engineering</a><a>Research</a></nav><span class="lbl">Sage outline inset · same rule as buttons</span></div>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid cols-3">
+    <div class="cell"><span class="tag">Card · default</span><article class="card"><span class="m">Pack / 01</span><div class="h">Shopify <em>Ops</em></div><div style="font-size:13px;color:var(--fg-2);">Watches inventory, triages orders.</div></article><span class="lbl">1px sand · no shadow · pointer cursor</span></div>
+    <div class="cell"><span class="tag">Card · hover</span><article class="card hover"><span class="m">Pack / 01</span><div class="h">Shopify <em>Ops</em></div><div style="font-size:13px;color:var(--fg-2);">Watches inventory, triages orders.</div></article><span class="lbl">Border darkens · 4px soft shadow · 200ms ease</span></div>
+    <div class="cell"><span class="tag">Card · focus</span><article class="card focus"><span class="m">Pack / 01</span><div class="h">Shopify <em>Ops</em></div><div style="font-size:13px;color:var(--fg-2);">Watches inventory, triages orders.</div></article><span class="lbl">Sage outline inset · keyboard only</span></div>
+  </div>
+</section>
+
+<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Audit pass · v1.36.04</span></footer>
+
+</div>
+<script src="_theme.js" defer></script>
+</body></html>

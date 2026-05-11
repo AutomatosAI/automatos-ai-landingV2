@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mission Card — 3 Concepts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #0a0a0e; font-family: Inter, system-ui, sans-serif; }
+    #root { width: 100vw; height: 100vh; }
+    .note {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.55;
+      max-width: 720px;
+      letter-spacing: 0.1px;
+    }
+    .note strong { color: #fed7aa; font-weight: 700; }
+    .ctx-card {
+      background: linear-gradient(135deg, #14110f, #0e0d12);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 28px 32px;
+      color: #e5e7eb;
+      width: 760px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .ctx-card h1 {
+      font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.4px; color: #f9fafb;
+    }
+    .ctx-card .meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      color: #64748b; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 18px;
+    }
+    .ctx-card p { color: #94a3b8; font-size: 13.5px; line-height: 1.6; margin: 0 0 12px; max-width: 640px; }
+    .ctx-card ul { color: #94a3b8; font-size: 13px; line-height: 1.65; margin: 0; padding-left: 18px; }
+    .ctx-card .accent { color: #fdba74; }
+    .pal { display: flex; gap: 8px; margin-top: 18px; align-items: center; }
+    .swatch { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); }
+    .pal-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b;
+      letter-spacing: 1px; text-transform: uppercase; margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="cards/MissionCardConstellation.jsx"></script>
+  <script type="text/babel" src="cards/MissionCardSwarm.jsx"></script>
+  <script type="text/babel" src="cards/MissionCardThreads.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+
+    const ContextCard = () => (
+      <div className="ctx-card">
+        <div className="meta">brief · automatos · /assignments</div>
+        <h1>Mission hero card</h1>
+        <p>
+          Three concept directions for the Mission card on <span className="accent">/assignments</span>. Card is ~⅔ width, ~300px tall, dark theme, brand orange accent. Each concept visualises 6–9 agents working in parallel without resorting to flowcharts, brain mascots, or DAG diagrams.
+        </p>
+        <ul>
+          <li><span className="accent">01 Constellation</span> — orbs on faint orbital rings; light pulses travel between them</li>
+          <li><span className="accent">02 Swarm field</span> — drifting particle cloud with 6 brighter "lead" agents</li>
+          <li><span className="accent">03 Parallel threads</span> — vertical streams (one per agent) crossing a shared field memory band</li>
+        </ul>
+        <div className="pal">
+          <span className="pal-label">palette</span>
+          <div className="swatch" style={{background:'#0a0a0e'}}></div>
+          <div className="swatch" style={{background:'#14110f'}}></div>
+          <div className="swatch" style={{background:'#1a120c'}}></div>
+          <div className="swatch" style={{background:'#f97316'}}></div>
+          <div className="swatch" style={{background:'#fdba74'}}></div>
+          <div className="swatch" style={{background:'#fed7aa'}}></div>
+        </div>
+      </div>
+    );
+
+    const MotionNote = ({ children }) => (
+      <div style={{
+        width: 760,
+        padding: '18px 24px',
+        background: 'rgba(20,17,15,0.5)',
+        border: '1px dashed rgba(255,255,255,0.08)',
+        borderRadius: 10,
+        fontFamily: 'JetBrains Mono, monospace',
+        fontSize: 11,
+        lineHeight: 1.7,
+        color: '#94a3b8',
+        letterSpacing: 0.1,
+      }}>
+        <span style={{color:'#fdba74', fontWeight: 700, marginRight: 8}}>MOTION</span>
+        {children}
+      </div>
+    );
+
+    const App = () => (
+      <DesignCanvas title="Mission Card — Concept Explorations" initialScale={0.85}>
+        <DCSection id="brief" title="Brief">
+          <DCArtboard id="ctx" label="Context" width={824} height={340}>
+            <div style={{padding: 32}}>
+              <ContextCard />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c1" title="01 — Constellation">
+          <DCArtboard id="c1-card" label="Mission card · constellation" width={824} height={364}>
+            <div style={{padding: 32}}>
+              <MissionCardConstellation />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c1-note" label="Motion notes" width={824} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <MotionNote>
+                Orbs <strong style={{color:'#fed7aa'}}>breathe</strong> at staggered ~3–5s intervals (opacity 0.18 ↔ 0.45). Light packets travel along the connection arcs every 3–5s, fading in and out — never more than 3 in flight at once. Background ellipses are static. The lead orb (centre) is slightly larger and pulses in sync with the live-status dot. On hover the whole constellation tightens by ~4% and arcs brighten to 0.35 alpha. Calm, never chaotic.
+              </MotionNote>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c2" title="02 — Swarm Field">
+          <DCArtboard id="c2-card" label="Mission card · swarm field" width={824} height={364}>
+            <div style={{padding: 32}}>
+              <MissionCardSwarm />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c2-note" label="Motion notes" width={824} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <MotionNote>
+                80 micro-particles drift along their local vector field (each gets unique x/y wobble at 5–10s, opacity flicker 4–8s). Three <strong style={{color:'#fed7aa'}}>activity streaks</strong> sweep horizontally across the field on 5–7s loops — the visual proof of "parallel reasoning". Lead agent chips have a soft halo that pulses every 3.4–5.5s, staggered. Whisper-lines between leads stay constant; only the field moves. Result: the card feels populated and busy at a glance, but quiet up close.
+              </MotionNote>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="c3" title="03 — Parallel Threads">
+          <DCArtboard id="c3-card" label="Mission card · parallel threads" width={824} height={364}>
+            <div style={{padding: 32}}>
+              <MissionCardThreads />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="c3-note" label="Motion notes" width={824} height={120}>
+            <div style={{padding: '20px 32px'}}>
+              <MotionNote>
+                Each thread has a head packet that falls top→bottom on a 4–5.6s loop (different per thread, never synchronised — that's the point). Event bursts flare horizontally at fixed depths every ~2.6s with random phase. The shared <strong style={{color:'#fed7aa'}}>field memory band</strong> in the middle has sync pulses sweeping left→right every 5–6.5s, tying the columns together. Reads as "7 specialists working in parallel, sharing one memory" — most literal of the three, most legible for a non-technical user.
+              </MotionNote>
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        <DCSection id="rec" title="Recommendation">
+          <DCArtboard id="rec-card" label="Designer's note" width={824} height={220}>
+            <div style={{padding: 32}}>
+              <div className="ctx-card" style={{paddingTop: 22, paddingBottom: 22}}>
+                <div className="meta">designer's read</div>
+                <p>
+                  <span className="accent">01 Constellation</span> is the safest and most "alive" — it's the one that screams <em>team</em>. <span className="accent">02 Swarm</span> is the most ambient and least literal; best if Marketplace cards already lean that way. <span className="accent">03 Threads</span> is the most informative — it actually shows "parallel" — but is the most engineering-flavoured of the three.
+                </p>
+                <p style={{marginBottom: 0}}>
+                  My pick for non-technical users: <span className="accent">01 Constellation</span>, with the field-memory band borrowed from 03 added as a faint horizontal whisper underneath the orbs.
+                </p>
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

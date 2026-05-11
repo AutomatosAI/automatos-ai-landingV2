@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg-4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8dcc4"></stop>
+      <stop offset="100%" stop-color="#c9b894"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg-4)"></rect>
+  
+  <ellipse cx="200" cy="470" rx="120" ry="8" fill="#11271c" opacity="0.3"></ellipse>
+  
+  <path d="M 100 380 Q 80 420 120 450 Q 200 470 280 450 Q 320 420 300 380 Q 280 320 200 310 Q 120 320 100 380 Z" fill="#7a5a3a" stroke="#0e1f17" stroke-width="0.6"></path>
+  <path d="M 130 390 Q 150 380 180 385 Q 200 390 220 385 Q 250 380 270 390" stroke="#5a3e22" stroke-width="0.8" fill="none"></path>
+  <path d="M 150 410 Q 200 415 250 410" stroke="#5a3e22" stroke-width="0.8" fill="none"></path>
+  <text x="200" y="60" text-anchor="middle" font-family="Marcellus, serif" font-size="16" letter-spacing="3" fill="#11271c">UNTITLED · STUDY</text>
+
+</svg>

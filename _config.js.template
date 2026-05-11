@@ -1,0 +1,17 @@
+/**
+ * Automatos v2 — runtime config (templated by server.js at container start).
+ *
+ * Variables ${...} are substituted from the container env. To regenerate
+ * in dev: `node server.js` once, or copy this file to `_config.js` and
+ * hand-edit the placeholders.
+ *
+ * The ak_pub_* key is allow-listed by origin server-side, so it is safe
+ * to ship in client JS as long as `allowed_domains` on the key matches
+ * the deployed origin.
+ */
+window.AUTOMATOS_CONFIG = {
+  publicKey:   "${VITE_AUTOMATOS_PUBLIC_KEY}",
+  workspaceId: "${VITE_AUTOMATOS_WORKSPACE_ID}",
+  chatAgentId: "${VITE_AUTOMATOS_CHAT_AGENT_ID}",
+  apiBase:     "https://api.automatos.app",
+};

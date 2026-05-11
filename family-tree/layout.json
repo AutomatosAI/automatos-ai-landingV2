@@ -1,0 +1,374 @@
+{
+  "version": "1.0.0",
+  "navigation": "NavMinimal",
+  "navigationConfig": {
+    "links": [
+      { "label": "Practice", "href": "/about" },
+      { "label": "Drops", "href": "/products" },
+      { "label": "Journal", "href": "/the-wire" },
+      { "label": "Members", "href": "/members" }
+    ],
+    "cta": { "label": "Apply to join", "href": "/apply" },
+    "cta2": { "label": "Member sign in", "href": "/login" },
+    "showCart": true
+  },
+  "sections": [
+    {
+      "type": "HeroSplit",
+      "id": "hero",
+      "config": {
+        "title": "A medical practice that knows your name.",
+        "subtitle": "FAMILY TREE · LISBON · MEMBERS ONLY",
+        "description": "We are a small clinical team and a smaller community of patients. Members co-develop the strains we prescribe, share the journal we publish, and keep the lights on in our Lisbon practice. Apply to join — there is no waitlist, only a conversation.",
+        "ctaText": "Apply to join",
+        "ctaHref": "/apply",
+        "secondaryCtaText": "Read the manifesto",
+        "secondaryCtaHref": "/manifesto",
+        "imageUrl": "assets/hero-crest.svg",
+        "imagePosition": "right",
+        "heroHeight": "large",
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "TextMarquee",
+      "id": "credentials",
+      "config": {
+        "text": "Members Only · Lisbon Practice · INFARMED Licensed · Founded 2024 · Patient-Owned Strains · Doctor Prescribed",
+        "icon": "leaf",
+        "speed": 32,
+        "fontSize": "lg",
+        "fontStyle": "italic-serif",
+        "showBorder": "true",
+        "repeat": 3
+      },
+      "colorOverrides": {
+        "background": "155 35% 12%",
+        "text": "42 35% 80%",
+        "border": "42 30% 35%"
+      }
+    },
+    {
+      "type": "ValueProps",
+      "id": "pillars",
+      "config": {
+        "heading": "What membership gives you",
+        "subtitle": "Free to join. There is no tier above this one. Membership is the practice.",
+        "items": [
+          {
+            "title": "A doctor who knows you",
+            "description": "Same prescriber, every visit. Your record is held in the practice, not on a platform. Quarterly follow-ups included in your care.",
+            "icon": "Stethoscope"
+          },
+          {
+            "title": "Strains named by members",
+            "description": "Each season we co-develop a strain with a member whose treatment shaped it. Their name on the jar, their story in the journal.",
+            "icon": "Sprout"
+          },
+          {
+            "title": "The Letter, monthly",
+            "description": "A long-form letter from the practice — clinical evidence, regulatory shifts, member writing. No marketing, no algorithm, no telling you what to think.",
+            "icon": "BookOpen"
+          },
+          {
+            "title": "A real address, real people",
+            "description": "We are seven clinicians in a Lisbon townhouse, not an app. Members are welcome at the practice for consultations, dispensing, or just tea.",
+            "icon": "MapPin"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "TabsShowcase",
+      "id": "drops",
+      "config": {
+        "heading": "Strains, named by members",
+        "subtitle": "Every season, a member whose treatment shaped a formulation lends it their name. Below — the four current drops, the patients who named them, and what the strain was developed to address.",
+        "tabs": [
+          {
+            "label": "Marina · S/26",
+            "icon": "Moon",
+            "title": "Marina — for sleep that arrives without negotiation",
+            "description": "Indica-leaning, 18% THC, 8% CBD. Named by Marina, a member in care since 2024 for treatment-resistant insomnia following her cancer treatment. Developed with our prescribing team after eighteen months of titration. Released in spring jars of forty.",
+            "imageUrl": "assets/drop-marina.svg"
+          },
+          {
+            "label": "Tomé · A/26",
+            "icon": "Activity",
+            "title": "Tomé — for the chronic pain that other clinics could not name",
+            "description": "Balanced THC:CBD oil, 1:1, sublingual. Named by Tomé, a member living with central sensitisation syndrome for nine years. The formulation he and Dr Marques arrived at after his fourth pain clinic gave up. Quarterly batches.",
+            "imageUrl": "assets/drop-tome.svg"
+          },
+          {
+            "label": "Inês · W/25",
+            "icon": "Brain",
+            "title": "Inês — for the morning anxiety that nothing else touches",
+            "description": "CBD-dominant, 12% CBD, 1% THC, vaporiser flower. Named by Inês, a member who came to us when SSRIs left her unable to feel anything at all. Worked with the practice for fourteen months to find a morning protocol. Winter release.",
+            "imageUrl": "assets/drop-ines.svg"
+          },
+          {
+            "label": "Henrique · A/25",
+            "icon": "Zap",
+            "title": "Henrique — for MS spasticity and the dignity of moving",
+            "description": "1:1 THC:CBD oromucosal spray, pharmaceutical preparation. Named by Henrique, an architect with secondary-progressive MS, who insisted the practice carry a spray-format option after returning from a trial in Madrid. Continuous availability.",
+            "imageUrl": "assets/drop-henrique.svg"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "About",
+      "id": "practice",
+      "config": {
+        "heading": "We built a practice. The membership built itself.",
+        "content": "Family Tree was started in 2024 by Dr Elena Marques and four founder-patients she had been treating since her time at Apothicare. The conversation that became the practice happened around her kitchen table: what would a medical-cannabis service look like if patients owned a piece of it? What if the strains carried our names instead of trademark numbers? What if the doctor who started your treatment was the doctor who finished it? We answered those questions with a small townhouse in Príncipe Real, seven clinicians, and 340 founding members. There is no waitlist. There is, as there always was, a conversation.",
+        "imageUrl": "assets/about-townhouse.svg",
+        "contentPosition": "right",
+        "ctaText": "Read the founding manifesto",
+        "stats": [
+          { "label": "Founding members", "value": "340" },
+          { "label": "Strains co-developed", "value": "11" },
+          { "label": "Clinicians on the team", "value": "7" },
+          { "label": "Year the kitchen-table conversation started", "value": "2024" }
+        ],
+        "animation": "fade-right"
+      },
+      "colorOverrides": {
+        "background": "155 35% 14%",
+        "surface": "155 30% 19%",
+        "heading": "42 35% 90%",
+        "text": "42 22% 80%",
+        "primary": "42 55% 60%",
+        "border": "42 30% 30%"
+      }
+    },
+    {
+      "type": "BlogFeatured",
+      "id": "journal",
+      "config": {
+        "heading": "From the Journal",
+        "subtitle": "Long-form, member-bylined, monthly. Written by clinicians and patients in equal measure.",
+        "viewAllText": "Read every issue",
+        "viewAllHref": "/the-wire",
+        "items": [
+          {
+            "title": "On lineage: why we put your name on the jar",
+            "excerpt": "Pharmaceutical naming conventions exist for good reasons. They also strip the medicine of its history. Here is the case for doing both.",
+            "author": "Dr Elena Marques",
+            "date": "March 2026",
+            "readTime": "8 min",
+            "category": "Founder",
+            "imageUrl": "assets/journal-lineage.svg",
+            "href": "/the-wire/lineage"
+          },
+          {
+            "title": "Eighteen months to name a strain — Marina's account",
+            "excerpt": "Marina, a member since 2024, on titration, sleep, and what it meant when the practice asked if they could call her formulation by her name.",
+            "author": "Marina F.",
+            "date": "February 2026",
+            "readTime": "12 min",
+            "category": "Member",
+            "imageUrl": "assets/journal-marina.svg",
+            "href": "/the-wire/marina"
+          },
+          {
+            "title": "What the new INFARMED guidance changes for members",
+            "excerpt": "The November 2025 update to Portuguese medical-cannabis prescribing guidance — what it changes for our prescribers, what it changes for you, what does not change at all.",
+            "author": "Dr Tiago Oliveira",
+            "date": "January 2026",
+            "readTime": "6 min",
+            "category": "Regulatory",
+            "imageUrl": "assets/journal-infarmed.svg",
+            "href": "/the-wire/infarmed-2025"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "Gallery",
+      "id": "artists",
+      "config": {
+        "heading": "Patient-artist takeover · Spring 2026",
+        "subtitle": "Each season a member-artist takes over the visual identity of the practice — labels, journal covers, the room above the dispensing bench. This season: João Beirão, member since 2024, ceramicist.",
+        "layout": "masonry",
+        "items": [
+          { "imageUrl": "assets/art-jb-01.svg", "caption": "Vessel I — slip-cast porcelain, brass leaf inlay" },
+          { "imageUrl": "assets/art-jb-02.svg", "caption": "Vessel III — wood-fired stoneware" },
+          { "imageUrl": "assets/art-jb-03.svg", "caption": "Apothecary jar series — for the spring drops" },
+          { "imageUrl": "assets/art-jb-04.svg", "caption": "Untitled — clay study for the dispensing room shelf" }
+        ],
+        "ctaText": "Read João's letter",
+        "ctaHref": "/the-wire/jb-spring",
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "Testimonials",
+      "id": "members",
+      "config": {
+        "heading": "From the membership",
+        "subtitle": "Members on what the practice means to them. Edited for length; published with permission.",
+        "items": [
+          {
+            "quote": "I was a patient at three different clinics before this. The thing that broke me was being passed between five different prescribers in a year, none of whom remembered me. Family Tree was the first place where the same doctor who started my treatment is the doctor who titrated it.",
+            "name": "Marina F.",
+            "role": "Founding member · Lisbon · in care since 2024",
+            "rating": 5
+          },
+          {
+            "quote": "I am a retired architect and a sceptical man. My membership card sits in the same drawer as my Royal Institute one. Both have meant something to me. This one took less time to mean it.",
+            "name": "Henrique D.",
+            "role": "Founding member · Cascais · in care since 2024",
+            "rating": 5
+          },
+          {
+            "quote": "The fact that I can walk into the townhouse on a Wednesday afternoon, hand my prescription to the same person every time, and have a cup of tea while it is dispensed — I had forgotten medicine could feel like that.",
+            "name": "Inês R.",
+            "role": "Member · Porto (visits monthly) · in care since 2025",
+            "rating": 5
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "ProcessSteps",
+      "id": "join",
+      "config": {
+        "heading": "How to join the family",
+        "subtitle": "Four steps, no waitlist. Most members are in care within ten days of first writing to us.",
+        "orientation": "horizontal",
+        "steps": [
+          {
+            "title": "Write to the practice",
+            "description": "A short letter — the medical history you'd like us to know, what you have tried, what brought you here. We read every one. Practice, not platform.",
+            "icon": "Mail"
+          },
+          {
+            "title": "A conversation",
+            "description": "Forty-five minutes with a prescribing physician — at the townhouse, or by video if you live further than the train. The conversation is the consultation.",
+            "icon": "MessageCircle"
+          },
+          {
+            "title": "Membership card",
+            "description": "If we are the right practice for you, we issue a numbered membership card. Yours for life. Carries your prescriber's name and direct line.",
+            "icon": "BadgeCheck"
+          },
+          {
+            "title": "The Letter and the drops",
+            "description": "From your first issue of The Letter onward, you are part of the conversation that shapes the next strain, the next event, the next member-named jar.",
+            "icon": "Sprout"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "FAQ",
+      "id": "faq",
+      "config": {
+        "heading": "Questions members ask",
+        "subtitle": "If something is unclear, write to the practice. Dr Marques or one of the team will reply, usually within a working day.",
+        "items": [
+          {
+            "question": "Is membership free?",
+            "answer": "Yes. There is no membership fee — you pay for consultations and medication, the same as you would at any private practice. Membership is a relationship, not a subscription. We considered a paid tier and decided against it: the practice should not be more available to members who can pay more."
+          },
+          {
+            "question": "What does it actually cost to be a patient here?",
+            "answer": "The first letter and a five-minute eligibility call are free. The initial consultation is €185 and includes 45 minutes with a prescribing physician. Quarterly follow-ups (€95) are included in the annual care plan. Medication is priced at cost-plus and varies by formulation; expect €110–€260 per month at typical doses."
+          },
+          {
+            "question": "Do I have to live in Lisbon?",
+            "answer": "No. Members come from across Portugal and a few from further afield. Consultations are available by video; medication is dispatched by tracked, signed-for courier from the townhouse. We ask new members to make at least one in-person visit during the first year, if practicable, so we can put a face to a name."
+          },
+          {
+            "question": "What does 'co-developing a strain' actually mean?",
+            "answer": "Each season we identify a member whose treatment has produced an unusually well-tuned formulation — through months of titration with their prescriber. We work with our pharmacy partner to manufacture that formulation as a small-batch named strain, with the member's permission, and they receive the first jar. It is recognition, not ownership; the formulation belongs to the practice."
+          },
+          {
+            "question": "Is medical cannabis legal in Portugal?",
+            "answer": "Yes. INFARMED, the Portuguese medicines authority, has authorised medical cannabis prescribing since 2019. Family Tree operates under a full INFARMED licence for prescribing, with dispensing through an authorised pharmacy partner. Recreational cannabis remains illegal."
+          },
+          {
+            "question": "Can I bring my doctor into the conversation?",
+            "answer": "Please do. With your written consent, we write to your existing GP, neurologist, or pain consultant after every visit — and we welcome a phone call from any of them. Cannabis is a tool that works best when the rest of your care team is not surprised by it."
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "Newsletter",
+      "id": "letter",
+      "config": {
+        "heading": "The Letter",
+        "subtitle": "Once a month. Long-form, member-bylined, no marketing. Free to read; you do not have to be a member to subscribe — though many subscribers eventually become members.",
+        "placeholder": "your@email.pt",
+        "buttonText": "Subscribe to The Letter",
+        "overlayOpacity": "0"
+      },
+      "colorOverrides": {
+        "background": "155 35% 14%",
+        "surface": "155 30% 19%",
+        "heading": "42 35% 90%",
+        "text": "42 22% 80%",
+        "primary": "42 55% 60%",
+        "border": "42 30% 30%"
+      }
+    }
+  ],
+  "footer": "FooterBrand",
+  "footerConfig": {
+    "tagline": "A members' medical-cannabis practice · Lisbon · INFARMED licensed",
+    "address": "Travessa do Carmo 9, 1200-094 Lisboa, Portugal",
+    "email": "kin@familytree.pt",
+    "phone": "+351 213 471 600",
+    "disclaimer": "Family Tree is a private medical practice authorised by INFARMED to prescribe medical cannabis to eligible patients in Portugal. Membership is free; consultations and medication are paid services. For prescription use only. Patients only. Not for sale to under-18s. The information on this site supports — but does not replace — the relationship between a patient and their physician.",
+    "sections": [
+      {
+        "title": "Practice",
+        "links": [
+          { "label": "About", "href": "/about" },
+          { "label": "Manifesto", "href": "/manifesto" },
+          { "label": "Clinicians", "href": "/about" },
+          { "label": "Visit the townhouse", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Membership",
+        "links": [
+          { "label": "Apply to join", "href": "/apply" },
+          { "label": "Member sign in", "href": "/login" },
+          { "label": "Drops", "href": "/products" },
+          { "label": "FAQ", "href": "/faq" }
+        ]
+      },
+      {
+        "title": "Journal & legal",
+        "links": [
+          { "label": "The Letter", "href": "/the-wire" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Terms of membership", "href": "/terms" },
+          { "label": "Regulatory", "href": "/regulatory" }
+        ]
+      }
+    ],
+    "socialLinks": [
+      { "platform": "instagram", "url": "https://instagram.com/familytree.pt" },
+      { "platform": "linkedin", "url": "https://linkedin.com/company/familytree-practice" }
+    ]
+  },
+  "settings": {
+    "wrapperClass": "template-family-tree",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Marcellus&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Petit+Formal+Script&family=JetBrains+Mono:wght@400;500&display=swap",
+    "sectionPadding": "2rem/3.5rem/5rem",
+    "glassEffect": "subtle",
+    "animationType": "fade",
+    "dividerStyle": "none",
+    "buttonHoverEffect": "lift"
+  }
+}

@@ -1,0 +1,1699 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Automatos — platform mocks (editorial direction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --serif: "Instrument Serif", "Times New Roman", serif;
+  --sans: "Geist", -apple-system, "Helvetica Neue", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Pitch — deep ink + bone + brass */
+  --bg: #0E1311;
+  --bg-2: #161C19;
+  --bg-3: #1C231F;
+  --fg: #EFE9DD;
+  --fg-2: #C9C2B4;
+  --muted: #8A857C;
+  --rule: rgba(239, 233, 221, 0.12);
+  --rule-strong: rgba(239, 233, 221, 0.28);
+  --accent: #C7B27A;
+  --accent-2: #5B7C68;
+  --signal-amber: #D9A24E;
+  --signal-green: #6B9974;
+  --signal-red:   #C66B5C;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #07090A;
+  color: var(--fg);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* film grain */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
+  opacity: 0.06;
+  mix-blend-mode: screen;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* ─── shared editorial elements ─────────────────────────────── */
+.eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+}
+.serif { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01em; }
+.serif em { font-style: italic; color: var(--muted); }
+.mono { font-family: var(--mono); }
+.rule { height: 1px; background: var(--rule); }
+
+/* ─── artboard wrapper ──────────────────────────────────────── */
+.artboard {
+  width: 1440px;
+  background: var(--bg);
+  color: var(--fg);
+  position: relative;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+/* ─── platform chrome shared ────────────────────────────────── */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 920px;
+}
+
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--rule);
+  padding: 18px 0;
+  display: flex; flex-direction: column;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.sb-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 18px 18px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 14px;
+}
+.sb-mark {
+  width: 24px; height: 24px;
+  border: 1px solid var(--fg);
+  position: relative;
+}
+.sb-mark::before, .sb-mark::after {
+  content: ""; position: absolute; background: var(--fg);
+}
+.sb-mark::before { top: 50%; left: 4px; right: 4px; height: 1.5px; transform: translateY(-50%); }
+.sb-mark::after  { left: 50%; top: 4px; bottom: 4px; width: 1.5px; transform: translateX(-50%); }
+.sb-brand b {
+  font-family: var(--serif); font-size: 20px; font-weight: 400;
+  letter-spacing: -0.02em; line-height: 1;
+}
+.sb-brand b em { color: var(--muted); }
+.sb-section {
+  padding: 14px 18px 6px;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; justify-content: space-between;
+}
+.sb-item {
+  display: grid; grid-template-columns: 18px 1fr auto;
+  align-items: center; gap: 10px;
+  padding: 8px 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  border-left: 2px solid transparent;
+}
+.sb-item:hover { color: var(--fg); background: rgba(239, 233, 221, 0.03); }
+.sb-item.active {
+  color: var(--fg);
+  background: rgba(199, 178, 122, 0.08);
+  border-left-color: var(--accent);
+}
+.sb-item .num { color: var(--muted); font-size: 10px; }
+.sb-icon {
+  width: 12px; height: 12px;
+  border: 1px solid currentColor;
+  display: inline-block;
+}
+.sb-icon.dot { border: 0; background: currentColor; border-radius: 50%; width: 6px; height: 6px; margin-left: 3px; }
+
+.sb-foot {
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid var(--rule);
+  font-size: 11px;
+  color: var(--muted);
+  display: grid; gap: 8px;
+}
+.sb-foot .live { color: var(--signal-green); display: inline-flex; align-items: center; gap: 6px; }
+.sb-foot .live::before { content: ""; width: 6px; height: 6px; background: var(--signal-green); border-radius: 50%; }
+
+/* topbar */
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+}
+.crumbs {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.crumbs b { color: var(--fg); font-weight: 500; }
+.crumbs span.sep { padding: 0 10px; color: var(--rule-strong); }
+.tb-right { display: flex; gap: 4px; }
+.tb-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg-2);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.tb-btn:hover { background: var(--bg-2); color: var(--fg); }
+.tb-btn.solid { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.tb-btn.solid:hover { background: var(--fg); border-color: var(--fg); }
+.tb-search {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  display: inline-flex; align-items: center; gap: 14px;
+  min-width: 360px;
+}
+.tb-search kbd {
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 6px; border: 1px solid var(--rule);
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* main column */
+.main { padding: 28px 32px 36px; }
+.page-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+.page-h1 {
+  font-family: var(--serif); font-size: 64px; line-height: 1;
+  letter-spacing: -0.022em; font-weight: 400;
+}
+.page-h1 em { font-style: italic; color: var(--muted); }
+.page-sub {
+  margin-top: 14px;
+  color: var(--fg-2);
+  max-width: 540px;
+  font-size: 15px;
+}
+.page-meta {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  display: grid; gap: 6px;
+  text-align: right;
+}
+.page-meta b { color: var(--fg); font-weight: 500; }
+
+/* shared card */
+.card {
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+.card-head {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.card-head b { color: var(--fg); font-weight: 500; }
+.card-head .num {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--rule);
+  color: var(--accent);
+  letter-spacing: 0.18em;
+}
+.card-body { padding: 18px 16px; }
+.card-foot {
+  padding: 10px 16px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; justify-content: space-between;
+}
+.card-foot a { color: var(--accent); }
+
+/* ─── DASHBOARD: bridge / command centre ────────────────────── */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+.dashboard .span2 { grid-column: span 2; }
+.dashboard .span3 { grid-column: span 3; }
+
+/* fleet status row (telemetry strip) */
+.fleet {
+  grid-column: span 3;
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+}
+.fleet .cell {
+  padding: 16px 18px;
+  border-right: 1px solid var(--rule);
+}
+.fleet .cell:last-child { border-right: 0; }
+.fleet .lbl {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; justify-content: space-between;
+}
+.fleet .val {
+  font-family: var(--serif); font-size: 36px; line-height: 1;
+  margin-top: 14px; letter-spacing: -0.015em;
+}
+.fleet .val sup {
+  font-family: var(--mono); font-size: 10px; vertical-align: super;
+  color: var(--muted); margin-left: 4px;
+}
+.fleet .delta {
+  margin-top: 8px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--signal-green);
+}
+.fleet .delta.warn { color: var(--signal-amber); }
+.fleet .delta.crit { color: var(--signal-red); }
+
+/* reports list */
+.reports {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  font-size: 13px;
+}
+.report {
+  padding: 14px 16px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.report:nth-child(2n) { border-right: 0; }
+.report:nth-last-child(-n+2) { border-bottom: 0; }
+.report .agent-mark {
+  width: 22px; height: 22px;
+  border: 1px solid var(--rule-strong);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 2px;
+}
+.report .by {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.report .by b { color: var(--fg); font-weight: 500; }
+.report .head {
+  font-family: var(--serif); font-size: 18px;
+  line-height: 1.2; letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+.report .head em { font-style: italic; color: var(--muted); }
+
+/* schedule */
+.sched-row {
+  display: grid;
+  grid-template-columns: 70px 1fr auto auto;
+  gap: 14px; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13px;
+}
+.sched-row:last-child { border-bottom: 0; }
+.sched-row .t {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.sched-row .body { color: var(--fg); }
+.sched-row .body em { font-style: italic; color: var(--muted); font-family: var(--serif); font-size: 14px; }
+.sched-row .agent {
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--rule);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sched-row .when {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+}
+.sched-day {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 14px;
+  margin-bottom: 4px;
+}
+.sched-day:first-child { padding-top: 0; }
+
+/* workload bars */
+.wload {
+  display: grid; gap: 0;
+}
+.wload-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 40px;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.wload-row:last-child { border-bottom: 0; }
+.wload-row .name { text-transform: uppercase; }
+.wload-row .bar {
+  height: 8px;
+  background: var(--bg-3);
+  position: relative;
+}
+.wload-row .bar i {
+  position: absolute; inset: 0 auto 0 0;
+  background: var(--fg-2);
+}
+.wload-row .bar i.hot { background: var(--accent); }
+.wload-row .n { text-align: right; color: var(--muted); }
+
+/* cost chart */
+.cost-summary {
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: end; gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.cost-num {
+  font-family: var(--serif); font-size: 56px; line-height: 1;
+  letter-spacing: -0.02em;
+}
+.cost-num small {
+  display: block;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.cost-spark {
+  height: 70px;
+  display: grid; grid-template-columns: repeat(30, 1fr);
+  align-items: end; gap: 2px;
+}
+.cost-spark i {
+  background: var(--fg-2); opacity: 0.4;
+  height: var(--h, 30%);
+}
+.cost-spark i.peak { background: var(--accent); opacity: 1; }
+.cost-list {
+  margin-top: 14px;
+  display: grid; gap: 6px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.cost-list .row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.cost-list .row:last-child { border-bottom: 0; }
+.cost-list .row .agent { text-transform: uppercase; color: var(--fg-2); }
+.cost-list .row .bar {
+  width: 80px; height: 6px; background: var(--bg-3); align-self: center;
+}
+.cost-list .row .bar i { display: block; height: 100%; background: var(--accent-2); }
+
+/* approval gates */
+.gate-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13px;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+.gate-row:last-child { border-bottom: 0; }
+.gate-row .icon {
+  width: 22px; height: 22px;
+  border: 1px solid var(--signal-amber);
+  color: var(--signal-amber);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10px;
+  margin-top: 2px;
+}
+.gate-row p {
+  line-height: 1.4;
+}
+.gate-row .meta {
+  margin-top: 6px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.gate-row .when {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--signal-amber);
+  white-space: nowrap;
+}
+
+/* perf bars (compact) */
+.perf {
+  display: grid; gap: 0;
+}
+.perf-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 30px;
+  gap: 10px; align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.perf-row:last-child { border-bottom: 0; }
+.perf-row .name { text-transform: uppercase; }
+.perf-row .bar { height: 4px; background: var(--bg-3); position: relative; }
+.perf-row .bar i { position: absolute; inset: 0 auto 0 0; background: var(--signal-green); }
+.perf-row .bar i.warn { background: var(--signal-amber); }
+.perf-row .bar i.crit { background: var(--signal-red); }
+.perf-row .n { text-align: right; color: var(--muted); }
+
+/* ─── CHAT artboard ─────────────────────────────────────────── */
+.chat-shell {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 880px;
+  background: var(--bg);
+}
+.chat-main {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  border-right: 1px solid var(--rule);
+}
+.chat-head {
+  padding: 22px 32px 18px;
+  border-bottom: 1px solid var(--rule);
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+}
+.chat-title {
+  font-family: var(--serif); font-size: 40px; line-height: 1;
+  letter-spacing: -0.02em;
+}
+.chat-title em { font-style: italic; color: var(--muted); }
+.chat-meta {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+  display: grid; gap: 4px;
+}
+.chat-meta b { color: var(--accent); font-weight: 500; }
+
+.chat-stream {
+  padding: 28px 32px 24px;
+  display: grid; gap: 28px;
+  align-content: start;
+  overflow: hidden;
+}
+.msg {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 18px;
+}
+.msg .gutter {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+  padding-top: 6px;
+  border-right: 1px solid var(--rule);
+  padding-right: 14px;
+}
+.msg .gutter b { color: var(--fg); font-weight: 500; display: block; }
+.msg .gutter time { color: var(--muted); }
+.msg .gutter.agent b { color: var(--accent); }
+.msg-body {
+  display: grid; gap: 10px;
+  align-content: start;
+}
+.msg-body p { font-size: 15px; line-height: 1.55; max-width: 720px; }
+.msg-body .lead {
+  font-family: var(--serif); font-size: 28px;
+  line-height: 1.2; letter-spacing: -0.015em;
+  max-width: 720px;
+}
+.msg-body .lead em { font-style: italic; color: var(--muted); }
+.msg-block {
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+  padding: 14px 16px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-width: 720px;
+}
+.msg-block .lbl {
+  display: block;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.msg-list {
+  font-family: var(--mono); font-size: 12px;
+  display: grid; gap: 4px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.msg-list .li {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.msg-list .li::before { content: "—"; color: var(--muted); }
+
+.chat-cta-row {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  max-width: 720px;
+}
+.chip {
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg-2);
+}
+.chip.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.chat-input {
+  border-top: 1px solid var(--rule);
+  background: var(--bg-2);
+  padding: 16px 32px 18px;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 12px;
+}
+.chat-input-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px; align-items: center;
+}
+.chat-agent-pick {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex; gap: 8px; align-items: center;
+}
+.chat-agent-pick::before {
+  content: ""; width: 6px; height: 6px; background: var(--accent);
+}
+.chat-field {
+  padding: 12px 0;
+  font-family: var(--serif); font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  font-style: italic;
+}
+.chat-send {
+  padding: 10px 18px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  display: inline-flex; gap: 10px; align-items: center;
+}
+.chat-tools {
+  display: flex; gap: 4px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+.chat-tool {
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  color: var(--muted);
+  display: inline-flex; gap: 8px; align-items: center;
+}
+.chat-tool.on { color: var(--accent); border-color: var(--accent); }
+
+/* chat right rail */
+.chat-rail { padding: 22px 24px; display: grid; gap: 24px; align-content: start; }
+.rail-section .eyebrow { margin-bottom: 12px; display: block; }
+.rail-card {
+  border: 1px solid var(--rule);
+  padding: 14px;
+  display: grid; gap: 8px;
+}
+.rail-card .top {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.rail-card .top b { color: var(--accent); font-weight: 500; }
+.rail-card h4 {
+  font-family: var(--serif); font-size: 22px;
+  line-height: 1.15; letter-spacing: -0.01em; font-weight: 400;
+}
+.rail-card h4 em { font-style: italic; color: var(--muted); }
+.rail-card .body { font-size: 13px; color: var(--fg-2); line-height: 1.45; }
+.rail-list { display: grid; gap: 8px; }
+.rail-list .item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13px;
+}
+.rail-list .item:last-child { border-bottom: 0; }
+.rail-list .item .agent-mark {
+  width: 24px; height: 24px;
+  border: 1px solid var(--rule-strong);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--accent);
+}
+.rail-list .item .meta {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.rail-list .item .now {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--signal-green);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ─── MARKETPLACE artboard ─────────────────────────────────── */
+.market-head {
+  display: grid; grid-template-columns: 1.2fr 1fr;
+  gap: 56px; align-items: end;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+.market-h1 {
+  font-family: var(--serif); font-size: 88px; line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+.market-h1 em { font-style: italic; color: var(--muted); }
+.market-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+}
+.market-stats .s {
+  padding: 14px;
+  border-right: 1px solid var(--rule);
+}
+.market-stats .s:last-child { border-right: 0; }
+.market-stats .s .lbl {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+}
+.market-stats .s .val {
+  font-family: var(--serif); font-size: 32px;
+  line-height: 1; margin-top: 8px;
+}
+
+.market-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.market-tabs {
+  display: flex; gap: 0;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  border: 1px solid var(--rule);
+  width: fit-content;
+}
+.market-tab {
+  padding: 10px 16px;
+  color: var(--muted);
+  border-right: 1px solid var(--rule);
+  display: inline-flex; gap: 12px; align-items: center;
+}
+.market-tab:last-child { border-right: 0; }
+.market-tab.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.market-tab .n { color: inherit; opacity: 0.7; }
+
+.market-search {
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  min-width: 280px;
+}
+
+/* featured plate */
+.featured {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--rule);
+  margin-bottom: 24px;
+  background: var(--bg-2);
+  min-height: 360px;
+}
+.featured-photo {
+  background:
+    linear-gradient(135deg, rgba(199, 178, 122, 0.0) 0%, rgba(199, 178, 122, 0.18) 100%),
+    url("https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=85&auto=format&fit=crop");
+  background-size: cover; background-position: center;
+  position: relative;
+  filter: contrast(0.95) saturate(0.85);
+  border-right: 1px solid var(--rule);
+}
+.featured-photo .stamp {
+  position: absolute; top: 14px; left: 14px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--fg);
+  padding: 6px 10px;
+  background: rgba(14, 19, 17, 0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+}
+.featured-content {
+  padding: 32px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 18px;
+}
+.featured-tag {
+  display: inline-flex; gap: 8px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+}
+.featured-tag .pill {
+  padding: 3px 8px; border: 1px solid var(--accent); color: var(--accent);
+}
+.featured-h {
+  font-family: var(--serif); font-size: 56px; line-height: 1;
+  letter-spacing: -0.02em;
+}
+.featured-h em { font-style: italic; color: var(--muted); }
+.featured-body { font-size: 15px; color: var(--fg-2); line-height: 1.55; max-width: 540px; }
+.featured-byline {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; gap: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+.featured-byline b { color: var(--fg); font-weight: 500; }
+.featured-byline .install {
+  margin-left: auto;
+  padding: 8px 14px;
+  background: var(--accent); color: var(--bg);
+  border: 1px solid var(--accent);
+  letter-spacing: 0.16em;
+}
+
+/* agent grid */
+.agrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rule);
+}
+.agrid-cell {
+  padding: 22px 22px 18px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 12px;
+  background: var(--bg);
+}
+.agrid-cell:nth-child(4n) { border-right: 0; }
+.agrid-cell:nth-last-child(-n+4) { border-bottom: 0; }
+.agrid-top {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.agrid-top .num { color: var(--accent); }
+.agrid-mark {
+  width: 36px; height: 36px;
+  border: 1px solid var(--rule-strong);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 500; font-size: 12px;
+  color: var(--accent);
+}
+.agrid-h {
+  font-family: var(--serif); font-size: 24px; line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.agrid-h em { font-style: italic; color: var(--muted); }
+.agrid-body { font-size: 13px; color: var(--fg-2); line-height: 1.45; }
+.agrid-foot {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+}
+.agrid-foot b { color: var(--fg); font-weight: 500; }
+.agrid-foot .install {
+  text-align: right;
+  color: var(--accent);
+}
+
+/* ─── CANVAS HOST ──────────────────────────────────────────── */
+#dc-root { width: 100vw; min-height: 100vh; }
+</style>
+</head>
+<body>
+
+<div id="dc-root"></div>
+
+<!-- Dashboard artboard -->
+<template id="art-dashboard">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sb-brand">
+          <span class="sb-mark"></span>
+          <b>Automatos<em>·ai</em></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item active" href="#"><i class="sb-icon"></i><span>Command&nbsp;centre</span><span class="num">01</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Auto · chat</span><span class="num">02</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Missions</span><span class="num">03</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Playbooks</span><span class="num">04</span></a>
+
+        <div class="sb-section"><span>Workforce</span><span>02</span></div>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Agents</span><span class="num">20</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Skills</span><span class="num">71</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Tools</span><span class="num">22</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Knowledge</span><span class="num">14</span></a>
+
+        <div class="sb-section"><span>Operations</span><span>03</span></div>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Marketplace</span><span class="num">↗</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Analytics</span><span class="num">05</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Audit&nbsp;log</span><span class="num">06</span></a>
+
+        <div class="sb-foot">
+          <span class="live">All systems · operational</span>
+          <span>v1.36.04 · build 2026·05·09</span>
+        </div>
+      </aside>
+
+      <div>
+        <div class="topbar">
+          <div class="crumbs">
+            <span>Workspace</span><span class="sep">/</span>
+            <span>Operations</span><span class="sep">/</span>
+            <b>Command centre</b>
+          </div>
+          <div class="tb-search">
+            <span>Search the workspace…</span><kbd>⌘ K</kbd>
+          </div>
+          <div class="tb-right">
+            <a class="tb-btn" href="#">Filters · 3</a>
+            <a class="tb-btn" href="#">Last 24h</a>
+            <a class="tb-btn solid" href="#">New mission →</a>
+          </div>
+        </div>
+
+        <div class="main">
+          <div class="page-head">
+            <div>
+              <div class="eyebrow">Index · 01 — The bridge</div>
+              <h1 class="page-h1" style="margin-top:14px;">Command <em>centre.</em></h1>
+              <p class="page-sub">Your full workforce at a glance — live agent status, scheduled routines, agent reports, and what needs attention. Auto surfaces what matters first.</p>
+            </div>
+            <div class="page-meta">
+              <div><b>09 May 2026</b> · 14:02 GMT</div>
+              <div>Workspace · <b>My Workspace</b></div>
+              <div>Watch · <b>22 agents</b> · 19 active</div>
+            </div>
+          </div>
+
+          <!-- fleet status (telemetry strip) -->
+          <div class="dashboard">
+            <div class="fleet">
+              <div class="cell">
+                <div class="lbl"><span>F.01 — Active</span><span>↗</span></div>
+                <div class="val">19<sup>/&nbsp;22</sup></div>
+                <div class="delta">+2 since 06:00</div>
+              </div>
+              <div class="cell">
+                <div class="lbl"><span>F.02 — Missions</span><span>↗</span></div>
+                <div class="val">11<sup>now</sup></div>
+                <div class="delta">8 scheduled</div>
+              </div>
+              <div class="cell">
+                <div class="lbl"><span>F.03 — Approvals</span><span>↗</span></div>
+                <div class="val">5<sup>pending</sup></div>
+                <div class="delta warn">avg 10h&nbsp;52m</div>
+              </div>
+              <div class="cell">
+                <div class="lbl"><span>F.04 — Spend (24h)</span><span>↗</span></div>
+                <div class="val">$71.40</div>
+                <div class="delta">−4.2% vs 7d</div>
+              </div>
+              <div class="cell">
+                <div class="lbl"><span>F.05 — Reports</span><span>↗</span></div>
+                <div class="val">11<sup>/&nbsp;20</sup></div>
+                <div class="delta">last 03:14</div>
+              </div>
+              <div class="cell">
+                <div class="lbl"><span>F.06 — Incidents</span><span>↗</span></div>
+                <div class="val">0</div>
+                <div class="delta">all systems · op.</div>
+              </div>
+            </div>
+
+            <!-- agent reports (span 2) -->
+            <div class="card span2">
+              <div class="card-head">
+                <span class="num">/01</span>
+                <span><b>Today's filings</b> — agent reports</span>
+                <span>11&nbsp;/&nbsp;20 filed</span>
+              </div>
+              <div class="card-body" style="padding:0;">
+                <div class="reports">
+                  <div class="report">
+                    <span class="agent-mark">CO</span>
+                    <div>
+                      <div class="by">By <b>COMMS</b> · 13:48 · Mission&nbsp;042</div>
+                      <div class="head">Drafted three replies; <em>flagged one</em> for legal review.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="agent-mark">QA</span>
+                    <div>
+                      <div class="by">By <b>QA·Engineer</b> · 12:11 · Mission&nbsp;038</div>
+                      <div class="head">Nightly suite · <em>1 regression</em> in checkout flow.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="agent-mark">SE</span>
+                    <div>
+                      <div class="by">By <b>SENTINEL</b> · 11:02 · Watch&nbsp;routine</div>
+                      <div class="head">No new CVEs. <em>Two dependencies</em> due rotation.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="agent-mark">SC</span>
+                    <div>
+                      <div class="by">By <b>SCRIBE</b> · 09:46 · Mission&nbsp;040</div>
+                      <div class="head">Field notes filed; <em>three drafts</em> awaiting review.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="agent-mark">SO</span>
+                    <div>
+                      <div class="by">By <b>SCOUT</b> · 09:22 · Mission&nbsp;041</div>
+                      <div class="head">Three competitors moved on pricing — see brief.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="agent-mark">AT</span>
+                    <div>
+                      <div class="by">By <b>ATLAS</b> · 08:14 · Daily</div>
+                      <div class="head">Workspace tidied; <em>14 docs</em> re-indexed overnight.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>Filed today · 09 May</span>
+                <a href="#">Open all reports →</a>
+              </div>
+            </div>
+
+            <!-- schedule -->
+            <div class="card">
+              <div class="card-head">
+                <span class="num">/02</span>
+                <span><b>Schedule</b> — next 48h</span>
+                <span>Sat&nbsp;09</span>
+              </div>
+              <div class="card-body">
+                <div class="sched-day">Today · 09 May</div>
+                <div class="sched-row">
+                  <span class="t">22:00</span>
+                  <span class="body"><em>Watchtower</em> routine</span>
+                  <span class="agent">SENTINEL</span>
+                  <span class="when">Tonight</span>
+                </div>
+                <div class="sched-row">
+                  <span class="t">23:30</span>
+                  <span class="body"><em>Daily</em> tidy &amp; index</span>
+                  <span class="agent">ATLAS</span>
+                  <span class="when">Tonight</span>
+                </div>
+                <div class="sched-day">Tomorrow · 10 May</div>
+                <div class="sched-row">
+                  <span class="t">03:00</span>
+                  <span class="body"><em>Nightly</em> test pipeline</span>
+                  <span class="agent">QA</span>
+                  <span class="when">Tomorrow</span>
+                </div>
+                <div class="sched-row">
+                  <span class="t">07:00</span>
+                  <span class="body">IG carousel — <em>fact post</em></span>
+                  <span class="agent">SOCIAL</span>
+                  <span class="when">Tomorrow</span>
+                </div>
+                <div class="sched-row">
+                  <span class="t">07:15</span>
+                  <span class="body">X carousel — <em>fact post</em></span>
+                  <span class="agent">SOCIAL</span>
+                  <span class="when">Tomorrow</span>
+                </div>
+                <div class="sched-row">
+                  <span class="t">09:00</span>
+                  <span class="body">Daily social — <em>analytics</em></span>
+                  <span class="agent">ANALYST</span>
+                  <span class="when">Tomorrow</span>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>6 routines · 0 paused</span>
+                <a href="#">Open scheduler →</a>
+              </div>
+            </div>
+
+            <!-- workload -->
+            <div class="card">
+              <div class="card-head">
+                <span class="num">/03</span>
+                <span><b>Workload</b> — by assignee</span>
+                <span>108 max</span>
+              </div>
+              <div class="card-body">
+                <div class="wload">
+                  <div class="wload-row"><span class="name">QA·ENG</span><span class="bar"><i class="hot" style="width:100%"></i></span><span class="n">108</span></div>
+                  <div class="wload-row"><span class="name">ORACLE</span><span class="bar"><i style="width:79%"></i></span><span class="n">85</span></div>
+                  <div class="wload-row"><span class="name">SOCIAL</span><span class="bar"><i style="width:73%"></i></span><span class="n">79</span></div>
+                  <div class="wload-row"><span class="name">ATLAS</span><span class="bar"><i style="width:58%"></i></span><span class="n">63</span></div>
+                  <div class="wload-row"><span class="name">PULSE</span><span class="bar"><i style="width:25%"></i></span><span class="n">27</span></div>
+                  <div class="wload-row"><span class="name">QUILL</span><span class="bar"><i style="width:24%"></i></span><span class="n">26</span></div>
+                  <div class="wload-row"><span class="name">FIXER</span><span class="bar"><i style="width:15%"></i></span><span class="n">16</span></div>
+                  <div class="wload-row"><span class="name">AUTO</span><span class="bar"><i style="width:13%"></i></span><span class="n">14</span></div>
+                  <div class="wload-row"><span class="name">RALLY</span><span class="bar"><i style="width:11%"></i></span><span class="n">12</span></div>
+                  <div class="wload-row"><span class="name">COMMS</span><span class="bar"><i style="width:10%"></i></span><span class="n">11</span></div>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>QA·ENG · saturated</span>
+                <a href="#">Rebalance →</a>
+              </div>
+            </div>
+
+            <!-- cost -->
+            <div class="card">
+              <div class="card-head">
+                <span class="num">/04</span>
+                <span><b>Spend</b> — last 30 days</span>
+                <span>OPS</span>
+              </div>
+              <div class="card-body">
+                <div class="cost-summary">
+                  <div class="cost-num">$476.16<small>30-day total</small></div>
+                  <div class="cost-spark">
+                    <i style="--h:35%"></i><i style="--h:42%"></i><i style="--h:30%"></i>
+                    <i style="--h:55%"></i><i style="--h:48%"></i><i style="--h:62%"></i>
+                    <i style="--h:38%"></i><i style="--h:45%"></i><i style="--h:50%"></i>
+                    <i style="--h:40%"></i><i style="--h:36%"></i><i style="--h:48%"></i>
+                    <i style="--h:58%"></i><i style="--h:42%"></i><i style="--h:51%"></i>
+                    <i style="--h:60%"></i><i style="--h:65%"></i><i style="--h:58%"></i>
+                    <i style="--h:70%"></i><i style="--h:55%"></i><i style="--h:62%"></i>
+                    <i style="--h:74%"></i><i style="--h:80%"></i><i style="--h:72%"></i>
+                    <i style="--h:78%" class="peak"></i><i style="--h:85%" class="peak"></i><i style="--h:90%" class="peak"></i>
+                    <i style="--h:96%" class="peak"></i><i style="--h:100%" class="peak"></i><i style="--h:88%" class="peak"></i>
+                  </div>
+                </div>
+                <div class="cost-list">
+                  <div class="row"><span class="agent">AUTO</span><span class="bar"><i style="width:100%"></i></span><span>$80.44</span></div>
+                  <div class="row"><span class="agent">ANALYST</span><span class="bar"><i style="width:96%"></i></span><span>$77.15</span></div>
+                  <div class="row"><span class="agent">ATLAS</span><span class="bar"><i style="width:91%"></i></span><span>$73.01</span></div>
+                  <div class="row"><span class="agent">SCRIBE</span><span class="bar"><i style="width:62%"></i></span><span>$49.80</span></div>
+                  <div class="row"><span class="agent">SCOUT</span><span class="bar"><i style="width:48%"></i></span><span>$38.62</span></div>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>Avg per req · $0.026</span>
+                <a href="#">Cost analytics →</a>
+              </div>
+            </div>
+
+            <!-- approvals -->
+            <div class="card">
+              <div class="card-head">
+                <span class="num">/05</span>
+                <span><b>Approvals</b> — gates pending</span>
+                <span>5 awaiting</span>
+              </div>
+              <div class="card-body">
+                <div class="gate-row">
+                  <span class="icon">!</span>
+                  <div>
+                    <p>Remediate the org health findings — enforce the new default governance blueprint.</p>
+                    <div class="meta">Mission 042 · Sentinel · Owner: Gerard</div>
+                  </div>
+                  <span class="when">20h</span>
+                </div>
+                <div class="gate-row">
+                  <span class="icon">!</span>
+                  <div>
+                    <p>Overnight ship watch — monitor workspace health, queue depth, active agents.</p>
+                    <div class="meta">Mission 044 · Watchtower · Owner: G.K.</div>
+                  </div>
+                  <span class="when">20h</span>
+                </div>
+                <div class="gate-row">
+                  <span class="icon">!</span>
+                  <div>
+                    <p>Review VECTOR weekly memo — content cadence high, audience reach embryonic.</p>
+                    <div class="meta">Mission 040 · Vector · Owner: Auto</div>
+                  </div>
+                  <span class="when">4h</span>
+                </div>
+                <div class="gate-row">
+                  <span class="icon">!</span>
+                  <div>
+                    <p>Long-form post — <em>The Future of AI-Powered Automation: Trends &amp; Plays.</em></p>
+                    <div class="meta">Mission 045 · Quill · Owner: G.K.</div>
+                  </div>
+                  <span class="when">14d</span>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>avg gate · 10h&nbsp;52m</span>
+                <a href="#">Open queue →</a>
+              </div>
+            </div>
+
+            <!-- performance -->
+            <div class="card">
+              <div class="card-head">
+                <span class="num">/06</span>
+                <span><b>Performance</b> — success rate (7d)</span>
+                <span>17 active</span>
+              </div>
+              <div class="card-body">
+                <div class="perf">
+                  <div class="perf-row"><span class="name">VECTOR</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                  <div class="perf-row"><span class="name">RALLY</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                  <div class="perf-row"><span class="name">FIXER</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                  <div class="perf-row"><span class="name">EDITOR</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                  <div class="perf-row"><span class="name">SCOUT</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                  <div class="perf-row"><span class="name">QA·ENG</span><span class="bar"><i style="width:96%"></i></span><span class="n">96</span></div>
+                  <div class="perf-row"><span class="name">QUILL</span><span class="bar"><i class="warn" style="width:92%"></i></span><span class="n">92</span></div>
+                  <div class="perf-row"><span class="name">COMMS</span><span class="bar"><i class="warn" style="width:90%"></i></span><span class="n">90</span></div>
+                  <div class="perf-row"><span class="name">SCRIBE</span><span class="bar"><i class="warn" style="width:87%"></i></span><span class="n">87</span></div>
+                  <div class="perf-row"><span class="name">GROWTH</span><span class="bar"><i class="crit" style="width:50%"></i></span><span class="n">50</span></div>
+                  <div class="perf-row"><span class="name">SOCIAL</span><span class="bar"><i class="crit" style="width:45%"></i></span><span class="n">45</span></div>
+                </div>
+              </div>
+              <div class="card-foot">
+                <span>2 needing attention</span>
+                <a href="#">Tune →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Chat artboard -->
+<template id="art-chat">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sb-brand">
+          <span class="sb-mark"></span>
+          <b>Automatos<em>·ai</em></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Command&nbsp;centre</span><span class="num">01</span></a>
+        <a class="sb-item active" href="#"><i class="sb-icon"></i><span>Auto · chat</span><span class="num">02</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Missions</span><span class="num">03</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Playbooks</span><span class="num">04</span></a>
+
+        <div class="sb-section"><span>Recent · chats</span><span>22</span></div>
+        <a class="sb-item" href="#"><span></span><span>OS operating model · Auto</span><span class="num">12m</span></a>
+        <a class="sb-item" href="#"><span></span><span>Skill governance review</span><span class="num">2h</span></a>
+        <a class="sb-item" href="#"><span></span><span>Shopify pack onboarding</span><span class="num">5h</span></a>
+        <a class="sb-item" href="#"><span></span><span>Spike — playbook fan-out</span><span class="num">1d</span></a>
+        <a class="sb-item" href="#"><span></span><span>Sentinel false-positive triage</span><span class="num">2d</span></a>
+
+        <div class="sb-foot">
+          <span class="live">Auto · listening</span>
+          <span>Tokens used (7d) · 38,452</span>
+        </div>
+      </aside>
+
+      <div class="chat-shell">
+        <div class="chat-main">
+          <div class="chat-head">
+            <div>
+              <div class="eyebrow">Index · 02 — A conversation with</div>
+              <div class="chat-title" style="margin-top:8px;">Auto, the <em>orchestrator.</em></div>
+            </div>
+            <div class="chat-meta">
+              <div>Session · <b>OS operating model</b></div>
+              <div>Routed · <b>Auto → Tiktok-automation</b></div>
+              <div>Started · <b>13:50 · 09 May</b></div>
+            </div>
+          </div>
+
+          <div class="chat-stream">
+            <!-- user -->
+            <div class="msg">
+              <div class="gutter">
+                <b>You</b>
+                <time>13:50</time>
+              </div>
+              <div class="msg-body">
+                <p class="lead">
+                  Auto — does the operating model still hold for skill <em>governance</em>
+                  if a manager edits a workspace skill before the team lead has signed off?
+                </p>
+              </div>
+            </div>
+
+            <!-- agent -->
+            <div class="msg">
+              <div class="gutter agent">
+                <b>AUTO</b>
+                <time>13:50</time>
+              </div>
+              <div class="msg-body">
+                <p>Routed via <b>tiktok-automation</b> — but the answer's the same. Run the
+                  smoke test from a fresh chat. If governance is wired in, you should
+                  hear me mention things like:</p>
+
+                <div class="msg-list">
+                  <div class="li">Auto remains workspace orchestrator</div>
+                  <div class="li">Team leads start advisor-only</div>
+                  <div class="li">Managers drive execution but not structural governance</div>
+                  <div class="li">Strong role skills are the backbone</div>
+                  <div class="li">Smaller playbook steps beat giant prompts</div>
+                  <div class="li">Reports create change requests</div>
+                  <div class="li">Skill / tool edits need governance</div>
+                  <div class="li">Marketplace skills fork on workspace edit</div>
+                  <div class="li">Hierarchy permissions before manager autonomy</div>
+                </div>
+
+                <p>If I don't mention those without being reminded, the modified skill is
+                  either not attached to me — or not being injected at initialisation.</p>
+
+                <div class="msg-block"><span class="lbl">Best&nbsp;test ↓</span>Open a fresh chat → ask me:
+"What is the Automatos OS operating model for team leads, skills, governance?"</div>
+
+                <div class="chat-cta-row">
+                  <span class="chip on">Open new chat</span>
+                  <span class="chip">Inspect skill attachments</span>
+                  <span class="chip">View governance log</span>
+                  <span class="chip">Promote to mission</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input">
+            <div class="chat-input-row">
+              <span class="chat-agent-pick">Auto · routed</span>
+              <span class="chat-field">Type a message — Auto routes it…</span>
+              <span class="chat-send">Send <span>→</span></span>
+            </div>
+            <div class="chat-tools">
+              <span class="chat-tool on">Code</span>
+              <span class="chat-tool">Plan</span>
+              <span class="chat-tool">Mission</span>
+              <span class="chat-tool">Scribe</span>
+              <span class="chat-tool">Canvas</span>
+              <span class="chat-tool">+ Tool</span>
+              <span class="chat-tool" style="margin-left:auto;">Tokens · 38,452</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="chat-rail">
+          <div class="rail-section">
+            <span class="eyebrow">/.01 — Active mission</span>
+            <div class="rail-card">
+              <div class="top"><span>Mission 042</span><b>Routing</b></div>
+              <h4>Skill governance — <em>fresh-chat smoke test.</em></h4>
+              <div class="body">Verify the modified workspace skill is loaded at chat init. 4 checks; 1 pending.</div>
+            </div>
+          </div>
+
+          <div class="rail-section">
+            <span class="eyebrow">/.02 — On the team</span>
+            <div class="rail-list">
+              <div class="item">
+                <span class="agent-mark">AT</span>
+                <span><b>ATLAS</b><div class="meta">workspace orchestrator</div></span>
+                <span class="now">on</span>
+              </div>
+              <div class="item">
+                <span class="agent-mark">SC</span>
+                <span><b>SCRIBE</b><div class="meta">field notes · drafts</div></span>
+                <span class="now">on</span>
+              </div>
+              <div class="item">
+                <span class="agent-mark">SE</span>
+                <span><b>SENTINEL</b><div class="meta">security · watch</div></span>
+                <span class="now">on</span>
+              </div>
+              <div class="item">
+                <span class="agent-mark">QA</span>
+                <span><b>QA·ENG</b><div class="meta">test · regression</div></span>
+                <span class="now">on</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rail-section">
+            <span class="eyebrow">/.03 — Suggested · next</span>
+            <div class="rail-list">
+              <div class="item">
+                <span class="agent-mark" style="color:var(--signal-amber);border-color:var(--signal-amber);">!</span>
+                <span><b>Open fresh chat</b><div class="meta">smoke-test the skill</div></span>
+                <span class="now">→</span>
+              </div>
+              <div class="item">
+                <span class="agent-mark" style="color:var(--accent-2);border-color:var(--accent-2);">+</span>
+                <span><b>Promote to mission</b><div class="meta">repeatable governance check</div></span>
+                <span class="now">→</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Marketplace artboard -->
+<template id="art-market">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sb-brand">
+          <span class="sb-mark"></span>
+          <b>Automatos<em>·ai</em></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Command&nbsp;centre</span><span class="num">01</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Auto · chat</span><span class="num">02</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Missions</span><span class="num">03</span></a>
+
+        <div class="sb-section"><span>Workforce</span><span>02</span></div>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Agents</span><span class="num">20</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Skills</span><span class="num">71</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Tools</span><span class="num">22</span></a>
+
+        <div class="sb-section"><span>Operations</span><span>03</span></div>
+        <a class="sb-item active" href="#"><i class="sb-icon"></i><span>Marketplace</span><span class="num">↗</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Analytics</span><span class="num">05</span></a>
+        <a class="sb-item" href="#"><i class="sb-icon"></i><span>Audit&nbsp;log</span><span class="num">06</span></a>
+
+        <div class="sb-foot">
+          <span class="live">22 connected · 1,000+ available</span>
+          <span>67 installed · last sync · 02m</span>
+        </div>
+      </aside>
+
+      <div>
+        <div class="topbar">
+          <div class="crumbs">
+            <span>Workspace</span><span class="sep">/</span>
+            <span>Operations</span><span class="sep">/</span>
+            <b>Marketplace</b>
+          </div>
+          <div class="tb-search">
+            <span>Search agents, skills, playbooks, tools…</span><kbd>⌘ K</kbd>
+          </div>
+          <div class="tb-right">
+            <a class="tb-btn" href="#">Sync</a>
+            <a class="tb-btn" href="#">Filters · 2</a>
+            <a class="tb-btn solid" href="#">Submit listing →</a>
+          </div>
+        </div>
+
+        <div class="main">
+          <div class="market-head">
+            <div>
+              <div class="eyebrow">Index · 03 — The wire</div>
+              <h1 class="market-h1" style="margin-top:18px;">Community<br /><em>marketplace.</em></h1>
+              <p class="page-sub" style="margin-top:18px;">Pre-built agents, packaged playbooks, reusable skills, tool integrations. Drop them into your workspace; they show up tomorrow morning ready to file.</p>
+            </div>
+            <div class="market-stats">
+              <div class="s"><div class="lbl">Items</div><div class="val">1,000+</div></div>
+              <div class="s"><div class="lbl">Installed</div><div class="val">67</div></div>
+              <div class="s"><div class="lbl">Connected</div><div class="val">22</div></div>
+            </div>
+          </div>
+
+          <div class="market-toolbar">
+            <div class="market-tabs">
+              <a class="market-tab on" href="#"><span>All</span><span class="n">1,000+</span></a>
+              <a class="market-tab" href="#"><span>Agents</span><span class="n">100+</span></a>
+              <a class="market-tab" href="#"><span>Playbooks</span><span class="n">42</span></a>
+              <a class="market-tab" href="#"><span>Skills</span><span class="n">150+</span></a>
+              <a class="market-tab" href="#"><span>Tools</span><span class="n">1,000+</span></a>
+              <a class="market-tab" href="#"><span>LLMs</span><span class="n">300+</span></a>
+            </div>
+            <div class="market-search">Filter listings…</div>
+          </div>
+
+          <!-- Featured plate -->
+          <div class="featured">
+            <div class="featured-photo"><span class="stamp">Featured · 09 May</span></div>
+            <div class="featured-content">
+              <div class="featured-tag">
+                <span class="pill">Workspace pack</span>
+                <span>Support · agents</span>
+              </div>
+              <h2 class="featured-h">Shopify <em>support pack.</em></h2>
+              <p class="featured-body">A customer-support specialist for Shopify stores. Answers shopper questions, looks up orders, explains policies, escalates to humans when needed. Ships with 12 agents, 32 skills, and the dashboards to run them.</p>
+              <div class="featured-byline">
+                <span>By <b>seed_shopify_agents</b></span>
+                <span>v1.0.0</span>
+                <span>4 installs · this week</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- agent grid -->
+          <div class="agrid">
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.01 · Agent</span><span class="num">v1.0</span></div>
+              <span class="agrid-mark">SS</span>
+              <div>
+                <h3 class="agrid-h">Shopify <em>support agent.</em></h3>
+                <p class="agrid-body">Answers shopper questions, looks up orders, explains policies, escalates when needed.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>4</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.02 · Playbook</span><span class="num">v2.1</span></div>
+              <span class="agrid-mark">DW</span>
+              <div>
+                <h3 class="agrid-h">Document <em>workflow.</em></h3>
+                <p class="agrid-body">Routes, organises and manages docs across your workspace. Tagging, versioning, archive.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>5</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.03 · Agent</span><span class="num">v1.2</span></div>
+              <span class="agrid-mark">SE</span>
+              <div>
+                <h3 class="agrid-h">SEO content <em>writer.</em></h3>
+                <p class="agrid-body">Long-tail keyword writer that produces blog posts targeting your roadmap topics.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.04 · Agent</span><span class="num">v1.0</span></div>
+              <span class="agrid-mark">RP</span>
+              <div>
+                <h3 class="agrid-h">Recruitment <em>pipeline.</em></h3>
+                <p class="agrid-body">Run manually when you need to fill a role fast. Sourcing, sifting, scheduling, scorecards.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.05 · Agent</span><span class="num">v1.4</span></div>
+              <span class="agrid-mark">PR</span>
+              <div>
+                <h3 class="agrid-h">GitHub PR <em>security.</em></h3>
+                <p class="agrid-body">Triggered on every new pull request. Sentinel posture monitoring scans diffs for risk.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.06 · Playbook</span><span class="num">v1.0</span></div>
+              <span class="agrid-mark">HR</span>
+              <div>
+                <h3 class="agrid-h">New hire <em>onboarding.</em></h3>
+                <p class="agrid-body">Triggered when a new employee is added in BambooHR. HR welcome, accounts, schedule.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.07 · Agent</span><span class="num">v0.9</span></div>
+              <span class="agrid-mark">EX</span>
+              <div>
+                <h3 class="agrid-h">Expense <em>tracker.</em></h3>
+                <p class="agrid-body">Scans Gmail for receipts and invoices, extracts amounts, categorises, files monthly.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+
+            <div class="agrid-cell">
+              <div class="agrid-top"><span>/.08 · Agent</span><span class="num">v1.1</span></div>
+              <span class="agrid-mark">MC</span>
+              <div>
+                <h3 class="agrid-h">Meeting <em>coordinator.</em></h3>
+                <p class="agrid-body">Eliminates scheduling overhead. Manages Google Calendar across your team and guests.</p>
+              </div>
+              <div class="agrid-foot">
+                <span><b>3</b> installs</span>
+                <a class="install" href="#">Install →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Mount script -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const Tpl = ({ id }) => {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const tpl = document.getElementById(id);
+    if (tpl && ref.current) {
+      ref.current.innerHTML = "";
+      ref.current.appendChild(tpl.content.cloneNode(true));
+    }
+  }, [id]);
+  return <div ref={ref} />;
+};
+
+function App() {
+  return (
+    <DesignCanvas title="Automatos · platform mocks" subtitle="Editorial / Pitch — deep ink, bone, brass">
+      <DCSection id="platform" title="Platform mocks — editorial direction">
+        <DCArtboard id="dashboard" label="01 — Command centre" width={1440} height={920}>
+          <Tpl id="art-dashboard" />
+        </DCArtboard>
+        <DCArtboard id="chat" label="02 — Auto · chat" width={1440} height={920}>
+          <Tpl id="art-chat" />
+        </DCArtboard>
+        <DCArtboard id="market" label="03 — Marketplace" width={1440} height={920}>
+          <Tpl id="art-market" />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("dc-root")).render(<App />);
+</script>
+
+</body>
+</html>

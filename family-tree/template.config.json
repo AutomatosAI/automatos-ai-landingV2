@@ -1,0 +1,33 @@
+{
+  "id": "family-tree",
+  "slug": "family-tree",
+  "name": "Family Tree — Members' Practice",
+  "description": "A medical-cannabis members' practice template. Heritage members'-club register — embossed crest, evergreen and brass, member-named strains, founder journals, patient artist takeovers. For practices that want patients to feel like kin, not customers. Lisbon-set, INFARMED-aligned, easily re-geographied.",
+  "category": "membership",
+  "tags": [
+    "medical",
+    "membership",
+    "community",
+    "heritage",
+    "members-club",
+    "premium",
+    "portugal",
+    "infarmed",
+    "lifestyle",
+    "patient-first",
+    "drops",
+    "embossed"
+  ],
+  "features": [
+    "Members-club visual register — embossed Marcellus crest, evergreen + brass + bone, no medical-green clichés",
+    "DropsShowcase tabs — member-named strains, each with a member story and a release date",
+    "Patient-artist quarterly takeover gallery — community feels lived-in, not stock",
+    "Founder & clinician journals (BlogFeatured) — long-form, monthly, member-bylined",
+    "Embossed membership-card crest in HeroSplit — wax-seal energy without the cliché",
+    "Marcellus display + DM Sans body + Petit Formal Script accent — engraved-roman type system",
+    "Dark evergreen anchors (Practice + Newsletter + Footer) on bone body — calm light/dark rhythm",
+    "WCAG 2.2 AA contrast pairs verified · prefers-reduced-motion honoured · focus-visible brass ring"
+  ],
+  "author": "BudStacks Platform",
+  "version": "1.0.0"
+}

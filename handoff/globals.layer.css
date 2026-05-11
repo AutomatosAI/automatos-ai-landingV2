@@ -1,0 +1,83 @@
+/* ===========================================================================
+   BUDSTACKS ADMIN — globals.layer.css
+   Paste below your @tailwind base / components / utilities directives.
+   =========================================================================== */
+
+/* Required: load Cormorant Garamond, Inter, JetBrains Mono in the root layout
+   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+*/
+
+@layer base {
+  :root {
+    --bs-green-ring:   rgba(82,217,122,0.30);
+    --bs-green-tint-5: rgba(82,217,122,0.05);
+    --bs-gold-ring:    rgba(231,219,184,0.30);
+    --bs-gold-tint:    rgba(231,219,184,0.14);
+    --bs-danger-ring:  rgba(248,113,113,0.32);
+    --bs-warn-ring:    rgba(245,194,107,0.32);
+    --bs-info-ring:    rgba(125,183,255,0.30);
+  }
+  body { @apply bg-bs-bg text-bs-fg-body font-sans antialiased; }
+  h1, h2, h3 { @apply font-display text-bs-fg; font-weight: 500; }
+}
+
+@layer components {
+  /* ===== Page header ===== */
+  .bs-eyebrow              { @apply inline-flex items-center gap-2 font-mono text-mono-eyebrow uppercase text-bs-gold border border-bs-gold/30 bg-bs-gold/[0.14] px-3.5 py-1.5 rounded-bs-pill; }
+  .bs-page-title           { @apply font-display text-display-xl text-bs-fg; font-weight: 500; }
+  .bs-page-subtitle        { @apply text-bs-fg-body text-[15px] max-w-[640px]; }
+  .bs-page-header-centered { @apply text-center px-6 pt-14 pb-10; }
+  .bs-page-header-compact  { @apply flex items-end justify-between pt-7 pb-5 mb-6 border-b border-bs-border-100; }
+
+  /* ===== Buttons ===== */
+  .bs-btn        { @apply inline-flex items-center gap-2 h-10 px-[22px] rounded-bs-pill font-sans font-medium text-sm transition border whitespace-nowrap; }
+  .bs-btn-sm     { @apply h-8 px-[14px] text-[13px]; }
+  .bs-btn-green  { @apply bg-bs-green-deep text-[#07090A] border-transparent shadow-bs-glow hover:bg-bs-green hover:shadow-bs-glow-hover; }
+  .bs-btn-ghost  { @apply bg-transparent text-bs-fg border-bs-step-300 hover:bg-bs-card hover:border-bs-fg-muted; }
+  .bs-btn-text   { @apply bg-transparent text-bs-fg-body border-transparent hover:text-bs-fg px-2 h-8; }
+  .bs-btn-danger { @apply bg-transparent text-bs-danger border-bs-danger/30 hover:bg-bs-danger/10 hover:border-bs-danger; }
+
+  /* ===== Cards ===== */
+  .bs-card       { @apply bg-bs-card border border-bs-border rounded-bs-lg shadow-bs-card transition hover:shadow-bs-card-hover; }
+  .bs-card-pad   { @apply p-6; }
+  .bs-card-head  { @apply flex items-start gap-3.5 mb-[18px]; }
+  .bs-card-icon  { @apply w-9 h-9 flex items-center justify-center rounded-[10px] bg-bs-green/10 text-bs-green border border-bs-green/[0.18] flex-shrink-0; }
+  .bs-card-title { @apply font-display text-display-md text-bs-fg; font-weight: 500; }
+  .bs-card-desc  { @apply text-bs-fg-muted text-[13.5px]; }
+
+  /* ===== Stat ===== */
+  .bs-stat       { @apply bg-bs-card border border-bs-border rounded-bs-lg shadow-bs-card p-[22px] min-h-[132px] flex flex-col transition hover:shadow-bs-card-hover; }
+  .bs-stat-row   { @apply flex justify-between items-center mb-3.5; }
+  .bs-stat-label { @apply font-mono text-[10.5px] tracking-[0.18em] uppercase text-bs-gold-soft; }
+  .bs-stat-icon  { @apply w-7 h-7 flex items-center justify-center rounded-lg bg-bs-green/10 text-bs-green; }
+  .bs-stat-value { @apply font-display text-display-num text-bs-gold-cream; font-weight: 500; }
+  .bs-stat-delta { @apply mt-2.5 text-xs text-bs-fg-muted flex items-center gap-1.5; }
+
+  /* ===== Chips ===== */
+  .bs-chip        { @apply inline-flex items-center gap-1.5 font-mono text-mono-chip uppercase px-2.5 py-1 rounded-bs-pill border whitespace-nowrap; }
+  .bs-chip-green  { @apply text-bs-green-soft border-bs-green/30 bg-bs-green/5; }
+  .bs-chip-gold   { @apply text-bs-gold-soft border-bs-gold/[0.35] bg-bs-gold/5; }
+  .bs-chip-danger { @apply text-bs-danger border-bs-danger/[0.32] bg-bs-danger/[0.08]; }
+  .bs-chip-warn   { @apply text-bs-warn border-bs-warn/[0.32] bg-bs-warn/[0.08]; }
+  .bs-chip-info   { @apply text-bs-info border-bs-info/30 bg-bs-info/[0.08]; }
+  .bs-chip-muted  { @apply text-bs-fg-muted border-bs-fg-muted/25 bg-bs-fg-muted/[0.06]; }
+
+  /* ===== Inputs ===== */
+  .bs-input { @apply w-full h-10 bg-bs-input border border-bs-border rounded-bs-md px-3.5 text-bs-fg text-sm placeholder:text-bs-fg-muted transition focus:outline-none focus:border-bs-green/30 focus:ring-2 focus:ring-bs-green/10; }
+  .bs-label { @apply block text-[13px] text-bs-fg-body-2 font-medium mb-1.5; }
+  .bs-help  { @apply text-xs text-bs-fg-muted mt-1.5; }
+
+  /* ===== Tables ===== */
+  .bs-table-wrap     { @apply bg-bs-card border border-bs-border rounded-bs-lg shadow-bs-card overflow-hidden; }
+  .bs-table          { @apply w-full text-[13.5px] border-collapse; }
+  .bs-table thead th { @apply text-left font-medium text-xs tracking-wide text-bs-fg-muted px-[22px] py-3 bg-white/[0.015] border-b border-bs-border-100; }
+  .bs-table tbody td { @apply px-[22px] py-3.5 border-b border-bs-border-100 text-bs-fg-body align-middle; }
+  .bs-table tbody tr { @apply transition hover:bg-bs-green/[0.025]; }
+  .bs-table .num,
+  .bs-table .mono    { @apply font-mono text-mono-cell text-bs-fg-body-2; }
+  .bs-table .strong  { @apply text-bs-fg font-medium; }
+
+  /* ===== Misc ===== */
+  .bs-banner { @apply border border-bs-green/30 bg-bs-green/[0.06] rounded-bs-md px-4 py-3 text-bs-fg-body-2 text-[13.5px]; }
+  .bs-avatar { @apply w-8 h-8 rounded-full bg-bs-green/[0.18] text-bs-green-soft inline-flex items-center justify-center font-sans font-semibold text-xs tracking-wider; }
+}

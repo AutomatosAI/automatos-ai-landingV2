@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg-3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8dcc4"></stop>
+      <stop offset="100%" stop-color="#c9b894"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg-3)"></rect>
+  
+  <ellipse cx="200" cy="470" rx="70" ry="6" fill="#11271c" opacity="0.3"></ellipse>
+  
+  <rect x="160" y="200" width="80" height="18" fill="#8a6a32"></rect>
+  <rect x="155" y="218" width="90" height="6" fill="#b08840"></rect>
+  
+  <path d="M 145 224 L 145 430 Q 145 460 175 460 L 225 460 Q 255 460 255 430 L 255 224 Z" fill="#1a3829" stroke="#0e1f17" stroke-width="0.6"></path>
+  
+  <rect x="160" y="280" width="80" height="100" fill="#b08840" stroke="#8a6a32" stroke-width="0.4"></rect>
+  <text x="200" y="300" text-anchor="middle" font-family="Marcellus, serif" font-size="7" letter-spacing="2" fill="#11271c">FAMILY TREE</text>
+  <text x="200" y="335" text-anchor="middle" font-family="Marcellus, serif" font-size="12" fill="#11271c">SPRING</text>
+  <text x="200" y="350" text-anchor="middle" font-family="Petit Formal Script, cursive" font-size="10" fill="#1a3829">a series</text>
+  <text x="200" y="370" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#11271c">S/26</text>
+  <text x="200" y="60" text-anchor="middle" font-family="Marcellus, serif" font-size="16" letter-spacing="3" fill="#11271c">JAR · SERIES</text>
+
+</svg>

@@ -1,0 +1,189 @@
+{
+  "template": "clarity-health",
+  "slug": "clarity-health",
+  "logoPath": "assets/logo.png",
+  "heroImagePath": "assets/hero-clinician-portrait.jpg",
+  "heroVideoPath": null,
+  "primaryColor": "210 78% 22%",
+  "fontFamily": "'Plus Jakarta Sans', system-ui, sans-serif",
+  "designSystem": {
+    "colors": {
+      "primary-scale": {
+        "50": "210 60% 97%",
+        "100": "210 55% 92%",
+        "200": "210 50% 82%",
+        "300": "210 50% 72%",
+        "400": "210 60% 60%",
+        "500": "210 78% 22%",
+        "600": "210 78% 18%",
+        "700": "210 78% 14%",
+        "800": "210 78% 14%",
+        "900": "210 78% 14%"
+      },
+      "primary": "210 78% 22%",
+      "secondary": "205 55% 48%",
+      "accent": "196 75% 55%",
+      "background": "210 25% 98%",
+      "surface": "210 30% 96%",
+      "text": "210 20% 28%",
+      "heading": "210 50% 12%",
+      "border": "210 25% 88%",
+      "success": "162 60% 38%",
+      "warning": "38 92% 50%",
+      "error": "0 72% 51%",
+      "info": "199 89% 48%"
+    },
+    "typography": {
+      "headingFont": "'Geist', 'Plus Jakarta Sans', system-ui, sans-serif",
+      "bodyFont": "'Plus Jakarta Sans', system-ui, sans-serif",
+      "headingWeight": 700,
+      "bodyWeight": 400,
+      "letterSpacing": "tight",
+      "baseSize": "16px"
+    },
+    "shadows": {
+      "card": "0 1px 2px 0 rgba(15, 35, 70, 0.04), 0 4px 16px -4px rgba(15, 35, 70, 0.06)",
+      "elegant": "0 12px 32px -8px rgba(15, 35, 70, 0.10)",
+      "soft": "0 1px 3px 0 rgb(0 0 0 / 0.05)"
+    },
+    "gradients": {
+      "primary": "linear-gradient(135deg, hsl(210 78% 22%), hsl(205 55% 48%))",
+      "soft": "linear-gradient(180deg, hsl(210 25% 98%), hsl(210 30% 96%))",
+      "accent": "linear-gradient(135deg, hsl(205 55% 48%), hsl(196 75% 55%))"
+    },
+    "spacing": {
+      "section": "5rem",
+      "container": "1.5rem",
+      "card": "2rem"
+    },
+    "borderRadius": {
+      "sm": "0.375rem",
+      "md": "0.625rem",
+      "lg": "0.875rem",
+      "xl": "1.25rem",
+      "2xl": "1.75rem",
+      "full": "9999px"
+    },
+    "buttonHoverEffect": "lift",
+    "glassEffect": "light",
+    "animationType": "fade-up",
+    "dividerStyle": "none"
+  },
+  "valueProps": [
+    {
+      "icon": "stethoscope",
+      "title": "GMC-registered specialists",
+      "description": "Consultations led by UK consultants with prescribing experience."
+    },
+    {
+      "icon": "shield-check",
+      "title": "Pharmacy-grade products",
+      "description": "EU-GMP certified, dispensed by registered UK pharmacies."
+    },
+    {
+      "icon": "calendar-clock",
+      "title": "Care that adapts",
+      "description": "Quarterly follow-ups and dose adjustments by message."
+    },
+    {
+      "icon": "lock",
+      "title": "Quietly confidential",
+      "description": "Plain packaging and secure records by default."
+    }
+  ],
+  "pageContent": {
+    "home": {
+      "heroTitle": "Medical cannabis, prescribed with clarity.",
+      "heroSubtitle": "Doctor-led care for life over 40 — for chronic pain, anxiety, sleep and more.",
+      "heroCtaText": "Check Eligibility",
+      "heroAlignment": "left",
+      "heroHeight": "large",
+      "heroOverlayStyle": "gradient-dark",
+      "heroOverlayOpacity": 35
+    },
+    "about": {
+      "heroTitle": "About Clarity Health",
+      "heroSubtitle": "A modern medical cannabis service built around evidence, not enthusiasm.",
+      "missionTitle": "Our Mission",
+      "missionParagraphs": [
+        "Clarity Health exists to make medical cannabis a credible option for adults living with chronic conditions — without the gimmickry, the green leaves, or the gatekeeping.",
+        "Every patient is seen by a GMC-registered specialist. Every product is EU-GMP certified, lab-tested, and dispensed by a UK pharmacy. Every prescription is reviewed quarterly.",
+        "We built this service for the people we know best: parents, professionals, retirees — adults over 40 who have tried the conventional route and want something better, prescribed properly."
+      ]
+    },
+    "contact": {
+      "title": "Speak to our team",
+      "description": "Patient services answer messages within one working day. For clinical urgency please call 111 or your GP.",
+      "email": "hello@bubstacks.io",
+      "phone": "+44 20 4571 8800",
+      "address": "Clarity Health\n86–90 Paul Street\nLondon EC2A 4NE\nUnited Kingdom"
+    },
+    "support": {
+      "contactEmail": "hello@bubstacks.io",
+      "contactPhone": "+44 20 4571 8800"
+    },
+    "educationHotspots": [],
+    "logoPlacement": {
+      "navPosition": "left",
+      "navSize": 36,
+      "showBusinessName": true,
+      "heroShowLogo": false,
+      "heroX": 50,
+      "heroY": 20,
+      "heroSize": 80,
+      "heroStyle": "default",
+      "footerShowLogo": true
+    }
+  },
+  "navigation": {
+    "links": [
+      { "label": "Conditions", "href": "/conditions" },
+      { "label": "How it works", "href": "/how-it-works" },
+      { "label": "Treatments", "href": "/products" },
+      { "label": "The Wire", "href": "/the-wire" },
+      { "label": "About", "href": "/about" }
+    ],
+    "cta": { "label": "Check Eligibility", "href": "/consultation" },
+    "cta2": { "label": "Patient Login", "href": "/login" },
+    "showCart": false
+  },
+  "footer": {
+    "tagline": "A modern medical cannabis service. Doctor-led, pharmacy-dispensed, designed for adults who want their care taken seriously.",
+    "disclaimer": "Cannabis-based medicinal products are prescription-only medicines (POM) regulated by the MHRA. Treatment is only available to patients meeting the prescribing criteria of the General Medical Council. Clarity Health is operated by Bubstacks Ltd. Registered in England & Wales. © 2026 Bubstacks Ltd.",
+    "address": "86–90 Paul Street, London EC2A 4NE",
+    "email": "hello@bubstacks.io",
+    "sections": [
+      {
+        "title": "Care",
+        "links": [
+          { "label": "Conditions treated", "href": "/conditions" },
+          { "label": "How it works", "href": "/how-it-works" },
+          { "label": "Eligibility", "href": "/consultation" },
+          { "label": "Treatments", "href": "/products" }
+        ]
+      },
+      {
+        "title": "Company",
+        "links": [
+          { "label": "About", "href": "/about" },
+          { "label": "Our clinicians", "href": "/about" },
+          { "label": "The Wire", "href": "/the-wire" },
+          { "label": "Contact", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Legal",
+        "links": [
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Terms", "href": "/terms" },
+          { "label": "Regulatory", "href": "/regulatory" },
+          { "label": "Complaints", "href": "/contact" }
+        ]
+      }
+    ],
+    "socialLinks": [
+      { "platform": "instagram", "href": "https://instagram.com/bubstacks" },
+      { "platform": "linkedin", "href": "https://linkedin.com/company/bubstacks" }
+    ]
+  }
+}

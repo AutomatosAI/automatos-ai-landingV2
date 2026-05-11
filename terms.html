@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automatos · Terms of Service</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EDE4;--bg-2:#ECE6D9;--bg-3:#E2DBC9;--fg:#0F1411;--fg-2:#3A3F3A;--muted:#8A8B83;--rule-c:#D9D2C0;--rule-strong:#B6AE99;--accent:#5B7C68;--accent-ink:#F2EDE4;--serif:"Instrument Serif",Georgia,serif;--sans:"Geist",sans-serif;--mono:"Geist Mono",monospace;--gutter:60px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:16px var(--gutter);border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
+.brand em{font-style:italic;color:var(--muted)}
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav{display:flex;gap:28px;justify-content:center}
+.topbar nav a:hover{color:var(--fg)}
+.topbar > :last-child{text-align:right;display:flex;gap:16px;justify-content:flex-end;align-items:center}
+.topbar .cta{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px}
+.masthead{display:grid;grid-template-columns:240px 1fr 1fr;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.masthead > div{padding:18px 28px;border-right:1px solid var(--rule-c);display:flex;align-items:center;gap:10px}
+.masthead > div:last-child{border-right:0;justify-content:flex-end}
+.masthead b{color:var(--fg);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg)}
+.title-block{padding:80px var(--gutter) 48px;border-bottom:1px solid var(--rule-c);display:grid;grid-template-columns:1.4fr 1fr;gap:80px;align-items:end}
+.title-block h1{font-family:var(--serif);font-size:88px;line-height:.96;letter-spacing:-.025em;text-wrap:balance}
+.title-block h1 em{font-style:italic;color:var(--muted)}
+.title-block .dek{margin-top:24px;font-size:18px;color:var(--fg-2);max-width:50ch;line-height:1.55}
+.title-block .meta{display:grid;gap:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.title-block .meta b{color:var(--fg);font-weight:500}
+.tabs{display:flex;border-bottom:1px solid var(--rule-c)}
+.tabs a{padding:18px 28px;border-right:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tabs a.is-on{color:var(--fg);background:var(--bg-2)}
+.tabs a:hover{color:var(--fg)}
+.body{display:grid;grid-template-columns:240px minmax(0,1fr) 60px;padding:64px var(--gutter) 80px;border-bottom:1px solid var(--rule-c);gap:56px;align-items:start}
+.toc{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);position:sticky;top:24px;display:grid;gap:6px}
+.toc .sec{color:var(--fg);margin-bottom:6px}
+.toc a{padding:5px 0;border-bottom:1px dashed var(--rule-c);display:block}
+.toc a:hover{color:var(--fg)}
+.prose{max-width:68ch;font-size:16.5px;line-height:1.65}
+.prose h2{font-family:var(--serif);font-size:36px;line-height:1.1;letter-spacing:-.015em;margin:48px 0 18px;scroll-margin-top:24px}
+.prose h2 em{font-style:italic;color:var(--muted)}
+.prose h2 .num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.prose p{margin-bottom:18px;text-wrap:pretty}
+.prose ul{margin:0 0 18px 22px}
+.prose ul li{margin-bottom:6px}
+.prose .plain{padding:14px 18px;background:var(--bg-2);border-left:2px solid var(--accent);margin:8px 0 22px;font-style:italic;font-family:var(--serif);font-size:18px;line-height:1.5}
+.prose .plain b{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:500;display:block;margin-bottom:6px;letter-spacing:.18em}
+.prose code{font-family:var(--mono);font-size:14px;background:var(--bg-2);padding:1px 6px;border:1px solid var(--rule-c)}
+.foot{padding:36px var(--gutter);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style></head><body data-mood="bone" data-screen-label="Legal — Terms">
+
+<header class="topbar">
+  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html">Field notes</a>
+  </nav>
+  <div><a href="https://ui.automatos.app/sign-in">Sign in</a><a data-waitlist href="#" class="cta">Sign up free →</a></div>
+</header>
+
+<div class="masthead">
+  <div><span class="pill">Plate&nbsp;/&nbsp;LGL</span> Legal</div>
+  <div>The plain-language version sits beside each clause.</div>
+  <div><b>Effective</b> · 10 May 2026</div>
+</div>
+
+<section class="title-block">
+  <div>
+    <h1>Terms of <em>Service</em>.</h1>
+    <p class="dek">A working agreement between you and Automatos Labs, Lda. The italic blocks are the plain-language summary — those don't override the legal text, but they're how we'd explain it over coffee.</p>
+  </div>
+  <div class="meta">
+    <div><b>Effective</b> · 10 May 2026</div>
+    <div><b>Version</b> · 2.1</div>
+    <div><b>Replaces</b> · v2.0 (12 Feb 2026)</div>
+    <div><b>Jurisdiction</b> · Portugal · EU</div>
+  </div>
+</section>
+
+<nav class="tabs">
+  <a class="is-on" href="#">Terms of Service</a>
+  <a href="#">Privacy</a>
+  <a href="#">DPA</a>
+  <a href="#">Sub-processors</a>
+  <a href="#">Acceptable Use</a>
+  <a href="#">Security</a>
+</nav>
+
+<article class="body">
+  <aside class="toc">
+    <div class="sec">— On this page</div>
+    <a href="#s1">01 · Acceptance</a>
+    <a href="#s2">02 · Account &amp; eligibility</a>
+    <a href="#s3">03 · The service</a>
+    <a href="#s4">04 · Your data</a>
+    <a href="#s5">05 · Models &amp; keys</a>
+    <a href="#s6">06 · Acceptable use</a>
+    <a href="#s7">07 · Fees &amp; cancellation</a>
+    <a href="#s8">08 · Open source &amp; IP</a>
+    <a href="#s9">09 · Warranties &amp; liability</a>
+    <a href="#s10">10 · Termination</a>
+    <a href="#s11">11 · Governing law</a>
+    <a href="#s12">12 · Contact</a>
+  </aside>
+
+  <div class="prose">
+
+    <h2 id="s1"><span class="num">Section 01</span>Acceptance of <em>terms</em></h2>
+    <p>By creating an Automatos account, installing a Pack from the Marketplace, or running our hosted service, you agree to these Terms of Service ("Terms") and the documents linked above. If you are accepting on behalf of a company or organisation, you warrant that you have authority to do so.</p>
+    <div class="plain"><b>In plain words</b>If you sign up or use the hosted product, you agree. If you're signing for your company, make sure you're allowed to.</div>
+
+    <h2 id="s2"><span class="num">Section 02</span>Account &amp; <em>eligibility</em></h2>
+    <p>You must be at least 18, provide accurate information, and keep your credentials secure. You are responsible for everything that happens under your account, including any agents, missions, or skills you configure.</p>
+    <div class="plain"><b>In plain words</b>You're 18+, your details are real, and your agents' actions are your actions.</div>
+
+    <h2 id="s3"><span class="num">Section 03</span>The <em>service</em></h2>
+    <p>"Service" means the Automatos hosted platform at <code>app.automatos.ai</code>, the Marketplace, this website, and any official client libraries. The open-source Automatos codebase, distributed under Apache 2.0 from <code>github.com/AutomatosAI/automatos-ai</code>, is governed by its license, not these Terms — though if you bring it back to our hosted infrastructure, the relevant clauses below apply.</p>
+
+    <h2 id="s4"><span class="num">Section 04</span>Your <em>data</em></h2>
+    <p>You retain ownership of all data you upload, generate, or process through the Service — including knowledge bases, mission outputs, agent configurations, and routing logs. We process your data only to provide and improve the Service, in accordance with our DPA.</p>
+    <ul>
+      <li>We do not train models on your data.</li>
+      <li>We do not sell your data, ever.</li>
+      <li>You can export your data at any time as a single bundle.</li>
+      <li>EU customers can pin all storage to our Frankfurt region.</li>
+    </ul>
+    <div class="plain"><b>In plain words</b>Your data is your data. We don't train on it, sell it, or move it across regions without your say-so.</div>
+
+    <h2 id="s5"><span class="num">Section 05</span>Models &amp; <em>API keys</em></h2>
+    <p>Automatos is bring-your-own-keys. You are responsible for any fees charged by upstream model providers (OpenRouter, Anthropic, OpenAI, Google, or any other provider you connect). The router may select among the keys you've connected based on cost and capability rules — those rules are visible and editable in your workspace.</p>
+
+    <h2 id="s6"><span class="num">Section 06</span>Acceptable <em>use</em></h2>
+    <p>You agree not to use the Service to: (a) violate any law; (b) infringe intellectual property rights; (c) generate or distribute material that exploits minors, incites violence, or harasses; (d) attempt to extract our systems' source code or model weights; or (e) operate at a scale that compromises Service availability for other customers. The full Acceptable Use Policy is linked above.</p>
+
+    <h2 id="s7"><span class="num">Section 07</span>Fees &amp; <em>cancellation</em></h2>
+    <p>Paid plans bill monthly or annually in advance. You can cancel from your workspace settings at any time; cancellation takes effect at the end of the current billing period. We do not pro-rate refunds for partial periods, but we will pro-rate genuine errors on our part — just write in.</p>
+    <div class="plain"><b>In plain words</b>Cancel any time, no clawback. We don't refund partial months unless we messed up.</div>
+
+    <h2 id="s8"><span class="num">Section 08</span>Open source &amp; <em>intellectual property</em></h2>
+    <p>The core Automatos codebase is open source under Apache 2.0. Our trademarks ("Automatos", the plate mark) are not licensed under Apache 2.0 — you can use the code, fork it, sell services on top of it, but please don't pass off your fork as ours. Marketplace agents and skills are licensed individually; check each listing.</p>
+
+    <h2 id="s9"><span class="num">Section 09</span>Warranties &amp; <em>liability</em></h2>
+    <p>The Service is provided "as is". To the maximum extent permitted by law, our aggregate liability under these Terms is limited to the amount you paid us in the twelve months preceding the claim. We do not exclude liability for fraud, gross negligence, or anything else excluded by mandatory consumer law.</p>
+
+    <h2 id="s10"><span class="num">Section 10</span>Termination</h2>
+    <p>You may terminate at any time by closing your account. We may suspend or terminate your access if you materially breach these Terms, with reasonable notice where practicable. On termination, you'll have 30 days to export your data; after that, we delete it from our active systems within 90 days, and from backups within a further 90.</p>
+
+    <h2 id="s11"><span class="num">Section 11</span>Governing <em>law</em></h2>
+    <p>These Terms are governed by the laws of Portugal. Any dispute will be resolved in the courts of Lisbon, except that consumers may also bring claims in their place of residence.</p>
+
+    <h2 id="s12"><span class="num">Section 12</span>Contact</h2>
+    <p>Legal: <a href="mailto:legal@automatos.ai"><code>legal@automatos.ai</code></a> · Security: <a href="mailto:security@automatos.ai"><code>security@automatos.ai</code></a> · Press: <a href="mailto:press@automatos.ai"><code>press@automatos.ai</code></a> · Postal: Automatos Labs, Lda · Rua de São Paulo · 1200-470 Lisboa · Portugal.</p>
+
+    <p style="margin-top:48px;padding-top:18px;border-top:1px solid var(--rule-c);font-family:var(--mono);font-size:12px;color:var(--muted);">— v2.1 · effective 10 May 2026 · supersedes v2.0</p>
+  </div>
+  <div></div>
+</article>
+
+<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Legal · v1.36.04</span></footer>
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body></html>

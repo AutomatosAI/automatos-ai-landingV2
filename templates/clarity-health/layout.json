@@ -1,0 +1,218 @@
+{
+  "version": "1.0.0",
+  "navigation": "NavFull",
+  "sections": [
+    {
+      "type": "HeroSplitImages",
+      "id": "hero",
+      "config": {
+        "title": "Medical cannabis, prescribed with clarity.",
+        "subtitle": "Doctor-led care for life over 40",
+        "description": "Evidence-based treatment for chronic pain, anxiety, sleep and more — reviewed by GMC-registered specialists and delivered to your door.",
+        "ctaText": "Check Eligibility",
+        "secondaryCtaText": "Speak to a Clinician",
+        "secondaryCtaHref": "/consultation",
+        "layout": "left",
+        "badgeText": "Regulated · Evidence-led · Discreet",
+        "imageUrl": "assets/hero-clinician-portrait.jpg",
+        "imageUrl2": "assets/hero-lab-plant.jpg",
+        "imageUrl3": "assets/process-clinical.jpg"
+      }
+    },
+    {
+      "type": "LogoMarquee",
+      "id": "trust",
+      "config": {
+        "heading": "Trusted by patients and recognised across the medical community",
+        "speed": "slow",
+        "logos": [
+          { "src": "", "alt": "GMC Registered" },
+          { "src": "", "alt": "MHRA Compliant" },
+          { "src": "", "alt": "CQC Reviewed" },
+          { "src": "", "alt": "GPhC Pharmacy" },
+          { "src": "", "alt": "EU-GMP Certified" },
+          { "src": "", "alt": "Project Twenty21" }
+        ]
+      }
+    },
+    {
+      "type": "ValueProps",
+      "id": "values",
+      "config": {
+        "heading": "A calmer way to access cannabis-based medicine",
+        "subtitle": "Built around the realities of chronic illness — not the buzz of an industry.",
+        "items": [
+          {
+            "icon": "stethoscope",
+            "title": "GMC-registered specialists",
+            "description": "Every consultation is led by a UK consultant with prescribing experience in pain, neurology or psychiatry."
+          },
+          {
+            "icon": "shield-check",
+            "title": "Pharmacy-grade products",
+            "description": "EU-GMP certified flower and oils with full lab reports, dispensed by registered UK pharmacies."
+          },
+          {
+            "icon": "calendar-clock",
+            "title": "Care that adapts",
+            "description": "Follow-ups every 3 months, dose adjustments by message, and a real human at the end of every form."
+          },
+          {
+            "icon": "lock",
+            "title": "Quietly confidential",
+            "description": "Plain packaging, secure records, and a service designed for people who don't want a fuss."
+          }
+        ]
+      }
+    },
+    {
+      "type": "BentoGrid",
+      "id": "conditions",
+      "config": {
+        "heading": "Conditions our clinicians treat",
+        "subtitle": "If you have tried two or more conventional treatments without sufficient relief, you may be eligible for a medical cannabis prescription.",
+        "cards": [
+          {
+            "icon": "activity",
+            "title": "Chronic pain",
+            "description": "Back pain, fibromyalgia, neuropathic pain, arthritis, CRPS, migraine and chronic headaches.",
+            "span": "wide",
+            "imageUrl": "assets/about-jar.jpg"
+          },
+          {
+            "icon": "brain",
+            "title": "Mental health",
+            "description": "PTSD, anxiety disorders, treatment-resistant depression, OCD."
+          },
+          {
+            "icon": "moon",
+            "title": "Sleep",
+            "description": "Insomnia and disrupted sleep linked to pain or anxiety."
+          },
+          {
+            "icon": "leaf",
+            "title": "Gastrointestinal",
+            "description": "Crohn's disease, ulcerative colitis, IBS, chronic nausea and appetite loss."
+          },
+          {
+            "icon": "heart-pulse",
+            "title": "Palliative & complex",
+            "description": "Symptom management where conventional medicines have plateaued.",
+            "span": "wide"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ProcessSteps",
+      "id": "process",
+      "config": {
+        "heading": "From enquiry to prescription in three steps",
+        "subtitle": "No surgeries to visit. No paper forms. No grey-area suppliers.",
+        "orientation": "horizontal",
+        "steps": [
+          {
+            "icon": "file-check",
+            "title": "1 · Eligibility check",
+            "description": "A 3-minute online questionnaire confirms whether medical cannabis may be appropriate for your condition."
+          },
+          {
+            "icon": "video",
+            "title": "2 · Specialist consultation",
+            "description": "A 30-minute video call with a UK consultant who reviews your history and discusses options."
+          },
+          {
+            "icon": "package",
+            "title": "3 · Discreet delivery",
+            "description": "Your prescription is dispensed by a UK pharmacy and delivered tracked, in plain packaging."
+          }
+        ]
+      }
+    },
+    {
+      "type": "ImageShowcase",
+      "id": "lab",
+      "config": {
+        "heading": "Every batch tested. Every record traced.",
+        "content": "We only work with EU-GMP certified producers. Each product carries a full Certificate of Analysis — cannabinoid profile, terpene content, heavy metals, microbials. Nothing leaves the pharmacy without it.",
+        "imageUrl": "assets/lab-tweezers.jpg",
+        "overlayStyle": "gradient-left",
+        "ctaText": "Read our quality standards"
+      }
+    },
+    {
+      "type": "Testimonials",
+      "id": "stories",
+      "config": {
+        "heading": "Real patients. Quiet results.",
+        "subtitle": "Outcomes shared with permission. Names changed where requested.",
+        "items": [
+          {
+            "rating": 5,
+            "quote": "After 14 years of fibromyalgia I had given up on feeling like myself. Three months in I'm walking the dog every morning again. The clinician actually listened.",
+            "author": "Margaret H.",
+            "role": "Patient since 2025 · Age 58"
+          },
+          {
+            "rating": 5,
+            "quote": "I was sceptical — I'm a retired GP. The consultation was rigorous, the paperwork is impeccable, and the follow-ups are properly clinical. This is medicine, not a gimmick.",
+            "author": "Dr Alan R.",
+            "role": "Patient since 2024 · Age 67"
+          },
+          {
+            "rating": 5,
+            "quote": "PTSD had me on five medications with side effects worse than the symptoms. I'm down to two. I sleep through the night. I cannot overstate how much that matters.",
+            "author": "James W.",
+            "role": "Patient since 2025 · Age 49"
+          }
+        ]
+      }
+    },
+    {
+      "type": "FAQ",
+      "id": "faq",
+      "config": {
+        "heading": "Honest answers to the questions we hear most",
+        "subtitle": "Can't see yours? Message a clinician — we reply within one working day.",
+        "items": [
+          {
+            "question": "Is medical cannabis legal in the UK?",
+            "answer": "Yes. Cannabis-based medicinal products have been legal to prescribe in the UK since November 2018, when prescribed by a specialist consultant on the GMC Specialist Register."
+          },
+          {
+            "question": "Will I get high?",
+            "answer": "No, not when used correctly. Dosing is titrated slowly with your clinician, and many patients are prescribed CBD-dominant or balanced products that are not intoxicating at therapeutic doses."
+          },
+          {
+            "question": "How much does treatment cost?",
+            "answer": "Initial consultation £150; follow-ups £75. Medication is dispensed by pharmacy at cost — typically £150–£300 per month depending on prescription."
+          },
+          {
+            "question": "Can I drive?",
+            "answer": "A statutory medical defence applies if you are following your prescription correctly. Your clinician will discuss this and provide written guidance."
+          },
+          {
+            "question": "Will it affect my employer or insurance?",
+            "answer": "Treatment is private and confidential. Records are held securely and never shared without your consent."
+          }
+        ]
+      }
+    },
+    {
+      "type": "CTASplit",
+      "id": "cta",
+      "config": {
+        "heading": "Find out if treatment is right for you.",
+        "subtitle": "Three minutes. No commitment. A clinician reviews every response.",
+        "ctaText": "Start Eligibility Check",
+        "imageUrl": "assets/process-clinical.jpg"
+      }
+    }
+  ],
+  "footer": "FooterBrand",
+  "settings": {
+    "wrapperClass": "template-clarity-health",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Geist:wght@400;500;600;700&display=swap",
+    "sectionPadding": "2.5rem/4rem/5rem"
+  }
+}

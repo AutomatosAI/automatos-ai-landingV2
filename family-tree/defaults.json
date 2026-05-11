@@ -1,0 +1,196 @@
+{
+  "template": "family-tree",
+  "slug": "family-tree",
+  "logoPath": "assets/logo-family-tree.svg",
+  "heroImagePath": "assets/hero-crest.svg",
+  "heroVideoPath": null,
+  "primaryColor": "42 55% 52%",
+  "fontFamily": "'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
+  "designSystem": {
+    "colors": {
+      "primary-scale": {
+        "50": "42 55% 96%",
+        "100": "42 50% 90%",
+        "200": "42 50% 80%",
+        "300": "42 52% 70%",
+        "400": "42 55% 60%",
+        "500": "42 55% 52%",
+        "600": "42 60% 44%",
+        "700": "40 60% 36%",
+        "800": "38 55% 28%",
+        "900": "36 50% 20%"
+      },
+      "primary": "42 55% 52%",
+      "secondary": "155 35% 16%",
+      "accent": "5 50% 32%",
+      "background": "42 28% 92%",
+      "surface": "42 22% 88%",
+      "text": "155 25% 14%",
+      "heading": "155 35% 10%",
+      "border": "42 22% 78%",
+      "success": "142 45% 32%",
+      "warning": "42 85% 48%",
+      "error": "5 60% 42%",
+      "info": "200 50% 38%"
+    },
+    "typography": {
+      "fontHeading": "'Marcellus', 'Trajan Pro', 'Times New Roman', Georgia, serif",
+      "fontBody": "'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      "fontAccent": "'Petit Formal Script', 'Brush Script MT', cursive",
+      "fontMono": "'JetBrains Mono', 'Menlo', monospace",
+      "headingWeight": "400",
+      "bodyWeight": "400",
+      "headingTracking": "0.005em",
+      "bodyTracking": "-0.005em",
+      "headingLineHeight": "1.1",
+      "bodyLineHeight": "1.6"
+    },
+    "shadows": {
+      "card": "0 1px 2px rgba(20, 35, 28, 0.05), 0 8px 24px -10px rgba(20, 35, 28, 0.10)",
+      "elegant": "0 14px 44px -14px rgba(20, 35, 28, 0.16)",
+      "frame": "0 24px 60px -20px rgba(15, 30, 22, 0.40)",
+      "button": "0 1px 2px rgba(20, 35, 28, 0.10)",
+      "embossed": "inset 0 1px 0 rgba(255,240,210,0.25), inset 0 -1px 0 rgba(0,0,0,0.20), 0 1px 2px rgba(20,35,28,0.20)"
+    },
+    "gradients": {
+      "boneSurface": "linear-gradient(180deg, hsl(42 28% 92%) 0%, hsl(42 22% 88%) 100%)",
+      "evergreen": "linear-gradient(135deg, hsl(155 35% 14%) 0%, hsl(155 30% 19%) 100%)",
+      "brassWash": "linear-gradient(135deg, hsl(42 55% 52%) 0%, hsl(40 60% 44%) 100%)"
+    },
+    "spacing": {
+      "section": "5rem",
+      "container": "1.5rem",
+      "card": "2rem"
+    },
+    "borderRadius": {
+      "sm": "0.25rem",
+      "md": "0.5rem",
+      "lg": "0.75rem",
+      "xl": "1rem",
+      "2xl": "1.25rem",
+      "full": "9999px"
+    }
+  },
+  "valueProps": [
+    { "title": "A doctor who knows you", "description": "Same prescriber, every visit. Quarterly follow-ups included.", "icon": "Stethoscope" },
+    { "title": "Strains named by members", "description": "Each season a member co-develops a strain. Their name on the jar.", "icon": "Sprout" },
+    { "title": "The Letter, monthly", "description": "Long-form, member-bylined. No marketing.", "icon": "BookOpen" },
+    { "title": "A real address, real people", "description": "A Lisbon townhouse, seven clinicians, members welcome.", "icon": "MapPin" }
+  ],
+  "pageContent": {
+    "homeHeroTitle": "A medical practice that knows your name.",
+    "homeHeroSubtitle": "FAMILY TREE · LISBON · MEMBERS ONLY",
+    "homeHeroDescription": "We are a small clinical team and a smaller community of patients. Apply to join — there is no waitlist, only a conversation.",
+    "homeHeroCtaText": "Apply to join",
+    "homeHeroCtaHref": "/apply",
+    "homeHeroSecondaryCtaText": "Read the manifesto",
+    "homeHeroSecondaryCtaHref": "/manifesto",
+    "home": {
+      "heroTitle": "A medical practice that knows your name.",
+      "heroSubtitle": "FAMILY TREE · LISBON · MEMBERS ONLY",
+      "heroDescription": "We are a small clinical team and a smaller community of patients.",
+      "heroCtaText": "Apply to join",
+      "heroCtaHref": "/apply",
+      "heroSecondaryCtaText": "Read the manifesto",
+      "heroSecondaryCtaHref": "/manifesto"
+    },
+    "about": {
+      "heading": "We built a practice. The membership built itself.",
+      "mission": "Family Tree is a private medical-cannabis practice in Lisbon, founded in 2024 by Dr Elena Marques and four founder-patients, organised around the relationship between a prescriber and the patient in their care.",
+      "story": "Founded around a kitchen table in Príncipe Real in 2024, Family Tree began as a conversation between Dr Marques and four patients she had been treating for years. The question — what would a medical-cannabis service look like if patients owned a piece of it — became a townhouse, seven clinicians, and 340 founding members.",
+      "values": "Relationship first. Lineage on the label. Patience as a clinical virtue."
+    },
+    "contact": {
+      "heading": "Visit the townhouse",
+      "address": "Travessa do Carmo 9, 1200-094 Lisboa, Portugal",
+      "email": "kin@familytree.pt",
+      "phone": "+351 213 471 600",
+      "hours": "Tuesday to Friday, 09:30–18:00 WET. Saturday by appointment. Closed Sundays and Mondays — for the clinicians."
+    },
+    "support": {
+      "contactEmail": "kin@familytree.pt",
+      "contactPhone": "+351 213 471 600"
+    },
+    "aboutMission": "Family Tree is a private medical-cannabis practice in Lisbon, founded in 2024 by Dr Elena Marques and four founder-patients, organised around the relationship between a prescriber and the patient in their care.",
+    "logoPlacement": {
+      "navPosition": "left",
+      "navSize": "medium",
+      "showBusinessName": false,
+      "heroShowLogo": false,
+      "heroX": 50,
+      "heroY": 30,
+      "heroSize": 120,
+      "heroStyle": "default",
+      "footerShowLogo": true
+    },
+    "educationHotspots": [
+      {
+        "id": "spot-pillars",
+        "targetSectionId": "pillars",
+        "x": 50,
+        "y": 50,
+        "title": "Why membership is free",
+        "description": "Charging for membership would mean the practice was more available to members who could pay more. We considered it and chose not to. You pay for medicine and consultations — same as any private clinic — and the relationship is included."
+      },
+      {
+        "id": "spot-drops",
+        "targetSectionId": "drops",
+        "x": 25,
+        "y": 50,
+        "title": "How a strain gets a member's name",
+        "description": "When a member's months of titration produce an unusually well-tuned formulation, the practice asks — with their permission — to manufacture it as a small-batch named strain. Recognition, not ownership; the formulation belongs to the practice."
+      }
+    ]
+  },
+  "navigation": {
+    "links": [
+      { "label": "Practice", "href": "/about" },
+      { "label": "Drops", "href": "/products" },
+      { "label": "Journal", "href": "/the-wire" },
+      { "label": "Members", "href": "/members" }
+    ],
+    "cta": { "label": "Apply to join", "href": "/apply" },
+    "cta2": { "label": "Member sign in", "href": "/login" },
+    "showCart": true
+  },
+  "footer": {
+    "tagline": "A members' medical-cannabis practice · Lisbon · INFARMED licensed",
+    "address": "Travessa do Carmo 9, 1200-094 Lisboa, Portugal",
+    "email": "kin@familytree.pt",
+    "phone": "+351 213 471 600",
+    "disclaimer": "Family Tree is a private medical practice authorised by INFARMED to prescribe medical cannabis to eligible patients in Portugal. Membership is free; consultations and medication are paid services. For prescription use only. Patients only. Not for sale to under-18s. The information on this site supports — but does not replace — the relationship between a patient and their physician.",
+    "sections": [
+      {
+        "title": "Practice",
+        "links": [
+          { "label": "About", "href": "/about" },
+          { "label": "Manifesto", "href": "/manifesto" },
+          { "label": "Clinicians", "href": "/about" },
+          { "label": "Visit the townhouse", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Membership",
+        "links": [
+          { "label": "Apply to join", "href": "/apply" },
+          { "label": "Member sign in", "href": "/login" },
+          { "label": "Drops", "href": "/products" },
+          { "label": "FAQ", "href": "/faq" }
+        ]
+      },
+      {
+        "title": "Journal & legal",
+        "links": [
+          { "label": "The Letter", "href": "/the-wire" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Terms of membership", "href": "/terms" },
+          { "label": "Regulatory", "href": "/regulatory" }
+        ]
+      }
+    ],
+    "socialLinks": [
+      { "platform": "instagram", "url": "https://instagram.com/familytree.pt" },
+      { "platform": "linkedin", "url": "https://linkedin.com/company/familytree-practice" }
+    ]
+  }
+}

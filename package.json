@@ -1,0 +1,20 @@
+{
+  "name": "automatos-landing-v2",
+  "version": "2.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Automatos v2 landing — static editorial site.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.21.2",
+    "nodemailer": "^6.9.16"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Automatos — calm pass + recommendations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --sans: "Geist", -apple-system, "Helvetica Neue", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Current product palette — calmed */
+  --bg:        #0A0D0C;
+  --bg-2:      #111614;
+  --bg-3:      #161C1A;
+  --bg-4:      #1C2421;
+  --fg:        #E8E6E3;
+  --fg-2:      #B5B0A8;
+  --muted:     #6F6B62;
+  --rule:      rgba(255, 255, 255, 0.07);
+  --rule-2:    rgba(255, 255, 255, 0.12);
+  --accent:    #F97316;
+  --accent-d:  #C25A11;
+  --accent-q:  rgba(249, 115, 22, 0.10);
+  --green:     #6B9974;
+  --amber:     #D9A24E;
+  --red:       #C66B5C;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #050706; color: var(--fg); }
+body { font-family: var(--sans); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; background: 0; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent); color: var(--bg); }
+
+.mono { font-family: var(--mono); }
+.eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── ARTBOARD ─────────────────────────────────────────────── */
+.artboard {
+  width: 1440px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+}
+.app { display: grid; grid-template-columns: 220px 1fr; min-height: 920px; }
+
+/* sidebar */
+.sb { background: var(--bg-2); border-right: 1px solid var(--rule); padding: 16px 0; display: flex; flex-direction: column; font-family: var(--mono); font-size: 12px; }
+.sb-brand { display: flex; align-items: center; gap: 10px; padding: 0 16px 16px; border-bottom: 1px solid var(--rule); margin-bottom: 12px; }
+.sb-mark { width: 22px; height: 22px; background: var(--accent); display: grid; place-items: center; color: var(--bg); font-family: var(--sans); font-weight: 700; font-size: 13px; border-radius: 4px; }
+.sb-brand b { font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.sb-brand b span { color: var(--muted); font-weight: 400; }
+.sb-section { padding: 12px 16px 4px; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.sb-item { display: grid; grid-template-columns: 16px 1fr auto; align-items: center; gap: 10px; padding: 7px 16px; color: var(--fg-2); border-left: 2px solid transparent; }
+.sb-item:hover { color: var(--fg); background: rgba(255,255,255,0.02); }
+.sb-item.active { color: var(--fg); background: var(--accent-q); border-left-color: var(--accent); }
+.sb-item .ic { width: 12px; height: 12px; border: 1.2px solid currentColor; border-radius: 2px; }
+.sb-item .num { color: var(--muted); font-size: 10px; }
+.sb-foot { margin-top: auto; padding: 14px 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 11px; display: grid; gap: 6px; }
+.sb-foot .live { color: var(--green); display: inline-flex; gap: 6px; align-items: center; }
+.sb-foot .live::before { content: ""; width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+
+/* topbar */
+.tb { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center; padding: 12px 28px; border-bottom: 1px solid var(--rule); }
+.crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.crumbs b { color: var(--fg); font-weight: 500; }
+.crumbs .sep { padding: 0 8px; color: var(--rule-2); }
+.tb-search { padding: 7px 12px; border: 1px solid var(--rule); border-radius: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted); display: inline-flex; gap: 14px; align-items: center; min-width: 320px; }
+.tb-search kbd { font-family: var(--mono); font-size: 10px; padding: 1px 6px; border: 1px solid var(--rule); border-radius: 3px; }
+.tb-r { display: flex; gap: 6px; }
+.btn { padding: 7px 12px; border: 1px solid var(--rule); border-radius: 6px; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--fg-2); display: inline-flex; gap: 8px; align-items: center; }
+.btn:hover { background: var(--bg-2); color: var(--fg); }
+.btn.solid { background: var(--accent); color: #0F0A04; border-color: var(--accent); font-weight: 600; }
+.btn.solid:hover { background: #FF8A3D; }
+.btn.ghost { color: var(--accent); border-color: rgba(249,115,22,0.3); background: var(--accent-q); }
+
+.main { padding: 24px 28px 32px; }
+
+/* page head — single weight (calm pass) */
+.ph { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
+.ph h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: var(--fg); }
+.ph p { margin-top: 6px; color: var(--fg-2); font-size: 14px; max-width: 540px; }
+.ph-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted); display: grid; gap: 4px; text-align: right; text-transform: uppercase; }
+.ph-meta b { color: var(--fg); font-weight: 500; }
+
+/* card */
+.card { border: 1px solid var(--rule); border-radius: 8px; background: var(--bg-2); display: grid; grid-template-rows: auto 1fr auto; }
+.card-h { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--rule); font-size: 13px; font-weight: 500; }
+.card-h .lbl { color: var(--fg); display: inline-flex; gap: 8px; align-items: center; }
+.card-h .lbl::before { content: ""; width: 6px; height: 6px; background: var(--accent); border-radius: 1px; }
+.card-h .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.card-b { padding: 14px; }
+.card-f { padding: 10px 14px; border-top: 1px solid var(--rule); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.card-f a { color: var(--accent); }
+
+/* monogram tile (replaces mascot icon) */
+.mono-tile {
+  width: 32px; height: 32px;
+  border: 1px solid var(--rule-2);
+  background: var(--bg-3);
+  border-radius: 6px;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-weight: 500; font-size: 11px;
+  color: var(--fg);
+  letter-spacing: 0.04em;
+}
+.mono-tile.lg { width: 40px; height: 40px; font-size: 13px; }
+.mono-tile.sm { width: 24px; height: 24px; font-size: 9px; border-radius: 4px; }
+.mono-tile.accent { border-color: var(--accent); color: var(--accent); }
+
+/* ─── DASHBOARD ────────────────────────────────────────────── */
+.grid { display: grid; gap: 14px; grid-template-columns: 1.4fr 1fr 1fr; }
+.span2 { grid-column: span 2; }
+.span3 { grid-column: span 3; }
+
+/* metric strip — calm version */
+.metrics { grid-column: span 3; display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--rule); border-radius: 8px; background: var(--bg-2); }
+.metrics .m { padding: 14px 16px; border-right: 1px solid var(--rule); }
+.metrics .m:last-child { border-right: 0; }
+.metrics .m .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.metrics .m .v { font-size: 28px; font-weight: 600; line-height: 1; margin-top: 10px; letter-spacing: -0.02em; }
+.metrics .m .v sup { font-family: var(--mono); font-size: 10px; vertical-align: super; color: var(--muted); margin-left: 4px; font-weight: 400; }
+.metrics .m .d { margin-top: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--green); }
+.metrics .m .d.warn { color: var(--amber); }
+.metrics .m .d.crit { color: var(--red); }
+
+/* reports — bylined */
+.reports-list { display: grid; grid-template-columns: 1fr 1fr; }
+.report {
+  padding: 14px 16px;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.report:nth-child(2n) { border-right: 0; }
+.report:nth-last-child(-n+2) { border-bottom: 0; }
+.report .by { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.report .by b { color: var(--fg); font-weight: 500; }
+.report .head { font-size: 14px; line-height: 1.4; margin-top: 4px; color: var(--fg); }
+.report .head em { font-style: normal; color: var(--accent); }
+
+/* schedule */
+.sched { display: grid; gap: 0; }
+.sched-day { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); padding-top: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+.sched-day:first-child { padding-top: 0; }
+.sched-row { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.sched-row:last-child { border-bottom: 0; }
+.sched-row .t { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.sched-row .agent { font-family: var(--mono); font-size: 10px; padding: 2px 6px; border: 1px solid var(--rule); border-radius: 3px; text-transform: uppercase; color: var(--fg-2); }
+
+/* workload */
+.wload-row { display: grid; grid-template-columns: 90px 1fr 36px; gap: 12px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; }
+.wload-row:last-child { border-bottom: 0; }
+.wload-row .name { text-transform: uppercase; }
+.wload-row .bar { height: 6px; background: var(--bg-3); border-radius: 2px; position: relative; overflow: hidden; }
+.wload-row .bar i { position: absolute; inset: 0 auto 0 0; background: var(--fg-2); }
+.wload-row .bar i.hot { background: var(--accent); }
+.wload-row .n { text-align: right; color: var(--muted); }
+
+/* cost */
+.cost-num { font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
+.cost-num small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 6px; font-weight: 400; }
+.cost-spark { height: 56px; display: grid; grid-template-columns: repeat(30, 1fr); align-items: end; gap: 2px; margin-top: 12px; }
+.cost-spark i { background: var(--fg-2); opacity: 0.3; height: var(--h, 30%); border-radius: 1px; }
+.cost-spark i.peak { background: var(--accent); opacity: 1; }
+.cost-list { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); display: grid; gap: 4px; }
+.cost-list .row { display: grid; grid-template-columns: 70px 1fr auto; gap: 10px; align-items: center; padding: 5px 0; font-family: var(--mono); font-size: 11px; }
+.cost-list .row .agent { text-transform: uppercase; color: var(--fg-2); }
+.cost-list .row .bar { height: 4px; background: var(--bg-3); border-radius: 1px; }
+.cost-list .row .bar i { display: block; height: 100%; background: var(--accent-d); border-radius: 1px; }
+
+/* approvals */
+.gate { padding: 12px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; font-size: 13px; }
+.gate:last-child { border-bottom: 0; }
+.gate .ic { width: 22px; height: 22px; border: 1px solid var(--amber); color: var(--amber); display: grid; place-items: center; font-family: var(--mono); font-size: 10px; border-radius: 4px; margin-top: 2px; }
+.gate p { line-height: 1.4; color: var(--fg); }
+.gate .meta { margin-top: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.gate .when { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); white-space: nowrap; }
+
+/* perf */
+.perf-row { display: grid; grid-template-columns: 80px 1fr 32px; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; }
+.perf-row:last-child { border-bottom: 0; }
+.perf-row .name { text-transform: uppercase; }
+.perf-row .bar { height: 3px; background: var(--bg-3); border-radius: 1px; position: relative; }
+.perf-row .bar i { position: absolute; inset: 0 auto 0 0; background: var(--green); border-radius: 1px; }
+.perf-row .bar i.warn { background: var(--amber); }
+.perf-row .bar i.crit { background: var(--red); }
+.perf-row .n { text-align: right; color: var(--muted); }
+
+/* ─── REPORT VIEWER ────────────────────────────────────────── */
+.report-shell { display: grid; grid-template-columns: 1fr 320px; min-height: 880px; }
+.report-doc { padding: 0 0 60px; max-width: 880px; margin: 0 auto; }
+.report-toolbar { padding: 14px 28px; border-bottom: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.report-toolbar .crumbs { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.report-toolbar .crumbs b { color: var(--fg); font-weight: 500; }
+.report-toolbar .actions { display: flex; gap: 6px; }
+
+.doc { padding: 56px 64px 48px; background: var(--bg); }
+.doc-letterhead {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end;
+  padding-bottom: 22px;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: 28px;
+}
+.doc-letterhead .lh-l { display: grid; gap: 6px; }
+.doc-stamp { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+.doc-issue { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.doc-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.doc-id b { color: var(--fg); font-weight: 500; display: block; font-size: 13px; margin-bottom: 2px; }
+
+.doc-h1 { font-size: 36px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; color: var(--fg); margin-bottom: 18px; }
+
+.doc-byline {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+  align-items: center;
+}
+.doc-byline .who { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+.doc-byline .who b { color: var(--fg); font-weight: 500; }
+.doc-byline .who .agent { color: var(--accent); }
+
+.doc-tldr {
+  background: var(--bg-2);
+  border-left: 3px solid var(--accent);
+  padding: 18px 22px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 32px;
+}
+.doc-tldr .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.doc-tldr p { font-size: 16px; line-height: 1.55; color: var(--fg); }
+
+.doc-section { margin-bottom: 32px; }
+.doc-h2 { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--rule); margin-bottom: 16px; display: flex; justify-content: space-between; }
+.doc-h2 .num { font-family: var(--mono); color: var(--accent); }
+.doc p { font-size: 15px; line-height: 1.65; color: var(--fg-2); margin-bottom: 12px; }
+.doc p b { color: var(--fg); font-weight: 600; }
+
+.doc-findings { display: grid; gap: 0; }
+.finding {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.finding:last-child { border-bottom: 0; }
+.finding .sev {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-align: center;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+.finding .sev.high { background: rgba(198, 107, 92, 0.15); color: var(--red); border: 1px solid rgba(198, 107, 92, 0.3); }
+.finding .sev.med  { background: rgba(217, 162, 78, 0.15); color: var(--amber); border: 1px solid rgba(217, 162, 78, 0.3); }
+.finding .sev.low  { background: rgba(107, 153, 116, 0.15); color: var(--green); border: 1px solid rgba(107, 153, 116, 0.3); }
+.finding .body p { margin: 0 0 4px; font-size: 14px; color: var(--fg); line-height: 1.5; }
+.finding .body .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.finding .act {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 6px 10px; border: 1px solid var(--rule-2); border-radius: 4px; color: var(--fg-2);
+  white-space: nowrap;
+}
+.finding .act.primary { color: var(--accent); border-color: var(--accent); }
+
+.doc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.doc-table th, .doc-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--rule); }
+.doc-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.doc-table td.num { font-family: var(--mono); text-align: right; color: var(--fg); }
+.doc-table .delta-up { color: var(--green); font-family: var(--mono); font-size: 11px; }
+.doc-table .delta-dn { color: var(--red); font-family: var(--mono); font-size: 11px; }
+
+.doc-quote {
+  border-left: 2px solid var(--rule-2);
+  padding: 4px 0 4px 18px;
+  margin: 16px 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-2);
+  font-style: italic;
+}
+
+.doc-attach { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.attach { padding: 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg-2); display: grid; gap: 4px; }
+.attach .name { font-family: var(--mono); font-size: 12px; color: var(--fg); display: flex; gap: 8px; align-items: center; }
+.attach .name::before { content: "↗"; color: var(--accent); }
+.attach .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+.doc-signoff {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 2px solid var(--accent);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.signoff-block .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.signoff-block .name { font-size: 16px; font-weight: 500; color: var(--fg); }
+.signoff-block .id { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+.signature {
+  font-family: "Brush Script MT", cursive;
+  font-size: 28px;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule-2);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+/* report rail */
+.report-rail { border-left: 1px solid var(--rule); padding: 22px 22px 32px; display: grid; gap: 24px; align-content: start; background: var(--bg-2); }
+.rail-h { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
+.rail-status {
+  display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center;
+  padding: 12px; border: 1px solid var(--rule); border-radius: 6px;
+}
+.rail-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+.rail-status b { display: block; font-size: 13px; font-weight: 500; }
+.rail-status span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.rail-actions { display: grid; gap: 6px; }
+.rail-actions .btn { width: 100%; justify-content: center; }
+.rail-trail { display: grid; gap: 8px; }
+.trail-row { display: grid; grid-template-columns: 8px 1fr; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 12px; }
+.trail-row:last-child { border-bottom: 0; }
+.trail-row .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); margin-top: 6px; }
+.trail-row .dot.live { background: var(--green); }
+.trail-row .dot.acc { background: var(--accent); }
+.trail-row b { font-weight: 500; color: var(--fg); display: block; }
+.trail-row .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+/* ─── CHAT ─────────────────────────────────────────────────── */
+.chat-shell { display: grid; grid-template-columns: 1fr 320px; min-height: 880px; }
+.chat-main { display: grid; grid-template-rows: auto 1fr auto; border-right: 1px solid var(--rule); }
+.chat-head { padding: 18px 28px; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px; }
+.chat-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.015em; }
+.chat-meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: flex; gap: 16px; }
+.chat-meta b { color: var(--fg); font-weight: 500; }
+
+.stream { padding: 24px 28px; display: grid; gap: 24px; align-content: start; }
+.msg { display: grid; grid-template-columns: 60px 1fr; gap: 16px; }
+.msg .gutter { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); text-align: right; padding-top: 4px; border-right: 1px solid var(--rule); padding-right: 12px; }
+.msg .gutter b { color: var(--fg); font-weight: 500; display: block; margin-bottom: 2px; }
+.msg .gutter time { color: var(--muted); }
+.msg-body { display: grid; gap: 12px; }
+.msg-body p { font-size: 14px; line-height: 1.6; max-width: 720px; color: var(--fg); }
+.msg-body p.lead { font-size: 17px; line-height: 1.5; color: var(--fg); }
+.msg-body p em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+/* routing strip — the legible-routing piece */
+.routing {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--bg-2);
+  max-width: 720px;
+  display: grid;
+  grid-template-rows: auto auto auto;
+}
+.routing-h {
+  padding: 10px 14px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--rule);
+  display: flex; justify-content: space-between;
+}
+.routing-h b { color: var(--accent); font-weight: 500; }
+.routing-flow {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+.routing-node { display: grid; gap: 4px; text-align: center; }
+.routing-node .mono-tile { margin: 0 auto; }
+.routing-node .name { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg); }
+.routing-node .role { font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.routing-arrow { color: var(--accent); font-family: var(--mono); font-size: 14px; }
+.routing-because {
+  padding: 10px 14px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px;
+  color: var(--fg-2);
+  letter-spacing: 0.04em;
+  display: grid; gap: 4px;
+}
+.routing-because span { color: var(--muted); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; }
+
+.msg-list { font-family: var(--mono); font-size: 12px; max-width: 720px; line-height: 1.7; display: grid; gap: 2px; }
+.msg-list .li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--rule); }
+.msg-list .li::before { content: "→"; color: var(--accent); }
+
+.cta-row { display: flex; gap: 6px; flex-wrap: wrap; max-width: 720px; }
+.chip { padding: 6px 10px; border: 1px solid var(--rule); border-radius: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); }
+.chip.on { background: var(--accent); color: #0F0A04; border-color: var(--accent); font-weight: 600; }
+.chip.ghost { color: var(--accent); border-color: rgba(249,115,22,0.3); }
+
+.composer { border-top: 1px solid var(--rule); background: var(--bg-2); padding: 14px 28px 16px; display: grid; gap: 10px; }
+.composer-row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.composer-pick { padding: 7px 12px; border: 1px solid rgba(249,115,22,0.3); border-radius: 6px; background: var(--accent-q); font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: inline-flex; gap: 8px; align-items: center; }
+.composer-pick::before { content: ""; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+.composer-field { padding: 10px 0; font-size: 14px; color: var(--muted); }
+.composer-send { padding: 8px 16px; background: var(--accent); color: #0F0A04; font-family: var(--sans); font-size: 12px; font-weight: 600; border-radius: 6px; display: inline-flex; gap: 8px; align-items: center; }
+.composer-tools { display: flex; gap: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
+.composer-tool { padding: 5px 10px; border: 1px solid var(--rule); border-radius: 4px; color: var(--muted); }
+.composer-tool.on { color: var(--accent); border-color: rgba(249,115,22,0.3); }
+
+/* chat rail */
+.chat-rail { padding: 20px 22px; display: grid; gap: 22px; align-content: start; background: var(--bg-2); border-left: 1px solid var(--rule); }
+.rail-card { border: 1px solid var(--rule); border-radius: 6px; padding: 14px; display: grid; gap: 8px; background: var(--bg); }
+.rail-card .top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.rail-card .top b { color: var(--accent); font-weight: 500; }
+.rail-card h4 { font-size: 15px; font-weight: 500; line-height: 1.3; }
+.rail-card .body { font-size: 12px; color: var(--fg-2); line-height: 1.4; }
+
+.team-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.team-row:last-child { border-bottom: 0; }
+.team-row b { font-weight: 500; display: block; font-size: 13px; }
+.team-row .meta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.team-row .now { font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); padding: 2px 6px; border: 1px solid rgba(107, 153, 116, 0.3); border-radius: 3px; }
+
+/* ─── canvas mount ─────────────────────────────────────────── */
+#dc-root { width: 100vw; min-height: 100vh; }
+</style>
+</head>
+<body>
+
+<div id="dc-root"></div>
+
+<!-- ============ DASHBOARD ============ -->
+<template id="art-dash">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sb">
+        <div class="sb-brand">
+          <span class="sb-mark">A</span>
+          <b>Automatos <span>a.i.</span></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item active" href="#"><i class="ic"></i><span>Dashboard</span><span class="num">01</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Chat</span><span class="num">02</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Reports</span><span class="num">11</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Missions</span><span class="num">42</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Playbooks</span><span class="num">11</span></a>
+
+        <div class="sb-section"><span>Workforce</span><span>02</span></div>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Agents</span><span class="num">20</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Skills</span><span class="num">71</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Tools</span><span class="num">22</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Knowledge</span><span class="num">14</span></a>
+
+        <div class="sb-section"><span>Operations</span><span>03</span></div>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Marketplace</span><span class="num">↗</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Analytics</span><span class="num">05</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Audit log</span><span class="num">06</span></a>
+
+        <div class="sb-foot">
+          <span class="live">All systems operational</span>
+          <span>v1.36.04 · build 2026·05·09</span>
+        </div>
+      </aside>
+
+      <div>
+        <div class="tb">
+          <div class="crumbs"><span>Workspace</span><span class="sep">/</span><b>Dashboard</b></div>
+          <div class="tb-search"><span>Search the workspace…</span><kbd>⌘ K</kbd></div>
+          <div class="tb-r">
+            <a class="btn" href="#">Last 24h</a>
+            <a class="btn solid" href="#">New mission</a>
+          </div>
+        </div>
+
+        <div class="main">
+          <div class="ph">
+            <div>
+              <h1>Dashboard</h1>
+              <p>What your workforce filed today, what's running, and what needs you.</p>
+            </div>
+            <div class="ph-meta">
+              <div><b>09 May 2026</b> · 14:02 GMT</div>
+              <div>Workspace · <b>My Workspace</b></div>
+              <div>Watch · <b>22 agents</b> · 19 active</div>
+            </div>
+          </div>
+
+          <div class="grid">
+            <!-- metrics strip — single accent, no rainbow -->
+            <div class="metrics">
+              <div class="m">
+                <div class="lbl">Active</div>
+                <div class="v">19<sup>/ 22</sup></div>
+                <div class="d">+2 since 06:00</div>
+              </div>
+              <div class="m">
+                <div class="lbl">Missions</div>
+                <div class="v">11<sup>now</sup></div>
+                <div class="d">8 scheduled</div>
+              </div>
+              <div class="m">
+                <div class="lbl">Approvals</div>
+                <div class="v">5<sup>pending</sup></div>
+                <div class="d warn">avg 10h 52m</div>
+              </div>
+              <div class="m">
+                <div class="lbl">Spend (24h)</div>
+                <div class="v">$71.40</div>
+                <div class="d">−4.2% vs 7d</div>
+              </div>
+              <div class="m">
+                <div class="lbl">Reports</div>
+                <div class="v">11<sup>/ 20</sup></div>
+                <div class="d">last 03:14</div>
+              </div>
+              <div class="m">
+                <div class="lbl">Incidents</div>
+                <div class="v">0</div>
+                <div class="d">all clear</div>
+              </div>
+            </div>
+
+            <!-- reports — calmed, monogram tiles, bylines -->
+            <div class="card span2">
+              <div class="card-h">
+                <span class="lbl">Today's reports</span>
+                <span></span>
+                <span class="meta">11 / 20 filed</span>
+              </div>
+              <div class="card-b" style="padding:0;">
+                <div class="reports-list">
+                  <div class="report">
+                    <span class="mono-tile">CO</span>
+                    <div>
+                      <div class="by">By <b>COMMS</b> · 13:48 · Mission 042</div>
+                      <div class="head">Drafted three replies; <em>flagged one</em> for legal review.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="mono-tile">QA</span>
+                    <div>
+                      <div class="by">By <b>QA·ENG</b> · 12:11 · Mission 038</div>
+                      <div class="head">Nightly suite — <em>1 regression</em> in checkout flow.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="mono-tile">SE</span>
+                    <div>
+                      <div class="by">By <b>SENTINEL</b> · 11:02 · Watch routine</div>
+                      <div class="head">No new CVEs. <em>Two dependencies</em> due rotation.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="mono-tile">SC</span>
+                    <div>
+                      <div class="by">By <b>SCRIBE</b> · 09:46 · Mission 040</div>
+                      <div class="head">Field notes filed; <em>three drafts</em> awaiting review.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="mono-tile">SO</span>
+                    <div>
+                      <div class="by">By <b>SCOUT</b> · 09:22 · Mission 041</div>
+                      <div class="head">Three competitors moved on pricing — see brief.</div>
+                    </div>
+                  </div>
+                  <div class="report">
+                    <span class="mono-tile">AT</span>
+                    <div>
+                      <div class="by">By <b>ATLAS</b> · 08:14 · Daily</div>
+                      <div class="head">Workspace tidied; <em>14 docs</em> re-indexed overnight.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-f"><span>Filed today · 09 May</span><a href="#">All reports →</a></div>
+            </div>
+
+            <!-- schedule -->
+            <div class="card">
+              <div class="card-h">
+                <span class="lbl">Schedule</span><span></span><span class="meta">Next 48h</span>
+              </div>
+              <div class="card-b">
+                <div class="sched-day">Today · 09 May</div>
+                <div class="sched-row"><span class="t">22:00</span><span>Watchtower routine</span><span class="agent">SENTINEL</span></div>
+                <div class="sched-row"><span class="t">23:30</span><span>Daily tidy &amp; index</span><span class="agent">ATLAS</span></div>
+                <div class="sched-day">Tomorrow · 10 May</div>
+                <div class="sched-row"><span class="t">03:00</span><span>Nightly test pipeline</span><span class="agent">QA</span></div>
+                <div class="sched-row"><span class="t">07:00</span><span>IG carousel — fact post</span><span class="agent">SOCIAL</span></div>
+                <div class="sched-row"><span class="t">07:15</span><span>X carousel — fact post</span><span class="agent">SOCIAL</span></div>
+                <div class="sched-row"><span class="t">09:00</span><span>Daily social analytics</span><span class="agent">ANALYST</span></div>
+              </div>
+              <div class="card-f"><span>6 routines · 0 paused</span><a href="#">Scheduler →</a></div>
+            </div>
+
+            <!-- workload -->
+            <div class="card">
+              <div class="card-h"><span class="lbl">Workload</span><span></span><span class="meta">By assignee</span></div>
+              <div class="card-b">
+                <div class="wload-row"><span class="name">QA·ENG</span><span class="bar"><i class="hot" style="width:100%"></i></span><span class="n">108</span></div>
+                <div class="wload-row"><span class="name">ORACLE</span><span class="bar"><i style="width:79%"></i></span><span class="n">85</span></div>
+                <div class="wload-row"><span class="name">SOCIAL</span><span class="bar"><i style="width:73%"></i></span><span class="n">79</span></div>
+                <div class="wload-row"><span class="name">ATLAS</span><span class="bar"><i style="width:58%"></i></span><span class="n">63</span></div>
+                <div class="wload-row"><span class="name">PULSE</span><span class="bar"><i style="width:25%"></i></span><span class="n">27</span></div>
+                <div class="wload-row"><span class="name">QUILL</span><span class="bar"><i style="width:24%"></i></span><span class="n">26</span></div>
+                <div class="wload-row"><span class="name">FIXER</span><span class="bar"><i style="width:15%"></i></span><span class="n">16</span></div>
+                <div class="wload-row"><span class="name">AUTO</span><span class="bar"><i style="width:13%"></i></span><span class="n">14</span></div>
+                <div class="wload-row"><span class="name">RALLY</span><span class="bar"><i style="width:11%"></i></span><span class="n">12</span></div>
+                <div class="wload-row"><span class="name">COMMS</span><span class="bar"><i style="width:10%"></i></span><span class="n">11</span></div>
+              </div>
+              <div class="card-f"><span>QA·ENG saturated</span><a href="#">Rebalance →</a></div>
+            </div>
+
+            <!-- cost -->
+            <div class="card">
+              <div class="card-h"><span class="lbl">Spend</span><span></span><span class="meta">Last 30 days</span></div>
+              <div class="card-b">
+                <div class="cost-num">$476.16<small>30-day total</small></div>
+                <div class="cost-spark">
+                  <i style="--h:35%"></i><i style="--h:42%"></i><i style="--h:30%"></i>
+                  <i style="--h:55%"></i><i style="--h:48%"></i><i style="--h:62%"></i>
+                  <i style="--h:38%"></i><i style="--h:45%"></i><i style="--h:50%"></i>
+                  <i style="--h:40%"></i><i style="--h:36%"></i><i style="--h:48%"></i>
+                  <i style="--h:58%"></i><i style="--h:42%"></i><i style="--h:51%"></i>
+                  <i style="--h:60%"></i><i style="--h:65%"></i><i style="--h:58%"></i>
+                  <i style="--h:70%"></i><i style="--h:55%"></i><i style="--h:62%"></i>
+                  <i style="--h:74%"></i><i style="--h:80%"></i><i style="--h:72%"></i>
+                  <i style="--h:78%" class="peak"></i><i style="--h:85%" class="peak"></i><i style="--h:90%" class="peak"></i>
+                  <i style="--h:96%" class="peak"></i><i style="--h:100%" class="peak"></i><i style="--h:88%" class="peak"></i>
+                </div>
+                <div class="cost-list">
+                  <div class="row"><span class="agent">AUTO</span><span class="bar"><i style="width:100%"></i></span><span>$80.44</span></div>
+                  <div class="row"><span class="agent">ANALYST</span><span class="bar"><i style="width:96%"></i></span><span>$77.15</span></div>
+                  <div class="row"><span class="agent">ATLAS</span><span class="bar"><i style="width:91%"></i></span><span>$73.01</span></div>
+                  <div class="row"><span class="agent">SCRIBE</span><span class="bar"><i style="width:62%"></i></span><span>$49.80</span></div>
+                </div>
+              </div>
+              <div class="card-f"><span>Avg per req · $0.026</span><a href="#">Analytics →</a></div>
+            </div>
+
+            <!-- approvals -->
+            <div class="card">
+              <div class="card-h"><span class="lbl">Approvals</span><span></span><span class="meta">5 pending</span></div>
+              <div class="card-b">
+                <div class="gate">
+                  <span class="ic">!</span>
+                  <div>
+                    <p>Remediate the org health findings — enforce the new default governance blueprint.</p>
+                    <div class="meta">Mission 042 · Sentinel · Owner Gerard</div>
+                  </div>
+                  <span class="when">20h</span>
+                </div>
+                <div class="gate">
+                  <span class="ic">!</span>
+                  <div>
+                    <p>Overnight ship watch — workspace health, queue depth, active agents.</p>
+                    <div class="meta">Mission 044 · Watchtower · Owner G.K.</div>
+                  </div>
+                  <span class="when">20h</span>
+                </div>
+                <div class="gate">
+                  <span class="ic">!</span>
+                  <div>
+                    <p>Review VECTOR weekly memo — content cadence high, audience reach embryonic.</p>
+                    <div class="meta">Mission 040 · Vector · Owner Auto</div>
+                  </div>
+                  <span class="when">4h</span>
+                </div>
+              </div>
+              <div class="card-f"><span>avg gate · 10h 52m</span><a href="#">Queue →</a></div>
+            </div>
+
+            <!-- performance -->
+            <div class="card">
+              <div class="card-h"><span class="lbl">Performance</span><span></span><span class="meta">7d success</span></div>
+              <div class="card-b">
+                <div class="perf-row"><span class="name">VECTOR</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                <div class="perf-row"><span class="name">RALLY</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                <div class="perf-row"><span class="name">FIXER</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                <div class="perf-row"><span class="name">EDITOR</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                <div class="perf-row"><span class="name">SCOUT</span><span class="bar"><i style="width:100%"></i></span><span class="n">100</span></div>
+                <div class="perf-row"><span class="name">QA·ENG</span><span class="bar"><i style="width:96%"></i></span><span class="n">96</span></div>
+                <div class="perf-row"><span class="name">QUILL</span><span class="bar"><i class="warn" style="width:92%"></i></span><span class="n">92</span></div>
+                <div class="perf-row"><span class="name">COMMS</span><span class="bar"><i class="warn" style="width:90%"></i></span><span class="n">90</span></div>
+                <div class="perf-row"><span class="name">SCRIBE</span><span class="bar"><i class="warn" style="width:87%"></i></span><span class="n">87</span></div>
+                <div class="perf-row"><span class="name">GROWTH</span><span class="bar"><i class="crit" style="width:50%"></i></span><span class="n">50</span></div>
+                <div class="perf-row"><span class="name">SOCIAL</span><span class="bar"><i class="crit" style="width:45%"></i></span><span class="n">45</span></div>
+              </div>
+              <div class="card-f"><span>2 needing attention</span><a href="#">Tune →</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- ============ REPORT VIEWER ============ -->
+<template id="art-report">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sb">
+        <div class="sb-brand">
+          <span class="sb-mark">A</span>
+          <b>Automatos <span>a.i.</span></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Dashboard</span><span class="num">01</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Chat</span><span class="num">02</span></a>
+        <a class="sb-item active" href="#"><i class="ic"></i><span>Reports</span><span class="num">11</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Missions</span><span class="num">42</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Playbooks</span><span class="num">11</span></a>
+
+        <div class="sb-section"><span>Filed today</span><span>11</span></div>
+        <a class="sb-item" href="#"><i class="ic"></i><span>COMMS · 13:48</span><span class="num">042</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>QA·ENG · 12:11</span><span class="num">038</span></a>
+        <a class="sb-item active" href="#"><i class="ic"></i><span>SENTINEL · 11:02</span><span class="num">W·09</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>SCRIBE · 09:46</span><span class="num">040</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>SCOUT · 09:22</span><span class="num">041</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>ATLAS · 08:14</span><span class="num">D·09</span></a>
+
+        <div class="sb-foot">
+          <span class="live">All systems operational</span>
+          <span>v1.36.04</span>
+        </div>
+      </aside>
+
+      <div>
+        <div class="report-toolbar">
+          <div class="crumbs"><span>Reports</span><span class="sep">/</span><span>Watch routine</span><span class="sep">/</span><b>SENTINEL · 09 May · 11:02</b></div>
+          <div class="actions">
+            <a class="btn" href="#">Promote to mission</a>
+            <a class="btn" href="#">Reply to SENTINEL</a>
+            <a class="btn ghost" href="#">Approve & dispatch</a>
+            <a class="btn" href="#">···</a>
+          </div>
+        </div>
+
+        <div class="report-shell">
+          <div class="report-doc">
+            <div class="doc">
+              <!-- letterhead -->
+              <div class="doc-letterhead">
+                <div class="lh-l">
+                  <div class="doc-stamp">▲ Automatos · field report</div>
+                  <div class="doc-issue">Volume 04 · Issue 127 · 09 May 2026</div>
+                </div>
+                <div class="doc-id">
+                  <b>RPT-W09-2026-127</b>
+                  Filed 11:02 GMT
+                </div>
+              </div>
+
+              <h1 class="doc-h1">Watchtower routine — overnight posture &amp; CVE sweep</h1>
+
+              <!-- byline -->
+              <div class="doc-byline">
+                <span class="mono-tile lg accent">SE</span>
+                <div class="who">
+                  <span>By <b class="agent">SENTINEL</b></span>
+                  <span>Filed <b>09 May · 11:02</b></span>
+                  <span>Routine <b>Watchtower / nightly</b></span>
+                  <span>Run time <b>2h 14m</b></span>
+                  <span>For <b>Gerard Kavanagh</b></span>
+                </div>
+              </div>
+
+              <!-- TLDR -->
+              <div class="doc-tldr">
+                <div class="lbl">Bottom line</div>
+                <p>No active incidents. Two dependencies are past rotation; one third-party API surfaced an elevated error rate around 03:40 GMT but recovered. Recommend approving the dependency rotation and watching <b>checkout/v2</b> through the next 24h before closing.</p>
+              </div>
+
+              <!-- findings -->
+              <div class="doc-section">
+                <h2 class="doc-h2"><span>§ 01 — Findings</span><span class="num">3 items</span></h2>
+                <div class="doc-findings">
+                  <div class="finding">
+                    <span class="sev med">Medium</span>
+                    <div class="body">
+                      <p>Two dependencies <b>past rotation window</b> — <code class="mono">@aws-sdk/client-s3</code> and <code class="mono">stripe-node</code>. Neither has open CVEs but both exceed the 90-day policy.</p>
+                      <div class="meta">Detected 03:18 · Policy gov-rotate-90 · Env production</div>
+                    </div>
+                    <a class="act primary" href="#">Approve rotation</a>
+                  </div>
+                  <div class="finding">
+                    <span class="sev low">Low</span>
+                    <div class="body">
+                      <p>Third-party API <b>checkout/v2</b> error rate spiked to 4.2% at 03:40 GMT for ~6 minutes; recovered to baseline 0.3%. No customer-visible incidents.</p>
+                      <div class="meta">Source upstream-status · Window 03:40–03:46 · Affected 0 sessions</div>
+                    </div>
+                    <a class="act" href="#">Watch 24h</a>
+                  </div>
+                  <div class="finding">
+                    <span class="sev low">Info</span>
+                    <div class="body">
+                      <p>Routine cleanup — purged <b>14 stale tokens</b> across the workspace and re-indexed audit log volumes 11–12.</p>
+                      <div class="meta">Tokens token-housekeeping · Volumes audit-vol-11, audit-vol-12</div>
+                    </div>
+                    <a class="act" href="#">Acknowledge</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- table -->
+              <div class="doc-section">
+                <h2 class="doc-h2"><span>§ 02 — Posture deltas vs 7d</span><span class="num">5 metrics</span></h2>
+                <table class="doc-table">
+                  <thead>
+                    <tr><th>Metric</th><th>Today</th><th>7d avg</th><th>Δ</th><th>Note</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Open CVEs</td><td class="num">0</td><td class="num">0.4</td><td><span class="delta-up">−100%</span></td><td>Quiet week</td></tr>
+                    <tr><td>Auth anomalies</td><td class="num">3</td><td class="num">2.1</td><td><span class="delta-dn">+43%</span></td><td>All resolved</td></tr>
+                    <tr><td>Failed deploys</td><td class="num">0</td><td class="num">0.2</td><td><span class="delta-up">−100%</span></td><td>Stable</td></tr>
+                    <tr><td>API error rate</td><td class="num">0.31%</td><td class="num">0.28%</td><td><span class="delta-dn">+0.03</span></td><td>Within band</td></tr>
+                    <tr><td>Token churn</td><td class="num">14</td><td class="num">11</td><td><span class="delta-dn">+27%</span></td><td>Cleanup</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- narrative -->
+              <div class="doc-section">
+                <h2 class="doc-h2"><span>§ 03 — Field notes</span><span class="num">SENTINEL</span></h2>
+                <p>The night was quiet. Most of the work was housekeeping — token rotations, log re-indexing, and a brief upstream wobble that resolved before any traffic noticed. <b>Checkout/v2</b> is the one thing I'd watch: the spike was small but the pattern matched a similar event from 03 May. If it recurs tonight, I'll escalate.</p>
+                <p>I also took the chance to apply the new governance blueprint draft to a sandbox copy of the workspace. <b>It applied cleanly.</b> No conflicts, no orphan permissions. Recommend promoting that change to a mission and scheduling for the weekend window.</p>
+                <div class="doc-quote">"Pattern matched, but window short and recovery clean. Watching, not waking. — SE"</div>
+              </div>
+
+              <!-- attachments -->
+              <div class="doc-section">
+                <h2 class="doc-h2"><span>§ 04 — Attachments</span><span class="num">3 files</span></h2>
+                <div class="doc-attach">
+                  <div class="attach"><span class="name">posture-delta.csv</span><span class="meta">2.4 KB · table data</span></div>
+                  <div class="attach"><span class="name">checkout-v2-trace.json</span><span class="meta">128 KB · upstream</span></div>
+                  <div class="attach"><span class="name">gov-blueprint-diff.md</span><span class="meta">6.1 KB · sandbox</span></div>
+                </div>
+              </div>
+
+              <!-- signoff -->
+              <div class="doc-signoff">
+                <div class="signoff-block">
+                  <div class="lbl">Filed by</div>
+                  <div class="signature">Sentinel</div>
+                  <div class="name">SENTINEL</div>
+                  <div class="id">v2.4 · workforce · Sentinel pack</div>
+                </div>
+                <div class="signoff-block">
+                  <div class="lbl">Routed to</div>
+                  <div class="signature" style="color:var(--fg-2);">Auto</div>
+                  <div class="name">AUTO · orchestrator</div>
+                  <div class="id">For triage &amp; dispatch · 11:02</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="report-rail">
+            <div>
+              <span class="rail-h">Status</span>
+              <div class="rail-status">
+                <span class="dot"></span>
+                <div><b>Awaiting your review</b><span>Filed 2h 14m ago</span></div>
+              </div>
+            </div>
+
+            <div>
+              <span class="rail-h">Actions</span>
+              <div class="rail-actions">
+                <a class="btn solid" href="#">Approve rotation →</a>
+                <a class="btn" href="#">Acknowledge &amp; close</a>
+                <a class="btn" href="#">Reply to SENTINEL</a>
+                <a class="btn" href="#">Promote to mission</a>
+              </div>
+            </div>
+
+            <div>
+              <span class="rail-h">Audit trail</span>
+              <div class="rail-trail">
+                <div class="trail-row">
+                  <span class="dot live"></span>
+                  <div><b>Routed to AUTO</b><div class="meta">11:02 · for triage</div></div>
+                </div>
+                <div class="trail-row">
+                  <span class="dot acc"></span>
+                  <div><b>Filed by SENTINEL</b><div class="meta">11:02 · routine complete</div></div>
+                </div>
+                <div class="trail-row">
+                  <span class="dot"></span>
+                  <div><b>Routine started</b><div class="meta">08:48 · Watchtower</div></div>
+                </div>
+                <div class="trail-row">
+                  <span class="dot"></span>
+                  <div><b>Triggered</b><div class="meta">08:48 · cron · nightly</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <span class="rail-h">Related</span>
+              <div class="rail-trail">
+                <div class="trail-row">
+                  <span class="dot acc"></span>
+                  <div><b>RPT-W08-126</b><div class="meta">Yesterday · 1 finding</div></div>
+                </div>
+                <div class="trail-row">
+                  <span class="dot acc"></span>
+                  <div><b>Mission 042 · org health</b><div class="meta">Open · 20h pending</div></div>
+                </div>
+                <div class="trail-row">
+                  <span class="dot acc"></span>
+                  <div><b>Playbook · Watchtower</b><div class="meta">v2.4 · 11 runs · 100%</div></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- ============ CHAT ============ -->
+<template id="art-chat">
+  <div class="artboard">
+    <div class="app">
+      <aside class="sb">
+        <div class="sb-brand">
+          <span class="sb-mark">A</span>
+          <b>Automatos <span>a.i.</span></b>
+        </div>
+        <div class="sb-section"><span>Workspace</span><span>01</span></div>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Dashboard</span><span class="num">01</span></a>
+        <a class="sb-item active" href="#"><i class="ic"></i><span>Chat</span><span class="num">02</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Reports</span><span class="num">11</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Missions</span><span class="num">42</span></a>
+        <a class="sb-item" href="#"><i class="ic"></i><span>Playbooks</span><span class="num">11</span></a>
+
+        <div class="sb-section"><span>Recent · chats</span><span>22</span></div>
+        <a class="sb-item active" href="#"><span></span><span>OS operating model · Auto</span><span class="num">12m</span></a>
+        <a class="sb-item" href="#"><span></span><span>Skill governance review</span><span class="num">2h</span></a>
+        <a class="sb-item" href="#"><span></span><span>Shopify pack onboarding</span><span class="num">5h</span></a>
+        <a class="sb-item" href="#"><span></span><span>Spike — playbook fan-out</span><span class="num">1d</span></a>
+        <a class="sb-item" href="#"><span></span><span>SENTINEL false-positive triage</span><span class="num">2d</span></a>
+
+        <div class="sb-foot">
+          <span class="live">Auto · listening</span>
+          <span>Tokens (7d) · 38,452</span>
+        </div>
+      </aside>
+
+      <div class="chat-shell">
+        <div class="chat-main">
+          <div class="chat-head">
+            <div>
+              <h2>OS operating model — governance smoke test</h2>
+              <div class="chat-meta">
+                <span>Routed via <b>Auto</b></span>
+                <span>Started <b>13:50 · 09 May</b></span>
+                <span>3 turns</span>
+              </div>
+            </div>
+            <a class="btn" href="#">Promote to mission</a>
+          </div>
+
+          <div class="stream">
+            <!-- user -->
+            <div class="msg">
+              <div class="gutter">
+                <b>You</b>
+                <time>13:50</time>
+              </div>
+              <div class="msg-body">
+                <p class="lead">Auto — does the operating model still hold for skill <em>governance</em> if a manager edits a workspace skill before the team lead has signed off?</p>
+              </div>
+            </div>
+
+            <!-- routing strip — the legible-routing piece -->
+            <div class="msg">
+              <div class="gutter"><b>Auto</b><time>13:50</time></div>
+              <div class="msg-body">
+                <div class="routing">
+                  <div class="routing-h">
+                    <span>Routing decision · Auto</span>
+                    <b>13:50:02 · 480ms</b>
+                  </div>
+                  <div class="routing-flow">
+                    <div class="routing-node">
+                      <span class="mono-tile lg accent">Y</span>
+                      <span class="name">You</span>
+                      <span class="role">prompt</span>
+                    </div>
+                    <span class="routing-arrow">────→</span>
+                    <div class="routing-node">
+                      <span class="mono-tile lg">AU</span>
+                      <span class="name">Auto</span>
+                      <span class="role">orchestrator</span>
+                    </div>
+                    <span class="routing-arrow">────→</span>
+                    <div class="routing-node">
+                      <span class="mono-tile lg accent">TT</span>
+                      <span class="name">Tiktok-auto</span>
+                      <span class="role">specialist</span>
+                    </div>
+                  </div>
+                  <div class="routing-because">
+                    <span>Why this route</span>
+                    <p>Prompt mentions <b>operating model</b> + <b>skill governance</b>. Workspace has a custom Tiktok-automation skill loaded with that governance guidance — using it as the source of truth. Fallback: Auto's base prompt.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- agent reply -->
+            <div class="msg">
+              <div class="gutter"><b>Auto</b><time>13:50</time></div>
+              <div class="msg-body">
+                <p>Routed via <b>tiktok-automation</b> — but the answer's the same. Run the smoke test from a fresh chat. If governance is wired in, you should hear me mention things like:</p>
+
+                <div class="msg-list">
+                  <div class="li">Auto remains workspace orchestrator</div>
+                  <div class="li">Team leads start advisor-only</div>
+                  <div class="li">Managers drive execution but not structural governance</div>
+                  <div class="li">Strong role skills are the backbone</div>
+                  <div class="li">Smaller playbook steps beat giant prompts</div>
+                  <div class="li">Reports create change requests</div>
+                  <div class="li">Skill / tool edits need governance</div>
+                  <div class="li">Marketplace skills fork on workspace edit</div>
+                </div>
+
+                <p>If I don't mention those without being reminded, the modified skill is either not attached — or not being injected at chat init.</p>
+
+                <div class="cta-row">
+                  <span class="chip on">Open new chat</span>
+                  <span class="chip ghost">Inspect skill attachments</span>
+                  <span class="chip">View governance log</span>
+                  <span class="chip">Promote to mission</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="composer-row">
+              <span class="composer-pick">Auto · routed</span>
+              <span class="composer-field">Type a message — Auto routes it…</span>
+              <span class="composer-send">Send →</span>
+            </div>
+            <div class="composer-tools">
+              <span class="composer-tool on">Code</span>
+              <span class="composer-tool">Plan</span>
+              <span class="composer-tool">Mission</span>
+              <span class="composer-tool">Scribe</span>
+              <span class="composer-tool">Canvas</span>
+              <span class="composer-tool">+ Tool</span>
+              <span class="composer-tool" style="margin-left:auto;">Tokens · 38,452</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="chat-rail">
+          <div>
+            <span class="rail-h">Active mission</span>
+            <div class="rail-card">
+              <div class="top"><span>Mission 042</span><b>Routing</b></div>
+              <h4>Skill governance — fresh-chat smoke test.</h4>
+              <div class="body">Verify the modified workspace skill loads at chat init. 4 checks · 1 pending.</div>
+            </div>
+          </div>
+
+          <div>
+            <span class="rail-h">Routing trail</span>
+            <div class="rail-trail">
+              <div class="trail-row">
+                <span class="dot acc"></span>
+                <div><b>Auto → Tiktok-auto</b><div class="meta">13:50:02 · governance match</div></div>
+              </div>
+              <div class="trail-row">
+                <span class="dot live"></span>
+                <div><b>Auto received prompt</b><div class="meta">13:50:01 · You</div></div>
+              </div>
+              <div class="trail-row">
+                <span class="dot"></span>
+                <div><b>Session opened</b><div class="meta">13:50 · workspace · my workspace</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <span class="rail-h">On the team</span>
+            <div>
+              <div class="team-row">
+                <span class="mono-tile sm">AT</span>
+                <div><b>ATLAS</b><div class="meta">orchestrator</div></div>
+                <span class="now">on</span>
+              </div>
+              <div class="team-row">
+                <span class="mono-tile sm">SC</span>
+                <div><b>SCRIBE</b><div class="meta">drafts</div></div>
+                <span class="now">on</span>
+              </div>
+              <div class="team-row">
+                <span class="mono-tile sm">SE</span>
+                <div><b>SENTINEL</b><div class="meta">security · watch</div></div>
+                <span class="now">on</span>
+              </div>
+              <div class="team-row">
+                <span class="mono-tile sm">QA</span>
+                <div><b>QA·ENG</b><div class="meta">test · regression</div></div>
+                <span class="now">on</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- mount -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const Tpl = ({ id }) => {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const tpl = document.getElementById(id);
+    if (tpl && ref.current) {
+      ref.current.innerHTML = "";
+      ref.current.appendChild(tpl.content.cloneNode(true));
+    }
+  }, [id]);
+  return <div ref={ref} />;
+};
+
+function App() {
+  return (
+    <DesignCanvas title="Automatos · platform — calm pass + recommendations" subtitle="Same dark + orange · stripped gradients · monogram tiles · single accent · report viewer + routing legibility">
+      <DCSection id="calm" title="01 — The calm pass">
+        <DCArtboard id="dash" label="Dashboard · same layout, calmed" width={1440} height={920}>
+          <Tpl id="art-dash" />
+        </DCArtboard>
+      </DCSection>
+      <DCSection id="report" title="02 — The agent report (the real bet)">
+        <DCArtboard id="rpt" label="Watchtower routine · SENTINEL · 09 May" width={1440} height={1320}>
+          <Tpl id="art-report" />
+        </DCArtboard>
+      </DCSection>
+      <DCSection id="chat" title="03 — Chat with legible routing">
+        <DCArtboard id="ch" label="OS operating model · governance smoke test" width={1440} height={920}>
+          <Tpl id="art-chat" />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("dc-root")).render(<App />);
+</script>
+
+</body>
+</html>

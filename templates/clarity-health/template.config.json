@@ -1,0 +1,17 @@
+{
+  "id": "clarity-health",
+  "slug": "clarity-health",
+  "name": "Clarity Health",
+  "description": "Bright, blue-forward medical cannabis storefront for adults 40+. Evidence-led, doctor-first, designed to feel more like a private clinic than a dispensary.",
+  "category": "medical",
+  "tags": ["medical", "clinical", "blue", "white", "professional", "40-plus", "uk", "wellness"],
+  "features": [
+    "Split-image hero with clinician + lab + product photography",
+    "Bento conditions grid covering pain, mental health, sleep and GI",
+    "3-step prescription process for new patients",
+    "Dark navy CTA gradient anchored against bright body sections",
+    "Plus Jakarta Sans + Geist type pairing — modern and clinical"
+  ],
+  "author": "Bubstacks Platform",
+  "version": "1.0.0"
+}

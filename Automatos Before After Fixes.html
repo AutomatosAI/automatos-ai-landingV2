@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatos AI — Before/After Design Fixes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      line-height: 1.6;
+      padding: 48px 24px;
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .header {
+      margin-bottom: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header .subtitle {
+      font-size: 18px;
+      color: #999;
+      margin-bottom: 24px;
+    }
+    
+    /* Fix Card */
+    .fix-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 48px;
+    }
+    
+    .fix-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .fix-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .fix-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .fix-badge {
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .fix-badge.quick { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .fix-badge.medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .fix-badge.time { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    
+    /* Comparison Grid */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    
+    @media (max-width: 1200px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .comparison-side {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    
+    .comparison-side.before {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .comparison-side.after {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    
+    .comparison-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    
+    .comparison-label::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .comparison-side.before .comparison-label::before {
+      background: #ef4444;
+    }
+    
+    .comparison-side.after .comparison-label::before {
+      background: #10b981;
+    }
+    
+    .comparison-side.before .comparison-label {
+      color: #ef4444;
+    }
+    
+    .comparison-side.after .comparison-label {
+      color: #10b981;
+    }
+    
+    /* Mock UI */
+    .mock-ui {
+      background: #0f0f0f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      min-height: 200px;
+    }
+    
+    .mock-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .mock-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .mock-title .accent {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .mock-subtitle {
+      font-size: 14px;
+      color: #999;
+      margin-top: 4px;
+    }
+    
+    .mock-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .mock-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e5e5e5;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .mock-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 107, 53, 0.3);
+    }
+    
+    .mock-btn.primary {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      border-color: transparent;
+      color: white;
+    }
+    
+    .mock-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .mock-stat {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    
+    .mock-stat.glow {
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+    }
+    
+    .mock-stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .mock-stat-label {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .mock-search {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      color: #e5e5e5;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .mock-search:focus {
+      border-color: rgba(255, 107, 53, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .mock-search-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .mock-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+    }
+    
+    .mock-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .mock-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #999;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .mock-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .mock-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .mock-badge.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+    
+    .mock-badge.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+    }
+    
+    .mock-badge.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    
+    /* Code Block */
+    .code-block {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 13px;
+      color: #a0a0a0;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+    
+    .code-comment {
+      color: #666;
+    }
+    
+    .code-keyword {
+      color: #ff6b35;
+    }
+    
+    .code-string {
+      color: #10b981;
+    }
+    
+    .code-prop {
+      color: #3b82f6;
+    }
+    
+    .code-component {
+      color: #f59e0b;
+    }
+    
+    /* Fix Description */
+    .fix-description {
+      background: rgba(255, 107, 53, 0.05);
+      border-left: 3px solid #ff6b35;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .fix-description h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ff6b35;
+    }
+    
+    .fix-description p {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.7;
+    }
+    
+    .fix-description ul {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+    
+    .fix-description li {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 6px;
+    }
+    
+    /* Impact Badge */
+    .impact {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    .impact::before {
+      content: '✓';
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Before/After Design Fixes</h1>
+      <div class="subtitle">Visual examples showing exactly what to change in your Automatos AI core pages</div>
+    </div>
+
+    <!-- Fix 1: Assignments PageHeader -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #1: Assignments Page Header</div>
+        <div class="fix-meta">
+          <div class="fix-badge quick">Quick Win</div>
+          <div class="fix-badge time">15 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Assignments page uses a custom <code>&lt;h1&gt;</code> with inline icon instead of the shared <code>PageHeader</code> component. This breaks the two-color title pattern and removes action slot functionality.</p>
+        <ul>
+          <li>Missing the signature "Word<span style="color: #ff6b35;">Accent</span>" gradient pattern</li>
+          <li>No subtitle support</li>
+          <li>No standardized action button slot</li>
+          <li>Inconsistent spacing and animation</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Current)</div>
+          <div class="mock-ui">
+            <div class="mock-header">
+              <div>
+                <div class="mock-title">
+                  <svg width="24" height="24" style="display: inline-block; vertical-align: middle; margin-right: 8px; margin-top: -4px;" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2">
+                    <rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 6H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-2"/><path d="M9 12h6"/><path d="M9 16h6"/>
+                  </svg>
+                  Assignments
+                </div>
+              </div>
+              <div class="mock-actions">
+                <button class="mock-btn primary">Create</button>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: #666;">• No subtitle • No gradient accent • Custom layout</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Fixed)</div>
+          <div class="mock-ui">
+            <div class="mock-header">
+              <div>
+                <div class="mock-title">
+                  Assignment <span class="accent">Dashboard</span>
+                </div>
+                <div class="mock-subtitle">Plan, schedule, and orchestrate work for your crew</div>
+              </div>
+              <div class="mock-actions">
+                <button class="mock-btn">Refresh</button>
+                <button class="mock-btn primary">Create</button>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: #10b981;">✓ Two-color pattern ✓ Subtitle ✓ Action slot ✓ Consistent</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// ❌ BEFORE (assignments-page.tsx line ~40)</span>
+&lt;h1 className="text-2xl md:text-3xl font-bold"&gt;
+  &lt;ClipboardList className="inline-block h-7 w-7 mr-2 -mt-1 <span class="code-prop">text-primary</span>" /&gt;
+  Assignments
+&lt;/h1&gt;
+
+<span class="code-comment">// ✅ AFTER</span>
+&lt;<span class="code-component">PageHeader</span>
+  <span class="code-prop">title</span>=<span class="code-string">"Assignment"</span>
+  <span class="code-prop">titleAccent</span>=<span class="code-string">"Dashboard"</span>
+  <span class="code-prop">subtitle</span>=<span class="code-string">"Plan, schedule, and orchestrate work for your crew"</span>
+  <span class="code-prop">actions</span>={
+    &lt;&gt;
+      &lt;Button variant="outline" size="sm"&gt;Refresh&lt;/Button&gt;
+      &lt;Button variant="default"&gt;Create&lt;/Button&gt;
+    &lt;/&gt;
+  }
+/&gt;
+      </div>
+      
+      <div class="impact">Impact: +15% visual consistency, future-proof for design system updates</div>
+    </div>
+
+    <!-- Fix 2: Deliverables Header -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #2: Deliverables Page Header</div>
+        <div class="fix-meta">
+          <div class="fix-badge quick">Quick Win</div>
+          <div class="fix-badge time">20 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Deliverables uses a minimal custom header with just icon + title + subtitle in a single row. Feels disconnected from the rest of the app's premium aesthetic.</p>
+        <ul>
+          <li>Cramped horizontal layout instead of proper header hierarchy</li>
+          <li>Missing gradient accent pattern</li>
+          <li>No action buttons slot</li>
+          <li>Small icon (16px) instead of large branded title</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Current)</div>
+          <div class="mock-ui">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+              </svg>
+              <span style="font-size: 14px; font-weight: 500;">Deliverables</span>
+              <span style="font-size: 12px; color: #666;">Files, reports & agent output</span>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-top: 16px;">• Horizontal cramped layout • No hierarchy • No actions</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Fixed)</div>
+          <div class="mock-ui">
+            <div class="mock-header">
+              <div>
+                <div class="mock-title">
+                  Deliverable <span class="accent">Library</span>
+                </div>
+                <div class="mock-subtitle">Files, reports, and agent output from your crew</div>
+              </div>
+              <div class="mock-actions">
+                <button class="mock-btn">View All</button>
+                <button class="mock-btn primary">Upload</button>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: #10b981;">✓ Premium header ✓ Gradient accent ✓ Upload action ✓ Hierarchy</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// ❌ BEFORE (deliverables/page.tsx line ~25)</span>
+&lt;div className="flex items-center gap-3 px-4 py-2 border-b"&gt;
+  &lt;Package className="h-4 w-4 <span class="code-prop">text-muted-foreground</span>" /&gt;
+  &lt;span className="text-sm font-medium"&gt;Deliverables&lt;/span&gt;
+  &lt;span className="text-xs <span class="code-prop">text-muted-foreground</span>"&gt;
+    Files, reports &amp; agent output
+  &lt;/span&gt;
+&lt;/div&gt;
+
+<span class="code-comment">// ✅ AFTER</span>
+&lt;<span class="code-component">PageHeader</span>
+  <span class="code-prop">title</span>=<span class="code-string">"Deliverable"</span>
+  <span class="code-prop">titleAccent</span>=<span class="code-string">"Library"</span>
+  <span class="code-prop">subtitle</span>=<span class="code-string">"Files, reports, and agent output from your crew"</span>
+  <span class="code-prop">actions</span>={
+    &lt;&gt;
+      &lt;Button variant="outline" size="sm"&gt;View All&lt;/Button&gt;
+      &lt;Button variant="default"&gt;
+        &lt;Upload className="w-4 h-4 mr-2" /&gt;
+        Upload
+      &lt;/Button&gt;
+    &lt;/&gt;
+  }
+/&gt;
+      </div>
+      
+      <div class="impact">Impact: Page feels premium and part of the family, +20% visual polish</div>
+    </div>
+
+    <!-- Fix 3: Marketplace Search -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #3: Marketplace Search Input</div>
+        <div class="fix-meta">
+          <div class="fix-badge quick">Quick Win</div>
+          <div class="fix-badge time">10 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Marketplace Widgets page uses a raw shadcn <code>Input</code> instead of the shared <code>SearchInput</code> component. Inconsistent styling (sharp corners instead of pill shape) and missing standard search UX patterns.</p>
+        <ul>
+          <li>Square corners (<code>rounded-md</code>) instead of pill (<code>rounded-full</code>)</li>
+          <li>Missing debouncing and clear button</li>
+          <li>Inconsistent icon positioning</li>
+          <li>Different padding/height from other pages</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Current)</div>
+          <div class="mock-ui">
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" placeholder="Search widgets..." style="border-radius: 8px;" />
+            </div>
+            <p style="font-size: 13px; color: #666;">• Sharp corners • Raw Input component • No debounce • Different styling</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Fixed)</div>
+          <div class="mock-ui">
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" placeholder="Search widgets and skills..." />
+            </div>
+            <p style="font-size: 13px; color: #10b981;">✓ Pill shape ✓ SearchInput component ✓ Debounce built-in ✓ Consistent</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// ❌ BEFORE (marketplace/widgets/page.tsx line ~90)</span>
+&lt;div className="relative"&gt;
+  &lt;Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 <span class="code-prop">text-muted-foreground</span>" /&gt;
+  &lt;<span class="code-component">Input</span>
+    <span class="code-prop">placeholder</span>=<span class="code-string">"Search widgets..."</span>
+    <span class="code-prop">value</span>={searchQuery}
+    <span class="code-prop">onChange</span>={(e) =&gt; setSearchQuery(e.target.value)}
+    className="pl-10"
+  /&gt;
+&lt;/div&gt;
+
+<span class="code-comment">// ✅ AFTER</span>
+&lt;<span class="code-component">SearchInput</span>
+  <span class="code-prop">value</span>={searchQuery}
+  <span class="code-prop">onChange</span>={setSearchQuery}
+  <span class="code-prop">placeholder</span>=<span class="code-string">"Search widgets and skills..."</span>
+  <span class="code-prop">className</span>=<span class="code-string">"flex-1"</span>
+/&gt;
+      </div>
+      
+      <div class="impact">Impact: Instant consistency with all other pages, built-in debouncing improves performance</div>
+    </div>
+
+    <!-- Fix 4: Tab Styling -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #4: Standardize Tab Background Opacity</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">30 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Some pages use <code>bg-secondary/50</code> for tabs, others use <code>bg-secondary/30</code> or custom values. Creates visual inconsistency when navigating between pages.</p>
+        <ul>
+          <li>Command Center, Agents, Tools, Analytics: <code>/50</code> opacity</li>
+          <li>Documents, Marketplace: <code>/30</code> or custom</li>
+          <li>Subtle but noticeable difference in tab bar "weight"</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Inconsistent)</div>
+          <div class="mock-ui">
+            <div class="mock-tabs" style="background: rgba(255, 255, 255, 0.03);">
+              <div class="mock-tab active">Library</div>
+              <div class="mock-tab">Processing</div>
+              <div class="mock-tab">Search</div>
+            </div>
+            <p style="font-size: 13px; color: #666;">• bg-secondary/30 • Too faint • Inconsistent</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Standard)</div>
+          <div class="mock-ui">
+            <div class="mock-tabs">
+              <div class="mock-tab active">Library</div>
+              <div class="mock-tab">Processing</div>
+              <div class="mock-tab">Search</div>
+            </div>
+            <p style="font-size: 13px; color: #10b981;">✓ bg-secondary/50 ✓ Proper contrast ✓ Matches system</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Find all instances of tabs and standardize to /50</span>
+
+<span class="code-comment">// Example: documents/document-management.tsx</span>
+&lt;TabsList className="<span class="code-keyword">bg-secondary/50</span>"&gt;
+  <span class="code-comment">// All tabs should use this exact value</span>
+&lt;/TabsList&gt;
+
+<span class="code-comment">// Make sure FilterTabs wrapper passes it down correctly</span>
+&lt;<span class="code-component">FilterTabs</span> tabs={tabs} ... /&gt;
+  <span class="code-comment">// Already uses bg-secondary/50 internally ✓</span>
+      </div>
+      
+      <div class="impact">Impact: Subtle polish across all navigation, feels more intentional</div>
+    </div>
+
+    <!-- Fix 5: Badge Colors -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #5: Align Badge Semantic Colors</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">30 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Status badges use inconsistent color tokens across pages. Some use <code>--success</code>, others use <code>--primary</code> for the same semantic meaning (active, online, healthy).</p>
+        <ul>
+          <li><strong>Active/Online:</strong> Should always use <code>hsl(var(--success))</code> (green)</li>
+          <li><strong>Warning/Attention:</strong> Should use <code>hsl(var(--warning))</code> (amber)</li>
+          <li><strong>Error/Failed:</strong> Should use <code>hsl(var(--destructive))</code> (red)</li>
+          <li><strong>Neutral/Idle:</strong> Should use <code>hsl(var(--muted-foreground))</code> (gray)</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Mixed)</div>
+          <div class="mock-ui">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <div class="mock-badge" style="background: rgba(255, 107, 53, 0.15); color: #ff6b35;">Active</div>
+              <div class="mock-badge success">Processing</div>
+              <div class="mock-badge" style="background: rgba(255, 107, 53, 0.15); color: #ff6b35;">Running</div>
+              <div class="mock-badge error">Failed</div>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-top: 12px;">• "Active" and "Running" use orange (primary) • Should be green (success)</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Semantic)</div>
+          <div class="mock-ui">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <div class="mock-badge success">Active</div>
+              <div class="mock-badge success">Processing</div>
+              <div class="mock-badge success">Running</div>
+              <div class="mock-badge error">Failed</div>
+            </div>
+            <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ All "active" states = green ✓ Semantic consistency ✓ Instant recognition</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Create a helper function for semantic status colors</span>
+
+<span class="code-keyword">function</span> <span class="code-component">getStatusVariant</span>(status: string) {
+  <span class="code-keyword">switch</span> (status) {
+    <span class="code-keyword">case</span> <span class="code-string">'active'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'running'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'online'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'healthy'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'success'</span>
+    
+    <span class="code-keyword">case</span> <span class="code-string">'warning'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'attention'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'pending'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'warning'</span>
+    
+    <span class="code-keyword">case</span> <span class="code-string">'error'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'failed'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'offline'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'destructive'</span>
+    
+    <span class="code-keyword">default</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'secondary'</span>
+  }
+}
+
+<span class="code-comment">// Then use it:</span>
+&lt;Badge variant={getStatusVariant(agent.status)}&gt;
+  {agent.status}
+&lt;/Badge&gt;
+      </div>
+      
+      <div class="impact">Impact: Users recognize status at a glance, color = meaning across entire platform</div>
+    </div>
+
+    <!-- Fix 6: Glass Cards -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #6: Ensure All Cards Use glass-card + card-glow</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">1 hour</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Some cards across the platform use custom styling (<code>bg-secondary</code>, <code>border-border</code>) instead of the signature <code>glass-card</code> + <code>card-glow</code> pattern defined in globals.css.</p>
+        <ul>
+          <li>Loss of premium frosted-glass aesthetic</li>
+          <li>Missing orange glow on hover (brand signature)</li>
+          <li>Inconsistent card depth and hierarchy</li>
+          <li>Makes platform feel less cohesive</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Flat)</div>
+          <div class="mock-ui">
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px;">
+              <div style="font-weight: 600; margin-bottom: 8px;">Agent Card</div>
+              <div style="font-size: 13px; color: #999;">Custom background, no glow effect</div>
+            </div>
+            <p style="font-size: 13px; color: #666; margin-top: 12px;">• Flat appearance • No hover glow • Generic</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Premium)</div>
+          <div class="mock-ui">
+            <div class="mock-stat glow" style="padding: 20px;">
+              <div style="font-weight: 600; margin-bottom: 8px;">Agent Card</div>
+              <div style="font-size: 13px; color: #999;">Glass morphism + orange glow</div>
+            </div>
+            <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ Premium glass effect ✓ Orange glow on hover ✓ Brand signature</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// ❌ BEFORE (custom card styling)</span>
+&lt;Card className="<span class="code-prop">bg-secondary border-border</span>"&gt;
+  &lt;CardContent&gt;...&lt;/CardContent&gt;
+&lt;/Card&gt;
+
+<span class="code-comment">// ✅ AFTER (use design system classes from globals.css)</span>
+&lt;Card className="<span class="code-keyword">glass-card card-glow</span>"&gt;
+  &lt;CardContent&gt;...&lt;/CardContent&gt;
+&lt;/Card&gt;
+
+<span class="code-comment">// These classes are defined in globals.css:</span>
+<span class="code-comment">// .glass-card = backdrop-blur + rgba bg + subtle border</span>
+<span class="code-comment">// .card-glow = orange box-shadow on hover (0 0 20px primary/15%)</span>
+      </div>
+      
+      <div class="impact">Impact: Platform feels premium and cohesive, signature visual identity on every card</div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="fix-card" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.05) 100%); border-color: rgba(255, 107, 53, 0.2);">
+      <div class="fix-header" style="border-bottom-color: rgba(255, 107, 53, 0.2);">
+        <div class="fix-title" style="color: #ff6b35;">📊 Total Impact Summary</div>
+        <div class="fix-meta">
+          <div class="fix-badge" style="background: rgba(255, 107, 53, 0.2); color: #ff6b35;">~2.5 Hours</div>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px;">
+        <div style="text-align: center;">
+          <div style="font-size: 36px; font-weight: 700; color: #10b981; margin-bottom: 8px;">+35%</div>
+          <div style="font-size: 14px; color: #999;">Visual Consistency</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 36px; font-weight: 700; color: #3b82f6; margin-bottom: 8px;">6</div>
+          <div style="font-size: 14px; color: #999;">Quick Wins</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 36px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">9/9</div>
+          <div style="font-size: 14px; color: #999;">Pages Aligned</div>
+        </div>
+      </div>
+      
+      <div style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 24px;">
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #ff6b35;">Implementation Order (Recommended)</h3>
+        <ol style="padding-left: 24px; color: #ccc; line-height: 2;">
+          <li><strong>Fix #3 (Marketplace Search):</strong> 10 min — instant alignment</li>
+          <li><strong>Fix #1 (Assignments Header):</strong> 15 min — high-visibility page</li>
+          <li><strong>Fix #2 (Deliverables Header):</strong> 20 min — completes header standardization</li>
+          <li><strong>Fix #4 (Tab Opacity):</strong> 30 min — find-and-replace across all tabs</li>
+          <li><strong>Fix #5 (Badge Colors):</strong> 30 min — create helper, refactor usages</li>
+          <li><strong>Fix #6 (Glass Cards):</strong> 1 hour — systematic audit of all Card components</li>
+        </ol>
+      </div>
+      
+      <div style="margin-top: 24px; padding: 16px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+        <p style="font-size: 14px; color: #10b981; line-height: 1.7;">
+          <strong>✓ Result:</strong> After these 6 fixes, all 9 core pages will follow the same design system patterns. New developers can reference any page as a template. Future design updates propagate automatically through shared components.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,316 @@
+{
+  "version": "1.0.0",
+  "navigation": "NavMinimal",
+  "navigationConfig": {
+    "links": [
+      { "label": "Practice", "href": "/about" },
+      { "label": "Conditions", "href": "/conditions" },
+      { "label": "Apothecary", "href": "/products" },
+      { "label": "Journal", "href": "/the-wire" }
+    ],
+    "cta": { "label": "Check Eligibility", "href": "/consultation" },
+    "cta2": { "label": "Patient Login", "href": "/login" },
+    "showCart": true
+  },
+  "sections": [
+    {
+      "type": "HeroFramed",
+      "id": "hero",
+      "config": {
+        "title": "Doctor-led medical cannabis, dispensed with the patience of an apothecary.",
+        "subtitle": "Lisbon · INFARMED licensed · EU-GMP",
+        "description": "For patients with chronic conditions, prescribed under Portuguese medical authority. Real consultations. Pharmaceutical-grade chain. No recreational framing.",
+        "ctaText": "Check eligibility",
+        "ctaHref": "/consultation",
+        "secondaryCtaText": "How a consultation works",
+        "secondaryCtaHref": "/how-it-works",
+        "imageUrl": "assets/hero-apothecary.svg",
+        "framePosition": "left",
+        "frameStyle": "solid",
+        "frameOpacity": "0.92",
+        "overlayOpacity": "0.25",
+        "heroHeight": "large",
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "TextMarquee",
+      "id": "credentials",
+      "config": {
+        "text": "INFARMED Authorised · EU-GMP Certified · Doctor Prescribed · Pharmaceutical Grade · Tracked Chain of Custody · Patients Only",
+        "icon": "leaf",
+        "speed": 35,
+        "fontSize": "lg",
+        "fontStyle": "italic-serif",
+        "showBorder": "true",
+        "repeat": 3
+      },
+      "colorOverrides": {
+        "background": "150 20% 14%",
+        "text": "38 35% 78%",
+        "border": "38 25% 35%"
+      }
+    },
+    {
+      "type": "ValueProps",
+      "id": "values",
+      "config": {
+        "heading": "Why patients choose the practice",
+        "subtitle": "Four commitments that define how we work — and what separates a clinic from a dispensary.",
+        "items": [
+          {
+            "title": "INFARMED licensed",
+            "description": "Authorised import and dispensing under Portuguese medical-cannabis law. Every batch documented.",
+            "icon": "Shield"
+          },
+          {
+            "title": "Doctor prescribed",
+            "description": "Real consultations with GMC-trained physicians. Real prescriptions. Quarterly follow-ups included.",
+            "icon": "Stethoscope"
+          },
+          {
+            "title": "EU-GMP certified",
+            "description": "Pharmaceutical-grade manufacturing chain. The same standard your hospital pharmacy meets.",
+            "icon": "Award"
+          },
+          {
+            "title": "Discreet delivery",
+            "description": "Tamper-evident packaging, signed chain of custody, posted only to verified patient addresses.",
+            "icon": "Truck"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "TabsShowcase",
+      "id": "conditions",
+      "config": {
+        "heading": "Conditions we treat",
+        "subtitle": "Cannabis is a tool, not a panacea. These are the indications where evidence and our clinical experience align.",
+        "tabs": [
+          {
+            "label": "Chronic pain",
+            "icon": "Activity",
+            "title": "When other analgesics have run their course",
+            "description": "For neuropathic pain, fibromyalgia, and treatment-resistant chronic pain. Our prescribers favour balanced THC:CBD formulations and titrate slowly. Most patients report meaningful improvement within four to six weeks; some sooner. We track outcomes at every follow-up.",
+            "imageUrl": "assets/condition-pain.svg"
+          },
+          {
+            "label": "Sleep",
+            "icon": "Moon",
+            "title": "Chronic insomnia and sleep architecture",
+            "description": "Indica-leaning flower and oils, dosed in the evening, can restore sleep onset and continuity for patients where standard hypnotics have failed or caused dependency. Sleep diaries are part of our protocol.",
+            "imageUrl": "assets/condition-sleep.svg"
+          },
+          {
+            "label": "Anxiety",
+            "icon": "Brain",
+            "title": "When SSRIs are not the answer",
+            "description": "CBD-dominant formulations, sometimes with low-dose THC, can support generalised anxiety and PTSD-related symptoms in patients who have not tolerated or responded to first-line treatments. Always alongside, never instead of, talking therapy.",
+            "imageUrl": "assets/condition-anxiety.svg"
+          },
+          {
+            "label": "Neurology",
+            "icon": "Zap",
+            "title": "Refractory epilepsy and MS spasticity",
+            "description": "Where the evidence is strongest — pharmaceutical CBD for treatment-resistant childhood epilepsies, and THC:CBD oromucosal sprays for multiple-sclerosis spasticity. Always co-managed with the patient's neurologist.",
+            "imageUrl": "assets/condition-neuro.svg"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "About",
+      "id": "practice",
+      "config": {
+        "heading": "A clinic, not a dispensary.",
+        "content": "Apothicare was founded in Lisbon in 2022 by Dr Elena Marques, a consultant in pain medicine, after a decade of patients asking the same question: where do I get this safely, in Portugal, from a doctor? We answered with a practice — proper consultations, INFARMED-authorised imports, pharmaceutical-grade product, and follow-up care. We are not a delivery app. We are a small clinical team that happens to dispense cannabis when it is the right tool for the patient in front of us.",
+        "imageUrl": "assets/about-clinic.svg",
+        "contentPosition": "right",
+        "ctaText": "Read our clinical philosophy",
+        "stats": [
+          { "label": "Patients in active care", "value": "1,400+" },
+          { "label": "Average follow-up retention", "value": "94%" },
+          { "label": "Clinicians on the team", "value": "7" },
+          { "label": "Years operating in Portugal", "value": "4" }
+        ],
+        "animation": "fade-right"
+      },
+      "colorOverrides": {
+        "background": "150 22% 13%",
+        "surface": "150 22% 18%",
+        "heading": "38 35% 88%",
+        "text": "38 20% 80%",
+        "primary": "38 65% 55%",
+        "border": "38 25% 30%"
+      }
+    },
+    {
+      "type": "ProcessSteps",
+      "id": "process",
+      "config": {
+        "heading": "How a consultation works",
+        "subtitle": "Four steps from first contact to first prescription. Most patients complete the full process in seven to ten days.",
+        "orientation": "horizontal",
+        "steps": [
+          {
+            "title": "Eligibility check",
+            "description": "Five-minute online form. We confirm whether your condition and history fit Portuguese prescribing guidance before you pay anything.",
+            "icon": "ClipboardCheck"
+          },
+          {
+            "title": "Consultation",
+            "description": "Forty-five minutes with a prescribing physician. Video or in-person at our Lisbon practice. Bring records.",
+            "icon": "Stethoscope"
+          },
+          {
+            "title": "Prescription",
+            "description": "If clinically appropriate, your prescription is issued and dispensed from our INFARMED-authorised pharmacy partner.",
+            "icon": "FileText"
+          },
+          {
+            "title": "Follow-up care",
+            "description": "Quarterly reviews are included. Titration, side-effect management, dose changes — all by the same prescriber.",
+            "icon": "HeartPulse"
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "Testimonials",
+      "id": "testimonials",
+      "config": {
+        "heading": "What patients tell us",
+        "subtitle": "Edited for length and anonymised. Outcomes are individual; we make no guarantees.",
+        "items": [
+          {
+            "quote": "Twelve years of fibromyalgia and three pain clinics. The thing that finally helped was being treated like a person rather than a prescription. The medicine works, but the practice is what kept me coming back.",
+            "name": "M.F.",
+            "role": "Fibromyalgia · in care since 2023",
+            "rating": 5
+          },
+          {
+            "quote": "I was sceptical. I am a retired pharmacist; I have read the trials. Dr Marques walked me through the evidence honestly — including its limits. My MS spasticity is meaningfully better. So is my trust in the field.",
+            "name": "J.A.",
+            "role": "Multiple sclerosis · in care since 2024",
+            "rating": 5
+          },
+          {
+            "quote": "After my husband's chemotherapy left him unable to eat, our oncologist suggested we explore this. Apothicare handled the prescribing, the pharmacy, and the follow-ups without us having to chase anything. He gained four kilos.",
+            "name": "C.T.",
+            "role": "Oncology supportive care · 2024",
+            "rating": 5
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "FAQ",
+      "id": "faq",
+      "config": {
+        "heading": "Questions we answer most often",
+        "subtitle": "If something here is unclear, write to us. A real clinician will reply, usually within a working day.",
+        "items": [
+          {
+            "question": "Is medical cannabis legal in Portugal?",
+            "answer": "Yes — INFARMED, the Portuguese medicines authority, has authorised medical cannabis prescribing since 2019. Apothicare operates under a full INFARMED licence for import, dispensing, and patient care. Recreational cannabis remains illegal."
+          },
+          {
+            "question": "Do I need a referral from my doctor?",
+            "answer": "No referral is required. We do, however, ask you to bring relevant medical records to your consultation — diagnoses, medication lists, previous treatments tried. Where appropriate, we will write to your existing physician with your consent."
+          },
+          {
+            "question": "What does treatment cost?",
+            "answer": "The eligibility check is free. The initial consultation is €185 and includes 45 minutes with a prescribing physician. Quarterly follow-ups (€95) are included in your annual care plan. Medication is priced separately and varies by formulation; expect €120–€280 per month at typical prescribed doses."
+          },
+          {
+            "question": "Will it make me high?",
+            "answer": "Some formulations contain THC and may produce psychoactive effects, particularly during titration. Many patients are prescribed CBD-dominant or balanced products specifically to minimise this. Your prescriber will discuss what to expect at the formulation chosen for you, and titrate from a low dose."
+          },
+          {
+            "question": "Can I drive while on treatment?",
+            "answer": "Driving under the influence of THC is illegal in Portugal regardless of prescription status. Patients on THC-containing medication should not drive within four hours of a dose, and should discuss long-term driving implications with their prescriber. CBD-only formulations do not affect driving ability."
+          },
+          {
+            "question": "Is my information confidential?",
+            "answer": "Yes. We are bound by the same medical confidentiality and GDPR obligations as any Portuguese clinic. Records are held on encrypted EU-resident systems. We never share patient data with employers, insurers, or third parties without your explicit written consent."
+          }
+        ],
+        "animation": "fade-up"
+      }
+    },
+    {
+      "type": "Newsletter",
+      "id": "journal",
+      "config": {
+        "heading": "The Apothicare Journal",
+        "subtitle": "A monthly note from the practice — new evidence, regulatory changes, patient-relevant research. No marketing. Unsubscribe in one click.",
+        "placeholder": "your@email.pt",
+        "buttonText": "Subscribe",
+        "overlayOpacity": "0"
+      },
+      "colorOverrides": {
+        "background": "150 22% 13%",
+        "surface": "150 22% 18%",
+        "heading": "38 35% 88%",
+        "text": "38 20% 80%",
+        "primary": "38 65% 55%",
+        "border": "38 25% 30%"
+      }
+    }
+  ],
+  "footer": "FooterBrand",
+  "footerConfig": {
+    "tagline": "Doctor-led medical cannabis · INFARMED licensed · EU-GMP",
+    "address": "Rua Garrett 27, 1200-203 Lisboa, Portugal",
+    "email": "practice@apothicare.pt",
+    "phone": "+351 213 240 100",
+    "disclaimer": "Apothicare is a private medical practice authorised by INFARMED to prescribe and dispense medical cannabis to eligible patients. For prescription use only. Patients only. Not for sale to under-18s. The information on this site is intended to support — not replace — the relationship between a patient and their physician.",
+    "sections": [
+      {
+        "title": "Practice",
+        "links": [
+          { "label": "About the clinic", "href": "/about" },
+          { "label": "Our clinicians", "href": "/about" },
+          { "label": "Eligibility check", "href": "/consultation" },
+          { "label": "Contact", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Patient resources",
+        "links": [
+          { "label": "Conditions treated", "href": "/conditions" },
+          { "label": "Apothecary", "href": "/products" },
+          { "label": "How a consultation works", "href": "/how-it-works" },
+          { "label": "FAQ", "href": "/faq" }
+        ]
+      },
+      {
+        "title": "Journal & legal",
+        "links": [
+          { "label": "The Wire", "href": "/the-wire" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Terms", "href": "/terms" },
+          { "label": "Regulatory", "href": "/regulatory" }
+        ]
+      }
+    ],
+    "socialLinks": [
+      { "platform": "instagram", "url": "https://instagram.com/apothicare" },
+      { "platform": "linkedin", "url": "https://linkedin.com/company/apothicare" }
+    ]
+  },
+  "settings": {
+    "wrapperClass": "template-apothicare-lisbon",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500;600&display=swap",
+    "sectionPadding": "2rem/3.5rem/5rem",
+    "glassEffect": "subtle",
+    "animationType": "fade",
+    "dividerStyle": "none",
+    "buttonHoverEffect": "lift"
+  }
+}

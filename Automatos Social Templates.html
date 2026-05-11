@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automatos — Social Templates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #0a0a0e; font-family: Inter, system-ui, sans-serif; }
+    #root { width: 100vw; height: 100vh; }
+
+    /* Brief / context card on canvas */
+    .brief {
+      width: 880px;
+      background: linear-gradient(135deg, #14110f, #0e0d12);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 32px 36px;
+      color: #e5e7eb;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .brief .meta {
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      color: #64748b; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .brief h1 {
+      font-family: Inter, sans-serif; font-size: 28px; font-weight: 700;
+      margin: 0 0 10px; letter-spacing: -0.6px; color: #f9fafb;
+    }
+    .brief p { color: #94a3b8; font-size: 14px; line-height: 1.65; margin: 0 0 12px; max-width: 760px; }
+    .brief .accent { color: #fdba74; }
+    .brief code {
+      font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+      color: #fed7aa; background: rgba(249,115,22,0.08); padding: 2px 6px; border-radius: 3px;
+    }
+    .brief ul { color: #94a3b8; font-size: 13.5px; line-height: 1.75; margin: 8px 0 0; padding-left: 20px; }
+    .brief li { margin-bottom: 4px; }
+    .brief .pal { display: flex; gap: 8px; margin-top: 18px; align-items: center; flex-wrap: wrap; }
+    .brief .swatch { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); }
+    .brief .pal-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b;
+      letter-spacing: 1px; text-transform: uppercase; margin-right: 10px;
+    }
+    .legend {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #94a3b8;
+      padding: 6px 12px; background: rgba(255,105,50,0.08);
+      border: 1px dashed rgba(255,138,92,0.5); border-radius: 4px;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="templates/_brand.jsx"></script>
+  <script type="text/babel" src="templates/TplTitle.jsx"></script>
+  <script type="text/babel" src="templates/TplDefinition.jsx"></script>
+  <script type="text/babel" src="templates/TplStats.jsx"></script>
+  <script type="text/babel" src="templates/TplQuote.jsx"></script>
+  <script type="text/babel" src="templates/TplAnnouncement.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+
+    // ── Aspect ratios (matches schema.json sizes)
+    const SIZES = {
+      ig_post:   { w: 1080, h: 1350, label: 'IG Post 4:5',    note: '1080×1350 · Instagram feed (recommended)' },
+      ig_story:  { w: 1080, h: 1920, label: 'IG Story 9:16',  note: '1080×1920 · Reels & Stories' },
+      linkedin:  { w: 1200, h: 628,  label: 'LinkedIn 1.91:1', note: '1200×628 · LinkedIn / Facebook feed' },
+      twitter:   { w: 1600, h: 900,  label: 'Twitter/X 16:9', note: '1600×900 · X post / YouTube thumb' },
+    };
+
+    // Each artboard scales template to fit comfortably
+    const ART = (size, scale=0.42) => ({
+      width: Math.round(size.w * scale) + 80,
+      height: Math.round(size.h * scale) + 80,
+      scale,
+    });
+
+    const Brief = () => (
+      <div className="brief">
+        <div className="meta">brief · automatos · social templates · v1</div>
+        <h1>Repeatable post templates · HTML → PNG renderer</h1>
+        <p>
+          Five template families × four aspect ratios = a complete daily-content kit. Designed for an
+          <span className="accent"> HTML → PNG </span>
+          pipeline: each template is a parameterised page at <code>render/index.html</code>; your playbook builds a URL with content fields and an <code>html-to-png</code> platform tool screenshots it. No Canva, no third-party API.
+        </p>
+        <p>
+          Aesthetic mirrors the editorial cream/orange carousel system — huge type, tight cards, JetBrains Mono
+          for body & meta, Inter Black for the displays. Every field is outlined with a dashed orange box so you
+          can see exactly what's swappable at a glance.
+        </p>
+        <ul>
+          <li><span className="accent">01 Title / Hook</span> — carousel covers, big single-statement posts</li>
+          <li><span className="accent">02 Definition</span> — "What is X?" educational slide w/ 3 body cards</li>
+          <li><span className="accent">03 Stats</span> — three large numbers + supporting context cards</li>
+          <li><span className="accent">04 Quote</span> — single-slide pull-quote w/ attribution</li>
+          <li><span className="accent">05 Announcement</span> — product launch / news slide w/ feature row</li>
+        </ul>
+        <div className="pal">
+          <span className="pal-label">palette</span>
+          <div className="swatch" style={{background:'#f1e9dd'}} title="paper #f1e9dd"></div>
+          <div className="swatch" style={{background:'#e3d9c8'}} title="card #e3d9c8"></div>
+          <div className="swatch" style={{background:'#191919'}} title="ink #191919"></div>
+          <div className="swatch" style={{background:'#FF6932'}} title="brick #FF6932"></div>
+          <div className="swatch" style={{background:'#6b6256'}} title="muted #6b6256"></div>
+        </div>
+        <div className="legend">
+          <span style={{display:'inline-block', width:14, height:14, outline:'1.5px dashed rgba(255,105,50,0.65)', borderRadius:1}}></span>
+          dashed-orange outlines = render-time URL fields (preview-only; hidden in production renders)
+        </div>
+      </div>
+    );
+
+    // ── Workflow card
+    const Workflow = () => (
+      <div className="brief" style={{width: 880}}>
+        <div className="meta">workflow · html → png · automatos playbook</div>
+        <h1>How your Automatos playbook uses these</h1>
+        <p style={{marginBottom: 14}}>
+          Clone this repo into your Automatos workspace. Your playbook builds a URL pointing at <code>render/index.html</code> with the field values as query params, then calls an <span className="accent">html-to-png</span> platform tool which loads the URL in headless Chrome and screenshots it. Composio posts the resulting PNG.
+        </p>
+        <pre style={{
+          background: '#0a0a0e', border: '1px solid rgba(255,255,255,0.06)',
+          borderRadius: 8, padding: '14px 18px', margin: 0,
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#e5e7eb',
+          lineHeight: 1.65, overflow: 'auto',
+        }}>
+{`# 1. Build URL with field values
+url = "{repo}/render/index.html?" + urlencode({
+  "template": "definition",
+  "size":     "ig_post",
+  "page":     "02", "total": "10", "showChip": "true",
+  "eyebrow":  "FIRST — THE CONCEPT",
+  "headline": "WHAT IS|AN AGENT?@brick",
+  "card_1":   "Not just a chatbot|A chatbot replies. An agent acts.",
+  "card_2":   "The core loop|Perceive → Reason → Act → Repeat.",
+  "card_3":   "3 must-haves|LLM brain. Tools. A loop.",
+  "handle":   "@automatos.app",
+})
+
+# 2. Headless render → PNG bytes
+png = html_to_png(url, viewport={"w":1080,"h":1350},
+                  waitFor="[data-render-ready='true']")
+
+# 3. Composio posts to IG / X / LinkedIn
+composio.instagram_post(image=png, caption=caption)`}
+        </pre>
+        <p style={{marginTop: 14, marginBottom: 0, fontSize: 13}}>
+          <span className="accent">Field formats:</span> <code>headline</code> uses <code>line1|line2@brick|line3</code> (suffix <code>@brick</code> for orange). <code>card_N</code> / <code>feature_N</code> use <code>Heading|Body</code>. <code>stat_N</code> uses <code>Value|Body</code>. Full spec in <code>schema.json</code>.
+        </p>
+      </div>
+    );
+
+    const App = () => (
+      <DesignCanvas title="Automatos — Social Post Templates" initialScale={0.55}>
+
+        <DCSection id="brief" title="Brief">
+          <DCArtboard id="brief-card" label="Context" width={960} height={540}>
+            <div style={{padding: 32}}><Brief /></div>
+          </DCArtboard>
+          <DCArtboard id="workflow" label="HTML → PNG render workflow" width={960} height={560}>
+            <div style={{padding: 32}}><Workflow /></div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── 01 TITLE ─────── */}
+        <DCSection id="title" title="01 — Title / Hook">
+          <DCArtboard id="title-ig" label="Instagram 4:5 — 1080×1350" {...ART(SIZES.ig_post, 0.5)}>
+            <div style={{padding: 40}}>
+              <TplTitle scale={0.5} size={SIZES.ig_post} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="title-story" label="Story / Reel 9:16 — 1080×1920" {...ART(SIZES.ig_story, 0.36)}>
+            <div style={{padding: 40}}>
+              <TplTitle scale={0.36} size={SIZES.ig_story} fontSize={172}
+                eyebrow="AI ARCHITECTURE"
+                cta="Tap to Continue" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="title-linkedin" label="LinkedIn 1.91:1 — 1200×628" {...ART(SIZES.linkedin, 0.55)}>
+            <div style={{padding: 40}}>
+              <TplTitle scale={0.55} size={SIZES.linkedin} fontSize={92}
+                cta="Read more on automatos.app →"
+                subline="The model is the brain. The harness is everything else." />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="title-twitter" label="X / Twitter 16:9 — 1600×900" {...ART(SIZES.twitter, 0.42)}>
+            <div style={{padding: 40}}>
+              <TplTitle scale={0.42} size={SIZES.twitter} fontSize={120}
+                cta="Thread below ↓"
+                subline="The model is the brain. The harness is everything else." />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="title-spec" label="Render-time fields" width={460} height={500}>
+            <div style={{padding: 32}}>
+              <SpecSheet
+                name="01 — Title / Hook"
+                dims="4:5 · 9:16 · 1.91:1 · 16:9"
+                fields={[
+                  {k:'page_num',  t:'Page index, e.g. "01"'},
+                  {k:'handle',    t:'Your handle, e.g. "@automatos.app"'},
+                  {k:'eyebrow',   t:'Caps mono label, e.g. "AI ARCHITECTURE 2026"'},
+                  {k:'headline',  t:'4 lines, multi-line text. Use \\n for line breaks. Mark final line(s) brick in template.'},
+                  {k:'subline',   t:'Optional 1–2 sentence context'},
+                ]}
+                notes="Use @brick suffix on a headline line to colour it brand orange. Example: AGENT|HARNESS.@brick|THE OS|FOR AI."
+              />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── 02 DEFINITION ─────── */}
+        <DCSection id="def" title="02 — Definition / Explainer">
+          <DCArtboard id="def-ig" label="Instagram 4:5" {...ART(SIZES.ig_post, 0.5)}>
+            <div style={{padding: 40}}>
+              <TplDefinition scale={0.5} size={SIZES.ig_post} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="def-story" label="Story / Reel 9:16" {...ART(SIZES.ig_story, 0.36)}>
+            <div style={{padding: 40}}>
+              <TplDefinition scale={0.36} size={SIZES.ig_story} fontSize={158}
+                cta="Tap →" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="def-linkedin" label="LinkedIn 1.91:1" {...ART(SIZES.linkedin, 0.55)}>
+            <div style={{padding: 40}}>
+              <TplDefinition scale={0.55} size={SIZES.linkedin} fontSize={84}
+                cta="Read full →"
+                cards={[
+                  { icon: '?', heading: 'Not just a chatbot', body: 'A chatbot replies. An agent acts — plans, uses tools, loops.' },
+                  { icon: '↻', heading: 'The core loop', body: 'Perceive → Reason → Act → Observe → Repeat until done.' },
+                  { icon: '✦', heading: '3 must-haves', body: 'An LLM brain. A set of tools. A loop. That\u2019s it.' },
+                ]} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="def-twitter" label="X / Twitter 16:9" {...ART(SIZES.twitter, 0.42)}>
+            <div style={{padding: 40}}>
+              <TplDefinition scale={0.42} size={SIZES.twitter} fontSize={108}
+                cta="Full thread ↓" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="def-spec" label="Render-time fields" width={460} height={520}>
+            <div style={{padding: 32}}>
+              <SpecSheet
+                name="02 — Definition"
+                dims="4:5 · 9:16 · 1.91:1 · 16:9"
+                fields={[
+                  {k:'page_num', t:'Page index'},
+                  {k:'handle',   t:'Your handle'},
+                  {k:'eyebrow',  t:'Caps mono label'},
+                  {k:'headline', t:'2-line headline. Accent word = brick orange.'},
+                  {k:'card_1',   t:'Card 1: heading + body (combine: "Heading|Body")'},
+                  {k:'card_2',   t:'Card 2: heading + body'},
+                  {k:'card_3',   t:'Card 3: heading + body'},
+                ]}
+                notes="Card format is Heading|Body — pipe-separated. Keep field names identical across sizes so one payload renders all 4 aspect ratios."
+              />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── 03 STATS ─────── */}
+        <DCSection id="stats" title="03 — Stats / Data">
+          <DCArtboard id="stats-ig" label="Instagram 4:5" {...ART(SIZES.ig_post, 0.5)}>
+            <div style={{padding: 40}}>
+              <TplStats scale={0.5} size={SIZES.ig_post} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="stats-story" label="Story / Reel 9:16" {...ART(SIZES.ig_story, 0.36)}>
+            <div style={{padding: 40}}>
+              <TplStats scale={0.36} size={SIZES.ig_story} fontSize={140}
+                cta="Save this →" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="stats-linkedin" label="LinkedIn 1.91:1" {...ART(SIZES.linkedin, 0.55)}>
+            <div style={{padding: 40}}>
+              <TplStats scale={0.55} size={SIZES.linkedin} fontSize={72}
+                cta="See methodology →"
+                cards={[
+                  { icon: '◯', heading: 'Model is a commodity', body: 'Same LLM, wildly different results. The harness is the differentiator.' },
+                ]} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="stats-twitter" label="X / Twitter 16:9" {...ART(SIZES.twitter, 0.42)}>
+            <div style={{padding: 40}}>
+              <TplStats scale={0.42} size={SIZES.twitter} fontSize={96}
+                cta="Source ↓"
+                cards={[
+                  { icon: '◯', heading: 'Model is a commodity', body: 'Same LLM, wildly different results. The harness is the differentiator.' },
+                ]} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="stats-spec" label="Render-time fields" width={460} height={520}>
+            <div style={{padding: 32}}>
+              <SpecSheet
+                name="03 — Stats"
+                dims="4:5 · 9:16 · 1.91:1 · 16:9"
+                fields={[
+                  {k:'page_num', t:'Page index'},
+                  {k:'handle',   t:'Your handle'},
+                  {k:'eyebrow',  t:'Caps mono label'},
+                  {k:'headline', t:'4-line headline'},
+                  {k:'stat_1',   t:'Big number + supporting line'},
+                  {k:'stat_2',   t:'Big number + supporting line'},
+                  {k:'stat_3',   t:'Big number + supporting line'},
+                  {k:'card_1',   t:'Context card 1 (light)'},
+                  {k:'card_2',   t:'Context card 2 (dark accent)'},
+                ]}
+                notes="Best for ‘by the numbers’ posts. card_2 is auto-styled dark to create visual rhythm against the cream paper."
+              />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── 04 QUOTE ─────── */}
+        <DCSection id="quote" title="04 — Quote / Inspiration">
+          <DCArtboard id="quote-ig" label="Instagram 4:5" {...ART(SIZES.ig_post, 0.5)}>
+            <div style={{padding: 40}}>
+              <TplQuote scale={0.5} size={SIZES.ig_post}
+                quote="The model is now a commodity. The harness is the moat."
+                accent="harness is the moat" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="quote-story" label="Story / Reel 9:16" {...ART(SIZES.ig_story, 0.36)}>
+            <div style={{padding: 40}}>
+              <TplQuote scale={0.36} size={SIZES.ig_story} fontSize={120}
+                quote="If you're not the model, you're the harness."
+                accent="harness"
+                cta="Tap to save →" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="quote-linkedin" label="LinkedIn 1.91:1" {...ART(SIZES.linkedin, 0.55)}>
+            <div style={{padding: 40}}>
+              <TplQuote scale={0.55} size={SIZES.linkedin} fontSize={64}
+                quote="The harness is the moat."
+                accent="moat"
+                cta="Discuss in comments →" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="quote-twitter" label="X / Twitter 16:9" {...ART(SIZES.twitter, 0.42)}>
+            <div style={{padding: 40}}>
+              <TplQuote scale={0.42} size={SIZES.twitter} fontSize={84}
+                quote="The model is the brain. The harness is everything else."
+                accent="everything else"
+                cta="Thread ↓" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="quote-spec" label="Render-time fields" width={460} height={460}>
+            <div style={{padding: 32}}>
+              <SpecSheet
+                name="04 — Quote"
+                dims="4:5 · 9:16 · 1.91:1 · 16:9"
+                fields={[
+                  {k:'page_num',     t:'Page index (use "01" for single-slide)'},
+                  {k:'handle',       t:'Your handle'},
+                  {k:'eyebrow',      t:'Caps mono label, e.g. "FIELD NOTES"'},
+                  {k:'quote',        t:'The full quote, no surrounding " marks (template adds them)'},
+                  {k:'attribution',  t:'Source — author or canonical reference'},
+                ]}
+                notes="The accent param picks a substring of quote to colour brick orange. Example: quote='The harness is the moat' + accent='moat'. Substring match is case-sensitive."
+              />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── 05 ANNOUNCEMENT ─────── */}
+        <DCSection id="ann" title="05 — Announcement / Launch">
+          <DCArtboard id="ann-ig" label="Instagram 4:5" {...ART(SIZES.ig_post, 0.5)}>
+            <div style={{padding: 40}}>
+              <TplAnnouncement scale={0.5} size={SIZES.ig_post} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="ann-story" label="Story / Reel 9:16" {...ART(SIZES.ig_story, 0.36)}>
+            <div style={{padding: 40}}>
+              <TplAnnouncement scale={0.36} size={SIZES.ig_story} fontSize={150}
+                cta="Tap to read →" />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="ann-linkedin" label="LinkedIn 1.91:1" {...ART(SIZES.linkedin, 0.55)}>
+            <div style={{padding: 40}}>
+              <TplAnnouncement scale={0.55} size={SIZES.linkedin} fontSize={76}
+                cta="Read changelog →"
+                features={[
+                  { icon: '◇', heading: '9× concurrency', body: 'Up to nine specialist agents per Mission, each with their own tools.' },
+                  { icon: '⌘', heading: 'Shared field memory', body: 'Agents read/write a common memory band — sync without orchestration overhead.' },
+                ]} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="ann-twitter" label="X / Twitter 16:9" {...ART(SIZES.twitter, 0.42)}>
+            <div style={{padding: 40}}>
+              <TplAnnouncement scale={0.42} size={SIZES.twitter} fontSize={108}
+                cta="Thread below ↓"
+                features={[
+                  { icon: '◇', heading: '9× concurrency', body: 'Up to nine specialist agents per Mission.' },
+                  { icon: '⌘', heading: 'Shared field memory', body: 'Sync without orchestration overhead.' },
+                ]} />
+            </div>
+          </DCArtboard>
+          <DCArtboard id="ann-spec" label="Render-time fields" width={460} height={540}>
+            <div style={{padding: 32}}>
+              <SpecSheet
+                name="05 — Announcement"
+                dims="4:5 · 9:16 · 1.91:1 · 16:9"
+                fields={[
+                  {k:'page_num',  t:'Page index'},
+                  {k:'handle',    t:'Your handle'},
+                  {k:'eyebrow',   t:'Caps mono label'},
+                  {k:'status',    t:'Live status pill, e.g. "SHIPPED · v2.4"'},
+                  {k:'headline',  t:'3-line headline. First word brick.'},
+                  {k:'subline',   t:'2-sentence summary'},
+                  {k:'feature_1', t:'Feature card 1'},
+                  {k:'feature_2', t:'Feature card 2'},
+                  {k:'feature_3', t:'Feature card 3'},
+                ]}
+                notes="Status pill is dynamic — drive from your release pipeline. Use brick-orange status for SHIPPED, ink for COMING SOON, etc."
+              />
+            </div>
+          </DCArtboard>
+        </DCSection>
+
+        {/* ─────── DESIGNER'S READ ─────── */}
+        <DCSection id="rec" title="Recommendation">
+          <DCArtboard id="rec-card" label="Designer's note" width={960} height={300}>
+            <div style={{padding: 32}}>
+              <div className="brief">
+                <div className="meta">designer's read</div>
+                <p>
+                  The <span className="accent">4:5 IG Post</span> is the canonical canvas for this aesthetic — it's where the type-driven layout breathes best. The same template component reflows to 9:16 (story), 1.91:1 (LinkedIn) and 16:9 (X) automatically — your playbook just changes the <code>?size=</code> param. Field names are identical across all 4 sizes, so a single payload renders any platform.
+                </p>
+                <p style={{marginBottom: 0}}>
+                  <span className="accent">Daily-content workflow:</span> Automatos playbook picks a feature → generates copy → builds the render URL → <code>html-to-png</code> tool screenshots it → Composio posts to IG / X / LinkedIn. With these five families you cover ~95% of educational AI/tech content.
+                </p>
+              </div>
+            </div>
+          </DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================
+ * Apothicare — Lisbon Apothecary
+ * Old-world apothecary meets modern clinical authority.
+ * Parchment-warm palette · brass accent · botanical green anchor.
+ * ============================================================= */
+
+:root {
+  /* Tenant color tokens — raw HSL channels */
+  --tenant-color-primary: 38 65% 45%;        /* brass */
+  --tenant-color-secondary: 150 22% 22%;     /* deep botanical */
+  --tenant-color-accent: 12 55% 48%;         /* terracotta seal */
+  --tenant-color-background: 38 35% 96%;     /* parchment */
+  --tenant-color-surface: 38 30% 92%;        /* aged paper */
+  --tenant-color-text: 150 12% 22%;          /* near-black ink */
+  --tenant-color-heading: 150 22% 14%;       /* botanical ink */
+  --tenant-color-border: 38 20% 82%;         /* warm hairline */
+
+  /* Typography */
+  --tenant-font-base: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tenant-font-heading: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+  --tenant-font-accent: 'Caveat', 'Brush Script MT', cursive;
+
+  /* Glass / blur tokens */
+  --tenant-blur-sm: 6px;
+  --tenant-blur-md: 12px;
+  --tenant-blur-lg: 20px;
+
+  /* Brand-tinted shadows */
+  --shadow-card: 0 1px 2px rgba(40, 30, 15, 0.04), 0 8px 24px -8px rgba(40, 30, 15, 0.08);
+  --shadow-elegant: 0 12px 40px -12px rgba(40, 30, 15, 0.12);
+  --shadow-frame: 0 24px 60px -20px rgba(20, 30, 22, 0.35);
+}
+
+/* =============================================================
+ * Global type treatment
+ * ============================================================= */
+
+.template-apothicare-lisbon {
+  font-family: var(--tenant-font-base);
+  font-feature-settings: "kern", "liga", "calt", "ss01";
+  letter-spacing: -0.005em;
+  color: hsl(var(--tenant-color-text));
+  background: hsl(var(--tenant-color-background));
+}
+
+.template-apothicare-lisbon h1,
+.template-apothicare-lisbon h2,
+.template-apothicare-lisbon h3,
+.template-apothicare-lisbon h4 {
+  font-family: var(--tenant-font-heading);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: hsl(var(--tenant-color-heading));
+}
+
+.template-apothicare-lisbon h1 em,
+.template-apothicare-lisbon h2 em {
+  font-family: var(--tenant-font-accent);
+  font-style: normal;
+  font-weight: 600;
+  color: hsl(var(--tenant-color-primary));
+  letter-spacing: 0;
+}
+
+.template-apothicare-lisbon .eyebrow {
+  font-family: var(--tenant-font-base);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--tenant-color-primary));
+}
+
+/* =============================================================
+ * Section rhythm — parchment / botanical alternation
+ * ============================================================= */
+
+/* Light sections — default parchment */
+.template-apothicare-lisbon #values,
+.template-apothicare-lisbon #conditions,
+.template-apothicare-lisbon #process,
+.template-apothicare-lisbon #testimonials,
+.template-apothicare-lisbon #faq {
+  background: hsl(var(--tenant-color-background));
+}
+
+/* Subtle aged-paper sections (for visual rhythm between two light sections) */
+.template-apothicare-lisbon #conditions,
+.template-apothicare-lisbon #testimonials {
+  background: hsl(var(--tenant-color-surface));
+}
+
+/* Dark anchor — Practice (About) section */
+.template-apothicare-lisbon #practice {
+  --tenant-color-background: 150 22% 13%;
+  --tenant-color-surface: 150 22% 18%;
+  --tenant-color-heading: 38 35% 88%;
+  --tenant-color-text: 38 20% 80%;
+  --tenant-color-primary: 38 65% 55%;
+  --tenant-color-border: 38 25% 30%;
+  background: hsl(var(--tenant-color-background));
+}
+.template-apothicare-lisbon #practice .stat-value,
+.template-apothicare-lisbon #practice [class*="text-3xl"],
+.template-apothicare-lisbon #practice [class*="text-4xl"] {
+  color: hsl(var(--tenant-color-primary));
+  font-family: var(--tenant-font-heading);
+}
+
+/* Dark band — credentials marquee */
+.template-apothicare-lisbon #credentials {
+  --tenant-color-background: 150 20% 14%;
+  --tenant-color-text: 38 35% 78%;
+  --tenant-color-border: 38 25% 35%;
+  background: hsl(var(--tenant-color-background));
+  border-top: 1px solid hsl(var(--tenant-color-border) / 0.4);
+  border-bottom: 1px solid hsl(var(--tenant-color-border) / 0.4);
+}
+.template-apothicare-lisbon #credentials .marquee-text {
+  font-family: var(--tenant-font-heading);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Dark band — newsletter */
+.template-apothicare-lisbon #journal {
+  --tenant-color-background: 150 22% 13%;
+  --tenant-color-surface: 150 22% 18%;
+  --tenant-color-heading: 38 35% 88%;
+  --tenant-color-text: 38 20% 80%;
+  --tenant-color-primary: 38 65% 55%;
+  --tenant-color-border: 38 25% 30%;
+  background: hsl(var(--tenant-color-background));
+}
+
+/* Footer — botanical dark, brass headers */
+.template-apothicare-lisbon footer {
+  --tenant-color-background: 150 25% 11%;
+  --tenant-color-surface: 150 25% 14%;
+  --tenant-color-heading: 38 65% 60%;
+  --tenant-color-text: 38 18% 75%;
+  --tenant-color-border: 38 25% 28%;
+  background: hsl(var(--tenant-color-background));
+}
+.template-apothicare-lisbon footer h3,
+.template-apothicare-lisbon footer h4 {
+  font-family: var(--tenant-font-heading);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--tenant-color-heading));
+}
+
+/* =============================================================
+ * Component treatments
+ * ============================================================= */
+
+/* Hero frame — apothecary card aesthetic */
+.template-apothicare-lisbon #hero .frame-panel {
+  background: hsl(var(--tenant-color-background) / 0.94);
+  backdrop-filter: blur(var(--tenant-blur-sm));
+  border: 1px solid hsl(var(--tenant-color-border));
+  box-shadow: var(--shadow-frame);
+}
+
+/* Buttons — brass primary, ink ghost */
+.template-apothicare-lisbon .btn-primary,
+.template-apothicare-lisbon button[class*="primary"],
+.template-apothicare-lisbon a[class*="primary"] {
+  background: hsl(var(--tenant-color-primary));
+  color: hsl(150 22% 14%);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+  box-shadow: 0 1px 2px rgba(40, 30, 15, 0.08);
+}
+.template-apothicare-lisbon .btn-primary:hover {
+  transform: translateY(-1px);
+  background: hsl(36 70% 38%);
+  box-shadow: 0 4px 12px -2px rgba(40, 30, 15, 0.18);
+}
+
+/* Cards — paper with hairline border */
+.template-apothicare-lisbon .card,
+.template-apothicare-lisbon [class*="rounded-2xl"],
+.template-apothicare-lisbon [class*="rounded-xl"] {
+  background: hsl(var(--tenant-color-background));
+  border: 1px solid hsl(var(--tenant-color-border));
+  box-shadow: var(--shadow-card);
+  border-radius: 0.75rem;
+}
+
+/* Value-prop icons — brass disc */
+.template-apothicare-lisbon #values .icon-wrap {
+  background: hsl(var(--tenant-color-primary) / 0.12);
+  color: hsl(var(--tenant-color-primary));
+  border: 1px solid hsl(var(--tenant-color-primary) / 0.3);
+  border-radius: 9999px;
+}
+
+/* Tabs — apothecary drawer pulls */
+.template-apothicare-lisbon #conditions .tab-trigger {
+  font-family: var(--tenant-font-heading);
+  font-size: 1.125rem;
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+}
+.template-apothicare-lisbon #conditions .tab-trigger[data-state="active"] {
+  color: hsl(var(--tenant-color-primary));
+  border-bottom-color: hsl(var(--tenant-color-primary));
+}
+
+/* Testimonials — quotation typography */
+.template-apothicare-lisbon #testimonials blockquote,
+.template-apothicare-lisbon #testimonials .quote {
+  font-family: var(--tenant-font-heading);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: hsl(var(--tenant-color-heading));
+}
+.template-apothicare-lisbon #testimonials blockquote::before {
+  content: "“";
+  font-size: 3rem;
+  line-height: 0.8;
+  color: hsl(var(--tenant-color-primary));
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* FAQ — bordered accordion */
+.template-apothicare-lisbon #faq .accordion-item {
+  border-bottom: 1px solid hsl(var(--tenant-color-border));
+}
+.template-apothicare-lisbon #faq .accordion-trigger {
+  font-family: var(--tenant-font-heading);
+  font-size: 1.25rem;
+  font-weight: 500;
+  padding: 1.5rem 0;
+}
+
+/* Process steps — brass numerals */
+.template-apothicare-lisbon #process .step-number {
+  font-family: var(--tenant-font-heading);
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: hsl(var(--tenant-color-primary));
+  font-feature-settings: "lnum", "tnum";
+}
+
+/* =============================================================
+ * Section padding
+ * ----------------------------------------------------------------
+ * INTENTIONALLY EMPTY. The BudStacks render engine reads
+ * `settings.sectionPadding` from layout.json and applies the
+ * vertical rhythm itself. Re-declaring `section { padding-* }`
+ * here doubles the spacing and produces visible empty bands
+ * between every section. Do not add padding rules here.
+ * ============================================================= */
+
+/* =============================================================
+ * Accessibility — WCAG 2.2 AA
+ * ============================================================= */
+
+.template-apothicare-lisbon *:focus-visible {
+  outline: 2px solid hsl(var(--tenant-color-accent));
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-apothicare-lisbon *,
+  .template-apothicare-lisbon *::before,
+  .template-apothicare-lisbon *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .template-apothicare-lisbon .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Skip-link target safety */
+.template-apothicare-lisbon main:focus { outline: none; }

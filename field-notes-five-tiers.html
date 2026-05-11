@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Why the router is five tiers — Automatos · Field Note 12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+  --gutter: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+
+/* TOPBAR */
+.topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 16px var(--gutter); border-bottom: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.brand { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; text-transform: none; color: var(--fg); display: inline-flex; align-items: center; }
+.brand em { font-style: italic; color: var(--muted); }
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav { display: flex; gap: 28px; justify-content: center; }
+.topbar nav a:hover, .topbar nav a.is-current { color: var(--fg); }
+.topbar > :last-child { text-align: right; display: flex; gap: 16px; justify-content: flex-end; align-items: center; }
+.topbar .cta { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* MASTHEAD */
+.masthead {
+  display: grid; grid-template-columns: 240px 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.masthead > div { padding: 18px 28px; border-right: 1px solid var(--rule-c); display: flex; align-items: center; gap: 10px; }
+.masthead > div:last-child { border-right: 0; justify-content: flex-end; }
+.masthead b { color: var(--fg); font-weight: 500; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 999px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); }
+.pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* TITLE BLOCK */
+.title-block {
+  padding: 88px var(--gutter) 56px;
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 80px; align-items: end;
+}
+.title-block h1 { font-family: var(--serif); font-size: 96px; line-height: 0.95; letter-spacing: -0.025em; text-wrap: balance; }
+.title-block h1 em { font-style: italic; color: var(--muted); }
+.title-block .dek { font-size: 19px; line-height: 1.55; color: var(--fg-2); max-width: 50ch; margin-top: 28px; }
+.title-block .meta { display: grid; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.title-block .meta b { color: var(--fg); font-weight: 500; }
+.title-block .meta .author { padding-top: 14px; border-top: 1px solid var(--rule-c); }
+.title-block .meta .author b { display: block; font-family: var(--serif); font-style: normal; font-size: 18px; letter-spacing: -0.01em; text-transform: none; font-weight: 500; margin-bottom: 4px; color: var(--fg); }
+
+/* HERO PHOTO */
+.hero-photo {
+  background: var(--bg-3);
+  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 8px, transparent 8px 16px);
+  aspect-ratio: 16/8;
+  display: grid; place-items: center;
+  border-bottom: 1px solid var(--rule-c);
+  position: relative;
+}
+.hero-photo .ph-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.hero-photo-cap { display: flex; justify-content: space-between; padding: 12px var(--gutter); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--rule-c); }
+
+/* BODY — two columns: marginalia + prose */
+.body {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr) 60px;
+  padding: 72px var(--gutter) 88px;
+  border-bottom: 1px solid var(--rule-c);
+  gap: 56px;
+  align-items: start;
+}
+.marginalia {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  position: sticky; top: 24px;
+  display: grid; gap: 8px;
+}
+.marginalia .sec { color: var(--fg); }
+.marginalia .row { padding: 4px 0; border-bottom: 1px dashed var(--rule-c); }
+.marginalia .row:last-child { border-bottom: 0; }
+
+.prose { max-width: 64ch; font-size: 18px; line-height: 1.65; color: var(--fg); font-family: var(--sans); }
+.prose p { margin-bottom: 22px; text-wrap: pretty; }
+.prose h2 {
+  font-family: var(--serif); font-size: 40px; line-height: 1.05; letter-spacing: -0.015em;
+  margin: 56px 0 22px;
+}
+.prose h2 em { font-style: italic; color: var(--muted); }
+.prose h2 .num {
+  display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+}
+.prose .dropcap::first-letter {
+  font-family: var(--serif); font-size: 96px; line-height: 0.85;
+  float: left; padding: 8px 14px 0 0; color: var(--fg);
+}
+.prose blockquote {
+  margin: 32px 0;
+  padding: 22px 0 22px 28px;
+  border-left: 2px solid var(--accent);
+  font-family: var(--serif); font-style: italic; font-size: 26px; line-height: 1.3;
+  color: var(--fg);
+}
+.prose code, .prose .mono { font-family: var(--mono); font-size: 14px; background: var(--bg-2); padding: 1px 6px; border: 1px solid var(--rule-c); }
+.prose .footnote-ref { font-family: var(--mono); font-size: 12px; vertical-align: super; color: var(--accent); }
+.prose ul { margin: 0 0 22px 22px; }
+.prose ul li { margin-bottom: 8px; }
+
+/* PULLOUT — schematic in body */
+.prose .schematic {
+  margin: 28px 0;
+  border: 1px solid var(--rule-c);
+  background: var(--bg-2);
+  padding: 22px;
+  font-family: var(--mono); font-size: 12px; line-height: 1.7;
+  position: relative;
+}
+.prose .schematic::before {
+  content: attr(data-fig);
+  position: absolute; top: -1px; left: -1px;
+  background: var(--bg); color: var(--muted);
+  padding: 3px 8px; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  border: 1px solid var(--rule-c);
+}
+.prose .schematic .row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; padding: 3px 0; }
+.prose .schematic .row .ix { color: var(--muted); }
+.prose .schematic .row .nm { color: var(--fg); text-transform: uppercase; letter-spacing: 0.08em; }
+.prose .schematic .row .meta { color: var(--muted); font-size: 11px; }
+.prose .schematic .sep { height: 1px; background: var(--rule-c); margin: 8px 0; }
+
+/* DATA TABLE */
+.prose table { width: 100%; border-collapse: collapse; margin: 24px 0; font-family: var(--mono); font-size: 13px; }
+.prose th, .prose td { padding: 12px 14px; border-bottom: 1px solid var(--rule-c); text-align: left; }
+.prose th { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.prose td.num { font-family: var(--serif); font-size: 18px; letter-spacing: -0.01em; }
+
+/* FOOTNOTES */
+.footnotes {
+  padding: 36px var(--gutter);
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--muted);
+  display: grid; grid-template-columns: 200px 1fr; gap: 56px;
+}
+.footnotes .lbl { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg); }
+.footnotes ol { margin-left: 18px; }
+.footnotes ol li { margin-bottom: 8px; }
+.footnotes ol li b { color: var(--fg); }
+
+/* RELATED */
+.related-meta { display: grid; grid-template-columns: 240px 1fr 1fr; border-bottom: 1px solid var(--rule-c); }
+.related-meta > div { padding: 18px 28px; border-right: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.related-meta > div:last-child { border-right: 0; justify-content: flex-end; }
+.related-meta b { color: var(--fg); font-weight: 500; }
+.related { display: grid; grid-template-columns: repeat(3, 1fr); }
+.related .note { border-right: 1px solid var(--rule-c); padding: 32px 28px; display: grid; gap: 14px; min-height: 240px; transition: background .15s; }
+.related .note:last-child { border-right: 0; }
+.related .note:hover { background: var(--bg-2); }
+.related .note .id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.related .note h3 { font-family: var(--serif); font-size: 24px; line-height: 1.1; letter-spacing: -0.01em; }
+.related .note h3 em { font-style: italic; color: var(--muted); }
+.related .note .read { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 1px; align-self: start; }
+
+/* CTA */
+.cta-strip { padding: 80px var(--gutter); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: end; }
+.cta-h { font-family: var(--serif); font-size: 64px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance; }
+.cta-h em { font-style: italic; color: var(--muted); }
+.cta-side p { font-size: 16px; line-height: 1.55; color: var(--fg-2); max-width: 42ch; margin-bottom: 18px; }
+.btn { display: inline-flex; align-items: center; gap: 14px; padding: 14px 18px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; border: 1px solid var(--rule-strong); color: var(--fg); background: transparent; }
+.btn.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn .arrow { font-family: var(--serif); font-size: 14px; }
+.cta-actions { display: flex; gap: 12px; }
+
+.foot { padding: 36px var(--gutter); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style>
+</head>
+<body data-mood="bone" data-screen-label="Field Note 12 — Article">
+
+<header class="topbar">
+  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html" class="is-current">Field notes</a>
+  </nav>
+  <div>
+    <a href="https://ui.automatos.app/sign-in">Sign in</a>
+    <a data-waitlist href="#" class="cta">Sign up free →</a>
+  </div>
+</header>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div><span class="pill accent">FN.&nbsp;12</span> Architecture</div>
+  <div>← <a href="field-notes.html">Index</a> &nbsp; · &nbsp; Volume 01</div>
+  <div><b>09 May 2026</b> · 14 min read</div>
+</div>
+
+<!-- TITLE -->
+<section class="title-block">
+  <div>
+    <h1>Why the router<br />is <em>five tiers</em>,<br />and not <em>four.</em></h1>
+    <p class="dek">The semantic tier was a late addition. We almost shipped without it. This is the story of the week we changed our minds — and what the cache hit rate looked like before and after.</p>
+  </div>
+  <div class="meta">
+    <div><b>Published</b> · 09 May 2026</div>
+    <div><b>Read time</b> · 14 minutes</div>
+    <div><b>Subject</b> · Architecture · Routing</div>
+    <div class="author">
+      <b>Yann L.</b>
+      Co-founder · routing
+    </div>
+  </div>
+</section>
+
+<!-- HERO PHOTO -->
+<div class="hero-photo">
+  <span class="ph-tag">photo · workshop bench · 16:8</span>
+</div>
+<div class="hero-photo-cap">
+  <span>Fig. 12 — Workshop, the morning we shipped T2.5</span>
+  <span>Plate&nbsp;/&nbsp;FN12</span>
+</div>
+
+<!-- BODY -->
+<article class="body">
+
+  <aside class="marginalia">
+    <div class="sec">— In this note</div>
+    <div class="row"><a href="#open">01 · The opening</a></div>
+    <div class="row"><a href="#four">02 · Why four felt right</a></div>
+    <div class="row"><a href="#cache">03 · The cache numbers</a></div>
+    <div class="row"><a href="#wrong">04 · Why four was wrong</a></div>
+    <div class="row"><a href="#five">05 · The fifth tier</a></div>
+    <div class="row"><a href="#after">06 · What changed</a></div>
+    <div class="row"><a href="#take">07 · What it taught us</a></div>
+  </aside>
+
+  <div class="prose">
+
+    <p class="dropcap" id="open">When we started building the router, we had four tiers. Override at the top — for the rare case the operator says "do this, my way, now" — then a cache, then a rule engine, then the LLM at the bottom for everything that didn't fit. It was clean. We could draw it on a napkin. We did, several times.</p>
+
+    <p>This note is about the week, in March, when we tore that drawing up and added a fifth tier. It's not a long story, but it changed the shape of the platform — and, looking at the numbers since, probably the unit economics for every operator who'll ever run on it.<span class="footnote-ref">¹</span></p>
+
+    <h2 id="four"><span class="num">02 · The four-tier model</span>Why four <em>felt</em> right</h2>
+
+    <p>The first version of <span class="mono">routing/engine.py</span> looked exactly like the napkin:</p>
+
+    <div class="schematic" data-fig="Fig. 12.A · routing.py — v0.3">
+      <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
+      <div class="sep"></div>
+      <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user-set</span></div>
+      <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">redis · exact key</span></div>
+      <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern match</span></div>
+      <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify · expensive</span></div>
+      <div class="sep"></div>
+      <div class="row"><span class="ix">↓</span><span class="nm">RoutingDecision</span><span class="meta">logged</span></div>
+    </div>
+
+    <p>The principle was simple: cheapest competent answer wins. The cache caught exact repeats. The rule engine caught everything we'd seen often enough to write a regex for. Anything else fell to the LLM, which was costly — but, we reasoned, the kind of decision that <em>deserved</em> the LLM.</p>
+
+    <p>It worked. For two months it worked beautifully. Cache hit rate was a respectable 41%. Rule hit rate was another 22%. The LLM saw 37% of traffic. We were happy with that mix and we wrote it on the whiteboard so we'd remember.</p>
+
+    <h2 id="cache"><span class="num">03 · The cache numbers</span>What the <em>logs</em> said</h2>
+
+    <p>And then, around week 8, we instrumented the cache misses. Not the misses themselves — those we already counted — but the <em>shape</em> of what was missing.<span class="footnote-ref">²</span></p>
+
+    <table>
+      <thead>
+        <tr><th>Bucket</th><th>% of misses</th><th>Mean cosine to nearest cache key</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Identical intent, different wording</td><td class="num">31%</td><td class="num">0.94</td></tr>
+        <tr><td>Genuinely novel</td><td class="num">42%</td><td class="num">0.61</td></tr>
+        <tr><td>Pattern fits a rule we hadn't written yet</td><td class="num">22%</td><td class="num">—</td></tr>
+        <tr><td>Other</td><td class="num">5%</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+
+    <p>That first row is the one that broke us. Almost a third of the things we were sending to the LLM had a sibling in the cache that meant the same thing — they just didn't share an exact key. <em>"Refund this order"</em> and <em>"please refund #4438"</em> and <em>"can we issue a refund on Maria's last purchase"</em> are, for routing purposes, the same request. The cache didn't know that.</p>
+
+    <h2 id="wrong"><span class="num">04 · Why four was wrong</span>The mistake we'd been <em>making</em></h2>
+
+    <blockquote>The cache was answering the wrong question. It was asking <em>"have I seen this exact string before"</em> when the question that mattered was <em>"have I seen this exact intent before."</em></blockquote>
+
+    <p>You can't fix that by writing more rules. The intents are too varied. You can't fix it inside the LLM tier either — by the time you've sent a request to the LLM, you've spent the money. What we needed was something that sat between the rule engine and the LLM, asking a cheaper question: <em>is this semantically close to anything I've routed before?</em></p>
+
+    <h2 id="five"><span class="num">05 · The fifth tier</span>How <em>T2.5</em> was built</h2>
+
+    <p>It took eight days. Most of that was deciding the threshold. The mechanics were simple — embed the request, search the cache by cosine similarity, accept any hit above 0.95. We tried 0.92, 0.94, 0.95, 0.97 in shadow mode against a week of pilot traffic.</p>
+
+    <ul>
+      <li><b>0.92</b> — too generous. False positives at 11%. The cache started routing <em>"refund this order"</em> to the same path as <em>"cancel this subscription"</em>. Correct in spirit, wrong in fact.</li>
+      <li><b>0.94</b> — better. False positives at 4%. Acceptable for low-stakes routing, not for billing.</li>
+      <li><b>0.95</b> — false positives at 0.7%. We could live with that. Hit rate dropped a little.</li>
+      <li><b>0.97</b> — only marginal hits. Most of what we wanted to catch fell below the line.</li>
+    </ul>
+
+    <p>0.95 it was. We wrote it into the engine, tucked it between rules and LLM, and called it T2.5. The half-tier number was a joke that stuck.</p>
+
+    <div class="schematic" data-fig="Fig. 12.B · routing.py — v0.4">
+      <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
+      <div class="sep"></div>
+      <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user</span></div>
+      <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">exact key · ~5ms</span></div>
+      <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern · ~8ms</span></div>
+      <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">cosine ≥ 0.95 · ~22ms</span></div>
+      <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify · ~900ms</span></div>
+      <div class="sep"></div>
+      <div class="row"><span class="ix">↓</span><span class="nm">RoutingDecision</span><span class="meta">logged · tier-tagged</span></div>
+    </div>
+
+    <h2 id="after"><span class="num">06 · The numbers, after</span>What <em>changed</em></h2>
+
+    <p>We let the new engine run for two weeks. Then we counted.</p>
+
+    <table>
+      <thead>
+        <tr><th>Metric</th><th>Before T2.5</th><th>After T2.5</th><th>Δ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cache + semantic hit rate</td><td class="num">41%</td><td class="num">68%</td><td class="num">+27pp</td></tr>
+        <tr><td>Rule hit rate</td><td class="num">22%</td><td class="num">21%</td><td class="num">−1pp</td></tr>
+        <tr><td>LLM hit rate</td><td class="num">37%</td><td class="num">11%</td><td class="num">−26pp</td></tr>
+        <tr><td>Mean cost / decision</td><td class="num">$0.0091</td><td class="num">$0.0027</td><td class="num">−70%</td></tr>
+        <tr><td>Mean latency / decision</td><td class="num">340ms</td><td class="num">95ms</td><td class="num">−72%</td></tr>
+      </tbody>
+    </table>
+
+    <p>The cost number is the one that matters. Three quarters of the LLM bill, gone. Most of the latency, gone. And — this is the part we didn't expect — the false positive rate held at the 0.7% we'd seen in shadow mode. The threshold was right.</p>
+
+    <h2 id="take"><span class="num">07 · What it taught us</span>The <em>takeaway</em></h2>
+
+    <p>Two things, mostly.</p>
+
+    <p>First, that the architecture you draw on a napkin is the one to ship — and then, eight weeks in, to second-guess. The four-tier router was not wrong. It was right for the data we had on the napkin. It was wrong for the data we had after eight weeks of operators using it. Those are different problems.</p>
+
+    <p>Second, that "semantic" doesn't have to mean "send it to the LLM." A cosine search against your own cache, at 22ms, is semantic. It's just <em>cheap</em> semantic. The LLM tier is for genuine novelty, not for paraphrase.</p>
+
+    <p>The router today still has five tiers. We've talked about adding a sixth — a tiny model, sub-50ms, that would sit between T2.5 and T3 — and we've decided, for now, against. The shape of what's left in T3 is genuinely novel enough to warrant the bigger model. We're not going to add a tier just because we can.<span class="footnote-ref">³</span></p>
+
+    <p style="margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--rule-c); font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--muted);">— Yann · Lisbon · 09 May 2026</p>
+
+  </div>
+
+  <div></div>
+</article>
+
+<!-- FOOTNOTES -->
+<section class="footnotes">
+  <div class="lbl">Footnotes</div>
+  <div>
+    <ol>
+      <li><b>¹</b> All numbers in this note are from our internal pilot — 11 operators, ~140k routing decisions over the two-week comparison window. Aggregated; no per-operator data.</li>
+      <li><b>²</b> The instrumentation lives in <span style="font-family:var(--mono);">orchestrator/observability/routing_telemetry.py</span> if you're self-hosting and want to do the same exercise.</li>
+      <li><b>³</b> The "tier you don't add" is a recurring theme. See FN.07 for more on why we resist new tiers, and FN.11 for the mission engine equivalent.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- RELATED -->
+<section>
+  <div class="related-meta">
+    <div><span class="pill">Plate&nbsp;/&nbsp;R</span> Read next</div>
+    <div>Three notes that pick up where this one leaves off.</div>
+    <div>↗&nbsp;&nbsp;Field notes index</div>
+  </div>
+  <div class="related">
+    <a href="#" class="note">
+      <span class="id">FN.&nbsp;11</span>
+      <h3>The mission engine, in <em>one diagram.</em></h3>
+      <p style="font-size: 13.5px; color: var(--fg-2); line-height: 1.55;">A tour of how a goal becomes a graph, and why the coordinator stays stateless.</p>
+      <span class="read">Read →</span>
+    </a>
+    <a href="#" class="note">
+      <span class="id">FN.&nbsp;07</span>
+      <h3>Why <em>cheap</em> models route most of our traffic.</h3>
+      <p style="font-size: 13.5px; color: var(--fg-2); line-height: 1.55;">Cache + rules carry 78% of decisions. The expensive models are reserved.</p>
+      <span class="read">Read →</span>
+    </a>
+    <a href="#" class="note">
+      <span class="id">FN.&nbsp;09</span>
+      <h3>Memory, in <em>five layers.</em></h3>
+      <p style="font-size: 13.5px; color: var(--fg-2); line-height: 1.55;">Focus, working, short-term, long-term, knowledge — what each one is for.</p>
+      <span class="read">Read →</span>
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <h2 class="cta-h">Run the router<br />against <em>your</em><br />own traffic.</h2>
+  <div class="cta-side">
+    <p>Sign up free and watch the routing telemetry against your own missions in real time. Or pull the repo and run all five tiers in your own cluster today.</p>
+    <div class="cta-actions">
+      <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+      <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+  <span>Field Note · 12 · v1.36.04</span>
+</footer>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body>
+</html>

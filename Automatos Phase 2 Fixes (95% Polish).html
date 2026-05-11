@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatos AI — Phase 2 Design Fixes (95% Polish)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      line-height: 1.6;
+      padding: 48px 24px;
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .header {
+      margin-bottom: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header .subtitle {
+      font-size: 18px;
+      color: #999;
+      margin-bottom: 24px;
+    }
+    
+    .phase-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(247, 147, 30, 0.1) 100%);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ff6b35;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Fix Card */
+    .fix-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 48px;
+    }
+    
+    .fix-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .fix-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .fix-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .fix-badge {
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .fix-badge.critical { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .fix-badge.high { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .fix-badge.medium { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .fix-badge.time { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    
+    /* Comparison Grid */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    
+    @media (max-width: 1200px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .comparison-side {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    
+    .comparison-side.before {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .comparison-side.after {
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    
+    .comparison-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    
+    .comparison-label::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .comparison-side.before .comparison-label::before {
+      background: #ef4444;
+    }
+    
+    .comparison-side.after .comparison-label::before {
+      background: #10b981;
+    }
+    
+    .comparison-side.before .comparison-label {
+      color: #ef4444;
+    }
+    
+    .comparison-side.after .comparison-label {
+      color: #10b981;
+    }
+    
+    /* Mock UI */
+    .mock-ui {
+      background: #0f0f0f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      min-height: 200px;
+    }
+    
+    .mock-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    
+    .mock-empty-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 107, 53, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    .mock-empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .mock-empty-desc {
+      font-size: 14px;
+      color: #999;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+    
+    .mock-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e5e5e5;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+    }
+    
+    .mock-btn.primary {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      border-color: transparent;
+      color: white;
+    }
+    
+    .mock-modal {
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .mock-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .mock-modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .mock-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .mock-modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .mock-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s;
+    }
+    
+    .mock-card.hover {
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    /* Code Block */
+    .code-block {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 13px;
+      color: #a0a0a0;
+      overflow-x: auto;
+      line-height: 1.6;
+    }
+    
+    .code-comment {
+      color: #666;
+    }
+    
+    .code-keyword {
+      color: #ff6b35;
+    }
+    
+    .code-string {
+      color: #10b981;
+    }
+    
+    .code-prop {
+      color: #3b82f6;
+    }
+    
+    .code-component {
+      color: #f59e0b;
+    }
+    
+    /* Fix Description */
+    .fix-description {
+      background: rgba(255, 107, 53, 0.05);
+      border-left: 3px solid #ff6b35;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .fix-description h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ff6b35;
+    }
+    
+    .fix-description p {
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.7;
+    }
+    
+    .fix-description ul {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+    
+    .fix-description li {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 6px;
+    }
+    
+    /* Impact Badge */
+    .impact {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    .impact::before {
+      content: '✓';
+      font-size: 16px;
+    }
+    
+    /* Spacing Demo */
+    .spacing-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .spacing-box {
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      color: #ff6b35;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    /* Icon Scale Demo */
+    .icon-demo {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+    }
+    
+    .icon-sample {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .icon-sample svg {
+      stroke: #ff6b35;
+      stroke-width: 2;
+      fill: none;
+    }
+    
+    .icon-label {
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Phase 2: The Final 15% (95% Polish)</h1>
+      <div class="subtitle">7 additional fixes to achieve pixel-perfect consistency across your platform</div>
+      <div class="phase-badge">Investor-Ready Polish</div>
+    </div>
+
+    <!-- Fix 7: Empty States -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #7: Standardized Empty States</div>
+        <div class="fix-meta">
+          <div class="fix-badge high">High Impact</div>
+          <div class="fix-badge time">1.5 hours</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Empty states are handled inconsistently across the platform. Some pages show illustrated empty states, others just display plain text like "No agents found". No shared component exists.</p>
+        <ul>
+          <li>Agents page: Custom illustration + CTA button</li>
+          <li>Documents page: Plain text "No documents yet"</li>
+          <li>Assignments page: Different illustration style</li>
+          <li>No consistent icon treatment, spacing, or action patterns</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Inconsistent)</div>
+          <div class="mock-ui">
+            <div style="padding: 48px 24px; text-align: center;">
+              <p style="color: #666; font-size: 14px;">No agents found.</p>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #666; margin-top: 12px;">• Plain text • No visual hierarchy • No action guidance</p>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Unified Component)</div>
+          <div class="mock-ui">
+            <div class="mock-empty">
+              <div class="mock-empty-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2">
+                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20z"/><path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <div class="mock-empty-title">No agents yet</div>
+              <div class="mock-empty-desc">
+                Create your first AI agent to start automating work
+              </div>
+              <button class="mock-btn primary">Create Agent</button>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ Consistent component ✓ Clear CTA ✓ Visual hierarchy</p>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Create shared component: components/shared/empty-state.tsx</span>
+
+<span class="code-keyword">interface</span> <span class="code-component">EmptyStateProps</span> {
+  <span class="code-prop">icon</span>: LucideIcon
+  <span class="code-prop">title</span>: string
+  <span class="code-prop">description</span>: string
+  <span class="code-prop">action</span>?: { label: string; onClick: () => void }
+  <span class="code-prop">className</span>?: string
+}
+
+<span class="code-keyword">export function</span> <span class="code-component">EmptyState</span>({ icon: Icon, title, description, action }: EmptyStateProps) {
+  <span class="code-keyword">return</span> (
+    &lt;div className="flex flex-col items-center justify-center py-16 px-6 text-center"&gt;
+      &lt;div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4"&gt;
+        &lt;Icon className="w-8 h-8 text-primary" /&gt;
+      &lt;/div&gt;
+      &lt;h3 className="text-lg font-semibold mb-2"&gt;{title}&lt;/h3&gt;
+      &lt;p className="text-sm text-muted-foreground max-w-sm mb-6"&gt;{description}&lt;/p&gt;
+      {action && (
+        &lt;Button onClick={action.onClick}&gt;{action.label}&lt;/Button&gt;
+      )}
+    &lt;/div&gt;
+  )
+}
+
+<span class="code-comment">// Usage:</span>
+&lt;<span class="code-component">EmptyState</span>
+  <span class="code-prop">icon</span>={Bot}
+  <span class="code-prop">title</span>=<span class="code-string">"No agents yet"</span>
+  <span class="code-prop">description</span>=<span class="code-string">"Create your first AI agent to start automating work"</span>
+  <span class="code-prop">action</span>={{ label: <span class="code-string">"Create Agent"</span>, onClick: () =&gt; setShowCreateModal(true) }}
+/&gt;
+      </div>
+      
+      <div class="impact">Impact: Professional, consistent empty states = better first impressions for investors</div>
+    </div>
+
+    <!-- Fix 8: Tabs Standardization -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #8: Replace All Direct Tabs with FilterTabs</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">45 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Some pages use shadcn's <code>Tabs</code> component directly, others use the <code>FilterTabs</code> wrapper. FilterTabs adds tour hooks, consistent icon alignment, and responsive mobile behavior.</p>
+        <ul>
+          <li><strong>Documents:</strong> Uses raw Tabs for both main + sub-tabs</li>
+          <li><strong>Deliverables:</strong> Uses raw Tabs</li>
+          <li><strong>Assignments:</strong> Uses raw Tabs for Playbooks/Missions</li>
+          <li>Missing <code>data-tour</code> attributes for onboarding flows</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Raw Tabs)</div>
+          <div class="mock-ui">
+            <div style="display: flex; gap: 4px; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.1); font-size: 13px; font-weight: 500;">Library</div>
+              <div style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #999;">Processing</div>
+              <div style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #999;">Search</div>
+            </div>
+            <p style="font-size: 13px; color: #666;">• No tour hooks • No icon alignment • Custom implementation</p>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (FilterTabs)</div>
+          <div class="mock-ui">
+            <div style="display: flex; gap: 4px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; margin-bottom: 20px;">
+              <div style="padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.1); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                Library
+              </div>
+              <div style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #999; display: flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                Processing
+              </div>
+            </div>
+            <p style="font-size: 13px; color: #10b981;">✓ data-tour attributes ✓ Icon alignment ✓ Consistent spacing</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// ❌ BEFORE (documents/document-management.tsx)</span>
+&lt;<span class="code-component">Tabs</span> <span class="code-prop">value</span>={activeTab} <span class="code-prop">onValueChange</span>={setActiveTab}&gt;
+  &lt;<span class="code-component">TabsList</span> className="bg-secondary/50"&gt;
+    &lt;<span class="code-component">TabsTrigger</span> <span class="code-prop">value</span>=<span class="code-string">"library"</span>&gt;Library&lt;/TabsTrigger&gt;
+    &lt;<span class="code-component">TabsTrigger</span> <span class="code-prop">value</span>=<span class="code-string">"processing"</span>&gt;Processing&lt;/TabsTrigger&gt;
+  &lt;/TabsList&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"library"</span>&gt;...&lt;/TabsContent&gt;
+&lt;/Tabs&gt;
+
+<span class="code-comment">// ✅ AFTER (use FilterTabs wrapper)</span>
+&lt;<span class="code-component">FilterTabs</span>
+  <span class="code-prop">tabs</span>={[
+    { value: <span class="code-string">'library'</span>, label: <span class="code-string">'Library'</span>, icon: BookOpen },
+    { value: <span class="code-string">'processing'</span>, label: <span class="code-string">'Processing'</span>, icon: Clock },
+  ]}
+  <span class="code-prop">value</span>={activeTab}
+  <span class="code-prop">onValueChange</span>={setActiveTab}
+  <span class="code-prop">dataTour</span>=<span class="code-string">"documents-tabs"</span>
+&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"library"</span>&gt;...&lt;/TabsContent&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"processing"</span>&gt;...&lt;/TabsContent&gt;
+&lt;/<span class="code-component">FilterTabs</span>&gt;
+      </div>
+      
+      <div class="impact">Impact: Tour hooks work across all pages, mobile responsive behavior built-in</div>
+    </div>
+
+    <!-- Fix 9: Modal Standardization -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #9: Canonical Modal Component</div>
+        <div class="fix-meta">
+          <div class="fix-badge high">High Impact</div>
+          <div class="fix-badge time">2 hours</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Every modal in the app has different chrome: Create Agent modal, Agent Details modal, file upload modals all have custom headers, close buttons, and footer layouts.</p>
+        <ul>
+          <li>Create Agent: Custom header with gradient title</li>
+          <li>Agent Details: Different close button style</li>
+          <li>File Upload: No header at all, just content</li>
+          <li>No consistent padding, backdrop blur, or animation</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Custom Each Time)</div>
+          <div class="mock-ui">
+            <div class="mock-modal" style="backdrop-filter: none; border-radius: 12px; padding: 24px;">
+              <div style="margin-bottom: 16px;">
+                <h2 style="font-size: 18px; font-weight: 600;">Create Agent</h2>
+              </div>
+              <p style="font-size: 13px; color: #666;">Modal content here...</p>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #666; margin-top: 12px;">• No close button • No backdrop blur • Inconsistent padding</p>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Unified Component)</div>
+          <div class="mock-ui">
+            <div class="mock-modal">
+              <div class="mock-modal-header">
+                <div class="mock-modal-title">Create Agent</div>
+                <div class="mock-modal-close">×</div>
+              </div>
+              <p style="font-size: 13px; color: #999; margin-bottom: 20px;">Modal content here...</p>
+              <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <button class="mock-btn">Cancel</button>
+                <button class="mock-btn primary">Create</button>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ Consistent header ✓ Close button ✓ Footer actions ✓ Backdrop blur</p>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Create: components/shared/modal.tsx</span>
+
+<span class="code-keyword">interface</span> <span class="code-component">ModalProps</span> {
+  <span class="code-prop">open</span>: boolean
+  <span class="code-prop">onClose</span>: () => void
+  <span class="code-prop">title</span>: string
+  <span class="code-prop">children</span>: ReactNode
+  <span class="code-prop">footer</span>?: ReactNode
+  <span class="code-prop">size</span>?: <span class="code-string">'sm'</span> | <span class="code-string">'md'</span> | <span class="code-string">'lg'</span> | <span class="code-string">'xl'</span>
+}
+
+<span class="code-keyword">export function</span> <span class="code-component">Modal</span>({ open, onClose, title, children, footer, size = <span class="code-string">'md'</span> }: ModalProps) {
+  <span class="code-keyword">return</span> (
+    &lt;<span class="code-component">Dialog</span> <span class="code-prop">open</span>={open} <span class="code-prop">onOpenChange</span>={onClose}&gt;
+      &lt;<span class="code-component">DialogContent</span> className={cn(
+        <span class="code-string">"glass-card backdrop-blur-xl rounded-3xl p-0"</span>,
+        sizeClasses[size]
+      )}&gt;
+        &lt;div className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-white/8"&gt;
+          &lt;h2 className="text-xl font-semibold"&gt;{title}&lt;/h2&gt;
+          &lt;button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center"
+          &gt;
+            &lt;<span class="code-component">X</span> className="w-4 h-4" /&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div className="px-8 py-6"&gt;{children}&lt;/div&gt;
+        {footer && (
+          &lt;div className="flex gap-3 justify-end px-8 pb-6 pt-4 border-t border-white/8"&gt;
+            {footer}
+          &lt;/div&gt;
+        )}
+      &lt;/DialogContent&gt;
+    &lt;/Dialog&gt;
+  )
+}
+
+<span class="code-comment">// Usage:</span>
+&lt;<span class="code-component">Modal</span>
+  <span class="code-prop">open</span>={showCreateModal}
+  <span class="code-prop">onClose</span>={() =&gt; setShowCreateModal(false)}
+  <span class="code-prop">title</span>=<span class="code-string">"Create Agent"</span>
+  <span class="code-prop">size</span>=<span class="code-string">"lg"</span>
+  <span class="code-prop">footer</span>={
+    &lt;&gt;
+      &lt;Button variant="outline" onClick={() =&gt; setShowCreateModal(false)}&gt;Cancel&lt;/Button&gt;
+      &lt;Button onClick={handleCreate}&gt;Create&lt;/Button&gt;
+    &lt;/&gt;
+  }
+&gt;
+  {/* Form content */}
+&lt;/<span class="code-component">Modal</span>&gt;
+      </div>
+      
+      <div class="impact">Impact: Modals feel part of one cohesive product, faster to build new features</div>
+    </div>
+
+    <!-- Fix 10: Hover States -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #10: Standardize All Hover States</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">1 hour</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Interactive elements have inconsistent hover behaviors. Some cards scale on hover, others don't. Some buttons have hover glow, others just change opacity.</p>
+        <ul>
+          <li><strong>Cards:</strong> Some use <code>hover:border-primary/20</code>, some don't hover at all</li>
+          <li><strong>Buttons:</strong> Mixed use of scale, glow, opacity changes</li>
+          <li><strong>Links:</strong> Some underline, some don't, some change color</li>
+          <li>No documented hover pattern in design system</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Inconsistent)</div>
+          <div class="mock-ui">
+            <div class="mock-card">
+              <div style="font-weight: 600; margin-bottom: 4px;">Agent Card</div>
+              <div style="font-size: 13px; color: #999;">No hover effect</div>
+            </div>
+            <div class="mock-card" style="opacity: 0.8;">
+              <div style="font-weight: 600; margin-bottom: 4px;">Tool Card</div>
+              <div style="font-size: 13px; color: #999;">Opacity hover only</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #666; margin-top: 12px;">• Mixed hover treatments • No predictable feedback</p>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (Unified Pattern)</div>
+          <div class="mock-ui">
+            <div class="mock-card hover">
+              <div style="font-weight: 600; margin-bottom: 4px;">Agent Card</div>
+              <div style="font-size: 13px; color: #999;">Border glow + lift on hover</div>
+            </div>
+            <div class="mock-card hover">
+              <div style="font-weight: 600; margin-bottom: 4px;">Tool Card</div>
+              <div style="font-size: 13px; color: #999;">Border glow + lift on hover</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ Consistent glow ✓ Subtle lift ✓ Predictable feedback</p>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Document in DESIGN_SYSTEM.md and enforce via Tailwind utilities:</span>
+
+<span class="code-comment">// 1. INTERACTIVE CARDS (clickable, selectable)</span>
+className="glass-card <span class="code-keyword">hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300</span>"
+
+<span class="code-comment">// 2. STATIC CARDS (display only, not clickable)</span>
+className="glass-card" <span class="code-comment">// No hover</span>
+
+<span class="code-comment">// 3. BUTTONS (primary actions)</span>
+className="... <span class="code-keyword">hover:shadow-lg hover:shadow-primary/20 transition-shadow</span>"
+
+<span class="code-comment">// 4. LINKS (text navigation)</span>
+className="<span class="code-keyword">hover:text-primary transition-colors</span>"
+
+<span class="code-comment">// Add to globals.css for reuse:</span>
+<span class="code-prop">.interactive-card</span> {
+  <span class="code-prop">@apply</span> glass-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300;
+}
+
+<span class="code-comment">// Then use:</span>
+&lt;Card className="<span class="code-keyword">interactive-card</span>" onClick={...}&gt;
+      </div>
+      
+      <div class="impact">Impact: Platform feels more responsive and polished, users know what's clickable</div>
+    </div>
+
+    <!-- Fix 11: Vertical Spacing -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #11: Establish Vertical Spacing Rhythm</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Medium Impact</div>
+          <div class="fix-badge time">45 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Spacing between page sections varies wildly: some pages use <code>space-y-4</code>, others <code>space-y-6</code>, some <code>space-y-8</code>. No clear hierarchy for when to use which.</p>
+        <ul>
+          <li>PageHeader → StatsBar: ranges from 16px to 32px</li>
+          <li>StatsBar → Tabs: inconsistent (20px to 40px)</li>
+          <li>Between content sections: all over the place</li>
+          <li>Makes pages feel unbalanced when navigating between them</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Inconsistent)</div>
+          <div class="mock-ui">
+            <div class="spacing-demo">
+              <div class="spacing-box">PageHeader</div>
+              <div style="height: 12px;"></div>
+              <div class="spacing-box">StatsBar</div>
+              <div style="height: 28px;"></div>
+              <div class="spacing-box">Tabs</div>
+              <div style="height: 16px;"></div>
+              <div class="spacing-box">Content</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #666; margin-top: 12px;">• Random gaps • No rhythm • Feels unbalanced</p>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (8px Grid System)</div>
+          <div class="mock-ui">
+            <div class="spacing-demo">
+              <div class="spacing-box">PageHeader</div>
+              <div style="height: 24px; background: rgba(16,185,129,0.1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10b981;">24px (space-y-6)</div>
+              <div class="spacing-box">StatsBar</div>
+              <div style="height: 24px; background: rgba(16,185,129,0.1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10b981;">24px (space-y-6)</div>
+              <div class="spacing-box">Tabs</div>
+              <div style="height: 24px; background: rgba(16,185,129,0.1); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #10b981;">24px (space-y-6)</div>
+              <div class="spacing-box">Content</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ Consistent 24px rhythm ✓ Visual balance ✓ Predictable layout</p>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Establish spacing scale in DESIGN_SYSTEM.md:</span>
+
+<span class="code-comment">## Vertical Spacing Hierarchy</span>
+
+<span class="code-comment">// Page-level sections (Header, Stats, Tabs, Content):</span>
+className="<span class="code-keyword">space-y-6</span>" <span class="code-comment">// 24px between major sections</span>
+
+<span class="code-comment">// Within a section (cards in a grid, list items):</span>
+className="<span class="code-keyword">space-y-4</span>" <span class="code-comment">// 16px between related items</span>
+
+<span class="code-comment">// Dense content (form fields, list details):</span>
+className="<span class="code-keyword">space-y-3</span>" <span class="code-comment">// 12px for compact layouts</span>
+
+<span class="code-comment">// Generous spacing (between unrelated sections):</span>
+className="<span class="code-keyword">space-y-8</span>" <span class="code-comment">// 32px for visual separation</span>
+
+<span class="code-comment">// Example page structure:</span>
+&lt;div className="<span class="code-keyword">space-y-6</span>"&gt;
+  &lt;PageHeader .../&gt;
+  &lt;StatsBar .../&gt;
+  &lt;SearchInput .../&gt;
+  &lt;FilterTabs .../&gt;
+&lt;/div&gt;
+      </div>
+      
+      <div class="impact">Impact: Pages feel intentionally designed, consistent rhythm across entire platform</div>
+    </div>
+
+    <!-- Fix 12: Icon Scale -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #12: Document Icon Sizing Scale</div>
+        <div class="fix-meta">
+          <div class="fix-badge medium">Low-Medium Impact</div>
+          <div class="fix-badge time">30 min</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Icons range from <code>w-4 h-4</code> to <code>w-8 h-8</code> with no clear system. Some inline text uses 16px icons, others 20px. No documentation on when to use which size.</p>
+        <ul>
+          <li>Inline text icons: mix of 16px and 20px</li>
+          <li>Button icons: mix of 16px, 20px, 24px</li>
+          <li>Empty state icons: range from 32px to 64px</li>
+          <li>Stat card icons: inconsistent between 20px and 24px</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">❌ Before (Random Sizes)</div>
+          <div class="mock-ui">
+            <div class="icon-demo">
+              <div class="icon-sample">
+                <svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">14px<br>(random)</div>
+              </div>
+              <div class="icon-sample">
+                <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">18px<br>(random)</div>
+              </div>
+              <div class="icon-sample">
+                <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">22px<br>(random)</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #666; margin-top: 12px;">• No system • Inconsistent visual weight • Arbitrary sizing</p>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">✅ After (4px Scale)</div>
+          <div class="mock-ui">
+            <div class="icon-demo">
+              <div class="icon-sample">
+                <svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">16px (w-4)<br>Inline text</div>
+              </div>
+              <div class="icon-sample">
+                <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">20px (w-5)<br>Buttons</div>
+              </div>
+              <div class="icon-sample">
+                <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">24px (w-6)<br>Headers</div>
+              </div>
+              <div class="icon-sample">
+                <svg width="32" height="32" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+                <div class="icon-label">32px (w-8)<br>Empty states</div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size: 13px; color: #10b981; margin-top: 12px;">✓ 4px scale ✓ Clear use cases ✓ Consistent visual weight</p>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Add to DESIGN_SYSTEM.md:</span>
+
+<span class="code-comment">## Icon Sizing Scale</span>
+
+<span class="code-comment">// Inline with text (paragraphs, labels):</span>
+className="<span class="code-keyword">w-4 h-4</span>" <span class="code-comment">// 16px</span>
+
+<span class="code-comment">// Buttons, tabs, navigation:</span>
+className="<span class="code-keyword">w-5 h-5</span>" <span class="code-comment">// 20px</span>
+
+<span class="code-comment">// Page headers, section titles:</span>
+className="<span class="code-keyword">w-6 h-6</span>" <span class="code-comment">// 24px</span>
+
+<span class="code-comment">// Empty states, feature callouts:</span>
+className="<span class="code-keyword">w-8 h-8</span>" <span class="code-comment">// 32px</span>
+
+<span class="code-comment">// Large illustrations (welcome screens):</span>
+className="<span class="code-keyword">w-16 h-16</span>" <span class="code-comment">// 64px</span>
+
+<span class="code-comment">// Examples:</span>
+&lt;Button&gt;&lt;Plus className="<span class="code-keyword">w-5 h-5</span> mr-2" /&gt;Create&lt;/Button&gt;
+&lt;EmptyState icon={Bot} /&gt; <span class="code-comment">// Component uses w-8 internally</span>
+&lt;PageHeader icon={&lt;Settings className="<span class="code-keyword">w-6 h-6</span>" /&gt;} .../&gt;
+      </div>
+      
+      <div class="impact">Impact: Icons feel intentional and balanced relative to surrounding text</div>
+    </div>
+
+    <!-- Fix 13: Chat Page -->
+    <div class="fix-card">
+      <div class="fix-header">
+        <div class="fix-title">Fix #13: Chat Page Decision Point</div>
+        <div class="fix-meta">
+          <div class="fix-badge critical">Needs Decision</div>
+          <div class="fix-badge time">30 min OR document</div>
+        </div>
+      </div>
+      
+      <div class="fix-description">
+        <h3>📍 What's Wrong</h3>
+        <p>Chat page has a completely custom layout: no PageHeader, no StatsBar, custom welcome greeting. This is either a bug OR an intentional design choice for the chat UX.</p>
+        <ul>
+          <li>Custom "Hey {firstName}, what can I do for you today?" greeting</li>
+          <li>Full-height resizable panels (chat history + main + widget canvas)</li>
+          <li>Standard page template doesn't fit the UX needs</li>
+          <li><strong>Decision needed:</strong> Conform to template OR document as intentional exception</li>
+        </ul>
+      </div>
+      
+      <div class="comparison">
+        <div class="comparison-side before">
+          <div class="comparison-label">Option A: Conform to Template</div>
+          <div class="mock-ui">
+            <div style="margin-bottom: 20px;">
+              <div style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">
+                Chat <span style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Assistant</span>
+              </div>
+              <div style="font-size: 14px; color: #999;">Collaborate with AI agents in real-time</div>
+            </div>
+            <div style="font-size: 13px; color: #666;">• Adds PageHeader • Loses personalized greeting • More consistent</div>
+          </div>
+        </div>
+        
+        <div class="comparison-side after">
+          <div class="comparison-label">Option B: Document Exception</div>
+          <div class="mock-ui">
+            <div style="padding: 24px;">
+              <h1 style="font-size: 32px; font-weight: 600; margin-bottom: 8px;">
+                Hey User, what can I do for you today?
+              </h1>
+              <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Custom welcome state preserved</p>
+            </div>
+            <div style="font-size: 13px; color: #10b981; padding: 12px; background: rgba(16,185,129,0.1); border-radius: 8px;">
+              ✓ Keep custom layout ✓ Document in DESIGN_SYSTEM.md as intentional exception ✓ Add reasoning
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="code-block">
+<span class="code-comment">// Recommendation: Option B (Document Exception)</span>
+
+<span class="code-comment">// Add to DESIGN_SYSTEM.md:</span>
+
+<span class="code-comment">## Page Template Exceptions</span>
+
+<span class="code-keyword">### Chat Page</span>
+
+The Chat page intentionally does NOT use the standard PageHeader + StatsBar + FilterTabs
+template because:
+
+1. <span class="code-string">**Full-height UX:**</span> Chat requires resizable panels spanning viewport height
+2. <span class="code-string">**Personalized greeting:**</span> "Hey {firstName}..." creates a conversational tone
+3. <span class="code-string">**No stats needed:**</span> Chat is a real-time interface, not a management dashboard
+
+This exception is <span class="code-keyword">intentional and approved</span>. Other pages should NOT deviate
+from the standard template without documented reasoning.
+
+<span class="code-comment">// If you want minimal conformity, keep custom welcome but add subtle branding:</span>
+&lt;h1 className="text-3xl font-semibold mb-1"&gt;
+  Hey {user?.firstName}, what can I do for you today?
+&lt;/h1&gt;
+&lt;p className="text-sm <span class="code-prop">text-muted-foreground</span>"&gt;
+  <span class="code-string">Chat Assistant</span> · Powered by your AI crew
+&lt;/p&gt;
+      </div>
+      
+      <div class="impact">Impact: Decision documented, future developers know Chat's divergence is intentional</div>
+    </div>
+
+    <!-- Summary -->
+    <div class="fix-card" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.05) 100%); border-color: rgba(255, 107, 53, 0.2);">
+      <div class="fix-header" style="border-bottom-color: rgba(255, 107, 53, 0.2);">
+        <div class="fix-title" style="color: #ff6b35;">📊 Phase 2 Impact Summary</div>
+        <div class="fix-meta">
+          <div class="fix-badge" style="background: rgba(255, 107, 53, 0.2); color: #ff6b35;">~7 Hours Total</div>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px;">
+        <div style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 700; color: #10b981; margin-bottom: 8px;">95%</div>
+          <div style="font-size: 14px; color: #999;">Target Consistency</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 700; color: #3b82f6; margin-bottom: 8px;">7</div>
+          <div style="font-size: 14px; color: #999;">Additional Fixes</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 42px; font-weight: 700; color: #f59e0b; margin-bottom: 8px;">13</div>
+          <div style="font-size: 14px; color: #999;">Total Fixes (Phase 1+2)</div>
+        </div>
+      </div>
+      
+      <div style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #ff6b35;">Combined Implementation Timeline</h3>
+        
+        <div style="margin-bottom: 16px;">
+          <div style="font-weight: 600; margin-bottom: 8px; color: #10b981;">Phase 1: Quick Wins (2.5 hours)</div>
+          <ol style="padding-left: 24px; color: #ccc; line-height: 1.8; font-size: 14px;">
+            <li>Marketplace Search (10 min)</li>
+            <li>Assignments Header (15 min)</li>
+            <li>Deliverables Header (20 min)</li>
+            <li>Tab Opacity (30 min)</li>
+            <li>Badge Colors (30 min)</li>
+            <li>Glass Cards (1 hour)</li>
+          </ol>
+        </div>
+        
+        <div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: #3b82f6;">Phase 2: Deep Polish (7 hours)</div>
+          <ol style="padding-left: 24px; color: #ccc; line-height: 1.8; font-size: 14px;" start="7">
+            <li>Empty States Component (1.5 hours)</li>
+            <li>FilterTabs Migration (45 min)</li>
+            <li>Modal Component (2 hours)</li>
+            <li>Hover States (1 hour)</li>
+            <li>Vertical Spacing (45 min)</li>
+            <li>Icon Scale Documentation (30 min)</li>
+            <li>Chat Page Decision (30 min)</li>
+          </ol>
+        </div>
+      </div>
+      
+      <div style="padding: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+        <p style="font-size: 15px; color: #10b981; line-height: 1.8; margin-bottom: 12px;">
+          <strong>✓ After Phase 1+2 (9.5 hours total):</strong>
+        </p>
+        <ul style="padding-left: 24px; color: #10b981; line-height: 1.8; font-size: 14px;">
+          <li>Every page follows the same design system patterns</li>
+          <li>Shared components eliminate duplication and drift</li>
+          <li>New features inherit polish automatically</li>
+          <li>Platform looks intentionally designed from top to bottom</li>
+          <li>Investor-ready visual consistency</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

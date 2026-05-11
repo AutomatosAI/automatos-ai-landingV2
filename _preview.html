@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos · v2 mocks — preview index</title>
+<style>
+  :root {
+    --bg: #F2EDE4;
+    --bg-2: #ECE6DA;
+    --fg: #0F1411;
+    --muted: #6E6960;
+    --rule: rgba(15, 20, 17, 0.14);
+    --accent: #2C5942;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.5 -apple-system, "Inter", "Geist", system-ui, sans-serif;
+    padding: 64px 56px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font: 11px/1 "JetBrains Mono", "Geist Mono", ui-monospace, monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 {
+    font: 400 56px/1 "Instrument Serif", "Times New Roman", serif;
+    letter-spacing: -0.02em;
+    margin: 12px 0 8px;
+  }
+  h1 em { color: var(--muted); }
+  .lead { font-size: 18px; color: var(--muted); max-width: 640px; margin-bottom: 48px; }
+  h2 {
+    font: 400 28px/1.1 "Instrument Serif", serif;
+    letter-spacing: -0.01em;
+    margin: 56px 0 4px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+  h2 em { color: var(--muted); font-style: italic; }
+  h2 .num {
+    font: 11px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin-right: 16px;
+    text-transform: uppercase;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 24px;
+  }
+  a.cell {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px;
+    padding: 24px;
+    background: var(--bg);
+    color: inherit;
+    text-decoration: none;
+    transition: background .18s;
+  }
+  a.cell:hover { background: var(--bg-2); }
+  .cell-num {
+    font: 11px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .cell-h {
+    font: 400 24px/1.1 "Instrument Serif", serif;
+    letter-spacing: -0.01em;
+    margin-top: 4px;
+  }
+  .cell-h em { color: var(--muted); font-style: italic; }
+  .cell-note { font-size: 14px; color: var(--muted); line-height: 1.45; }
+  .cell-arrow {
+    font: 11px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 8px;
+  }
+  .footer-note {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer-note code {
+    font-family: "JetBrains Mono", monospace;
+    background: var(--bg-2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body data-mood="bone">
+
+<div class="eyebrow">Preview · v2 · local · 127.0.0.1:8765</div>
+<h1>Automatos · <em>landing v2</em></h1>
+<p class="lead">Editorial-direction mocks from Claude Design. Click any plate to open the live HTML.</p>
+
+<h2><span class="num">01</span> Landing</h2>
+<div class="grid">
+  <a class="cell" href="index.html">
+    <div class="cell-num"><span>Plate / 001</span><span>Desktop</span></div>
+    <div class="cell-h"><em>An operating system</em> for autonomous agent teams.</div>
+    <div class="cell-note">Full landing — hero, ledger, chapters, schematic, packs, foundation, closer.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="landing-mobile.html">
+    <div class="cell-num"><span>Plate / 002</span><span>375 + 768</span></div>
+    <div class="cell-h">Landing — <em>responsive</em></div>
+    <div class="cell-note">Phone and tablet breakpoints, designed not just narrowed.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+</div>
+
+<h2><span class="num">02</span> System</h2>
+<div class="grid">
+  <a class="cell" href="styleguide.html">
+    <div class="cell-num"><span>Plate / 003</span><span>Source of truth</span></div>
+    <div class="cell-h">Primitives, types, and <em>plates.</em></div>
+    <div class="cell-note">Mood swatches, type scale, components in their states.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="pitch-mode.html">
+    <div class="cell-num"><span>Plate / 004</span><span>Dark · pitch</span></div>
+    <div class="cell-h">Pitch <em>mode.</em></div>
+    <div class="cell-note">Dark-mode coverage — landing fold, chapters, schematic, footer in pitch.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="states-and-motion.html">
+    <div class="cell-num"><span>Plate / 005</span><span>Behaviour</span></div>
+    <div class="cell-h">States &amp; <em>motion.</em></div>
+    <div class="cell-note">Hover, focus, active, loading, empty, error — plus motion specs for the schematic.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="404.html">
+    <div class="cell-num"><span>Plate / 006</span><span>Error · 404</span></div>
+    <div class="cell-h">The router could <em>not route</em> this one.</div>
+    <div class="cell-note">404 styled as a routing trace. The brand metaphor put to work.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+</div>
+
+<h2><span class="num">03</span> Editorial</h2>
+<div class="grid">
+  <a class="cell" href="field-notes.html">
+    <div class="cell-num"><span>Plate / 005</span><span>Index</span></div>
+    <div class="cell-h">Notes from the <em>field.</em></div>
+    <div class="cell-note">Blog index — featured note + category-tagged grid.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="field-notes-five-tiers.html">
+    <div class="cell-num"><span>Plate / 006</span><span>Article</span></div>
+    <div class="cell-h">Why the router is <em>five tiers,</em> and not four.</div>
+    <div class="cell-note">Long-form article template — side-rail TOC, plate captions, code blocks.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+</div>
+
+<h2><span class="num">04</span> Conversion + content</h2>
+<div class="grid">
+  <a class="cell" href="pricing.html">
+    <div class="cell-num"><span>Plate / 007</span><span>Rate card</span></div>
+    <div class="cell-h">Pay for the <em>workforce,</em> not the seats.</div>
+    <div class="cell-note">Four-tier pricing as editorial rate card with comparison table.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="marketplace.html">
+    <div class="cell-num"><span>Plate / 008</span><span>Catalogue</span></div>
+    <div class="cell-h">Hire one, or install a <em>whole team.</em></div>
+    <div class="cell-note">Featured packs + single-agent grid, install / free / $ badges.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="contact.html">
+    <div class="cell-num"><span>Plate / 009</span><span>Form</span></div>
+    <div class="cell-h">Send us <em>a note.</em></div>
+    <div class="cell-note">Two-column contact — form + "looking for…" panels.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+  <a class="cell" href="terms.html">
+    <div class="cell-num"><span>Plate / 010</span><span>Terms</span></div>
+    <div class="cell-h">Terms of <em>service.</em></div>
+    <div class="cell-note">Legal as editorial — side-rail TOC, "in plain English" callouts.</div>
+    <div class="cell-arrow">Open →</div>
+  </a>
+</div>
+
+<div class="footer-note">
+  Served from <code>python3 -m http.server 8765</code> — kill with <code>pkill -f "http.server 8765"</code> when done.
+  &nbsp;·&nbsp; Phone test: load this on your phone via your laptop's LAN IP (e.g. <code>http://192.168.x.x:8765/_preview.html</code>) for the outdoor-sun acceptance test.
+</div>
+
+<script src="_theme.js" defer></script>
+</body>
+</html>

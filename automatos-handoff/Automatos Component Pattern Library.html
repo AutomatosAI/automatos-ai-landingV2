@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatos AI — Component Pattern Library</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      line-height: 1.6;
+      padding: 48px 24px;
+    }
+    
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .header {
+      margin-bottom: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 56px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header .subtitle {
+      font-size: 20px;
+      color: #999;
+      margin-bottom: 24px;
+    }
+    
+    .header .description {
+      font-size: 16px;
+      color: #666;
+      max-width: 800px;
+      line-height: 1.7;
+    }
+    
+    /* Navigation */
+    .nav {
+      position: sticky;
+      top: 24px;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px 24px;
+      margin-bottom: 48px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+    
+    .nav a {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #999;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .nav a:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+    
+    .nav a.active {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(247, 147, 30, 0.1) 100%);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      color: #ff6b35;
+    }
+    
+    /* Section */
+    .section {
+      margin-bottom: 80px;
+      scroll-margin-top: 120px;
+    }
+    
+    .section-header {
+      margin-bottom: 32px;
+    }
+    
+    .section-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    
+    .section-description {
+      font-size: 16px;
+      color: #999;
+      line-height: 1.7;
+    }
+    
+    /* Component Card */
+    .component-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+    
+    .component-name {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    
+    .component-desc {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    /* State Grid */
+    .state-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .state-box {
+      background: #0f0f0f;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    
+    .state-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #666;
+      margin-bottom: 16px;
+    }
+    
+    /* Mock Components */
+    .mock-page-header {
+      margin-bottom: 24px;
+    }
+    
+    .mock-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .mock-title .accent {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .mock-subtitle {
+      font-size: 14px;
+      color: #999;
+    }
+    
+    .mock-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e5e5e5;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .mock-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+    }
+    
+    .mock-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .mock-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .mock-btn:disabled:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .mock-btn.primary {
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      border-color: transparent;
+      color: white;
+    }
+    
+    .mock-btn.primary:hover {
+      box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+    }
+    
+    .mock-btn.destructive {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+    
+    .mock-btn.destructive:hover {
+      background: rgba(239, 68, 68, 0.2);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+    
+    .mock-stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .mock-stat-card.glow {
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+    }
+    
+    .mock-stat-card:hover {
+      border-color: rgba(255, 107, 53, 0.2);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+    }
+    
+    .mock-stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 107, 53, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    
+    .mock-stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .mock-stat-label {
+      font-size: 13px;
+      color: #999;
+    }
+    
+    .mock-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .mock-badge.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+    
+    .mock-badge.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+    }
+    
+    .mock-badge.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+    
+    .mock-badge.default {
+      background: rgba(255, 255, 255, 0.08);
+      color: #999;
+    }
+    
+    .mock-search {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      color: #e5e5e5;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .mock-search:focus {
+      border-color: rgba(255, 107, 53, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    }
+    
+    .mock-search:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .mock-search-wrapper {
+      position: relative;
+    }
+    
+    .mock-search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      opacity: 0.5;
+    }
+    
+    .mock-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    
+    .mock-card.interactive {
+      cursor: pointer;
+    }
+    
+    .mock-card.interactive:hover {
+      border-color: rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .mock-card.loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    .mock-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .mock-tab {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #999;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .mock-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .mock-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .mock-input {
+      width: 100%;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #e5e5e5;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .mock-input:focus {
+      border-color: rgba(255, 107, 53, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    }
+    
+    .mock-input:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .mock-input.error {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+    
+    /* Code Block */
+    .code-block {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 13px;
+      color: #a0a0a0;
+      overflow-x: auto;
+      line-height: 1.6;
+      margin-top: 16px;
+    }
+    
+    .code-comment { color: #666; }
+    .code-keyword { color: #ff6b35; }
+    .code-string { color: #10b981; }
+    .code-prop { color: #3b82f6; }
+    .code-component { color: #f59e0b; }
+    
+    /* Specs Table */
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+    
+    .specs-table th {
+      text-align: left;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 600;
+      color: #999;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .specs-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .specs-table code {
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      color: #ff6b35;
+      font-family: 'SF Mono', monospace;
+    }
+    
+    /* Loading Spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #ff6b35;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    /* Skeleton */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .skeleton {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    .skeleton-text {
+      height: 16px;
+      margin-bottom: 8px;
+    }
+    
+    .skeleton-title {
+      height: 28px;
+      width: 60%;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Component Pattern Library</h1>
+      <div class="subtitle">Interactive reference for all Automatos AI design system components</div>
+      <div class="description">
+        Every component shown in all its states (default, hover, active, disabled, loading, error). Use this as a visual QA checklist to ensure consistency across the platform.
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+      <a href="#buttons" class="active">Buttons</a>
+      <a href="#inputs">Inputs</a>
+      <a href="#cards">Cards</a>
+      <a href="#badges">Badges</a>
+      <a href="#stats">Stats</a>
+      <a href="#tabs">Tabs</a>
+      <a href="#headers">Page Headers</a>
+      <a href="#search">Search</a>
+      <a href="#spacing">Spacing</a>
+      <a href="#typography">Typography</a>
+      <a href="#icons">Icons</a>
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="section" id="buttons">
+      <div class="section-header">
+        <div class="section-title">Buttons</div>
+        <div class="section-description">
+          Primary actions use gradient orange, secondary actions use outlined style, destructive actions use red accent.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Button Variants</div>
+        <div class="component-desc">Three button variants: primary (gradient), secondary (outline), destructive (red).</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Default</div>
+            <button class="mock-btn primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Primary Action
+            </button>
+            <br><br>
+            <button class="mock-btn">Secondary Action</button>
+            <br><br>
+            <button class="mock-btn destructive">Delete</button>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Hover (Try it)</div>
+            <button class="mock-btn primary">
+              Hover Me
+            </button>
+            <br><br>
+            <button class="mock-btn">Hover Me</button>
+            <br><br>
+            <button class="mock-btn destructive">Hover Me</button>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Disabled</div>
+            <button class="mock-btn primary" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Primary Action
+            </button>
+            <br><br>
+            <button class="mock-btn" disabled>Secondary Action</button>
+            <br><br>
+            <button class="mock-btn destructive" disabled>Delete</button>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Loading</div>
+            <button class="mock-btn primary" disabled>
+              <div class="spinner"></div>
+              Creating...
+            </button>
+            <br><br>
+            <button class="mock-btn" disabled>
+              <div class="spinner"></div>
+              Loading...
+            </button>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Primary Button</span>
+&lt;Button <span class="code-prop">variant</span>=<span class="code-string">"default"</span>&gt;
+  &lt;Plus className="w-4 h-4 mr-2" /&gt;
+  Create
+&lt;/Button&gt;
+
+<span class="code-comment">// Secondary Button</span>
+&lt;Button <span class="code-prop">variant</span>=<span class="code-string">"outline"</span>&gt;
+  Cancel
+&lt;/Button&gt;
+
+<span class="code-comment">// Destructive Button</span>
+&lt;Button <span class="code-prop">variant</span>=<span class="code-string">"destructive"</span>&gt;
+  Delete
+&lt;/Button&gt;
+
+<span class="code-comment">// Loading State</span>
+&lt;Button <span class="code-prop">disabled</span>={isLoading}&gt;
+  {isLoading && &lt;Loader2 className="w-4 h-4 mr-2 animate-spin" /&gt;}
+  {isLoading ? <span class="code-string">'Creating...'</span> : <span class="code-string">'Create'</span>}
+&lt;/Button&gt;
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Height</td>
+              <td><code>40px</code> (default)</td>
+              <td>Use <code>size="sm"</code> for 32px, <code>size="lg"</code> for 48px</td>
+            </tr>
+            <tr>
+              <td>Border Radius</td>
+              <td><code>10px</code></td>
+              <td>Rounded corners, not pill-shaped</td>
+            </tr>
+            <tr>
+              <td>Icon Size</td>
+              <td><code>w-4 h-4</code> (16px)</td>
+              <td>Use <code>w-5 h-5</code> for lg buttons</td>
+            </tr>
+            <tr>
+              <td>Hover Effect</td>
+              <td>Glow + subtle scale</td>
+              <td>Primary: orange glow, Secondary: border glow</td>
+            </tr>
+            <tr>
+              <td>Min Width</td>
+              <td><code>min-w-[44px]</code></td>
+              <td>Touch-friendly minimum</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Inputs Section -->
+    <div class="section" id="inputs">
+      <div class="section-header">
+        <div class="section-title">Input Fields</div>
+        <div class="section-description">
+          Text inputs with focus states, error states, and disabled states. Always use labels and helper text.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Text Input</div>
+        <div class="component-desc">Standard text input with all states.</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Default</div>
+            <input type="text" class="mock-input" placeholder="Enter your name" value="">
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Focus (Click to test)</div>
+            <input type="text" class="mock-input" placeholder="Click to focus" value="">
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Filled</div>
+            <input type="text" class="mock-input" value="John Doe">
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Error</div>
+            <input type="text" class="mock-input error" placeholder="Invalid input" value="">
+            <div style="margin-top: 8px; font-size: 12px; color: #ef4444;">This field is required</div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Disabled</div>
+            <input type="text" class="mock-input" placeholder="Disabled" disabled>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Basic Input</span>
+&lt;Input
+  <span class="code-prop">type</span>=<span class="code-string">"text"</span>
+  <span class="code-prop">placeholder</span>=<span class="code-string">"Enter your name"</span>
+  <span class="code-prop">value</span>={value}
+  <span class="code-prop">onChange</span>={(e) => setValue(e.target.value)}
+/&gt;
+
+<span class="code-comment">// Error State</span>
+&lt;div&gt;
+  &lt;Input
+    className={errors.name ? <span class="code-string">"border-destructive"</span> : <span class="code-string">""</span>}
+    {...register(<span class="code-string">"name"</span>, { required: <span class="code-keyword">true</span> })}
+  /&gt;
+  {errors.name && (
+    &lt;p className="text-sm <span class="code-prop">text-destructive</span> mt-1"&gt;
+      This field is required
+    &lt;/p&gt;
+  )}
+&lt;/div&gt;
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Height</td>
+              <td><code>40px</code></td>
+              <td>Matches button height for alignment</td>
+            </tr>
+            <tr>
+              <td>Border Radius</td>
+              <td><code>8px</code></td>
+              <td>Less rounded than buttons</td>
+            </tr>
+            <tr>
+              <td>Focus Ring</td>
+              <td><code>0 0 0 3px rgba(255,107,53,0.1)</code></td>
+              <td>Orange glow on focus</td>
+            </tr>
+            <tr>
+              <td>Error Color</td>
+              <td><code>hsl(var(--destructive))</code></td>
+              <td>Red border + helper text</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="section" id="search">
+      <div class="section-header">
+        <div class="section-title">Search Input</div>
+        <div class="section-description">
+          Pill-shaped search with icon, debouncing built-in. Use the shared SearchInput component, not raw Input.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">SearchInput Component</div>
+        <div class="component-desc">Pill-shaped search with magnifying glass icon and debouncing.</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Default</div>
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" placeholder="Search agents...">
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Focus (Click to test)</div>
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" placeholder="Click to focus">
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Filled</div>
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" value="neural network">
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Disabled</div>
+            <div class="mock-search-wrapper">
+              <svg class="mock-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input type="text" class="mock-search" placeholder="Search disabled" disabled>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Always use SearchInput component (from components/shared/search-input.tsx)</span>
+&lt;<span class="code-component">SearchInput</span>
+  <span class="code-prop">value</span>={searchTerm}
+  <span class="code-prop">onChange</span>={setSearchTerm}
+  <span class="code-prop">placeholder</span>=<span class="code-string">"Search agents by name, type, or capabilities..."</span>
+  <span class="code-prop">className</span>=<span class="code-string">"flex-1"</span>
+/&gt;
+
+<span class="code-comment">// DO NOT use raw Input with custom icon — SearchInput has debouncing built-in</span>
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Border Radius</td>
+              <td><code>24px</code> (pill shape)</td>
+              <td>Fully rounded, not just corners</td>
+            </tr>
+            <tr>
+              <td>Icon Position</td>
+              <td><code>left: 16px</code></td>
+              <td>Magnifying glass at 16px from left edge</td>
+            </tr>
+            <tr>
+              <td>Padding Left</td>
+              <td><code>44px</code></td>
+              <td>Makes room for icon</td>
+            </tr>
+            <tr>
+              <td>Debounce</td>
+              <td><code>300ms</code></td>
+              <td>Built into SearchInput component</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="section" id="cards">
+      <div class="section-header">
+        <div class="section-title">Cards</div>
+        <div class="section-description">
+          Glass morphism cards with optional glow on hover. Interactive cards get hover lift, static cards don't.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Card States</div>
+        <div class="component-desc">Static vs interactive cards, loading states, hover effects.</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Static Card</div>
+            <div class="mock-card">
+              <div style="font-weight: 600; margin-bottom: 8px;">Information Card</div>
+              <div style="font-size: 13px; color: #999;">Display-only, no hover effect</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Interactive (Hover Me)</div>
+            <div class="mock-card interactive">
+              <div style="font-weight: 600; margin-bottom: 8px;">Clickable Card</div>
+              <div style="font-size: 13px; color: #999;">Hover for glow + lift effect</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Loading</div>
+            <div class="mock-card loading">
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-text" style="width: 80%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Static Card (display only)</span>
+&lt;Card className="<span class="code-keyword">glass-card</span>"&gt;
+  &lt;CardContent&gt;...&lt;/CardContent&gt;
+&lt;/Card&gt;
+
+<span class="code-comment">// Interactive Card (clickable)</span>
+&lt;Card
+  className="<span class="code-keyword">glass-card hover:border-primary/20 hover:-translate-y-0.5 transition-all duration-300</span>"
+  onClick={handleClick}
+&gt;
+  &lt;CardContent&gt;...&lt;/CardContent&gt;
+&lt;/Card&gt;
+
+<span class="code-comment">// Or use the utility class from globals.css:</span>
+&lt;Card className="<span class="code-keyword">interactive-card</span>" onClick={...}&gt;
+  &lt;CardContent&gt;...&lt;/CardContent&gt;
+&lt;/Card&gt;
+
+<span class="code-comment">// Loading Skeleton</span>
+&lt;Card className="glass-card"&gt;
+  &lt;div className="<span class="code-keyword">skeleton skeleton-title</span>" /&gt;
+  &lt;div className="<span class="code-keyword">skeleton skeleton-text</span>" /&gt;
+  &lt;div className="<span class="code-keyword">skeleton skeleton-text</span>" style={{width: <span class="code-string">'80%'</span>}} /&gt;
+&lt;/Card&gt;
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Classes</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Static</td>
+              <td><code>glass-card</code></td>
+              <td>Display-only content (stat cards, info boxes)</td>
+            </tr>
+            <tr>
+              <td>Interactive</td>
+              <td><code>glass-card hover:border-primary/20 hover:-translate-y-0.5</code></td>
+              <td>Clickable/selectable (agent cards, tool cards)</td>
+            </tr>
+            <tr>
+              <td>Loading</td>
+              <td><code>glass-card opacity-60</code> + skeleton children</td>
+              <td>Async data fetching</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="section" id="badges">
+      <div class="section-header">
+        <div class="section-title">Badges</div>
+        <div class="section-description">
+          Status badges use semantic colors: green for success/active, amber for warning/pending, red for error/failed, gray for neutral.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Badge Variants</div>
+        <div class="component-desc">Semantic color variants for status indicators.</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Success / Active</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mock-badge success">Active</div>
+              <div class="mock-badge success">Running</div>
+              <div class="mock-badge success">Online</div>
+              <div class="mock-badge success">Healthy</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Warning / Pending</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mock-badge warning">Warning</div>
+              <div class="mock-badge warning">Pending</div>
+              <div class="mock-badge warning">Attention</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Error / Failed</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mock-badge error">Error</div>
+              <div class="mock-badge error">Failed</div>
+              <div class="mock-badge error">Offline</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Default / Neutral</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="mock-badge default">Idle</div>
+              <div class="mock-badge default">Draft</div>
+              <div class="mock-badge default">Paused</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Create helper function for semantic variants:</span>
+
+<span class="code-keyword">function</span> <span class="code-component">getStatusVariant</span>(status: string) {
+  <span class="code-keyword">switch</span> (status.toLowerCase()) {
+    <span class="code-keyword">case</span> <span class="code-string">'active'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'running'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'online'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'healthy'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'success'</span>
+    
+    <span class="code-keyword">case</span> <span class="code-string">'warning'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'pending'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'attention'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'warning'</span>
+    
+    <span class="code-keyword">case</span> <span class="code-string">'error'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'failed'</span>:
+    <span class="code-keyword">case</span> <span class="code-string">'offline'</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'destructive'</span>
+    
+    <span class="code-keyword">default</span>:
+      <span class="code-keyword">return</span> <span class="code-string">'secondary'</span>
+  }
+}
+
+<span class="code-comment">// Usage:</span>
+&lt;Badge <span class="code-prop">variant</span>={getStatusVariant(agent.status)}&gt;
+  {agent.status}
+&lt;/Badge&gt;
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Variant</th>
+              <th>Color Token</th>
+              <th>Use Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Success</td>
+              <td><code>hsl(var(--success))</code> #10b981</td>
+              <td>Active, Running, Online, Healthy, Completed</td>
+            </tr>
+            <tr>
+              <td>Warning</td>
+              <td><code>hsl(var(--warning))</code> #f59e0b</td>
+              <td>Warning, Pending, Attention, Processing</td>
+            </tr>
+            <tr>
+              <td>Destructive</td>
+              <td><code>hsl(var(--destructive))</code> #ef4444</td>
+              <td>Error, Failed, Offline, Critical</td>
+            </tr>
+            <tr>
+              <td>Secondary</td>
+              <td><code>hsl(var(--muted-foreground))</code> #999</td>
+              <td>Idle, Draft, Paused, Neutral</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="section" id="stats">
+      <div class="section-header">
+        <div class="section-title">Stat Cards</div>
+        <div class="section-description">
+          Glass morphism stat cards with icon, value, label, and optional change indicator. Always use StatsBar component for consistency.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">StatsBar Component</div>
+        <div class="component-desc">Grid of 4 stat cards showing key metrics.</div>
+        
+        <div class="state-grid">
+          <div class="state-box">
+            <div class="state-label">Default</div>
+            <div class="mock-stat-card glow">
+              <div class="mock-stat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b35" stroke-width="2">
+                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20z"/><path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <div class="mock-stat-value">342</div>
+              <div class="mock-stat-label">Total Agents</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">With Change Indicator</div>
+            <div class="mock-stat-card glow">
+              <div class="mock-stat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px;">
+                <div class="mock-stat-value">87%</div>
+                <div style="font-size: 11px; color: #10b981;">+5%</div>
+              </div>
+              <div class="mock-stat-label">Success Rate</div>
+            </div>
+          </div>
+          
+          <div class="state-box">
+            <div class="state-label">Loading</div>
+            <div class="mock-stat-card glow">
+              <div class="mock-stat-icon">
+                <div class="spinner"></div>
+              </div>
+              <div class="mock-stat-value">...</div>
+              <div class="mock-stat-label">Loading...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Always use StatsBar component (from components/shared/stats-bar.tsx)</span>
+
+<span class="code-keyword">const</span> stats: StatItem[] = [
+  {
+    label: <span class="code-string">'Total Agents'</span>,
+    value: String(agentCount),
+    change: <span class="code-string">`${agentCount} agents`</span>,
+    icon: Bot,
+    iconColor: <span class="code-string">'text-primary'</span>,
+    globalIconKey: <span class="code-string">'global_agent'</span>, <span class="code-comment">// Optional premium icon</span>
+  },
+  <span class="code-comment">// ... more stats</span>
+]
+
+&lt;<span class="code-component">StatsBar</span> <span class="code-prop">stats</span>={stats} <span class="code-prop">loading</span>={isLoading} /&gt;
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Grid</td>
+              <td><code>grid-cols-2 lg:grid-cols-4</code></td>
+              <td>2 columns mobile, 4 columns desktop</td>
+            </tr>
+            <tr>
+              <td>Icon Container</td>
+              <td><code>40px × 40px</code>, rounded-2xl</td>
+              <td>Black bg with primary border</td>
+            </tr>
+            <tr>
+              <td>Value Size</td>
+              <td><code>text-2xl</code> (24px)</td>
+              <td>Bold weight</td>
+            </tr>
+            <tr>
+              <td>Label Size</td>
+              <td><code>text-sm</code> (14px)</td>
+              <td>Muted foreground color</td>
+            </tr>
+            <tr>
+              <td>Hover Effect</td>
+              <td>Orange border glow</td>
+              <td>Subtle, not interactive (cards are static)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tabs Section -->
+    <div class="section" id="tabs">
+      <div class="section-header">
+        <div class="section-title">Tabs</div>
+        <div class="section-description">
+          Always use FilterTabs wrapper (not raw shadcn Tabs). Includes tour hooks, icon alignment, and responsive mobile behavior.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">FilterTabs Component</div>
+        <div class="component-desc">Tab navigation with optional icons and count badges.</div>
+        
+        <div class="state-grid" style="grid-template-columns: 1fr;">
+          <div class="state-box">
+            <div class="state-label">Default State</div>
+            <div class="mock-tabs">
+              <div class="mock-tab active">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                All Agents
+                <span style="font-size: 10px; opacity: 0.6;">(24)</span>
+              </div>
+              <div class="mock-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+                Active
+                <span style="font-size: 10px; opacity: 0.6;">(18)</span>
+              </div>
+              <div class="mock-tab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                Idle
+                <span style="font-size: 10px; opacity: 0.6;">(6)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Define tabs array:</span>
+<span class="code-keyword">const</span> tabs = [
+  { value: <span class="code-string">'all'</span>, label: <span class="code-string">'All Agents'</span>, icon: Users, count: agents.length },
+  { value: <span class="code-string">'active'</span>, label: <span class="code-string">'Active'</span>, icon: Zap, count: activeCount },
+  { value: <span class="code-string">'idle'</span>, label: <span class="code-string">'Idle'</span>, icon: Clock, count: idleCount },
+]
+
+<span class="code-comment">// Use FilterTabs wrapper:</span>
+&lt;<span class="code-component">FilterTabs</span>
+  <span class="code-prop">tabs</span>={tabs}
+  <span class="code-prop">value</span>={activeTab}
+  <span class="code-prop">onValueChange</span>={setActiveTab}
+  <span class="code-prop">dataTour</span>=<span class="code-string">"agents-tabs"</span>
+  <span class="code-prop">trailing</span>={&lt;ViewToggle value={viewMode} onChange={setViewMode} /&gt;}
+&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"all"</span>&gt;...&lt;/TabsContent&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"active"</span>&gt;...&lt;/TabsContent&gt;
+  &lt;<span class="code-component">TabsContent</span> <span class="code-prop">value</span>=<span class="code-string">"idle"</span>&gt;...&lt;/TabsContent&gt;
+&lt;/<span class="code-component">FilterTabs</span>&gt;
+
+<span class="code-comment">// DO NOT use raw Tabs directly — FilterTabs adds tour hooks and mobile behavior</span>
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Background</td>
+              <td><code>bg-secondary/50</code></td>
+              <td>ALL tabs should use this exact opacity</td>
+            </tr>
+            <tr>
+              <td>Active Tab</td>
+              <td><code>bg-white/10</code></td>
+              <td>Slightly brighter background</td>
+            </tr>
+            <tr>
+              <td>Icon Size</td>
+              <td><code>w-4 h-4</code> (16px)</td>
+              <td>Consistent across all tabs</td>
+            </tr>
+            <tr>
+              <td>Min Height</td>
+              <td><code>min-h-[44px]</code> (mobile)</td>
+              <td>Touch-friendly on small screens</td>
+            </tr>
+            <tr>
+              <td>Tour Hook</td>
+              <td><code>data-tour</code> attribute</td>
+              <td>Automatically added by FilterTabs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Page Headers Section -->
+    <div class="section" id="headers">
+      <div class="section-header">
+        <div class="section-title">Page Headers</div>
+        <div class="section-description">
+          Every page (except Chat*) should use PageHeader component with two-color title pattern, subtitle, and action buttons slot.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">PageHeader Component</div>
+        <div class="component-desc">Standard page header with gradient accent word.</div>
+        
+        <div class="state-grid" style="grid-template-columns: 1fr;">
+          <div class="state-box">
+            <div class="state-label">Standard Pattern</div>
+            <div class="mock-page-header">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                <div>
+                  <div class="mock-title">
+                    Agent <span class="accent">Management</span>
+                  </div>
+                  <div class="mock-subtitle">Manage your AI agents, capabilities, and coordination strategies</div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                  <button class="mock-btn">Refresh</button>
+                  <button class="mock-btn primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-block">
+<span class="code-comment">// Standard pattern — use on ALL pages (except Chat)</span>
+&lt;<span class="code-component">PageHeader</span>
+  <span class="code-prop">title</span>=<span class="code-string">"Agent"</span>
+  <span class="code-prop">titleAccent</span>=<span class="code-string">"Management"</span>
+  <span class="code-prop">subtitle</span>=<span class="code-string">"Manage your AI agents, capabilities, and coordination strategies"</span>
+  <span class="code-prop">actions</span>={
+    &lt;&gt;
+      &lt;Button variant="outline" size="sm"&gt;
+        &lt;RefreshCw className="w-4 h-4 mr-2" /&gt;
+        Refresh
+      &lt;/Button&gt;
+      &lt;Button&gt;
+        &lt;Plus className="w-4 h-4 mr-2" /&gt;
+        Create Agent
+      &lt;/Button&gt;
+    &lt;/&gt;
+  }
+/&gt;
+
+<span class="code-comment">// Pattern: [Noun] [Accent Word]</span>
+<span class="code-comment">// Examples:</span>
+<span class="code-comment">//   Agent Management, Assignment Dashboard, Deliverable Library,</span>
+<span class="code-comment">//   Command Centre, Knowledge Bases, Tools & Integrations</span>
+        </div>
+
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>title</td>
+              <td>string</td>
+              <td>✓</td>
+              <td>First part (normal weight)</td>
+            </tr>
+            <tr>
+              <td>titleAccent</td>
+              <td>string</td>
+              <td>✓</td>
+              <td>Second part (gradient orange)</td>
+            </tr>
+            <tr>
+              <td>subtitle</td>
+              <td>string</td>
+              <td></td>
+              <td>Optional description below title</td>
+            </tr>
+            <tr>
+              <td>actions</td>
+              <td>ReactNode</td>
+              <td></td>
+              <td>Buttons/controls slot (right-aligned)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Spacing Section -->
+    <div class="section" id="spacing">
+      <div class="section-header">
+        <div class="section-title">Spacing Scale</div>
+        <div class="section-description">
+          Vertical spacing follows an 8px grid system. Use space-y-6 between page sections, space-y-4 within sections.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Vertical Rhythm</div>
+        <div class="component-desc">Consistent spacing between page elements.</div>
+        
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Context</th>
+              <th>Class</th>
+              <th>Value</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Page sections</td>
+              <td><code>space-y-6</code></td>
+              <td>24px</td>
+              <td>PageHeader → StatsBar → Tabs → Content</td>
+            </tr>
+            <tr>
+              <td>Within section</td>
+              <td><code>space-y-4</code></td>
+              <td>16px</td>
+              <td>Cards in grid, list items, related content</td>
+            </tr>
+            <tr>
+              <td>Dense content</td>
+              <td><code>space-y-3</code></td>
+              <td>12px</td>
+              <td>Form fields, compact lists</td>
+            </tr>
+            <tr>
+              <td>Generous spacing</td>
+              <td><code>space-y-8</code></td>
+              <td>32px</td>
+              <td>Between unrelated major sections</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+<span class="code-comment">// Page-level structure:</span>
+&lt;div className="<span class="code-keyword">space-y-6</span>"&gt;
+  &lt;PageHeader .../&gt;
+  &lt;StatsBar .../&gt;
+  &lt;SearchInput .../&gt;
+  &lt;FilterTabs&gt;
+    &lt;TabsContent value="all"&gt;
+      &lt;div className="<span class="code-keyword">space-y-4</span>"&gt;
+        &lt;Card /&gt;
+        &lt;Card /&gt;
+        &lt;Card /&gt;
+      &lt;/div&gt;
+    &lt;/TabsContent&gt;
+  &lt;/FilterTabs&gt;
+&lt;/div&gt;
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography Section -->
+    <div class="section" id="typography">
+      <div class="section-header">
+        <div class="section-title">Typography Scale</div>
+        <div class="section-description">
+          Consistent type sizing across the platform. Page titles are 28-32px, body text is 14px, labels are 12px.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Type Scale</div>
+        <div class="component-desc">Text sizing hierarchy.</div>
+        
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Element</th>
+              <th>Class</th>
+              <th>Size</th>
+              <th>Weight</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Page Title</td>
+              <td><code>text-2xl md:text-3xl</code></td>
+              <td>24px → 30px</td>
+              <td>700 (bold)</td>
+              <td>PageHeader titles</td>
+            </tr>
+            <tr>
+              <td>Section Title</td>
+              <td><code>text-xl</code></td>
+              <td>20px</td>
+              <td>600 (semibold)</td>
+              <td>Card headers, modal titles</td>
+            </tr>
+            <tr>
+              <td>Body Text</td>
+              <td><code>text-sm md:text-base</code></td>
+              <td>14px → 16px</td>
+              <td>400 (normal)</td>
+              <td>Paragraphs, descriptions</td>
+            </tr>
+            <tr>
+              <td>Small Text</td>
+              <td><code>text-xs</code></td>
+              <td>12px</td>
+              <td>400 (normal)</td>
+              <td>Labels, helper text, captions</td>
+            </tr>
+            <tr>
+              <td>Stat Value</td>
+              <td><code>text-2xl</code></td>
+              <td>24px</td>
+              <td>700 (bold)</td>
+              <td>Stat card values</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Icons Section -->
+    <div class="section" id="icons">
+      <div class="section-header">
+        <div class="section-title">Icon Sizing Scale</div>
+        <div class="section-description">
+          Icons follow a 4px scale: 16px for inline text, 20px for buttons, 24px for headers, 32px for empty states.
+        </div>
+      </div>
+
+      <div class="component-card">
+        <div class="component-name">Icon Scale</div>
+        <div class="component-desc">Consistent icon sizing relative to surrounding text.</div>
+        
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Context</th>
+              <th>Class</th>
+              <th>Size</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inline text</td>
+              <td><code>w-4 h-4</code></td>
+              <td>16px</td>
+              <td>Paragraph icons, table cells</td>
+            </tr>
+            <tr>
+              <td>Buttons, tabs</td>
+              <td><code>w-5 h-5</code></td>
+              <td>20px</td>
+              <td>Button icons, tab icons, nav items</td>
+            </tr>
+            <tr>
+              <td>Headers, titles</td>
+              <td><code>w-6 h-6</code></td>
+              <td>24px</td>
+              <td>Page header icons, section titles</td>
+            </tr>
+            <tr>
+              <td>Empty states</td>
+              <td><code>w-8 h-8</code></td>
+              <td>32px</td>
+              <td>EmptyState component, feature callouts</td>
+            </tr>
+            <tr>
+              <td>Large illustrations</td>
+              <td><code>w-16 h-16</code></td>
+              <td>64px</td>
+              <td>Welcome screens, onboarding</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code-block">
+<span class="code-comment">// Icon sizing examples:</span>
+
+<span class="code-comment">// Button icon (20px):</span>
+&lt;Button&gt;
+  &lt;Plus className="<span class="code-keyword">w-5 h-5</span> mr-2" /&gt;
+  Create
+&lt;/Button&gt;
+
+<span class="code-comment">// Tab icon (20px):</span>
+{ value: <span class="code-string">'agents'</span>, label: <span class="code-string">'Agents'</span>, icon: Bot } <span class="code-comment">// FilterTabs uses w-4 h-4 internally</span>
+
+<span class="code-comment">// Empty state icon (32px):</span>
+&lt;EmptyState icon={Bot} .../&gt; <span class="code-comment">// Component uses w-8 h-8 internally</span>
+
+<span class="code-comment">// Inline text icon (16px):</span>
+&lt;span className="flex items-center gap-2"&gt;
+  &lt;CheckCircle className="<span class="code-keyword">w-4 h-4</span> text-success" /&gt;
+  Completed
+&lt;/span&gt;
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Smooth scroll for nav links
+    document.querySelectorAll('.nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Update active state
+        document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+
+    // Update active nav on scroll
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav a');
+    
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= (sectionTop - 200)) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

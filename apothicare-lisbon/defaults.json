@@ -1,0 +1,194 @@
+{
+  "template": "apothicare-lisbon",
+  "slug": "apothicare-lisbon",
+  "logoPath": "assets/logo-apothicare.svg",
+  "heroImagePath": "assets/hero-apothecary.svg",
+  "heroVideoPath": null,
+  "primaryColor": "38 65% 45%",
+  "fontFamily": "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+  "designSystem": {
+    "colors": {
+      "primary-scale": {
+        "50": "38 65% 96%",
+        "100": "38 60% 90%",
+        "200": "38 58% 80%",
+        "300": "38 55% 68%",
+        "400": "38 60% 56%",
+        "500": "38 65% 45%",
+        "600": "38 70% 38%",
+        "700": "36 70% 30%",
+        "800": "34 65% 24%",
+        "900": "32 60% 18%"
+      },
+      "primary": "38 65% 45%",
+      "secondary": "150 22% 22%",
+      "accent": "12 55% 48%",
+      "background": "38 35% 96%",
+      "surface": "38 30% 92%",
+      "text": "150 12% 22%",
+      "heading": "150 22% 14%",
+      "border": "38 20% 82%",
+      "success": "142 50% 36%",
+      "warning": "38 92% 50%",
+      "error": "0 65% 48%",
+      "info": "199 60% 42%"
+    },
+    "typography": {
+      "fontHeading": "'Cormorant Garamond', 'Times New Roman', Georgia, serif",
+      "fontBody": "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      "fontAccent": "'Caveat', 'Brush Script MT', cursive",
+      "headingWeight": "500",
+      "bodyWeight": "400",
+      "headingTracking": "-0.02em",
+      "bodyTracking": "-0.005em",
+      "headingLineHeight": "1.05",
+      "bodyLineHeight": "1.65"
+    },
+    "shadows": {
+      "card": "0 1px 2px rgba(40, 30, 15, 0.04), 0 8px 24px -8px rgba(40, 30, 15, 0.08)",
+      "elegant": "0 12px 40px -12px rgba(40, 30, 15, 0.12)",
+      "frame": "0 24px 60px -20px rgba(20, 30, 22, 0.35)",
+      "button": "0 1px 2px rgba(40, 30, 15, 0.08)"
+    },
+    "gradients": {
+      "warmParchment": "linear-gradient(180deg, hsl(38 35% 96%) 0%, hsl(38 30% 92%) 100%)",
+      "darkBotanical": "linear-gradient(135deg, hsl(150 22% 13%) 0%, hsl(150 22% 18%) 100%)",
+      "brassWash": "linear-gradient(135deg, hsl(38 65% 45%) 0%, hsl(34 65% 38%) 100%)"
+    },
+    "spacing": {
+      "section": "5rem",
+      "container": "1.5rem",
+      "card": "2rem"
+    },
+    "borderRadius": {
+      "sm": "0.25rem",
+      "md": "0.5rem",
+      "lg": "0.75rem",
+      "xl": "1rem",
+      "2xl": "1.25rem",
+      "full": "9999px"
+    }
+  },
+  "valueProps": [
+    { "title": "INFARMED licensed", "description": "Authorised import and dispensing under Portuguese medical-cannabis law.", "icon": "Shield" },
+    { "title": "Doctor prescribed", "description": "Real consultations. Real prescriptions. Quarterly follow-ups included.", "icon": "Stethoscope" },
+    { "title": "EU-GMP certified", "description": "Pharmaceutical-grade manufacturing chain.", "icon": "Award" },
+    { "title": "Discreet delivery", "description": "Tamper-evident packaging, signed chain of custody.", "icon": "Truck" }
+  ],
+  "pageContent": {
+    "homeHeroTitle": "Doctor-led medical cannabis, dispensed with the patience of an apothecary.",
+    "homeHeroSubtitle": "Lisbon · INFARMED licensed · EU-GMP",
+    "homeHeroDescription": "For patients with chronic conditions, prescribed under Portuguese medical authority. Real consultations. Pharmaceutical-grade chain. No recreational framing.",
+    "homeHeroCtaText": "Check eligibility",
+    "homeHeroCtaHref": "/consultation",
+    "homeHeroSecondaryCtaText": "How a consultation works",
+    "homeHeroSecondaryCtaHref": "/how-it-works",
+    "home": {
+      "heroTitle": "Doctor-led medical cannabis, dispensed with the patience of an apothecary.",
+      "heroSubtitle": "Lisbon · INFARMED licensed · EU-GMP",
+      "heroDescription": "For patients with chronic conditions, prescribed under Portuguese medical authority.",
+      "heroCtaText": "Check eligibility",
+      "heroCtaHref": "/consultation",
+      "heroSecondaryCtaText": "How a consultation works",
+      "heroSecondaryCtaHref": "/how-it-works"
+    },
+    "about": {
+      "heading": "A clinic, not a dispensary.",
+      "mission": "Apothicare exists to make medical cannabis a credible therapeutic option in Portugal — prescribed by qualified physicians, dispensed under INFARMED authority, and followed up the way any other long-term medication should be.",
+      "story": "Founded in Lisbon in 2022 by Dr Elena Marques, a consultant in pain medicine, after a decade of patients asking the same question: where do I get this safely, in Portugal, from a doctor? We answered with a practice — proper consultations, INFARMED-authorised imports, pharmaceutical-grade product, and follow-up care.",
+      "values": "Evidence first. Patients first. Patience as a clinical virtue."
+    },
+    "contact": {
+      "heading": "Reach the practice",
+      "address": "Rua Garrett 27, 1200-203 Lisboa, Portugal",
+      "email": "practice@apothicare.pt",
+      "phone": "+351 213 240 100",
+      "hours": "Monday to Friday, 09:00–18:00 WET. Saturday by appointment."
+    },
+    "support": {
+      "contactEmail": "practice@apothicare.pt",
+      "contactPhone": "+351 213 240 100"
+    },
+    "aboutMission": "Apothicare exists to make medical cannabis a credible therapeutic option in Portugal — prescribed by qualified physicians, dispensed under INFARMED authority, and followed up the way any other long-term medication should be.",
+    "logoPlacement": {
+      "navPosition": "left",
+      "navSize": "medium",
+      "showBusinessName": false,
+      "heroShowLogo": false,
+      "heroX": 50,
+      "heroY": 30,
+      "heroSize": 120,
+      "heroStyle": "default",
+      "footerShowLogo": true
+    },
+    "educationHotspots": [
+      {
+        "id": "spot-credentials",
+        "targetSectionId": "credentials",
+        "x": 50,
+        "y": 50,
+        "title": "Why these badges matter",
+        "description": "INFARMED authorisation and EU-GMP certification together mean the medicine you receive is the same pharmaceutical grade you'd expect from any hospital pharmacy in the EU."
+      },
+      {
+        "id": "spot-process",
+        "targetSectionId": "process",
+        "x": 25,
+        "y": 50,
+        "title": "Why eligibility is free",
+        "description": "We will not take payment from a patient we cannot legally or ethically treat. The five-minute eligibility form catches that before money changes hands."
+      }
+    ]
+  },
+  "navigation": {
+    "links": [
+      { "label": "Practice", "href": "/about" },
+      { "label": "Conditions", "href": "/conditions" },
+      { "label": "Apothecary", "href": "/products" },
+      { "label": "Journal", "href": "/the-wire" }
+    ],
+    "cta": { "label": "Check Eligibility", "href": "/consultation" },
+    "cta2": { "label": "Patient Login", "href": "/login" },
+    "showCart": true
+  },
+  "footer": {
+    "tagline": "Doctor-led medical cannabis · INFARMED licensed · EU-GMP",
+    "address": "Rua Garrett 27, 1200-203 Lisboa, Portugal",
+    "email": "practice@apothicare.pt",
+    "phone": "+351 213 240 100",
+    "disclaimer": "Apothicare is a private medical practice authorised by INFARMED to prescribe and dispense medical cannabis to eligible patients. For prescription use only. Patients only. Not for sale to under-18s. The information on this site is intended to support — not replace — the relationship between a patient and their physician.",
+    "sections": [
+      {
+        "title": "Practice",
+        "links": [
+          { "label": "About the clinic", "href": "/about" },
+          { "label": "Our clinicians", "href": "/about" },
+          { "label": "Eligibility check", "href": "/consultation" },
+          { "label": "Contact", "href": "/contact" }
+        ]
+      },
+      {
+        "title": "Patient resources",
+        "links": [
+          { "label": "Conditions treated", "href": "/conditions" },
+          { "label": "Apothecary", "href": "/products" },
+          { "label": "How a consultation works", "href": "/how-it-works" },
+          { "label": "FAQ", "href": "/faq" }
+        ]
+      },
+      {
+        "title": "Journal & legal",
+        "links": [
+          { "label": "The Wire", "href": "/the-wire" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "Terms", "href": "/terms" },
+          { "label": "Regulatory", "href": "/regulatory" }
+        ]
+      }
+    ],
+    "socialLinks": [
+      { "platform": "instagram", "url": "https://instagram.com/apothicare" },
+      { "platform": "linkedin", "url": "https://linkedin.com/company/apothicare" }
+    ]
+  }
+}

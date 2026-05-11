@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><title>Chat Home — Redesign Options</title>
+<style>
+:root{--bg:#0a0a0a;--surface:#161616;--surface-2:#1c1c1c;--line:#232323;--line-2:#2c2c2c;--text:#ededed;--text-2:#a8a8a8;--text-3:#6e6e6e;--orange:#ff6b35;--orange-2:#f7931e;--orange-soft:rgba(255,107,53,.12);--green:#34c759;--blue:#4f8cff;--purple:#b07cff;--red:#ff5a4d;--yellow:#ffc857}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;background:#050505;color:var(--text);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+/* shared chrome */
+.frame{width:1280px;height:880px;background:var(--bg);position:relative;overflow:hidden;display:grid;grid-template-columns:56px 1fr;border-radius:8px}
+.rail{background:#0c0c0c;border-right:1px solid var(--line);padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.rail-icon{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--text-3);font-size:14px}
+.rail-icon.active{color:var(--orange);background:var(--orange-soft)}
+.topbar{height:48px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:12px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;letter-spacing:.04em;font-size:12px}
+.brand-mark{width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,var(--orange),var(--orange-2))}
+.top-spacer{flex:1}
+.top-pill{border:1px solid var(--line-2);padding:3px 8px;border-radius:999px;font-size:11px;color:var(--text-2)}
+.main{padding:36px 56px;height:calc(100% - 48px);overflow:hidden}
+
+/* hero & input */
+.greet{font-size:30px;font-weight:600;letter-spacing:-.01em;text-align:center;margin-bottom:18px}
+.greet em{font-style:normal;color:var(--orange)}
+.greet.small{font-size:22px;text-align:left;margin-bottom:14px}
+.greet .sub{display:block;color:var(--text-3);font-size:14px;font-weight:400;margin-top:4px;letter-spacing:0}
+.input-card{background:var(--surface);border:1px solid var(--line-2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 0 0 4px rgba(255,107,53,.04),0 8px 32px rgba(0,0,0,.4)}
+.input-card .ph{color:var(--text-3);font-size:14px;min-height:24px}
+.input-row{display:flex;gap:10px;align-items:center}
+.input-row .clip{color:var(--text-3);width:22px;height:22px;display:grid;place-items:center}
+.mode-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--text-2);background:rgba(255,255,255,.02)}
+.mode-chip .dot{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--orange),var(--orange-2));display:grid;place-items:center;font-size:9px;color:#1a0e08;font-weight:800}
+.send{margin-left:auto;width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--orange),var(--orange-2));color:#1a0e08;display:grid;place-items:center;font-weight:700}
+.starter-row{display:flex;gap:8px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+.starter{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,107,53,.06);border:1px solid rgba(255,107,53,.18);border-radius:999px;font-size:12.5px;color:var(--text-2)}
+.starter .icon{font-size:11px}
+
+/* labels */
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.label .pip{width:6px;height:6px;border-radius:50%;background:var(--orange)}
+.label .pip.live{background:var(--green);box-shadow:0 0 0 3px rgba(52,199,89,.18);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(52,199,89,.18)}50%{box-shadow:0 0 0 6px rgba(52,199,89,.05)}}
+
+/* OPT A — Team Concierge */
+.agent-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:18px}
+.agent-card{border:1px solid var(--line);border-radius:12px;padding:14px 12px;background:var(--surface);display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:all .15s;min-height:130px}
+.agent-card:hover{border-color:rgba(255,107,53,.4);transform:translateY(-2px)}
+.agent-avatar{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:16px;font-weight:700}
+.av-scribe{background:linear-gradient(135deg,#3a2a52,#5b3d7a);color:#fff}
+.av-canvas{background:linear-gradient(135deg,#3a1c20,#7a2e35);color:#fff}
+.av-atlas{background:linear-gradient(135deg,#1c3a2c,#2e7a55);color:#fff}
+.av-pulse{background:linear-gradient(135deg,#3a3a1c,#7a6a2e);color:#fff}
+.av-fixer{background:linear-gradient(135deg,#1c2a3a,#2e5a7a);color:#fff}
+.av-quill{background:linear-gradient(135deg,#3a1c3a,#7a2e7a);color:#fff}
+.agent-card .name{font-size:13px;font-weight:600}
+.agent-card .role{font-size:11px;color:var(--text-3)}
+.agent-card .prompt{font-size:12px;color:var(--text-2);line-height:1.4;margin-top:auto;padding-top:6px;border-top:1px solid var(--line)}
+
+/* OPT B — Mission Control */
+.mc-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:24px}
+.mc-card{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:16px}
+.activity-item{display:grid;grid-template-columns:24px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.activity-item:last-child{border:none}
+.activity-item .av{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700}
+.activity-item .name{color:var(--text);font-weight:500}
+.activity-item .what{color:var(--text-3);font-size:11.5px}
+.activity-item .when{color:var(--text-3);font-size:11px}
+.live-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-2);padding:6px 0}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(52,199,89,.18)}
+.inbox-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.inbox-row:last-child{border:none}
+.inbox-row .count{background:var(--orange-soft);color:var(--orange);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;border:1px solid rgba(255,107,53,.3)}
+
+/* OPT C — Continue */
+.continue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.thread-card{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px}
+.thread-card:hover{border-color:rgba(255,107,53,.4)}
+.thread-card .title{font-size:13.5px;font-weight:600;line-height:1.3}
+.thread-card .last{font-size:12px;color:var(--text-3);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.thread-card .footer{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text-3);margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+.suggested-row{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.suggested{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;transition:all .15s}
+.suggested:hover{border-color:rgba(255,107,53,.4)}
+.suggested .icon{width:24px;height:24px;border-radius:6px;background:var(--orange-soft);display:grid;place-items:center;color:var(--orange);font-size:12px;flex-shrink:0}
+.suggested .body{flex:1}
+.suggested .body .t{font-size:13px;font-weight:500}
+.suggested .body .s{font-size:11.5px;color:var(--text-3);margin-top:1px}
+.suggested .arrow{color:var(--text-3)}
+
+/* MINIMAL+ */
+.min-starters{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+.min-starter{border:1px solid var(--line);border-radius:10px;padding:12px;background:rgba(255,255,255,.015);font-size:13px;color:var(--text-2);cursor:pointer;text-align:left;line-height:1.35}
+.min-starter:hover{border-color:rgba(255,107,53,.4);color:var(--text)}
+.min-starter b{display:block;color:var(--text);font-weight:500;font-size:13px;margin-bottom:3px}
+.min-status{margin-top:24px;display:flex;justify-content:center;gap:18px;font-size:12px;color:var(--text-3)}
+.min-status .ok{color:var(--green)}
+
+.rationale{font-size:12.5px;color:var(--text-2);line-height:1.55;background:rgba(255,107,53,.04);border:1px dashed rgba(255,107,53,.25);border-radius:10px;padding:12px 14px;margin-top:14px}
+.rationale b{color:var(--text)}
+</style></head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const Chrome = ({children}) => (
+  <div className="frame">
+    <aside className="rail">
+      {['💬','🧩','📋','📦','🍯','🤖','🗃','🛍','👤','📈','🏢'].map((g,i)=>(
+        <div key={i} className={"rail-icon"+(i===0?' active':'')}>{g}</div>
+      ))}
+    </aside>
+    <main>
+      <header className="topbar">
+        <div className="brand"><div className="brand-mark"/>AUTOMATOS A.I.</div>
+        <div className="top-spacer"/>
+        <span className="top-pill">📚</span><span className="top-pill">🌙</span>
+        <span className="top-pill">🔔 9+</span>
+        <span className="top-pill" style={{background:'linear-gradient(135deg,#ff6b35,#f7931e)',color:'#1a0e08',fontWeight:700,borderColor:'transparent'}}>A</span>
+      </header>
+      <div className="main">{children}</div>
+    </main>
+  </div>
+);
+
+const InputCard = ({modes}) => (
+  <div className="input-card">
+    <div className="ph">Send a message…</div>
+    <div className="input-row">
+      <div className="clip">📎</div>
+      <span className="mode-chip"><span className="dot">A</span>Auto ▾</span>
+      {(modes||[]).map(m=>(<span key={m.label} className="mode-chip" style={{color:m.color||'var(--text-2)'}}><span style={{color:m.color}}>{m.icon}</span>{m.label}</span>))}
+      <button className="send">➤</button>
+    </div>
+  </div>
+);
+
+// === A: TEAM CONCIERGE ===
+const OptA = () => (
+  <Chrome>
+    <div className="greet">Hey <em>Gerard</em> — your team is ready.<span className="sub">Friday, May 9 · 9:14 AM · 19 of 20 agents online</span></div>
+    <div style={{maxWidth:920,margin:'0 auto'}}>
+      <InputCard/>
+      <div className="label" style={{marginTop:30,justifyContent:'center'}}><span className="pip"/>OR DELEGATE TO YOUR TEAM</div>
+      <div className="agent-grid">
+        <div className="agent-card"><div className="agent-avatar av-scribe">✍</div><div><div className="name">Scribe</div><div className="role">Long-form writing</div></div><div className="prompt">"Draft a LinkedIn post about today's launch"</div></div>
+        <div className="agent-card"><div className="agent-avatar av-canvas">🎨</div><div><div className="name">Canvas</div><div className="role">Visual content</div></div><div className="prompt">"Make a 4-slide carousel from my brief"</div></div>
+        <div className="agent-card"><div className="agent-avatar av-atlas">🗺</div><div><div className="name">Atlas</div><div className="role">Platform architect</div></div><div className="prompt">"Plan our Q4 architecture review"</div></div>
+        <div className="agent-card"><div className="agent-avatar av-pulse">📊</div><div><div className="name">Pulse</div><div className="role">Growth intel</div></div><div className="prompt">"Summarise this week's growth signals"</div></div>
+        <div className="agent-card"><div className="agent-avatar av-fixer">🔧</div><div><div className="name">Fixer</div><div className="role">Platform remediation</div></div><div className="prompt">"Triage the 3 open production issues"</div></div>
+        <div className="agent-card"><div className="agent-avatar av-quill">🪶</div><div><div className="name">Quill</div><div className="role">Long-form & decks</div></div><div className="prompt">"Turn yesterday's notes into a memo"</div></div>
+      </div>
+    </div>
+  </Chrome>
+);
+
+// === B: MISSION CONTROL ===
+const OptB = () => (
+  <Chrome>
+    <div className="greet small">Morning, <em>Gerard</em>.<span className="sub">Friday, May 9 · 9:14 AM</span></div>
+    <div className="mc-grid">
+      <div>
+        <InputCard/>
+        <div className="starter-row" style={{justifyContent:'flex-start'}}>
+          <span className="starter">⚡ Run Daily Social</span>
+          <span className="starter">📊 GA Brief — last week</span>
+          <span className="starter">📝 Draft release notes</span>
+          <span className="starter">+ More</span>
+        </div>
+        <div className="mc-card" style={{marginTop:18}}>
+          <div className="label"><span className="pip live"/>YOUR TEAM IS WORKING ON</div>
+          <div className="live-row"><span className="live-dot"/><b style={{color:'var(--text)'}}>Pulse</b> is finishing your daily growth digest <span style={{color:'var(--text-3)',marginLeft:'auto'}}>~2m left</span></div>
+          <div className="live-row"><span className="live-dot"/><b style={{color:'var(--text)'}}>Scout</b> is researching 3 inbound leads <span style={{color:'var(--text-3)',marginLeft:'auto'}}>~5m left</span></div>
+          <div className="live-row"><span className="live-dot" style={{background:'var(--yellow)',boxShadow:'0 0 0 3px rgba(255,200,87,.18)'}}/><b style={{color:'var(--text)'}}>Fixer</b> paused — needs your input <span style={{color:'var(--orange)',marginLeft:'auto'}}>Review →</span></div>
+        </div>
+      </div>
+      <div>
+        <div className="mc-card">
+          <div className="label"><span className="pip"/>FINISHED OVERNIGHT — 5 NEW</div>
+          <div className="inbox-row"><div><div style={{fontWeight:500}}>Daily Social — Week 19</div><div style={{color:'var(--text-3)',fontSize:11.5}}>Social Ops · 4 slides + report</div></div><span className="count">new</span></div>
+          <div className="inbox-row"><div><div style={{fontWeight:500}}>GA Weekly Brief</div><div style={{color:'var(--text-3)',fontSize:11.5}}>GA Analyst · funnel + cohorts</div></div><span className="count">new</span></div>
+          <div className="inbox-row"><div><div style={{fontWeight:500}}>LinkedIn publish report</div><div style={{color:'var(--text-3)',fontSize:11.5}}>Playbook · partial — image upload failed</div></div><span className="count" style={{background:'rgba(255,90,77,.1)',color:'var(--red)',borderColor:'rgba(255,90,77,.3)'}}>fix</span></div>
+          <div className="inbox-row"><div><div style={{fontWeight:500}}>Q4 OKR draft</div><div style={{color:'var(--text-3)',fontSize:11.5}}>Auto · 9 sections</div></div><span className="count">new</span></div>
+          <div className="inbox-row"><div><div style={{fontWeight:500}}>Marketplace pricing</div><div style={{color:'var(--text-3)',fontSize:11.5}}>Auto · 2.5 KB</div></div><span className="count">new</span></div>
+        </div>
+        <div className="mc-card" style={{marginTop:14}}>
+          <div className="label"><span className="pip" style={{background:'var(--blue)'}}/>UP NEXT</div>
+          <div style={{fontSize:13,color:'var(--text-2)',lineHeight:1.6}}>Daily Social runs in <b style={{color:'var(--orange)'}}>46m</b><br/>GA Brief auto-generates <b style={{color:'var(--orange)'}}>tonight at 18:00</b></div>
+        </div>
+      </div>
+    </div>
+  </Chrome>
+);
+
+// === C: CONTINUE WHERE YOU LEFT OFF ===
+const OptC = () => (
+  <Chrome>
+    <div style={{maxWidth:980,margin:'0 auto'}}>
+      <div className="greet small" style={{textAlign:'center'}}>Welcome back, <em>Gerard</em>.<span className="sub">You have 3 in-flight workspaces and 5 new outputs since Tuesday.</span></div>
+      <InputCard/>
+      <div className="label" style={{marginTop:24}}><span className="pip"/>CONTINUE WHERE YOU LEFT OFF</div>
+      <div className="continue-grid">
+        <div className="thread-card"><div className="title">Q4 launch strategy</div><div className="last">"…align the GTM plan with the new pricing tiers — I think we should bundle…"</div><div className="footer"><span>Atlas + Quill</span><span>Yesterday, 4:42 PM</span></div></div>
+        <div className="thread-card"><div className="title">Marketplace pricing rationale</div><div className="last">"…run a sensitivity analysis on the $20/$50/$200 tiers across the three…"</div><div className="footer"><span>Auto</span><span>Yesterday, 11:08 AM</span></div></div>
+        <div className="thread-card"><div className="title">Onboarding email sequence</div><div className="last">"…tighten step 3 — too much copy. Lead with the value prop, not the…"</div><div className="footer"><span>Scribe</span><span>2 days ago</span></div></div>
+      </div>
+      <div className="label" style={{marginTop:22}}><span className="pip" style={{background:'var(--blue)'}}/>SUGGESTED FOR THIS MORNING</div>
+      <div className="suggested-row">
+        <div className="suggested"><div className="icon">📨</div><div className="body"><div className="t">Review last night's GA Brief before your 10am</div><div className="s">Funnel + cohort + narrative · ready 6h ago</div></div><div className="arrow">→</div></div>
+        <div className="suggested"><div className="icon">🔧</div><div className="body"><div className="t">Decide on the LinkedIn image-upload fix</div><div className="s">Fixer is paused waiting on you · 1 question</div></div><div className="arrow">→</div></div>
+        <div className="suggested"><div className="icon">📅</div><div className="body"><div className="t">Prep notes for your 2pm with the design team</div><div className="s">Scribe can pull last week's threads + open questions</div></div><div className="arrow">→</div></div>
+      </div>
+    </div>
+  </Chrome>
+);
+
+// === D: MINIMAL+ ===
+const OptD = () => (
+  <Chrome>
+    <div style={{maxWidth:760,margin:'8% auto 0'}}>
+      <div className="greet">Hey <em>Gerard</em>, what can I do for you today?</div>
+      <InputCard modes={[{icon:'</>',label:'Code',color:'var(--blue)'},{icon:'📋',label:'Plan',color:'var(--green)'},{icon:'🎯',label:'Mission',color:'var(--orange)'}]}/>
+      <div className="min-starters">
+        <button className="min-starter"><b>Draft a LinkedIn post</b>about today's launch</button>
+        <button className="min-starter"><b>Pull the GA brief</b>for last week</button>
+        <button className="min-starter"><b>Plan my Q4</b>architecture review</button>
+        <button className="min-starter"><b>Triage open issues</b>across the platform</button>
+      </div>
+      <div className="min-status">
+        <span><span className="ok">●</span> 19 of 20 agents online</span>
+        <span>5 outputs since Tuesday</span>
+        <span>1 needs review</span>
+      </div>
+    </div>
+  </Chrome>
+);
+
+const App = () => (
+  <DesignCanvas>
+    <DCSection id="opts" title="Chat home — four directions">
+      <DCArtboard id="a" label="A · Team Concierge" width={1280} height={880}><OptA/></DCArtboard>
+      <DCArtboard id="b" label="B · Mission Control" width={1280} height={880}><OptB/></DCArtboard>
+      <DCArtboard id="c" label="C · Continue Where You Left Off" width={1280} height={880}><OptC/></DCArtboard>
+      <DCArtboard id="d" label="D · Minimal+" width={1280} height={880}><OptD/></DCArtboard>
+    </DCSection>
+  </DesignCanvas>
+);
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

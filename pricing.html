@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos · Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+  --gutter: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+
+/* TOPBAR */
+.topbar {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.brand { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; text-transform: none; color: var(--fg); display: inline-flex; align-items: center; }
+.brand em { font-style: italic; color: var(--muted); }
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav { display: flex; gap: 28px; justify-content: center; }
+.topbar nav a:hover, .topbar nav a.is-current { color: var(--fg); }
+.topbar > :last-child { text-align: right; display: flex; gap: 16px; justify-content: flex-end; align-items: center; }
+.topbar .cta { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* HERO */
+.hero {
+  padding: 88px var(--gutter) 64px;
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: end;
+}
+.hero-eye { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+.hero-h { font-family: var(--serif); font-size: 88px; line-height: 0.98; letter-spacing: -0.025em; text-wrap: balance; }
+.hero-h em { font-style: italic; color: var(--muted); }
+.hero-meta { display: grid; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.hero-meta b { color: var(--fg); font-weight: 500; }
+
+/* SECTION META */
+.section { border-bottom: 1px solid var(--rule-c); }
+.section-meta {
+  display: grid; grid-template-columns: 240px 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+}
+.section-meta > div {
+  padding: 18px 28px;
+  border-right: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-meta > div:last-child { border-right: 0; justify-content: flex-end; }
+.section-meta b { color: var(--fg); font-weight: 500; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--fg);
+}
+.pill.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* TIERS */
+.tiers {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+}
+.tier {
+  border-right: 1px solid var(--rule-c);
+  padding: 40px 32px 32px;
+  display: grid; grid-template-rows: auto auto auto auto 1fr auto; gap: 22px;
+  position: relative;
+  min-height: 720px;
+}
+.tier:last-child { border-right: 0; }
+.tier.is-featured { background: var(--bg-2); }
+.tier.is-featured::before {
+  content: "Recommended";
+  position: absolute; top: 0; left: 0; right: 0;
+  background: var(--accent); color: var(--accent-ink);
+  text-align: center;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase; padding: 6px 0;
+}
+.tier.is-featured { padding-top: 64px; }
+.tier-head { display: flex; justify-content: space-between; align-items: baseline; }
+.tier-id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.tier-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.tier-h { font-family: var(--serif); font-size: 36px; line-height: 1.05; letter-spacing: -0.015em; }
+.tier-h em { font-style: italic; color: var(--muted); }
+.tier-line { font-size: 14px; line-height: 1.55; color: var(--fg-2); max-width: 32ch; }
+.tier-price {
+  display: flex; align-items: baseline; gap: 8px;
+  border-top: 1px dashed var(--rule-c);
+  border-bottom: 1px dashed var(--rule-c);
+  padding: 18px 0;
+}
+.tier-price .v { font-family: var(--serif); font-size: 56px; letter-spacing: -0.025em; line-height: 1; }
+.tier-price .v em { font-style: italic; color: var(--muted); }
+.tier-price .u { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+.tier-list { display: grid; gap: 10px; font-size: 13.5px; line-height: 1.5; color: var(--fg); }
+.tier-list .row { display: grid; grid-template-columns: 16px 1fr; gap: 10px; align-items: baseline; }
+.tier-list .row .k { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+.tier-list .row .v { color: var(--fg); }
+.tier-list .row .v b { font-weight: 500; }
+.tier-list .group { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule-c); }
+.tier-list .group:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 14px; justify-content: space-between;
+  padding: 14px 18px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule-strong); color: var(--fg);
+  background: transparent; cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+  width: 100%;
+}
+.btn:hover { background: var(--bg-3); }
+.btn.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.solid:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn .arrow { font-family: var(--serif); font-size: 14px; }
+
+/* COMPARE TABLE */
+.compare {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+}
+.compare > div {
+  padding: 16px 22px;
+  border-right: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+  font-size: 13.5px;
+  display: flex; align-items: center;
+}
+.compare > div:nth-child(5n) { border-right: 0; }
+.compare .h-row { background: var(--bg-2); font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.compare .h-row b { color: var(--fg); font-weight: 500; }
+.compare .group-row {
+  grid-column: 1 / -1; background: var(--bg-2);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg);
+  border-right: 0;
+  padding: 14px 22px;
+}
+.compare .feat { font-family: var(--sans); font-size: 14px; color: var(--fg); }
+.compare .feat .desc { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.compare .val { font-family: var(--mono); font-size: 12px; color: var(--fg); letter-spacing: 0.04em; justify-content: center; }
+.compare .val .x { color: var(--muted); }
+.compare .val .y { font-family: var(--serif); font-size: 18px; color: var(--fg); }
+
+/* FAQ */
+.faq { display: grid; grid-template-columns: 1fr 1fr; }
+.faq-row {
+  padding: 28px 28px;
+  border-right: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+}
+.faq-row:nth-child(2n) { border-right: 0; }
+.faq-q { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 12px; }
+.faq-q em { font-style: italic; color: var(--muted); }
+.faq-a { font-size: 14px; line-height: 1.55; color: var(--fg-2); max-width: 50ch; }
+
+/* CTA STRIP */
+.cta-strip {
+  padding: 80px var(--gutter);
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: end;
+}
+.cta-h { font-family: var(--serif); font-size: 64px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance; }
+.cta-h em { font-style: italic; color: var(--muted); }
+.cta-side p { font-size: 16px; line-height: 1.55; color: var(--fg-2); max-width: 42ch; margin-bottom: 18px; }
+.cta-actions { display: flex; gap: 12px; }
+.cta-actions .btn { width: auto; }
+.cta-stamp { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 18px; }
+.cta-stamp .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+
+.foot {
+  padding: 36px var(--gutter);
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style>
+</head>
+<body data-mood="bone" data-screen-label="Pricing">
+
+<header class="topbar">
+  <div>
+    <a class="brand" href="index.html">
+      <span class="brand-mark"></span>Automatos<em>·ai</em>
+    </a>
+  </div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="#" class="is-current">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html">Field notes</a>
+  </nav>
+  <div>
+    <a href="https://ui.automatos.app/sign-in">Sign in</a>
+    <a data-waitlist href="#" class="cta">Sign up free →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-eye">Pricing · Apache 2.0 · Self-host or hosted</div>
+    <h1 class="hero-h">
+      Pay for the<br />
+      <em>workforce</em>,<br />
+      not the <em>seats</em>.
+    </h1>
+  </div>
+  <div class="hero-meta">
+    <div><b>Free forever</b> — self-host on Apache 2.0.</div>
+    <div><b>Hosted</b> — pay per agent, per month.</div>
+    <div><b>Bring</b> your own model keys (OpenRouter, Anthropic, OpenAI, Google).</div>
+    <div><b>EU residency</b> available on every paid tier.</div>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section class="section" data-comment-anchor="pr-tiers">
+  <div class="section-meta">
+    <div><span class="pill">Plan&nbsp;/&nbsp;01–04</span> Tiers</div>
+    <div>Start free, scale by agents in production. Cancel any time.</div>
+    <div>↗&nbsp;&nbsp;Prices in USD</div>
+  </div>
+  <div class="tiers">
+
+    <!-- Self-host -->
+    <article class="tier">
+      <div class="tier-head"><span class="tier-id">Plan&nbsp;/&nbsp;01</span><span class="tier-tag">Open source</span></div>
+      <h3 class="tier-h">Self-host</h3>
+      <p class="tier-line">The whole platform, free forever — Apache 2.0. Your servers, your data, your keys.</p>
+      <div class="tier-price">
+        <span class="v">$0</span>
+        <span class="u">forever</span>
+      </div>
+      <div class="tier-list">
+        <div class="group">Included</div>
+        <div class="row"><span class="k">·</span><span class="v"><b>Unlimited</b> agents &amp; missions</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Universal router · 5-tier engine</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Memory · knowledge base · NL2SQL</span></div>
+        <div class="row"><span class="k">·</span><span class="v">All marketplace agents &amp; packs</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Composio channels (BYO keys)</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Community Discord</span></div>
+        <div class="group">Bring</div>
+        <div class="row"><span class="k">·</span><span class="v">Postgres, Redis, Qdrant</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Docker / K8s</span></div>
+      </div>
+      <a class="btn" href="#">Get the repo <span class="arrow">→</span></a>
+    </article>
+
+    <!-- Starter -->
+    <article class="tier">
+      <div class="tier-head"><span class="tier-id">Plan&nbsp;/&nbsp;02</span><span class="tier-tag">Hosted</span></div>
+      <h3 class="tier-h">Starter</h3>
+      <p class="tier-line">Hosted Automatos for solo operators &amp; small rooms. Up and running in ten minutes.</p>
+      <div class="tier-price">
+        <span class="v">$0</span>
+        <span class="u">free · then $19/mo</span>
+      </div>
+      <div class="tier-list">
+        <div class="group">Capacity</div>
+        <div class="row"><span class="k">·</span><span class="v"><b>5</b> agents in production</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>500</b> missions / month</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>1</b> shared knowledge base</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>3</b> channel integrations</span></div>
+        <div class="group">Includes</div>
+        <div class="row"><span class="k">·</span><span class="v">All marketplace agents &amp; packs</span></div>
+        <div class="row"><span class="k">·</span><span class="v">BYO model keys (OpenRouter)</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Email support</span></div>
+      </div>
+      <a data-waitlist class="btn" href="#">Sign up free <span class="arrow">→</span></a>
+    </article>
+
+    <!-- Pro - featured -->
+    <article class="tier is-featured">
+      <div class="tier-head"><span class="tier-id">Plan&nbsp;/&nbsp;03</span><span class="tier-tag">Most popular</span></div>
+      <h3 class="tier-h">Pro</h3>
+      <p class="tier-line">For teams running real workforces — packs, custom skills, and the whole channel library.</p>
+      <div class="tier-price">
+        <span class="v">$99</span>
+        <span class="u">/ month</span>
+      </div>
+      <div class="tier-list">
+        <div class="group">Capacity</div>
+        <div class="row"><span class="k">·</span><span class="v"><b>25</b> agents in production</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>10,000</b> missions / month</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>10</b> knowledge bases</span></div>
+        <div class="row"><span class="k">·</span><span class="v"><b>All</b> 20+ channels</span></div>
+        <div class="group">Includes</div>
+        <div class="row"><span class="k">·</span><span class="v">Custom skills &amp; agents</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Mission scheduling &amp; cron</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Audit log · analytics</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Priority support · 1-day SLA</span></div>
+      </div>
+      <a class="btn solid" href="#">Start Pro trial <span class="arrow">→</span></a>
+    </article>
+
+    <!-- Enterprise -->
+    <article class="tier">
+      <div class="tier-head"><span class="tier-id">Plan&nbsp;/&nbsp;04</span><span class="tier-tag">EU residency</span></div>
+      <h3 class="tier-h">Enterprise</h3>
+      <p class="tier-line">Dedicated infrastructure, SSO, SOC&nbsp;2, and an engineer who knows your room by name.</p>
+      <div class="tier-price">
+        <span class="v"><em>Let's</em></span>
+        <span class="u">talk</span>
+      </div>
+      <div class="tier-list">
+        <div class="group">Capacity</div>
+        <div class="row"><span class="k">·</span><span class="v"><b>Unlimited</b> agents &amp; missions</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Dedicated cluster · EU/US/APAC</span></div>
+        <div class="group">Includes</div>
+        <div class="row"><span class="k">·</span><span class="v">SSO · SAML · SCIM</span></div>
+        <div class="row"><span class="k">·</span><span class="v">SOC&nbsp;2 Type II · DPA · BAA</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Custom router rules &amp; policies</span></div>
+        <div class="row"><span class="k">·</span><span class="v">Named solution engineer</span></div>
+        <div class="row"><span class="k">·</span><span class="v">99.9% SLA</span></div>
+      </div>
+      <a class="btn" href="#">Talk to sales <span class="arrow">→</span></a>
+    </article>
+
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="section" data-comment-anchor="pr-compare">
+  <div class="section-meta">
+    <div><span class="pill">Plate&nbsp;/&nbsp;CMP</span> Compare · in detail</div>
+    <div>Every capability, every limit, every plan — laid out flat.</div>
+    <div>↗&nbsp;&nbsp;Updated 10 May 2026</div>
+  </div>
+  <div class="compare">
+    <div class="h-row">Capability</div>
+    <div class="h-row val"><b>Self-host</b></div>
+    <div class="h-row val"><b>Starter</b></div>
+    <div class="h-row val"><b>Pro</b></div>
+    <div class="h-row val"><b>Enterprise</b></div>
+
+    <div class="group-row">Workforce</div>
+    <div class="feat">Agents in production<span class="desc">Hard cap, set by your plan</span></div>
+    <div class="val"><span class="y">∞</span></div>
+    <div class="val">5</div>
+    <div class="val">25</div>
+    <div class="val"><span class="y">∞</span></div>
+
+    <div class="feat">Missions / month<span class="desc">A mission is one orchestrated run</span></div>
+    <div class="val"><span class="y">∞</span></div>
+    <div class="val">500</div>
+    <div class="val">10,000</div>
+    <div class="val"><span class="y">∞</span></div>
+
+    <div class="feat">Knowledge bases<span class="desc">RAG + NL2SQL stores per workspace</span></div>
+    <div class="val"><span class="y">∞</span></div>
+    <div class="val">1</div>
+    <div class="val">10</div>
+    <div class="val"><span class="y">∞</span></div>
+
+    <div class="feat">Channels<span class="desc">Slack, Gmail, GitHub, Linear…</span></div>
+    <div class="val">All 20+</div>
+    <div class="val">3</div>
+    <div class="val">All 20+</div>
+    <div class="val">All + custom</div>
+
+    <div class="group-row">Routing &amp; cost</div>
+    <div class="feat">5-tier router<span class="desc">override · cache · rules · semantic · LLM</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="feat">Custom router policies<span class="desc">Per-team rules, cost ceilings</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="feat">Bring your own keys<span class="desc">OpenRouter, Anthropic, OpenAI, Google</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="group-row">Security &amp; control</div>
+    <div class="feat">Audit log<span class="desc">Every routing decision, every action</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="feat">SSO · SAML · SCIM</div>
+    <div class="val"><span class="x">DIY</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="feat">SOC 2 Type II · DPA · BAA</div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val">DPA</div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="feat">EU data residency</div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val"><span class="y">●</span></div>
+    <div class="val"><span class="y">●</span></div>
+
+    <div class="group-row">Support</div>
+    <div class="feat">Channel<span class="desc">Where to reach us</span></div>
+    <div class="val">Discord</div>
+    <div class="val">Email</div>
+    <div class="val">Email · Slack</div>
+    <div class="val">Named SE</div>
+
+    <div class="feat">SLA<span class="desc">First-response target</span></div>
+    <div class="val"><span class="x">—</span></div>
+    <div class="val">Best-effort</div>
+    <div class="val">1 business day</div>
+    <div class="val">99.9% · 1h</div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" data-comment-anchor="pr-faq">
+  <div class="section-meta">
+    <div><span class="pill">Plate&nbsp;/&nbsp;FAQ</span> Honest answers</div>
+    <div>The questions that actually come up before sign-up.</div>
+    <div>↗&nbsp;&nbsp;Email <a href="mailto:hello@automatos.ai">hello@automatos.ai</a> for the rest</div>
+  </div>
+  <div class="faq">
+    <div class="faq-row">
+      <h4 class="faq-q">Is the open-source <em>really</em> the same as the hosted?</h4>
+      <p class="faq-a">Yes. The repo at <a href="https://github.com/AutomatosAI/automatos-ai"><code>github.com/AutomatosAI/automatos-ai</code></a> is the production codebase. The hosted plans add managed infrastructure, support, and compliance — not feature gates.</p>
+    </div>
+    <div class="faq-row">
+      <h4 class="faq-q">Do I pay for <em>model</em> usage?</h4>
+      <p class="faq-a">No — you bring your own model keys. Automatos is a workforce platform, not a model proxy. The router will pick the cheapest competent model for each task; the bill goes to you, from the provider.</p>
+    </div>
+    <div class="faq-row">
+      <h4 class="faq-q">What happens at the agent / mission limit?</h4>
+      <p class="faq-a">Agents over the limit are paused — they keep their config and history. Missions over the limit are queued for the next billing cycle. We never silently overcharge.</p>
+    </div>
+    <div class="faq-row">
+      <h4 class="faq-q">Can I move from hosted to <em>self-host</em>?</h4>
+      <p class="faq-a">Either direction. Export your agents, knowledge bases, and routing rules as a single bundle; import on the other side. Same schemas, same code.</p>
+    </div>
+    <div class="faq-row">
+      <h4 class="faq-q">What's the EU residency story?</h4>
+      <p class="faq-a">Pro and Enterprise can pin their workspace to our Frankfurt cluster. All data — postgres, vectors, logs — stays in-region. EU AI Act risk-tier audit available on request.</p>
+    </div>
+    <div class="faq-row">
+      <h4 class="faq-q">Is there a non-profit / academic plan?</h4>
+      <p class="faq-a">Yes — Pro is free for registered non-profits and accredited research groups. Drop us a line with your domain and we'll switch you over.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip">
+  <h2 class="cta-h">Start free.<br />Scale when the room <em>needs</em> it.</h2>
+  <div>
+    <p>Sign up and run your first agent in ten minutes — free tier, no card. Or pull the repo and self-host on your own infrastructure today.</p>
+    <div class="cta-actions">
+      <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+      <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
+    </div>
+    <div class="cta-stamp"><span class="dot"></span>Apache 2.0 · BYO keys · EU residency on Pro+</div>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+  <span>Pricing · v1.36.04</span>
+</footer>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body>
+</html>

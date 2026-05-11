@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Apothicare — Lisbon Apothecary (Preview)</title>
+<link rel="stylesheet" href="../apothicare-lisbon/styles.css" />
+<style>
+  /* Preview-only chrome to imitate platform render */
+  body { margin: 0; }
+  [hidden] { display: none !important; }
+  .preview-banner {
+    position: sticky; top: 0; z-index: 50;
+    background: hsl(150 25% 11%); color: hsl(38 35% 88%);
+    font: 500 12px/1 'Inter', sans-serif; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 10px 24px; display: flex; gap: 24px; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid hsl(38 25% 30%);
+  }
+  .preview-banner b { color: hsl(38 65% 60%); font-weight: 600; }
+
+  /* Layout primitives — these mirror what the BudStacks render engine would produce */
+  .container { max-width: 1200px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+  section { padding: 5rem 0; }
+
+  /* NavMinimal */
+  .nav-minimal {
+    border-bottom: 1px solid hsl(var(--tenant-color-border));
+    background: hsl(var(--tenant-color-background));
+    position: sticky; top: 38px; z-index: 40;
+  }
+  .nav-inner { display: flex; align-items: center; gap: 2.5rem; padding: 1.25rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+  .nav-logo { font-family: var(--tenant-font-heading); font-size: 1.5rem; font-weight: 600; color: hsl(var(--tenant-color-heading)); letter-spacing: -0.02em; }
+  .nav-logo .leaf { color: hsl(var(--tenant-color-primary)); margin-right: 0.4rem; }
+  .nav-links { display: flex; gap: 2rem; list-style: none; padding: 0; margin: 0 auto 0 1rem; }
+  .nav-links a { color: hsl(var(--tenant-color-text)); text-decoration: none; font-size: 0.9375rem; }
+  .nav-links a:hover { color: hsl(var(--tenant-color-primary)); }
+  .nav-cta-group { display: flex; gap: 0.75rem; align-items: center; }
+  .nav-ghost { color: hsl(var(--tenant-color-text)); font-size: 0.875rem; text-decoration: none; padding: 0.5rem 0.75rem; }
+
+  /* HeroFramed */
+  .hero-framed { position: relative; min-height: 720px; padding: 0; display: flex; align-items: stretch; }
+  .hero-image { position: absolute; inset: 0; background:
+    linear-gradient(rgba(20,30,22,0.4), rgba(20,30,22,0.15)),
+    url("../apothicare-lisbon/assets/hero-apothecary.svg") center/cover no-repeat;
+  }
+  .hero-frame { position: relative; z-index: 2; width: 56%; max-width: 660px; margin: 4rem 0 4rem 4rem; padding: 4rem 3.5rem;
+    background: hsl(var(--tenant-color-background) / 0.94);
+    backdrop-filter: blur(var(--tenant-blur-sm));
+    border: 1px solid hsl(var(--tenant-color-border));
+    box-shadow: var(--shadow-frame);
+    display: flex; flex-direction: column; gap: 1.5rem; }
+  .hero-frame .eyebrow { display: inline-block; }
+  .hero-frame h1 { font-size: clamp(2.25rem, 4.2vw, 3.75rem); margin: 0; }
+  .hero-frame h1 em { display: block; font-size: 1.05em; margin-top: 0.25rem; }
+  .hero-frame p.lead { font-size: 1.0625rem; line-height: 1.65; color: hsl(var(--tenant-color-text)); margin: 0; max-width: 50ch; }
+  .hero-cta-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem; align-items: center; }
+  .btn-primary { background: hsl(var(--tenant-color-primary)); color: hsl(150 22% 14%); font-family: var(--tenant-font-base); font-weight: 500; letter-spacing: 0.01em; border-radius: 0.5rem; padding: 0.875rem 1.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease; box-shadow: 0 1px 2px rgba(40, 30, 15, 0.08); border: none; cursor: pointer; }
+  .btn-primary:hover { transform: translateY(-1px); background: hsl(36 70% 38%); box-shadow: 0 4px 12px -2px rgba(40, 30, 15, 0.18); }
+  .btn-ghost { color: hsl(var(--tenant-color-heading)); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: hsl(var(--tenant-color-border)); font-size: 0.9375rem; }
+  .btn-ghost:hover { text-decoration-color: hsl(var(--tenant-color-primary)); }
+
+  /* Marquee */
+  .marquee { overflow: hidden; padding: 1.75rem 0; }
+  .marquee-track { display: flex; gap: 3rem; animation: marquee 40s linear infinite; white-space: nowrap; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-item { font-family: var(--tenant-font-heading); font-style: italic; font-size: 1.375rem; color: hsl(var(--tenant-color-text)); display: flex; align-items: center; gap: 1.5rem; }
+  .marquee-item .dot { width: 6px; height: 6px; border-radius: 50%; background: hsl(var(--tenant-color-primary)); }
+
+  /* Section heading */
+  .section-head { max-width: 720px; margin: 0 auto 3rem; text-align: center; }
+  .section-head h2 { font-size: clamp(2rem, 3vw, 2.75rem); margin: 0.5rem 0 1rem; }
+  .section-head p { color: hsl(var(--tenant-color-text)); font-size: 1.0625rem; line-height: 1.65; margin: 0; }
+
+  /* ValueProps grid */
+  .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .value-card { background: hsl(var(--tenant-color-background)); border: 1px solid hsl(var(--tenant-color-border)); border-radius: 0.75rem; padding: 2rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 1rem; }
+  .icon-wrap { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background: hsl(var(--tenant-color-primary) / 0.12); color: hsl(var(--tenant-color-primary)); border: 1px solid hsl(var(--tenant-color-primary) / 0.3); }
+  .value-card h3 { font-size: 1.375rem; margin: 0; }
+  .value-card p { color: hsl(var(--tenant-color-text)); font-size: 0.9375rem; line-height: 1.6; margin: 0; }
+
+  /* TabsShowcase */
+  .tabs-row { display: flex; gap: 0; border-bottom: 1px solid hsl(var(--tenant-color-border)); margin-bottom: 3rem; flex-wrap: wrap; }
+  .tab-trigger { font-family: var(--tenant-font-heading); font-size: 1.25rem; padding: 1rem 1.5rem; border: none; background: none; color: hsl(var(--tenant-color-text)); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 0.625rem; }
+  .tab-trigger.active { color: hsl(var(--tenant-color-primary)); border-bottom-color: hsl(var(--tenant-color-primary)); }
+  .tab-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .tab-panel .tab-image { aspect-ratio: 4/3; border-radius: 0.75rem; background-size: cover; background-position: center;
+    box-shadow: var(--shadow-card); border: 1px solid hsl(var(--tenant-color-border)); }
+  .tab-panel[data-panel="pain"] .tab-image { background-image: url("../apothicare-lisbon/assets/condition-pain.svg"); }
+  .tab-panel[data-panel="sleep"] .tab-image { background-image: url("../apothicare-lisbon/assets/condition-sleep.svg"); }
+  .tab-panel[data-panel="anxiety"] .tab-image { background-image: url("../apothicare-lisbon/assets/condition-anxiety.svg"); }
+  .tab-panel[data-panel="neuro"] .tab-image { background-image: url("../apothicare-lisbon/assets/condition-neuro.svg"); }
+  .tab-panel h3 { font-size: 1.875rem; margin: 0 0 1rem; }
+  .tab-panel p { font-size: 1rem; line-height: 1.7; margin: 0; }
+
+  /* About / Practice (dark) */
+  #practice .practice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  #practice .practice-image { aspect-ratio: 4/5; border-radius: 0.75rem; background:
+    linear-gradient(rgba(20,30,22,0.3), rgba(20,30,22,0.1)),
+    url("../apothicare-lisbon/assets/about-clinic.svg") center/cover no-repeat;
+    border: 1px solid hsl(var(--tenant-color-border)); }
+  #practice h2 { font-size: clamp(2.25rem, 3.5vw, 3rem); margin: 0 0 1.5rem; }
+  #practice p { font-size: 1.0625rem; line-height: 1.75; }
+  .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 3rem; margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid hsl(var(--tenant-color-border)); }
+  .stat-value { font-family: var(--tenant-font-heading); font-size: 2.75rem; font-weight: 500; color: hsl(var(--tenant-color-primary)); line-height: 1; }
+  .stat-label { font-size: 0.875rem; color: hsl(var(--tenant-color-text)); margin-top: 0.5rem; letter-spacing: 0.02em; }
+
+  /* Process */
+  .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; position: relative; }
+  .process-grid::before { content: ""; position: absolute; top: 1.25rem; left: 12.5%; right: 12.5%; height: 1px; background: hsl(var(--tenant-color-border)); z-index: 0; }
+  .process-step { position: relative; z-index: 1; text-align: left; }
+  .step-number { font-family: var(--tenant-font-heading); font-size: 2.5rem; font-weight: 500; color: hsl(var(--tenant-color-primary)); line-height: 1; background: hsl(var(--tenant-color-background)); display: inline-block; padding-right: 0.75rem; margin-bottom: 1rem; }
+  .process-step h3 { font-size: 1.25rem; margin: 0 0 0.625rem; }
+  .process-step p { font-size: 0.9375rem; line-height: 1.6; color: hsl(var(--tenant-color-text)); margin: 0; }
+
+  /* Testimonials */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .testimonial-card { background: hsl(var(--tenant-color-background)); border: 1px solid hsl(var(--tenant-color-border)); border-radius: 0.75rem; padding: 2.5rem 2rem; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 1.5rem; }
+  .testimonial-card blockquote { font-family: var(--tenant-font-heading); font-style: italic; font-weight: 400; font-size: 1.1875rem; line-height: 1.5; color: hsl(var(--tenant-color-heading)); margin: 0; flex: 1; }
+  .testimonial-card blockquote::before { content: "“"; font-size: 3rem; line-height: 0.4; color: hsl(var(--tenant-color-primary)); display: block; margin-bottom: 1rem; }
+  .testimonial-meta { font-size: 0.875rem; color: hsl(var(--tenant-color-text)); border-top: 1px solid hsl(var(--tenant-color-border)); padding-top: 1rem; }
+  .testimonial-meta b { display: block; color: hsl(var(--tenant-color-heading)); font-family: var(--tenant-font-heading); font-size: 1rem; font-weight: 600; }
+
+  /* FAQ */
+  .faq-list { max-width: 820px; margin: 0 auto; }
+  .accordion-item { border-bottom: 1px solid hsl(var(--tenant-color-border)); }
+  .accordion-trigger { width: 100%; text-align: left; padding: 1.5rem 0; background: none; border: none; cursor: pointer; font-family: var(--tenant-font-heading); font-size: 1.25rem; font-weight: 500; color: hsl(var(--tenant-color-heading)); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .accordion-trigger .chev { color: hsl(var(--tenant-color-primary)); font-size: 1.5rem; transition: transform 220ms ease; }
+  .accordion-item[open] .chev { transform: rotate(45deg); }
+  .accordion-content { padding: 0 0 1.5rem; color: hsl(var(--tenant-color-text)); font-size: 1rem; line-height: 1.7; }
+
+  /* Newsletter (dark) */
+  #journal .newsletter-inner { max-width: 720px; margin: 0 auto; text-align: center; }
+  #journal h2 { font-size: clamp(2rem, 3vw, 2.75rem); margin: 0 0 1rem; color: hsl(var(--tenant-color-heading)); }
+  #journal p { color: hsl(var(--tenant-color-text)); font-size: 1.0625rem; line-height: 1.65; margin: 0 0 2rem; }
+  .newsletter-form { display: flex; gap: 0.75rem; max-width: 480px; margin: 0 auto; }
+  .newsletter-form input { flex: 1; padding: 0.875rem 1rem; background: hsl(var(--tenant-color-surface)); border: 1px solid hsl(var(--tenant-color-border)); color: hsl(var(--tenant-color-heading)); border-radius: 0.5rem; font-family: var(--tenant-font-base); font-size: 1rem; }
+  .newsletter-form input::placeholder { color: hsl(var(--tenant-color-text) / 0.6); }
+
+  /* Footer */
+  footer { padding: 5rem 0 2rem; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid hsl(var(--tenant-color-border)); }
+  .footer-brand .logo { font-family: var(--tenant-font-heading); font-size: 1.75rem; font-weight: 600; color: hsl(var(--tenant-color-heading)); margin-bottom: 1rem; }
+  .footer-brand .tagline { font-style: italic; font-family: var(--tenant-font-heading); color: hsl(var(--tenant-color-text)); font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem; }
+  .footer-brand .contact { font-size: 0.875rem; color: hsl(var(--tenant-color-text)); line-height: 1.7; }
+  .footer-brand .contact a { color: hsl(var(--tenant-color-text)); }
+  .footer-col h4 { margin: 0 0 1.25rem; }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.625rem; }
+  .footer-col a { color: hsl(var(--tenant-color-text)); text-decoration: none; font-size: 0.9375rem; }
+  .footer-col a:hover { color: hsl(var(--tenant-color-heading)); }
+  .footer-bottom { padding-top: 2rem; display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; font-size: 0.8125rem; color: hsl(var(--tenant-color-text) / 0.7); line-height: 1.6; }
+  .footer-bottom .disclaimer { max-width: 60%; }
+  .social { display: flex; gap: 0.75rem; }
+  .social a { width: 36px; height: 36px; border-radius: 50%; border: 1px solid hsl(var(--tenant-color-border)); display: flex; align-items: center; justify-content: center; color: hsl(var(--tenant-color-text)); }
+
+  @media (max-width: 1024px) {
+    .values-grid { grid-template-columns: repeat(2, 1fr); }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .tab-panel, #practice .practice-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .process-grid { grid-template-columns: repeat(2, 1fr); }
+    .process-grid::before { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hero-frame { width: calc(100% - 3rem); margin: 2rem auto; padding: 2.5rem 2rem; }
+  }
+</style>
+</head>
+<body class="template-apothicare-lisbon" data-screen-label="Apothicare Storefront">
+<div class="preview-banner">
+  <span><b>Preview</b> — apothicare-lisbon · Storefront render</span>
+  <span>NavMinimal · HeroFramed · 8 sections · FooterBrand</span>
+</div>
+
+<!-- ============= NavMinimal ============= -->
+<nav class="nav-minimal" aria-label="Primary">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><span class="leaf">❦</span>Apothicare</a>
+    <ul class="nav-links">
+      <li><a href="/about">Practice</a></li>
+      <li><a href="/conditions">Conditions</a></li>
+      <li><a href="/products">Apothecary</a></li>
+      <li><a href="/the-wire">Journal</a></li>
+    </ul>
+    <div class="nav-cta-group">
+      <a href="/login" class="nav-ghost">Patient Login</a>
+      <a href="/consultation" class="btn-primary">Check Eligibility</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============= HeroFramed ============= -->
+<section id="hero" class="hero-framed" data-screen-label="Hero">
+  <div class="hero-image" aria-hidden="true"></div>
+  <div class="hero-frame frame-panel">
+    <span class="eyebrow">Lisbon · INFARMED licensed · EU-GMP</span>
+    <h1>Doctor-led medical cannabis,<br/><em>dispensed with the patience of an apothecary.</em></h1>
+    <p class="lead">For patients with chronic conditions, prescribed under Portuguese medical authority. Real consultations. Pharmaceutical-grade chain. No recreational framing.</p>
+    <div class="hero-cta-row">
+      <a class="btn-primary" href="/consultation">Check eligibility →</a>
+      <a class="btn-ghost" href="/how-it-works">How a consultation works</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TextMarquee — credentials band ============= -->
+<section id="credentials" class="marquee" aria-label="Credentials">
+  <div class="marquee-track">
+    <span class="marquee-item">INFARMED Authorised<span class="dot"></span></span>
+    <span class="marquee-item">EU-GMP Certified<span class="dot"></span></span>
+    <span class="marquee-item">Doctor Prescribed<span class="dot"></span></span>
+    <span class="marquee-item">Pharmaceutical Grade<span class="dot"></span></span>
+    <span class="marquee-item">Tracked Chain of Custody<span class="dot"></span></span>
+    <span class="marquee-item">Patients Only<span class="dot"></span></span>
+    <span class="marquee-item">INFARMED Authorised<span class="dot"></span></span>
+    <span class="marquee-item">EU-GMP Certified<span class="dot"></span></span>
+    <span class="marquee-item">Doctor Prescribed<span class="dot"></span></span>
+    <span class="marquee-item">Pharmaceutical Grade<span class="dot"></span></span>
+    <span class="marquee-item">Tracked Chain of Custody<span class="dot"></span></span>
+    <span class="marquee-item">Patients Only<span class="dot"></span></span>
+  </div>
+</section>
+
+<!-- ============= ValueProps ============= -->
+<section id="values" data-screen-label="Why patients choose">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Why patients choose the practice</span>
+      <h2>Four commitments that define how we work — and what separates a clinic from a dispensary.</h2>
+    </div>
+    <div class="values-grid">
+      <article class="value-card">
+        <div class="icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>INFARMED licensed</h3>
+        <p>Authorised import and dispensing under Portuguese medical-cannabis law. Every batch documented.</p>
+      </article>
+      <article class="value-card">
+        <div class="icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2v6a4 4 0 0 1-4 4H5"/><path d="M11 2v6a4 4 0 0 0 4 4h2"/><circle cx="20" cy="14" r="2"/><path d="M8 12v3a6 6 0 0 0 12 0v-1"/></svg></div>
+        <h3>Doctor prescribed</h3>
+        <p>Real consultations with GMC-trained physicians. Real prescriptions. Quarterly follow-ups included.</p>
+      </article>
+      <article class="value-card">
+        <div class="icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="6"/><path d="M9 13l-2 9 5-3 5 3-2-9"/></svg></div>
+        <h3>EU-GMP certified</h3>
+        <p>Pharmaceutical-grade manufacturing chain. The same standard your hospital pharmacy meets.</p>
+      </article>
+      <article class="value-card">
+        <div class="icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/></svg></div>
+        <h3>Discreet delivery</h3>
+        <p>Tamper-evident packaging, signed chain of custody, posted only to verified patient addresses.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TabsShowcase — Conditions ============= -->
+<section id="conditions" data-screen-label="Conditions">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Conditions we treat</span>
+      <h2>Cannabis is a tool, not a panacea. These are the indications where evidence and our clinical experience align.</h2>
+    </div>
+    <div class="tabs-row" role="tablist">
+      <button class="tab-trigger active" data-tab="pain" aria-selected="true">Chronic pain</button>
+      <button class="tab-trigger" data-tab="sleep">Sleep</button>
+      <button class="tab-trigger" data-tab="anxiety">Anxiety</button>
+      <button class="tab-trigger" data-tab="neuro">Neurology</button>
+    </div>
+
+    <div class="tab-panel" data-panel="pain">
+      <div class="tab-image"></div>
+      <div>
+        <h3>When other analgesics have run their course</h3>
+        <p>For neuropathic pain, fibromyalgia, and treatment-resistant chronic pain. Our prescribers favour balanced THC:CBD formulations and titrate slowly. Most patients report meaningful improvement within four to six weeks; some sooner. We track outcomes at every follow-up.</p>
+      </div>
+    </div>
+    <div class="tab-panel" data-panel="sleep" hidden>
+      <div class="tab-image"></div>
+      <div>
+        <h3>Chronic insomnia and sleep architecture</h3>
+        <p>Indica-leaning flower and oils, dosed in the evening, can restore sleep onset and continuity for patients where standard hypnotics have failed or caused dependency. Sleep diaries are part of our protocol.</p>
+      </div>
+    </div>
+    <div class="tab-panel" data-panel="anxiety" hidden>
+      <div class="tab-image"></div>
+      <div>
+        <h3>When SSRIs are not the answer</h3>
+        <p>CBD-dominant formulations, sometimes with low-dose THC, can support generalised anxiety and PTSD-related symptoms in patients who have not tolerated or responded to first-line treatments. Always alongside, never instead of, talking therapy.</p>
+      </div>
+    </div>
+    <div class="tab-panel" data-panel="neuro" hidden>
+      <div class="tab-image"></div>
+      <div>
+        <h3>Refractory epilepsy and MS spasticity</h3>
+        <p>Where the evidence is strongest — pharmaceutical CBD for treatment-resistant childhood epilepsies, and THC:CBD oromucosal sprays for multiple-sclerosis spasticity. Always co-managed with the patient's neurologist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= About — dark anchor ============= -->
+<section id="practice" data-screen-label="The practice">
+  <div class="container">
+    <div class="practice-grid">
+      <div>
+        <span class="eyebrow">The practice</span>
+        <h2>A clinic, not a dispensary.</h2>
+        <p>Apothicare was founded in Lisbon in 2022 by Dr Elena Marques, a consultant in pain medicine, after a decade of patients asking the same question: where do I get this safely, in Portugal, from a doctor? We answered with a practice — proper consultations, INFARMED-authorised imports, pharmaceutical-grade product, and follow-up care. We are not a delivery app. We are a small clinical team that happens to dispense cannabis when it is the right tool for the patient in front of us.</p>
+        <div class="stats-row">
+          <div><div class="stat-value">1,400+</div><div class="stat-label">Patients in active care</div></div>
+          <div><div class="stat-value">94%</div><div class="stat-label">Average follow-up retention</div></div>
+          <div><div class="stat-value">7</div><div class="stat-label">Clinicians on the team</div></div>
+          <div><div class="stat-value">4</div><div class="stat-label">Years operating in Portugal</div></div>
+        </div>
+      </div>
+      <div class="practice-image" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= ProcessSteps ============= -->
+<section id="process" data-screen-label="How a consultation works">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">How a consultation works</span>
+      <h2>Four steps from first contact to first prescription.</h2>
+      <p>Most patients complete the full process in seven to ten days.</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step">
+        <div class="step-number">01</div>
+        <h3>Eligibility check</h3>
+        <p>Five-minute online form. We confirm whether your condition and history fit Portuguese prescribing guidance before you pay anything.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-number">02</div>
+        <h3>Consultation</h3>
+        <p>Forty-five minutes with a prescribing physician. Video or in-person at our Lisbon practice. Bring records.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-number">03</div>
+        <h3>Prescription</h3>
+        <p>If clinically appropriate, your prescription is issued and dispensed from our INFARMED-authorised pharmacy partner.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-number">04</div>
+        <h3>Follow-up care</h3>
+        <p>Quarterly reviews are included. Titration, side-effect management, dose changes — all by the same prescriber.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= Testimonials ============= -->
+<section id="testimonials" data-screen-label="What patients tell us">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Patient voices</span>
+      <h2>What patients tell us</h2>
+      <p>Edited for length and anonymised. Outcomes are individual; we make no guarantees.</p>
+    </div>
+    <div class="testimonials-grid">
+      <article class="testimonial-card">
+        <blockquote>Twelve years of fibromyalgia and three pain clinics. The thing that finally helped was being treated like a person rather than a prescription. The medicine works, but the practice is what kept me coming back.</blockquote>
+        <div class="testimonial-meta"><b>M.F.</b>Fibromyalgia · in care since 2023</div>
+      </article>
+      <article class="testimonial-card">
+        <blockquote>I was sceptical. I am a retired pharmacist; I have read the trials. Dr Marques walked me through the evidence honestly — including its limits. My MS spasticity is meaningfully better. So is my trust in the field.</blockquote>
+        <div class="testimonial-meta"><b>J.A.</b>Multiple sclerosis · in care since 2024</div>
+      </article>
+      <article class="testimonial-card">
+        <blockquote>After my husband's chemotherapy left him unable to eat, our oncologist suggested we explore this. Apothicare handled the prescribing, the pharmacy, and the follow-ups without us having to chase anything. He gained four kilos.</blockquote>
+        <div class="testimonial-meta"><b>C.T.</b>Oncology supportive care · 2024</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FAQ ============= -->
+<section id="faq" data-screen-label="FAQ">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Questions</span>
+      <h2>Questions we answer most often</h2>
+      <p>If something here is unclear, write to us. A real clinician will reply, usually within a working day.</p>
+    </div>
+    <div class="faq-list">
+      <details class="accordion-item" open>
+        <summary class="accordion-trigger">Is medical cannabis legal in Portugal? <span class="chev">+</span></summary>
+        <div class="accordion-content">Yes — INFARMED, the Portuguese medicines authority, has authorised medical cannabis prescribing since 2019. Apothicare operates under a full INFARMED licence for import, dispensing, and patient care. Recreational cannabis remains illegal.</div>
+      </details>
+      <details class="accordion-item">
+        <summary class="accordion-trigger">Do I need a referral from my doctor? <span class="chev">+</span></summary>
+        <div class="accordion-content">No referral is required. We do, however, ask you to bring relevant medical records to your consultation — diagnoses, medication lists, previous treatments tried. Where appropriate, we will write to your existing physician with your consent.</div>
+      </details>
+      <details class="accordion-item">
+        <summary class="accordion-trigger">What does treatment cost? <span class="chev">+</span></summary>
+        <div class="accordion-content">The eligibility check is free. The initial consultation is €185 and includes 45 minutes with a prescribing physician. Quarterly follow-ups (€95) are included in your annual care plan. Medication is priced separately and varies by formulation; expect €120–€280 per month at typical prescribed doses.</div>
+      </details>
+      <details class="accordion-item">
+        <summary class="accordion-trigger">Will it make me high? <span class="chev">+</span></summary>
+        <div class="accordion-content">Some formulations contain THC and may produce psychoactive effects, particularly during titration. Many patients are prescribed CBD-dominant or balanced products specifically to minimise this. Your prescriber will discuss what to expect at the formulation chosen for you, and titrate from a low dose.</div>
+      </details>
+      <details class="accordion-item">
+        <summary class="accordion-trigger">Can I drive while on treatment? <span class="chev">+</span></summary>
+        <div class="accordion-content">Driving under the influence of THC is illegal in Portugal regardless of prescription status. Patients on THC-containing medication should not drive within four hours of a dose, and should discuss long-term driving implications with their prescriber. CBD-only formulations do not affect driving ability.</div>
+      </details>
+      <details class="accordion-item">
+        <summary class="accordion-trigger">Is my information confidential? <span class="chev">+</span></summary>
+        <div class="accordion-content">Yes. We are bound by the same medical confidentiality and GDPR obligations as any Portuguese clinic. Records are held on encrypted EU-resident systems. We never share patient data with employers, insurers, or third parties without your explicit written consent.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============= Newsletter (dark) ============= -->
+<section id="journal" data-screen-label="Journal subscribe">
+  <div class="container">
+    <div class="newsletter-inner">
+      <span class="eyebrow">The Apothicare Journal</span>
+      <h2>A monthly note from the practice</h2>
+      <p>New evidence, regulatory changes, patient-relevant research. No marketing. Unsubscribe in one click.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault();">
+        <input type="email" placeholder="your@email.pt" aria-label="Email address" />
+        <button class="btn-primary" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FooterBrand ============= -->
+<footer data-screen-label="Footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">❦ Apothicare</div>
+        <div class="tagline">Doctor-led medical cannabis · INFARMED licensed · EU-GMP</div>
+        <div class="contact">
+          Rua Garrett 27, 1200-203 Lisboa, Portugal<br/>
+          <a href="mailto:practice@apothicare.pt">practice@apothicare.pt</a><br/>
+          <a href="tel:+351213240100">+351 213 240 100</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Practice</h4>
+        <ul>
+          <li><a href="/about">About the clinic</a></li>
+          <li><a href="/about">Our clinicians</a></li>
+          <li><a href="/consultation">Eligibility check</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Patient resources</h4>
+        <ul>
+          <li><a href="/conditions">Conditions treated</a></li>
+          <li><a href="/products">Apothecary</a></li>
+          <li><a href="/how-it-works">How a consultation works</a></li>
+          <li><a href="/faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Journal & legal</h4>
+        <ul>
+          <li><a href="/the-wire">The Wire</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/regulatory">Regulatory</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="disclaimer">Apothicare is a private medical practice authorised by INFARMED to prescribe and dispense medical cannabis to eligible patients. For prescription use only. Patients only. Not for sale to under-18s. The information on this site is intended to support — not replace — the relationship between a patient and their physician.</div>
+      <div class="social">
+        <a href="https://instagram.com/apothicare" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg></a>
+        <a href="https://linkedin.com/company/apothicare" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v0M11 17v-4a2 2 0 0 1 4 0v4M11 10v7"/></svg></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Tabs
+  document.querySelectorAll('.tab-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-trigger').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-panel').forEach(p => { p.hidden = p.dataset.panel !== target; });
+    });
+  });
+</script>
+</body>
+</html>

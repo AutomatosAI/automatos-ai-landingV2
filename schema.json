@@ -1,0 +1,104 @@
+{
+  "$schema": "https://automatos.app/schemas/social-templates/v1.json",
+  "version": "1.0.0",
+  "name": "Automatos Social Templates",
+  "description": "Repeatable post templates for Automatos playbooks. Render via render/index.html?template=<name>&size=<size>&<field>=<value>.",
+  "renderEndpoint": "render/index.html",
+  "sizes": {
+    "ig_post":  { "w": 1080, "h": 1350, "label": "Instagram 4:5" },
+    "ig_story": { "w": 1080, "h": 1920, "label": "Instagram Story / Reel 9:16" },
+    "linkedin": { "w": 1200, "h": 628,  "label": "LinkedIn / Facebook 1.91:1" },
+    "twitter":  { "w": 1600, "h": 900,  "label": "Twitter/X / YouTube 16:9" }
+  },
+  "shared": {
+    "page":     { "type": "string", "default": "01", "desc": "Page index, two digits e.g. \"02\"" },
+    "total":    { "type": "string", "default": "10", "desc": "Total pages, e.g. \"10\"" },
+    "handle":   { "type": "string", "default": "@automatos.app", "desc": "Brand handle shown top-right + footer" },
+    "showChip": { "type": "boolean", "default": false, "desc": "Show \"N/M\" page chip next to handle" },
+    "eyebrow":  { "type": "string", "desc": "Caps mono label in black pill at top" },
+    "cta":      { "type": "string", "desc": "Footer call-to-action text" },
+    "fontSize": { "type": "number", "desc": "Override headline font-size in px (defaults vary per size)" },
+    "size":     { "type": "enum", "values": ["ig_post","ig_story","linkedin","twitter"], "default": "ig_post" },
+    "preview":  { "type": "boolean", "default": false, "desc": "Show field-outline overlays (debug only)" }
+  },
+  "templates": {
+    "title": {
+      "label": "Title / Hook",
+      "use": "Carousel covers, big single-statement posts",
+      "fields": {
+        "headline": {
+          "type": "string",
+          "format": "lines",
+          "desc": "Pipe-separated lines. Suffix with @brick to color in orange.",
+          "example": "AGENT|HARNESS.@brick|THE OS|FOR AI."
+        },
+        "subline": {
+          "type": "string",
+          "desc": "Optional 1–2 sentence supporting copy"
+        }
+      }
+    },
+
+    "definition": {
+      "label": "Definition / Explainer",
+      "use": "What is X? carousel slide w/ 3 body cards",
+      "fields": {
+        "headline": {
+          "type": "string",
+          "format": "lines",
+          "example": "WHAT IS|AN AGENT?@brick"
+        },
+        "card_1": { "type": "string", "format": "card", "desc": "Heading|Body — first card", "example": "Not just a chatbot|A chatbot replies. An agent acts." },
+        "card_2": { "type": "string", "format": "card", "desc": "Heading|Body — second card" },
+        "card_3": { "type": "string", "format": "card", "desc": "Heading|Body — third card" }
+      }
+    },
+
+    "stats": {
+      "label": "Stats / Data",
+      "use": "By-the-numbers posts, proof-points, social proof",
+      "fields": {
+        "headline": { "type": "string", "format": "lines", "example": "THE|HARNESS@brick|IS THE|PRODUCT." },
+        "stat_1":   { "type": "string", "format": "stat", "desc": "Value|Body — first big number", "example": "5×|Manus rewrote their harness in 6 months." },
+        "stat_2":   { "type": "string", "format": "stat", "desc": "Value|Body — second big number" },
+        "stat_3":   { "type": "string", "format": "stat", "desc": "Value|Body — third big number" },
+        "card_1":   { "type": "string", "format": "card", "desc": "Light context card" },
+        "card_2":   { "type": "string", "format": "card", "desc": "Dark context card (auto-styled)" }
+      }
+    },
+
+    "quote": {
+      "label": "Quote / Inspiration",
+      "use": "Pull-quotes, single-slide inspirational",
+      "fields": {
+        "quote":       { "type": "string", "desc": "The quote text — no surrounding quotes (template adds them)", "example": "If you're not the model, you're the harness." },
+        "accent":      { "type": "string", "desc": "Substring of quote to color brick orange", "example": "harness" },
+        "attribution": { "type": "string", "desc": "Source / author", "example": "LangChain, 2026" }
+      }
+    },
+
+    "announcement": {
+      "label": "Announcement / Launch",
+      "use": "Product launches, news, releases",
+      "fields": {
+        "status":    { "type": "string", "desc": "Live status pill, e.g. \"SHIPPED · v2.4\"" },
+        "headline":  { "type": "string", "format": "lines", "example": "NEW:@brick|PARALLEL|MISSIONS." },
+        "subline":   { "type": "string" },
+        "feature_1": { "type": "string", "format": "card", "desc": "Heading|Body — first feature" },
+        "feature_2": { "type": "string", "format": "card" },
+        "feature_3": { "type": "string", "format": "card" }
+      }
+    }
+  },
+  "formats": {
+    "lines": "Pipe-separated headline lines. Append @brick to a line to render in brand orange (#FF6932). Example: 'WHAT IS|AN AGENT?@brick'",
+    "card":  "Pipe-separated 'Heading|Body' string. Heading rendered bold, body muted. Example: 'Not just a chatbot|A chatbot replies. An agent acts.'",
+    "stat":  "Pipe-separated 'Value|Body' string. Value is huge orange number, body is small mono caption. Example: '5×|Manus rewrote their harness.'"
+  },
+  "renderProtocol": {
+    "ready": "When the page is fully rendered (fonts loaded, layout settled), `document.body[data-render-ready]` becomes `\"true\"` AND `window.__renderReady === true`. Headless renderers should wait on either.",
+    "viewport": "Set the headless browser viewport to the size's exact pixel dimensions BEFORE navigating. The page sizes itself to match the `?size=` param.",
+    "format": "Capture as PNG. JPEG is acceptable but loses the cream-paper subtle gradient.",
+    "timeout": "5s is plenty. Templates have no animation; they're static at first paint after fonts load."
+  }
+}

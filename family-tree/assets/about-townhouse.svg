@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4c8a8"></stop>
+      <stop offset="100%" stop-color="#f4ecdc"></stop>
+    </linearGradient>
+    <linearGradient id="facade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8d4a8"></stop>
+      <stop offset="100%" stop-color="#c9b48a"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"></rect>
+  
+  <rect x="0" y="540" width="800" height="60" fill="#7a6a4f" opacity="0.4"></rect>
+  <rect x="0" y="540" width="800" height="3" fill="#8a6a32" opacity="0.5"></rect>
+
+  
+  <rect x="180" y="100" width="440" height="440" fill="url(#facade)"></rect>
+  
+  <rect x="170" y="95" width="460" height="10" fill="#1a3829"></rect>
+  <rect x="170" y="100" width="10" height="445" fill="#1a3829" opacity="0.7"></rect>
+  <rect x="620" y="100" width="10" height="445" fill="#1a3829" opacity="0.7"></rect>
+
+  
+  <line x1="180" y1="220" x2="620" y2="220" stroke="#1a3829" stroke-width="2" opacity="0.6"></line>
+  <line x1="180" y1="380" x2="620" y2="380" stroke="#1a3829" stroke-width="2" opacity="0.6"></line>
+
+  
+  <g>
+    <rect x="220" y="130" width="80" height="80" fill="#1a3829"></rect>
+    <rect x="225" y="135" width="70" height="70" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="260" y1="130" x2="260" y2="210" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="220" y1="170" x2="300" y2="170" stroke="#8a6a32" stroke-width="1.5"></line>
+
+    <rect x="360" y="130" width="80" height="80" fill="#1a3829"></rect>
+    <rect x="365" y="135" width="70" height="70" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="400" y1="130" x2="400" y2="210" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="360" y1="170" x2="440" y2="170" stroke="#8a6a32" stroke-width="1.5"></line>
+
+    <rect x="500" y="130" width="80" height="80" fill="#1a3829"></rect>
+    <rect x="505" y="135" width="70" height="70" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="540" y1="130" x2="540" y2="210" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="500" y1="170" x2="580" y2="170" stroke="#8a6a32" stroke-width="1.5"></line>
+  </g>
+
+  
+  <g>
+    <rect x="220" y="240" width="80" height="120" fill="#1a3829"></rect>
+    <rect x="225" y="245" width="70" height="110" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="260" y1="240" x2="260" y2="360" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="220" y1="300" x2="300" y2="300" stroke="#8a6a32" stroke-width="1.5"></line>
+    
+    <line x1="215" y1="362" x2="305" y2="362" stroke="#1a3829" stroke-width="2"></line>
+    <g stroke="#1a3829" stroke-width="1">
+      <line x1="225" y1="362" x2="225" y2="375"></line><line x1="245" y1="362" x2="245" y2="375"></line>
+      <line x1="265" y1="362" x2="265" y2="375"></line><line x1="285" y1="362" x2="285" y2="375"></line>
+    </g>
+
+    <rect x="360" y="240" width="80" height="120" fill="#1a3829"></rect>
+    <rect x="365" y="245" width="70" height="110" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="400" y1="240" x2="400" y2="360" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="360" y1="300" x2="440" y2="300" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="355" y1="362" x2="445" y2="362" stroke="#1a3829" stroke-width="2"></line>
+    <g stroke="#1a3829" stroke-width="1">
+      <line x1="365" y1="362" x2="365" y2="375"></line><line x1="385" y1="362" x2="385" y2="375"></line>
+      <line x1="405" y1="362" x2="405" y2="375"></line><line x1="425" y1="362" x2="425" y2="375"></line>
+    </g>
+
+    <rect x="500" y="240" width="80" height="120" fill="#1a3829"></rect>
+    <rect x="505" y="245" width="70" height="110" fill="#d4a85a" opacity="0.3"></rect>
+    <line x1="540" y1="240" x2="540" y2="360" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="500" y1="300" x2="580" y2="300" stroke="#8a6a32" stroke-width="1.5"></line>
+    <line x1="495" y1="362" x2="585" y2="362" stroke="#1a3829" stroke-width="2"></line>
+    <g stroke="#1a3829" stroke-width="1">
+      <line x1="505" y1="362" x2="505" y2="375"></line><line x1="525" y1="362" x2="525" y2="375"></line>
+      <line x1="545" y1="362" x2="545" y2="375"></line><line x1="565" y1="362" x2="565" y2="375"></line>
+    </g>
+  </g>
+
+  
+  <g>
+    
+    <rect x="220" y="410" width="60" height="100" fill="#1a3829"></rect>
+    <rect x="225" y="415" width="50" height="90" fill="#d4a85a" opacity="0.3"></rect>
+    <rect x="520" y="410" width="60" height="100" fill="#1a3829"></rect>
+    <rect x="525" y="415" width="50" height="90" fill="#d4a85a" opacity="0.3"></rect>
+
+    
+    <rect x="350" y="395" width="100" height="145" fill="#11271c"></rect>
+    <rect x="355" y="400" width="90" height="100" fill="#1a3829"></rect>
+    <circle cx="435" cy="465" r="2.5" fill="#d4a85a"></circle>
+    
+    <path d="M 345 395 Q 400 365 455 395" fill="#11271c"></path>
+    
+    <path d="M 350 395 Q 400 372 450 395 Z" fill="#d4a85a" opacity="0.4"></path>
+    <line x1="400" y1="375" x2="400" y2="395" stroke="#11271c" stroke-width="0.5"></line>
+    <line x1="375" y1="382" x2="375" y2="395" stroke="#11271c" stroke-width="0.5"></line>
+    <line x1="425" y1="382" x2="425" y2="395" stroke="#11271c" stroke-width="0.5"></line>
+
+    
+    <rect x="295" y="445" width="50" height="35" fill="#b08840" stroke="#8a6a32" stroke-width="0.5"></rect>
+    <text x="320" y="458" text-anchor="middle" font-family="Marcellus, serif" font-size="6" fill="#11271c">FAMILY</text>
+    <text x="320" y="466" text-anchor="middle" font-family="Marcellus, serif" font-size="6" fill="#11271c">TREE</text>
+    <text x="320" y="475" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="3.5" letter-spacing="0.5" fill="#11271c">A MEMBERS&#39; PRACTICE</text>
+  </g>
+
+  
+  <text x="400" y="362" text-anchor="middle" font-family="Marcellus, serif" font-size="14" fill="#d4a85a">№ 9</text>
+
+  
+  <g transform="translate(120,520)">
+    <rect x="-2" y="0" width="4" height="20" fill="#11271c"></rect>
+    <circle cx="0" cy="-15" r="22" fill="#1a3829"></circle>
+    <circle cx="-8" cy="-20" r="14" fill="#11271c" opacity="0.6"></circle>
+    <circle cx="9" cy="-15" r="13" fill="#11271c" opacity="0.5"></circle>
+  </g>
+  <g transform="translate(680,520)">
+    <rect x="-2" y="0" width="4" height="20" fill="#11271c"></rect>
+    <circle cx="0" cy="-15" r="22" fill="#1a3829"></circle>
+    <circle cx="-8" cy="-20" r="14" fill="#11271c" opacity="0.6"></circle>
+    <circle cx="9" cy="-15" r="13" fill="#11271c" opacity="0.5"></circle>
+  </g>
+
+  
+  <path d="M 160 100 L 400 60 L 640 100 Z" fill="#7a3429" opacity="0.7"></path>
+  <path d="M 160 100 L 640 100" stroke="#11271c" stroke-width="2"></path>
+</svg>

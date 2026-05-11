@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automatos Social — Render</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #f1e9dd; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+  <script src="_render-shared.js"></script>
+  <script type="text/babel" src="../templates/_brand.jsx"></script>
+  <script type="text/babel" src="../templates/TplTitle.jsx"></script>
+  <script type="text/babel" src="../templates/TplDefinition.jsx"></script>
+  <script type="text/babel" src="../templates/TplStats.jsx"></script>
+  <script type="text/babel" src="../templates/TplQuote.jsx"></script>
+  <script type="text/babel" src="../templates/TplAnnouncement.jsx"></script>
+
+  <script type="text/babel">
+    // ── PRODUCTION RENDER ENTRYPOINT ─────────────────────────────────
+    //
+    //  URL param contract:
+    //    ?template = title | definition | stats | quote | announcement
+    //    ?size     = ig_post | ig_story | linkedin | twitter
+    //    ?<field>  = value (per template schema; see schema.json)
+    //
+    //  When document.body[data-render-ready] === "true", screenshot the
+    //  page at the configured size. Renderer must set viewport to the
+    //  template's exact pixel dimensions BEFORE navigating.
+    //
+    //  Field markers (dashed orange outlines) auto-hide in render mode —
+    //  they only show in preview mode (?preview=1).
+    // ────────────────────────────────────────────────────────────────
+
+    const params = window.parseParams();
+    const template = (params.template || 'title').toLowerCase();
+    const size = params.size || 'ig_post';
+    const isPreview = params.preview === '1' || params.preview === 'true';
+    const dims = window.setCanvasSize(size);
+
+    // Hide field outlines in render mode
+    if (!isPreview) {
+      const style = document.createElement('style');
+      style.textContent = '[data-autofill]{outline:none!important;}';
+      document.head.appendChild(style);
+    }
+
+    // ── Build props from URL params ─────────────────────────────────
+    // All templates share these base props:
+    const base = {
+      size: dims,
+      page: params.page || '01',
+      total: params.total || '10',
+      handle: params.handle || '@automatos.app',
+      showChip: params.showChip === 'true',
+      eyebrow: params.eyebrow,
+      cta: params.cta,
+      scale: 1,
+    };
+
+    // Convert "card_1=Heading|Body" → {icon, heading, body}
+    const parseCard = (raw, defaultIcon = '◇') => {
+      if (!raw) return null;
+      if (typeof raw === 'object') return { icon: raw.icon || defaultIcon, heading: raw.heading || '', body: raw.body || '' };
+      const [heading, body] = String(raw).split('|');
+      return { icon: defaultIcon, heading: heading || '', body: body || '' };
+    };
+
+    // Per-template prop builders
+    const builders = {
+      title: () => ({
+        ...base,
+        eyebrow: params.eyebrow || 'AI ARCHITECTURE',
+        headline: window.parseHeadline(params.headline || 'AGENT|HARNESS.@brick|THE OS|FOR AI.'),
+        subline: params.subline,
+        cta: params.cta || 'Swipe to Start',
+        fontSize: Number(params.fontSize) || (size === 'linkedin' ? 92 : size === 'twitter' ? 120 : size === 'ig_story' ? 172 : 152),
+      }),
+
+      definition: () => {
+        const cards = [params.card_1, params.card_2, params.card_3]
+          .map((c, i) => parseCard(c, ['?', '↻', '✦'][i]))
+          .filter(Boolean);
+        return {
+          ...base,
+          eyebrow: params.eyebrow || 'FIRST — THE CONCEPT',
+          headline: window.parseHeadline(params.headline || 'WHAT IS|AN AGENT?'),
+          cards: cards.length ? cards : undefined,
+          cta: params.cta || 'Swipe to Know More',
+          fontSize: Number(params.fontSize) || (size === 'linkedin' ? 84 : size === 'twitter' ? 108 : size === 'ig_story' ? 158 : 132),
+        };
+      },
+
+      stats: () => {
+        const stats = [params.stat_1, params.stat_2, params.stat_3]
+          .filter(Boolean)
+          .map(raw => {
+            if (typeof raw === 'object') return raw;
+            const [value, body] = String(raw).split('|');
+            return { value: value || '', body: body || '' };
+          });
+        const cards = [params.card_1, params.card_2]
+          .map((c, i) => {
+            if (!c) return null;
+            const card = parseCard(c, ['◯', '+'][i]);
+            return { ...card, dark: i === 1 };
+          })
+          .filter(Boolean);
+        return {
+          ...base,
+          eyebrow: params.eyebrow || 'WHY IT MATTERS',
+          headline: window.parseHeadline(params.headline || 'THE|HARNESS@brick|IS THE|PRODUCT.'),
+          stats: stats.length ? stats : undefined,
+          cards: cards.length ? cards : undefined,
+          cta: params.cta || 'Swipe to Know More',
+          fontSize: Number(params.fontSize) || (size === 'linkedin' ? 72 : size === 'twitter' ? 96 : size === 'ig_story' ? 140 : 116),
+        };
+      },
+
+      quote: () => ({
+        ...base,
+        eyebrow: params.eyebrow || 'FIELD NOTES',
+        quote: params.quote || 'The model is now a commodity. The harness is the moat.',
+        accent: params.accent || 'harness is the moat',
+        attribution: params.attribution || 'LangChain · canonical definition, 2026',
+        cta: params.cta || 'Save this post →',
+        fontSize: Number(params.fontSize) || (size === 'linkedin' ? 64 : size === 'twitter' ? 84 : size === 'ig_story' ? 120 : 96),
+      }),
+
+      announcement: () => {
+        const features = [params.feature_1, params.feature_2, params.feature_3]
+          .map((c, i) => parseCard(c, ['◇', '⌘', '→'][i]))
+          .filter(Boolean);
+        return {
+          ...base,
+          eyebrow: params.eyebrow || 'PRODUCT LAUNCH',
+          status: params.status || 'SHIPPED · v2.4',
+          headline: window.parseHeadline(params.headline || 'NEW:@brick|PARALLEL|MISSIONS.'),
+          subline: params.subline || 'Run up to 9 agents in parallel on a single Mission.',
+          features: features.length ? features : undefined,
+          cta: params.cta || 'Read the changelog →',
+          fontSize: Number(params.fontSize) || (size === 'linkedin' ? 76 : size === 'twitter' ? 108 : size === 'ig_story' ? 150 : 124),
+        };
+      },
+    };
+
+    const Components = {
+      title: window.TplTitle,
+      definition: window.TplDefinition,
+      stats: window.TplStats,
+      quote: window.TplQuote,
+      announcement: window.TplAnnouncement,
+    };
+
+    const Cmp = Components[template];
+    const props = builders[template] ? builders[template]() : {};
+
+    if (!Cmp) {
+      document.body.innerHTML = `<pre style="padding:24px;font-family:monospace;color:#FF6932;">Unknown template "${template}". Valid: ${Object.keys(Components).join(', ')}</pre>`;
+    } else {
+      ReactDOM.createRoot(document.getElementById('root')).render(<Cmp {...props} />);
+      window.signalRenderReady();
+    }
+  </script>
+</body>
+</html>

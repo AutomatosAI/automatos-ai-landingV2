@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automatos · Contact</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EDE4;--bg-2:#ECE6D9;--bg-3:#E2DBC9;--fg:#0F1411;--fg-2:#3A3F3A;--muted:#8A8B83;--rule-c:#D9D2C0;--rule-strong:#B6AE99;--accent:#5B7C68;--accent-ink:#F2EDE4;--serif:"Instrument Serif",Georgia,serif;--sans:"Geist",sans-serif;--mono:"Geist Mono",monospace;--gutter:60px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:16px var(--gutter);border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
+.brand em{font-style:italic;color:var(--muted)}
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav{display:flex;gap:28px;justify-content:center}
+.topbar nav a:hover,.topbar nav a.is-current{color:var(--fg)}
+.topbar > :last-child{text-align:right;display:flex;gap:16px;justify-content:flex-end;align-items:center}
+.topbar .cta{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px}
+.hero{padding:88px var(--gutter) 56px;border-bottom:1px solid var(--rule-c);display:grid;grid-template-columns:1.3fr 1fr;gap:80px;align-items:end}
+.hero-eye{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+.hero-h{font-family:var(--serif);font-size:88px;line-height:.98;letter-spacing:-.025em;text-wrap:balance}
+.hero-h em{font-style:italic;color:var(--muted)}
+.hero-meta{display:grid;gap:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.hero-meta b{color:var(--fg);font-weight:500}
+.section-meta{display:grid;grid-template-columns:240px 1fr 1fr;border-bottom:1px solid var(--rule-c)}
+.section-meta > div{padding:18px 28px;border-right:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px}
+.section-meta > div:last-child{border-right:0;justify-content:flex-end}
+.section-meta b{color:var(--fg);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg)}
+.pill.accent{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.layout{display:grid;grid-template-columns:1.2fr 1fr;border-bottom:1px solid var(--rule-c)}
+.form{padding:56px var(--gutter);border-right:1px solid var(--rule-c)}
+.f-row{display:grid;gap:8px;padding:18px 0;border-bottom:1px solid var(--rule-c)}
+.f-row:last-of-type{border-bottom:0}
+.f-row .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.f-row input,.f-row textarea,.f-row select{appearance:none;background:transparent;border:0;font-family:var(--serif);font-size:24px;color:var(--fg);letter-spacing:-.01em;padding:4px 0;outline:none;border-bottom:1px solid transparent;width:100%}
+.f-row input::placeholder,.f-row textarea::placeholder{color:var(--muted);font-style:italic}
+.f-row input:focus,.f-row textarea:focus{border-bottom-color:var(--rule-strong)}
+.f-row .help{font-family:var(--sans);font-size:12px;color:var(--muted)}
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;padding-top:6px}
+.radio-row label{padding:8px 12px;border:1px solid var(--rule-strong);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg);cursor:pointer}
+.radio-row input{display:none}
+.radio-row input:checked + span{background:var(--fg);color:var(--bg)}
+.radio-row label span{display:inline-block;margin:-8px -12px;padding:8px 12px}
+.btn{display:inline-flex;align-items:center;gap:14px;padding:14px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--rule-strong);color:var(--fg);background:transparent;cursor:pointer}
+.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn .arrow{font-family:var(--serif);font-size:14px}
+.aside{padding:56px var(--gutter);background:var(--bg-2);display:grid;gap:36px;align-content:start}
+.aside .blk{display:grid;gap:10px}
+.aside .blk .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.aside .blk h3{font-family:var(--serif);font-size:28px;letter-spacing:-.01em;line-height:1.1}
+.aside .blk h3 em{font-style:italic;color:var(--muted)}
+.aside .blk p{font-size:14px;line-height:1.55;color:var(--fg-2);max-width:36ch}
+.aside .blk a.lnk{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;justify-self:start}
+.foot{padding:36px var(--gutter);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style></head><body data-mood="bone" data-screen-label="Contact">
+
+<header class="topbar">
+  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html">Field notes</a>
+  </nav>
+  <div><a href="https://ui.automatos.app/sign-in">Sign in</a><a data-waitlist href="#" class="cta">Sign up free →</a></div>
+</header>
+
+<section class="hero">
+  <div>
+    <div class="hero-eye">Contact · we read every one</div>
+    <h1 class="hero-h">Send us<br />a <em>note.</em></h1>
+  </div>
+  <div class="hero-meta">
+    <div><b>Reply</b> — within one business day, usually less.</div>
+    <div><b>EU office</b> — Lisbon · Mon–Fri 09:00–18:00 WET.</div>
+    <div><b>Press</b> — <a href="mailto:press@automatos.ai">press@automatos.ai</a></div>
+    <div><b>Security</b> — <a href="mailto:security@automatos.ai">security@automatos.ai</a> · PGP available.</div>
+  </div>
+</section>
+
+<div class="section-meta">
+  <div><span class="pill">Plate&nbsp;/&nbsp;F</span> Form</div>
+  <div>Tell us what you're building. A sentence or two is fine.</div>
+  <div>↗&nbsp;&nbsp;<a href="mailto:hello@automatos.ai">hello@automatos.ai</a></div>
+</div>
+
+<div class="layout">
+  <form class="form" id="contactForm">
+    <div class="f-row"><label class="lbl">What's this about</label>
+      <div class="radio-row">
+        <label><input type="radio" name="topic" value="Product" checked /><span>Product</span></label>
+        <label><input type="radio" name="topic" value="Sales · Enterprise" /><span>Sales · Enterprise</span></label>
+        <label><input type="radio" name="topic" value="Partnerships" /><span>Partnerships</span></label>
+        <label><input type="radio" name="topic" value="Press" /><span>Press</span></label>
+        <label><input type="radio" name="topic" value="Other" /><span>Other</span></label>
+      </div>
+    </div>
+    <div class="f-row"><label class="lbl">Name</label><input type="text" name="firstName" required autocomplete="name" placeholder="Maren K." /></div>
+    <div class="f-row"><label class="lbl">Work email</label><input type="email" name="email" required autocomplete="email" placeholder="maren@operator.eu" /></div>
+    <div class="f-row"><label class="lbl">Company &amp; role</label><input type="text" name="company" autocomplete="organization" placeholder="Halberd Legal — Ops Lead" /></div>
+    <div class="f-row"><label class="lbl">What are you building?</label><textarea name="message" required rows="4" placeholder="A small workforce for ops triage. Three agents, one knowledge base, Slack + Linear…"></textarea><span class="help" id="contactHelp">A sentence or two. Plain words. We read every one.</span></div>
+    <div class="f-row"><button class="btn solid" type="submit" id="contactSubmit" style="justify-self:start;">Send <span class="arrow">→</span></button></div>
+  </form>
+  <script>
+  (function () {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    const help = document.getElementById('contactHelp');
+    const btn  = document.getElementById('contactSubmit');
+
+    function setBtn(text) {
+      while (btn.firstChild) btn.removeChild(btn.firstChild);
+      btn.appendChild(document.createTextNode(text + ' '));
+      const arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      arrow.textContent = '→';
+      btn.appendChild(arrow);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      try {
+        const r = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (!r.ok) {
+          let msg = 'Send failed';
+          try { msg = (await r.json()).error || msg; } catch (_) {}
+          throw new Error(msg);
+        }
+        form.reset();
+        if (help) {
+          help.textContent = 'Marked. We reply within two working days.';
+          help.style.color = 'var(--accent)';
+        }
+        btn.textContent = 'Sent ✓';
+      } catch (err) {
+        if (help) {
+          help.textContent = (err && err.message) || 'Could not send. Try again or email hello@automatos.ai';
+          help.style.color = '#b53b2b';
+        }
+        btn.disabled = false;
+        setBtn('Send');
+      }
+    });
+  })();
+  </script>
+
+  <aside class="aside">
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Self-hosters &amp; <em>tinkerers</em></h3><p>The repo is the fastest path. Issues, discussions, and a community Discord live there.</p><a class="lnk" href="https://github.com/AutomatosAI">github.com/AutomatosAI →</a></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Enterprise &amp; <em>regulated</em> teams</h3><p>SOC 2, EU residency, SSO, named SE. Book a 30-minute call and we'll start with your constraints.</p><a class="lnk" href="#">Talk to sales →</a></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Researchers &amp; <em>writers</em></h3><p>Press kit, brand assets, founder bios — all in one folder. Press contact replies same day.</p><a class="lnk" href="#">Press kit →</a></div>
+    <div class="blk"><span class="lbl">Office</span><h3>Lisbon · <em>Cais do Sodré</em></h3><p>Rua de São Paulo · 1200-470 Lisboa · Portugal</p></div>
+  </aside>
+</div>
+
+<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Contact · v1.36.04</span></footer>
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body></html>

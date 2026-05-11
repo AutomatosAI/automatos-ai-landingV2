@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Automatos · Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+  --gutter: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* TOPBAR */
+.topbar {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 16px var(--gutter);
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.brand { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; text-transform: none; color: var(--fg); display: inline-flex; align-items: center; }
+.brand em { font-style: italic; color: var(--muted); }
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav { display: flex; gap: 28px; justify-content: center; }
+.topbar nav a:hover { color: var(--fg); }
+.topbar nav a.is-current { color: var(--fg); }
+.topbar > :last-child { text-align: right; display: flex; gap: 16px; justify-content: flex-end; align-items: center; }
+.topbar .cta { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* HERO */
+.hero {
+  padding: 88px var(--gutter) 64px;
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: end;
+}
+.hero-eye { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+.hero-h { font-family: var(--serif); font-size: 88px; line-height: 0.98; letter-spacing: -0.025em; text-wrap: balance; }
+.hero-h em { font-style: italic; color: var(--muted); }
+.hero-meta { display: grid; gap: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.hero-meta b { color: var(--fg); font-weight: 500; }
+
+/* SECTION META */
+.section { border-bottom: 1px solid var(--rule-c); }
+.section-meta {
+  display: grid; grid-template-columns: 240px 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+}
+.section-meta > div {
+  padding: 18px 28px;
+  border-right: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.section-meta > div:last-child { border-right: 0; justify-content: flex-end; }
+.section-meta b { color: var(--fg); font-weight: 500; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--fg);
+}
+.pill.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* PACKS */
+.packs {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+}
+.pack {
+  border-right: 1px solid var(--rule-c);
+  padding: 36px 32px 28px;
+  display: grid; grid-template-rows: auto auto 1fr auto auto; gap: 22px;
+  position: relative;
+  transition: background .2s;
+}
+.pack:last-child { border-right: 0; }
+.pack:hover { background: var(--bg-2); }
+.pack-head { display: flex; justify-content: space-between; align-items: baseline; }
+.pack-head .id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.pack-head .tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.pack-h { font-family: var(--serif); font-size: 36px; line-height: 1.05; letter-spacing: -0.015em; }
+.pack-h em { font-style: italic; color: var(--muted); }
+.pack-desc { font-size: 14px; line-height: 1.55; color: var(--fg-2); max-width: 36ch; }
+
+.pack-includes {
+  font-family: var(--mono); font-size: 11px; line-height: 1.7;
+  border-top: 1px dashed var(--rule-c);
+  padding-top: 16px;
+}
+.pack-includes .row { display: grid; grid-template-columns: 70px 1fr; gap: 10px; padding: 2px 0; }
+.pack-includes .row .k { color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-size: 10px; }
+.pack-includes .row .v { color: var(--fg); }
+
+.pack-foot { display: flex; justify-content: space-between; align-items: center; }
+.pack-price { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; }
+.pack-price em { font-style: italic; color: var(--muted); font-size: 12px; font-family: var(--mono); letter-spacing: 0.14em; text-transform: uppercase; margin-left: 6px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid var(--rule-strong); color: var(--fg);
+  background: transparent; cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+.btn:hover { background: var(--bg-3); }
+.btn.solid { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn.solid:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn .arrow { font-family: var(--serif); font-size: 14px; letter-spacing: 0; }
+
+/* TOOLBAR */
+.toolbar {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center;
+  border-bottom: 1px solid var(--rule-c);
+  padding: 0;
+}
+.search {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 28px;
+  border-right: 1px solid var(--rule-c);
+}
+.search .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.search input {
+  appearance: none; border: 0; background: transparent; outline: none;
+  font-family: var(--serif); font-size: 22px; color: var(--fg); flex: 1;
+  letter-spacing: -0.01em;
+}
+.search input::placeholder { color: var(--muted); font-style: italic; }
+.filter {
+  display: flex; gap: 0;
+  border-right: 1px solid var(--rule-c);
+}
+.filter a {
+  padding: 18px 18px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+  border-right: 1px solid var(--rule-c);
+}
+.filter a:last-child { border-right: 0; }
+.filter a.is-on { color: var(--fg); background: var(--bg-2); }
+.filter a:hover { color: var(--fg); }
+.sort {
+  padding: 18px 28px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.sort b { color: var(--fg); font-weight: 500; }
+
+/* AGENT GRID */
+.agent-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.agent {
+  border-right: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+  padding: 32px 28px 24px;
+  display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 16px;
+  min-height: 320px;
+  position: relative;
+  transition: background .15s;
+}
+.agent:hover { background: var(--bg-2); }
+.agent:nth-child(4n) { border-right: 0; }
+.agent-head { display: flex; justify-content: space-between; align-items: baseline; }
+.agent-id { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.agent-cat { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.agent-h { font-family: var(--serif); font-size: 26px; line-height: 1.1; letter-spacing: -0.01em; }
+.agent-h em { font-style: italic; color: var(--muted); }
+.agent-line { font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.agent-meta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px dashed var(--rule-c); padding-top: 12px;
+}
+.agent-meta b { color: var(--fg); font-weight: 500; }
+.agent-cta { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* CHANNELS */
+.channels {
+  display: grid; grid-template-columns: repeat(8, 1fr);
+}
+.channel {
+  border-right: 1px solid var(--rule-c);
+  padding: 28px 18px;
+  display: grid; place-items: center;
+  font-family: var(--serif); font-size: 18px; letter-spacing: -0.01em;
+  color: var(--fg);
+  height: 110px;
+  text-align: center;
+  position: relative;
+}
+.channel:last-child { border-right: 0; }
+.channel small { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-top: 8px; }
+.channel:hover { background: var(--bg-2); }
+
+/* CTA STRIP */
+.cta-strip {
+  padding: 80px var(--gutter);
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: end;
+}
+.cta-h { font-family: var(--serif); font-size: 64px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance; }
+.cta-h em { font-style: italic; color: var(--muted); }
+.cta-side { display: grid; gap: 18px; }
+.cta-side p { font-size: 16px; line-height: 1.55; color: var(--fg-2); max-width: 42ch; }
+.cta-actions { display: flex; gap: 12px; }
+.cta-stamp { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.cta-stamp .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+
+/* FOOTER */
+.foot {
+  padding: 36px var(--gutter);
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+</style>
+</head>
+<body data-mood="bone" data-screen-label="Marketplace">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div>
+    <a class="brand" href="index.html">
+      <span class="brand-mark"></span>Automatos<em>·ai</em>
+    </a>
+  </div>
+  <nav>
+    <a href="index.html">Platform</a>
+    <a href="#" class="is-current">Marketplace</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="field-notes.html">Field notes</a>
+  </nav>
+  <div>
+    <a href="https://ui.automatos.app/sign-in">Sign in</a>
+    <a data-waitlist href="#" class="cta">Sign up free →</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-eye">Marketplace · 100+ agents · 12 packs · Apache 2.0</div>
+    <h1 class="hero-h">
+      Hire one,<br />
+      or <em>install</em><br />
+      a whole <em>team</em>.
+    </h1>
+  </div>
+  <div class="hero-meta">
+    <div><b>Agents</b> — single-purpose hires.</div>
+    <div><b>Packs</b> — opinionated stacks, one click.</div>
+    <div><b>Skills</b> — portable across both.</div>
+    <div><b>Bring</b> your channels, your keys, your DB.</div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     PACKS — featured, top of marketplace
+     ───────────────────────────────────────────── -->
+<section class="section" data-comment-anchor="mk-packs">
+  <div class="section-meta">
+    <div><span class="pill accent">Packs</span> One-click stacks</div>
+    <div>An opinionated room — agents, skills, and channels — preconfigured.</div>
+    <div>↗&nbsp;&nbsp;3 of 12 shown</div>
+  </div>
+  <div class="packs">
+
+    <!-- Pack 01 — Shopify Ops -->
+    <article class="pack">
+      <div class="pack-head">
+        <span class="id">Pack&nbsp;/&nbsp;01</span>
+        <span class="tag">Most installed</span>
+      </div>
+      <h3 class="pack-h">Shopify <em>Ops</em></h3>
+      <p class="pack-desc">A four-agent room that watches inventory, triages orders, drafts refunds, and posts the daily standup to Slack — wired up the moment you connect your store.</p>
+      <div class="pack-includes">
+        <div class="row"><span class="k">Agents</span><span class="v">Inventory Sentinel · Order Triage · Refund Reviewer · Daily Scribe</span></div>
+        <div class="row"><span class="k">Skills</span><span class="v">restock-forecast · fraud-score · refund-policy · summarise-day</span></div>
+        <div class="row"><span class="k">Channels</span><span class="v">Shopify · Slack · Gmail · Stripe</span></div>
+        <div class="row"><span class="k">Knowledge</span><span class="v">your product catalog · returns policy</span></div>
+      </div>
+      <div class="pack-foot">
+        <div class="pack-price">Free<em>included · pro</em></div>
+        <a class="btn solid" href="#" data-disabled="true" aria-disabled="true">Coming soon</a>
+      </div>
+    </article>
+
+    <!-- Pack 02 — Growth Strategy -->
+    <article class="pack">
+      <div class="pack-head">
+        <span class="id">Pack&nbsp;/&nbsp;02</span>
+        <span class="tag">New</span>
+      </div>
+      <h3 class="pack-h">Growth <em>Strategy</em></h3>
+      <p class="pack-desc">A research-and-ideation room: scrapes your category weekly, drafts experiment briefs, scores them against your North-Star metric, and ships the top three to Linear.</p>
+      <div class="pack-includes">
+        <div class="row"><span class="k">Agents</span><span class="v">Market Scribe · Experiment Drafter · Metric Scorer · Ship Coordinator</span></div>
+        <div class="row"><span class="k">Skills</span><span class="v">competitor-scan · ICE-score · funnel-read · brief-format</span></div>
+        <div class="row"><span class="k">Channels</span><span class="v">Linear · Notion · Slack · GA4 · Mixpanel</span></div>
+        <div class="row"><span class="k">Knowledge</span><span class="v">your North-Star definition · prior experiments</span></div>
+      </div>
+      <div class="pack-foot">
+        <div class="pack-price">Free<em>included · pro</em></div>
+        <a class="btn solid" href="#" data-disabled="true" aria-disabled="true">Coming soon</a>
+      </div>
+    </article>
+
+    <!-- Pack 03 — Social Management -->
+    <article class="pack">
+      <div class="pack-head">
+        <span class="id">Pack&nbsp;/&nbsp;03</span>
+        <span class="tag">Editor's pick</span>
+      </div>
+      <h3 class="pack-h">Social <em>Management</em></h3>
+      <p class="pack-desc">A cross-channel social room: drafts in your voice, schedules across LinkedIn, X and Instagram, watches replies, and routes anything sensitive to a human.</p>
+      <div class="pack-includes">
+        <div class="row"><span class="k">Agents</span><span class="v">Voice Drafter · Scheduler · Reply Watcher · Escalation Router</span></div>
+        <div class="row"><span class="k">Skills</span><span class="v">tone-match · best-time · sentiment-score · brand-safety</span></div>
+        <div class="row"><span class="k">Channels</span><span class="v">LinkedIn · X · Instagram · Slack · Notion</span></div>
+        <div class="row"><span class="k">Knowledge</span><span class="v">brand voice doc · your last 90 days of posts</span></div>
+      </div>
+      <div class="pack-foot">
+        <div class="pack-price">Free<em>included · pro</em></div>
+        <a class="btn solid" href="#" data-disabled="true" aria-disabled="true">Coming soon</a>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- More packs strip -->
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule-c);">
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;04</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Inbox <em style="color:var(--muted); font-style:italic;">Triage</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;05</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Engineering <em style="color:var(--muted); font-style:italic;">Hygiene</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto; border-right:0;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;06</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Customer <em style="color:var(--muted); font-style:italic;">Sentinel</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule-c);">
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;07</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Research <em style="color:var(--muted); font-style:italic;">Desk</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;08</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Recruiter's <em style="color:var(--muted); font-style:italic;">Room</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+    <a href="https://ui.automatos.app/marketplace" target="_blank" rel="noopener" class="pack" style="min-height:auto; padding: 22px 32px; grid-template-rows: auto; border-right:0;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <div><span class="agent-id">Pack&nbsp;/&nbsp;09</span> &nbsp; <span style="font-family:var(--serif); font-size:20px; letter-spacing:-0.01em;">Compliance <em style="color:var(--muted); font-style:italic;">Watch</em></span></div>
+        <span class="agent-cta">View →</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     TOOLBAR — search, filter, sort
+     ───────────────────────────────────────────── -->
+<section class="section" data-comment-anchor="mk-toolbar">
+  <div class="section-meta">
+    <div><span class="pill">Index</span> All agents · 100+</div>
+    <div>Single-purpose hires — drop into any room, equip with skills.</div>
+    <div>↗&nbsp;&nbsp;Showing 12</div>
+  </div>
+  <div class="toolbar">
+    <div class="search">
+      <span class="k">Search</span>
+      <input type="text" placeholder="e.g. ‘refund triage’ or ‘code review’" />
+    </div>
+    <div class="filter">
+      <a class="is-on" href="#">All</a>
+      <a href="#">Code</a>
+      <a href="#">Ops</a>
+      <a href="#">Growth</a>
+      <a href="#">Research</a>
+      <a href="#">QA</a>
+    </div>
+    <div class="sort">Sort: <b>Most installed</b></div>
+  </div>
+
+  <!-- AGENT GRID -->
+  <div class="agent-grid">
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.001</span><span class="agent-cat">Code</span></div>
+      <h4 class="agent-h">Code <em>Reviewer</em></h4>
+      <p class="agent-line">Reviews PRs against your style guide and prior critiques. Comments inline.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>3.2k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.002</span><span class="agent-cat">QA</span></div>
+      <h4 class="agent-h">Test <em>Author</em></h4>
+      <p class="agent-line">Writes unit and integration tests for new functions; backfills coverage.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>2.8k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.003</span><span class="agent-cat">Ops</span></div>
+      <h4 class="agent-h">Inventory <em>Sentinel</em></h4>
+      <p class="agent-line">Watches stock levels across SKUs, predicts stockouts, drafts restock POs.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>2.4k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.004</span><span class="agent-cat">Ops</span></div>
+      <h4 class="agent-h">Order <em>Triage</em></h4>
+      <p class="agent-line">Scores incoming orders for fraud, holds, or fast-track. Routes to humans on edge cases.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>2.1k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.005</span><span class="agent-cat">Growth</span></div>
+      <h4 class="agent-h">Market <em>Scribe</em></h4>
+      <p class="agent-line">Weekly competitive scan of your category — moves, prices, launches — into a Notion brief.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.9k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.006</span><span class="agent-cat">Growth</span></div>
+      <h4 class="agent-h">Experiment <em>Drafter</em></h4>
+      <p class="agent-line">Turns a hypothesis into a one-page brief — variants, sample size, success metric.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.6k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.007</span><span class="agent-cat">Ops</span></div>
+      <h4 class="agent-h">Daily <em>Scribe</em></h4>
+      <p class="agent-line">Reads your Slack and tools, posts a single end-of-day digest of what shipped and what's stuck.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.5k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.008</span><span class="agent-cat">Research</span></div>
+      <h4 class="agent-h">Paper <em>Reader</em></h4>
+      <p class="agent-line">Watches arXiv categories you care about, summarises new work, links to related prior reads.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.3k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.009</span><span class="agent-cat">Growth</span></div>
+      <h4 class="agent-h">Voice <em>Drafter</em></h4>
+      <p class="agent-line">Drafts social posts in your tone of voice, checks brand safety, suggests cuts.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.2k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.010</span><span class="agent-cat">QA</span></div>
+      <h4 class="agent-h">Bug <em>Hunter</em></h4>
+      <p class="agent-line">Watches Sentry, clusters incoming errors, files Linear tickets with stack + repro.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>1.1k</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.011</span><span class="agent-cat">Ops</span></div>
+      <h4 class="agent-h">Refund <em>Reviewer</em></h4>
+      <p class="agent-line">Drafts refund decisions against your policy, queues a human for anything outside it.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>980</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+    <article class="agent">
+      <div class="agent-head"><span class="agent-id">A.012</span><span class="agent-cat">Code</span></div>
+      <h4 class="agent-h">Migration <em>Coordinator</em></h4>
+      <p class="agent-line">Plans multi-PR migrations, tracks progress, opens follow-ups when checks fail.</p>
+      <div></div>
+      <div class="agent-meta"><span><b>820</b> installs</span><a href="https://ui.automatos.app/marketplace" class="agent-cta" target="_blank" rel="noopener">View →</a></div>
+    </article>
+
+  </div>
+
+  <!-- Load more -->
+  <div style="padding: 28px var(--gutter); display: flex; justify-content: center; border-top: 1px solid var(--rule-c);">
+    <a class="btn" href="#">Load more agents <span class="arrow">↓</span></a>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     CHANNELS
+     ───────────────────────────────────────────── -->
+<section class="section" data-comment-anchor="mk-channels">
+  <div class="section-meta">
+    <div><span class="pill">Plate&nbsp;/&nbsp;CH</span> Channels</div>
+    <div>20+ channels — agents speak where your work already happens.</div>
+    <div>↗&nbsp;&nbsp;Composio-native</div>
+  </div>
+  <div class="channels">
+    <div class="channel">Slack<small>chat</small></div>
+    <div class="channel">Gmail<small>email</small></div>
+    <div class="channel">GitHub<small>repos</small></div>
+    <div class="channel">Linear<small>tracker</small></div>
+    <div class="channel">Notion<small>docs</small></div>
+    <div class="channel">Telegram<small>chat</small></div>
+    <div class="channel">Shopify<small>store</small></div>
+    <div class="channel">Stripe<small>billing</small></div>
+  </div>
+  <div class="channels" style="border-top: 1px solid var(--rule-c);">
+    <div class="channel">LinkedIn<small>social</small></div>
+    <div class="channel">X<small>social</small></div>
+    <div class="channel">Instagram<small>social</small></div>
+    <div class="channel">Discord<small>chat</small></div>
+    <div class="channel">Sentry<small>errors</small></div>
+    <div class="channel">GA4<small>analytics</small></div>
+    <div class="channel">Mixpanel<small>events</small></div>
+    <div class="channel">+12 more<small>see all</small></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────
+     CTA
+     ───────────────────────────────────────────── -->
+<section class="cta-strip">
+  <h2 class="cta-h">Pick a pack.<br />Plug in your <em>channels.</em><br />The room's <em>open</em>.</h2>
+  <div class="cta-side">
+    <p>Start free — bring your own model keys, run on our hosted region or self-host. Either way the agents are the same agents.</p>
+    <div class="cta-actions">
+      <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+      <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
+    </div>
+    <div class="cta-stamp"><span class="dot"></span>OpenRouter-native · EU residency · Apache 2.0</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+  <span>Marketplace · v1.36.04</span>
+</footer>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+</body>
+</html>

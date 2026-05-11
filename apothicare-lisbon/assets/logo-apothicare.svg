@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 64" width="240" height="64">
+  <defs>
+    
+  </defs>
+  
+  <g transform="translate(8,12)">
+    <path d="M 4 12 Q 4 36 20 40 Q 36 36 36 12 Z" fill="none" stroke="#b88a4a" stroke-width="2"></path>
+    <ellipse cx="20" cy="12" rx="16" ry="4" fill="none" stroke="#b88a4a" stroke-width="2"></ellipse>
+    <line x1="20" y1="12" x2="32" y2="-2" stroke="#b88a4a" stroke-width="2.5" stroke-linecap="round"></line>
+    <circle cx="32" cy="-2" r="3" fill="#b88a4a"></circle>
+  </g>
+  <text x="62" y="36" class="ink" font-size="26">Apothicare</text>
+  <text x="62" y="50" class="small">Lisbon · Est. 2022</text>
+</svg>
