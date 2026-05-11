@@ -116,18 +116,29 @@ app.get(/^\/blog\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
 });
 
 // ── Static files ──────────────────────────────────────────────────────
+// Cache strategy:
+//   .html / _config.js  → no-cache (must revalidate every request)
+//   _*.js  / _*.css     → 60s, must-revalidate (shared loaders that we ship to often)
+//   images, fonts, etc. → 30d (fingerprint by URL if needed later)
 app.use(express.static(__dirname, {
-  maxAge: "1y",
-  immutable: true,
+  maxAge: "30d",
+  immutable: false,
   index: "index.html",
   extensions: ["html"],
   setHeaders(res, filePath) {
+    const base = filePath.split("/").pop() || "";
     if (filePath.endsWith(".html")) {
       res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      return;
     }
-    if (filePath.endsWith("_config.js")) {
-      // Config is per-deploy; don't aggressively cache
+    if (base === "_config.js") {
       res.setHeader("Cache-Control", "no-cache");
+      return;
+    }
+    // Shared loaders + stylesheets — keep short so we can iterate
+    if (/^_.+\.(js|css)$/.test(base)) {
+      res.setHeader("Cache-Control", "public, max-age=60, must-revalidate");
+      return;
     }
   },
 }));
