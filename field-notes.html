@@ -127,8 +127,8 @@ body[data-mood="pitch"] [class*="vis-"] {
   filter: brightness(0.92) saturate(0.92);
 }
 </style>
-<link rel="stylesheet" href="plates.css?v=20260511q">
-<link rel="stylesheet" href="_responsive.css?v=20260511q">
+<link rel="stylesheet" href="plates.css?v=20260511r">
+<link rel="stylesheet" href="_responsive.css?v=20260511r">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Automatos">
@@ -165,7 +165,7 @@ body[data-mood="pitch"] [class*="vis-"] {
 <!-- HERO -->
 <section class="hero">
   <div>
-    <div class="hero-eye">Field notes · Volume 01 · 12 entries</div>
+    <div class="hero-eye">Field notes · Volume 01</div>
     <h1 class="hero-h">
       Notes from<br />
       the <em>field.</em><br />
@@ -181,74 +181,14 @@ body[data-mood="pitch"] [class*="vis-"] {
   </div>
 </section>
 
-<!-- FEATURED -->
-<section class="section" data-comment-anchor="fn-feat">
+<!-- FEATURED — filled from API by _fieldnotes.js -->
+<section class="section" data-comment-anchor="fn-feat" id="fn-feat-section" hidden>
   <div class="section-meta">
-    <div><span class="pill accent">FN.&nbsp;12</span> Featured · this week</div>
+    <div><span class="pill accent">Featured</span> This week</div>
     <div>The longest piece this volume — read it first.</div>
-    <div>↗&nbsp;&nbsp;Published 09 May 2026</div>
+    <div id="fn-feat-meta">↗</div>
   </div>
-  <div class="featured">
-    <div class="photo">
-      <div class="plate plate-cutaway">
-        <div class="ct-title">Five tiers <small>Fig. 12 · Router</small></div>
-        <div class="ct-sub"><span>System · Override → Cache → Rules → Semantic → LLM</span><span>Crew · 5 tiers</span></div>
-        <div class="ct-stage">
-          <svg viewBox="0 0 480 220" fill="none" stroke-width="1.2" preserveAspectRatio="xMidYMid meet">
-            <rect x="20" y="30" width="440" height="170" stroke-dasharray="3 3"></rect>
-            <g>
-              <circle cx="68" cy="115" r="32"></circle>
-              <text x="68" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T0</text>
-              <text x="68" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">OVERRIDE</text>
-            </g>
-            <g>
-              <circle cx="156" cy="115" r="32"></circle>
-              <text x="156" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T1</text>
-              <text x="156" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">CACHE</text>
-            </g>
-            <g>
-              <circle cx="240" cy="115" r="32"></circle>
-              <text x="240" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T2</text>
-              <text x="240" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">RULES</text>
-            </g>
-            <g>
-              <circle cx="324" cy="115" r="32" class="ink-accent" fill="none"></circle>
-              <text x="324" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T2.5</text>
-              <text x="324" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">SEMANTIC</text>
-            </g>
-            <g>
-              <circle cx="412" cy="115" r="32"></circle>
-              <text x="412" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T3</text>
-              <text x="412" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">LLM</text>
-            </g>
-            <path d="M 100 115 L 122 115"></path><path d="M 122 115 l -5 -3 M 122 115 l -5 3"></path>
-            <path d="M 188 115 L 210 115"></path><path d="M 210 115 l -5 -3 M 210 115 l -5 3"></path>
-            <path d="M 272 115 L 294 115"></path><path d="M 294 115 l -5 -3 M 294 115 l -5 3"></path>
-            <path d="M 356 115 L 378 115"></path><path d="M 378 115 l -5 -3 M 378 115 l -5 3"></path>
-            <text x="240" y="50" text-anchor="middle" font-family="Geist Mono" font-size="8.5" letter-spacing="2" class="ink-muted">CHEAPEST COMPETENT ANSWER WINS</text>
-            <text x="324" y="200" text-anchor="middle" class="ink-accent" font-family="Geist Mono" font-size="8" letter-spacing="2">+ COSINE ≥ 0.95</text>
-          </svg>
-        </div>
-        <div class="ct-stamp">Shipped<b>T 2.5</b></div>
-        <div class="ct-foot"><span>Plate · 012</span><span>Drawn to scale</span></div>
-      </div>
-    </div>
-    <div class="body">
-      <div class="meta">
-        <span><b>Field Note · 12</b></span>
-        <span>Architecture</span>
-        <span>14 min read</span>
-      </div>
-      <h2>Why the router is <em>five tiers</em>, and not four.</h2>
-      <p class="dek">The semantic tier was a late addition. We almost shipped without it. This is the story of the week we changed our minds — and what the cache hit rate looked like before and after.</p>
-      <div></div>
-      <div class="author">
-        <span><b>Yann L.</b></span>
-        <span>Co-founder · routing</span>
-      </div>
-      <a class="read" href="field-notes-five-tiers.html">Read the note →</a>
-    </div>
-  </div>
+  <div class="featured"></div>
 </section>
 
 <!-- FILTERS -->
@@ -262,135 +202,11 @@ body[data-mood="pitch"] [class*="vis-"] {
       <a href="#">Operator notes</a>
       <a href="#">Research</a>
     </div>
-    <div class="count">Showing <b>11</b> of 11</div>
+    <div class="count">&nbsp;</div>
   </div>
 
-  <!-- INDEX -->
-  <div class="index-grid">
-
-    <article class="note">
-      <a href="#" class="plate plate-cutaway">
-        <div class="ct-title">Mission engine <small>Fig. 11 · DAG</small></div>
-        <div class="ct-sub"><span>System · Goal → Graph → Tasks</span><span>Crew · 3 stages</span></div>
-        <div class="ct-stage">
-          <svg viewBox="0 0 480 240" fill="none" stroke-width="1.2" preserveAspectRatio="xMidYMid meet">
-            <rect x="20" y="30" width="440" height="180" stroke-dasharray="3 3"></rect>
-            <g><circle cx="100" cy="120" r="38"></circle><text x="100" y="124" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="16">Goal</text><text x="100" y="180" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">INTAKE</text></g>
-            <g><circle cx="240" cy="120" r="38"></circle><text x="240" y="124" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="16">DAG</text><text x="240" y="180" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">PLANNER</text></g>
-            <g><circle cx="380" cy="120" r="38"></circle><text x="380" y="124" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="16">Tasks</text><text x="380" y="180" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">EXEC</text></g>
-            <path d="M 138 120 L 198 120"></path><path d="M 198 120 l -5 -3 M 198 120 l -5 3"></path>
-            <path d="M 278 120 L 338 120"></path><path d="M 338 120 l -5 -3 M 338 120 l -5 3"></path>
-            <text x="240" y="50" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">COORDINATOR STAYS STATELESS</text>
-          </svg>
-        </div>
-        <div class="ct-stamp">Stateless<b>v 0.4</b></div>
-        <div class="ct-foot"><span>Plate · 011</span><span>One diagram</span></div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 02 May · Architecture</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 10 / Operator notes</span><span>28 · 04 · 26</span></div>
-        <div class="fn-quote">Two months running an <em>inventory sentinel</em> — what changed, what broke, what we wish we'd built first.</div>
-        <div class="fn-attr">— Pilot diary · Maren K. · Wk 17</div>
-      </a>
-      <div class="foot"><span><b>Maren K.</b> · 28 Apr · Operator notes</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-watchbill">
-        <div class="wb-title">Memory <small>Fig. 09 · Layers</small></div>
-        <div class="wb-sub"><span>Layers · five</span><span>Drawn · P. Raja</span></div>
-        <table>
-          <thead><tr><th>No.</th><th>Layer</th><th>For</th><th>Hold</th></tr></thead>
-          <tbody>
-            <tr><td class="num">01</td><td class="name">Focus</td><td>Current turn</td><td class="watch">sec</td></tr>
-            <tr><td class="num">02</td><td class="name">Working</td><td>The mission</td><td class="watch">min</td></tr>
-            <tr><td class="num">03</td><td class="name">Short</td><td>The session</td><td class="watch">hr</td></tr>
-            <tr><td class="num">04</td><td class="name">Long</td><td>The profile</td><td class="watch">d</td></tr>
-            <tr><td class="num">05</td><td class="name">Knowledge</td><td>The corpus</td><td class="watch">∞</td></tr>
-          </tbody>
-        </table>
-        <div class="wb-stamp">Layered<b>04 · 26</b></div>
-        <div class="wb-foot"><span>Plate · 009</span><span>5 layers</span></div>
-      </a>
-      <div class="foot"><span><b>Priya R.</b> · 21 Apr · Engineering</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 08 / Field reports</span><span>14 · 04 · 26</span></div>
-        <div class="fn-quote">Four days of <em>silence</em> wasn't a failure — it was the sign things had crossed.</div>
-        <div class="fn-attr">— Logbook · pilot week 14</div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 14 Apr · Field reports</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 07 / Architecture</span><span>07 · 04 · 26</span></div>
-        <div class="fn-quote">Cache + rules carry <em>78%</em> of decisions. The expensive models are reserved.</div>
-        <div class="fn-attr">— Routing telemetry · two-week window</div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 07 Apr · Architecture</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 06 / Engineering</span><span>31 · 03 · 26</span></div>
-        <div class="fn-quote">A tool is a verb. A skill is a <em>hire-able trait</em>.</div>
-        <div class="fn-attr">— Notebook · taxonomy</div>
-      </a>
-      <div class="foot"><span><b>Priya R.</b> · 31 Mar · Engineering</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 05 / Research</span><span>24 · 03 · 26</span></div>
-        <div class="fn-quote">Rereading the <em>tool-use</em> literature — the parts we agreed, and the parts we didn't.</div>
-        <div class="fn-attr">— Reading list · spring</div>
-      </a>
-      <div class="foot"><span><b>Priya R.</b> · 24 Mar · Research</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 04 / Operator notes</span><span>17 · 03 · 26</span></div>
-        <div class="fn-quote">What <em>"in production"</em> actually means here — and what doesn't count.</div>
-        <div class="fn-attr">— Definition · operations</div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 17 Mar · Operator notes</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 03 / Field reports</span><span>10 · 03 · 26</span></div>
-        <div class="fn-quote">Three rooms, three <em>shapes</em> — and the one we didn't expect.</div>
-        <div class="fn-attr">— Pilot notes · early Q2</div>
-      </a>
-      <div class="foot"><span><b>Maren K.</b> · 10 Mar · Field reports</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 02 / Architecture</span><span>03 · 03 · 26</span></div>
-        <div class="fn-quote">The coordinator ticks every <em>five seconds</em>. Not three. Not thirty.</div>
-        <div class="fn-attr">— Engine logbook · cadence</div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 03 Mar · Architecture</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-    <article class="note">
-      <a href="#" class="plate plate-fieldnote">
-        <div class="fn-meta"><span>FN · 01 / Manifesto</span><span>24 · 02 · 26</span></div>
-        <div class="fn-quote">What we're <em>building</em>, and what we aren't.</div>
-        <div class="fn-attr">— Founders' note · volume 01</div>
-      </a>
-      <div class="foot"><span><b>Yann L.</b> · 24 Feb · Manifesto</span><a class="read" href="#">Read →</a></div>
-    </article>
-
-  </div>
+  <!-- INDEX — filled from API by _fieldnotes.js -->
+  <div class="index-grid"></div>
 </section>
 
 <!-- SUBSCRIBE -->
@@ -410,11 +226,11 @@ body[data-mood="pitch"] [class*="vis-"] {
   <span>Field notes · v1.36.04</span>
 </footer>
 
-<script src="_theme.js?v=20260511q" defer></script>
-<script src="_config.js?v=20260511q" defer></script>
-<script src="_nav.js?v=20260511q" defer></script>
-<script src="_waitlist.js?v=20260511q" defer></script>
-<script src="_chat.js?v=20260511q" defer></script>
-<script src="_fieldnotes.js?v=20260511q" defer></script>
+<script src="_theme.js?v=20260511r" defer></script>
+<script src="_config.js?v=20260511r" defer></script>
+<script src="_nav.js?v=20260511r" defer></script>
+<script src="_waitlist.js?v=20260511r" defer></script>
+<script src="_chat.js?v=20260511r" defer></script>
+<script src="_fieldnotes.js?v=20260511r" defer></script>
 </body>
 </html>

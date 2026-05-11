@@ -247,6 +247,24 @@
     section.appendChild(bar);
   }
 
+  function showEmptyGrid(message) {
+    const grid = $grid();
+    if (!grid) return;
+    while (grid.firstChild) grid.removeChild(grid.firstChild);
+    const empty = el('div', {
+      style: 'grid-column:1/-1;padding:80px var(--gutter);text-align:center;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--muted);',
+      text: message,
+    });
+    grid.appendChild(empty);
+  }
+
+  function revealFeaturedSection(show) {
+    const section = document.getElementById('fn-feat-section');
+    if (!section) return;
+    if (show) section.removeAttribute('hidden');
+    else section.setAttribute('hidden', '');
+  }
+
   // ── Load + render flow ───────────────────────────────────────────────
   async function load() {
     const grid = $grid();
@@ -259,16 +277,8 @@
       const totalPages = data.total_pages ?? 1;
 
       if (posts.length === 0) {
-        // No posts back. On page 1: leave static cards alone (fallback).
-        // On later pages: show empty state.
-        if (currentPage > 1) {
-          while (grid.firstChild) grid.removeChild(grid.firstChild);
-          const empty = el('div', {
-            style: 'grid-column:1/-1;padding:80px var(--gutter);text-align:center;font-family:var(--serif);font-size:22px;color:var(--muted);',
-            text: 'No notes here yet.'
-          });
-          grid.appendChild(empty);
-        }
+        revealFeaturedSection(false);
+        showEmptyGrid(currentCategory ? 'No notes in this category yet.' : 'No notes published yet.');
         renderCount(0, total);
         renderPagination(currentPage, totalPages);
         return;
@@ -277,11 +287,10 @@
       // Numbering: highest FN.NN for the first (most recent) post on page 1
       const baseNum = total - ((currentPage - 1) * PER_PAGE);
 
-      // Featured = most recent post on page 1. renderFeatured always emits
-      // a plate now (no photo override), so it stays in the new vocabulary
-      // and shows the operator's real featured post.
+      // Featured = most recent post on page 1.
       if (currentPage === 1) {
         renderFeatured(posts[0], baseNum);
+        revealFeaturedSection(true);
       }
 
       // Grid: all but the featured on page 1; all posts on later pages
@@ -296,7 +305,10 @@
       renderCount(gridPosts.length + (currentPage === 1 ? 1 : 0), total);
       renderPagination(currentPage, totalPages);
     } catch (err) {
-      console.warn('[fieldnotes] fetch failed; keeping static cards:', err && err.message ? err.message : err);
+      console.warn('[fieldnotes] fetch failed:', err && err.message ? err.message : err);
+      revealFeaturedSection(false);
+      showEmptyGrid('Notes are loading from the field. Check back in a moment.');
+      renderCount(0, 0);
     } finally {
       grid.style.opacity = '';
     }
