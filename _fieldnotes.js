@@ -32,11 +32,24 @@
   function $count()     { return document.querySelector('.count'); }
   function $section()   { return document.querySelector('[data-comment-anchor="fn-filter"]'); }
 
+  if (!$grid()) return; // not the field-notes page
+
   if (!WORKSPACE) {
-    console.warn('[fieldnotes] AUTOMATOS_CONFIG.workspaceId missing — static cards remain.');
+    console.warn('[fieldnotes] AUTOMATOS_CONFIG.workspaceId missing — set VITE_AUTOMATOS_WORKSPACE_ID in the deploy env.');
+    // Surface the misconfig on-page so it's not silently empty.
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.querySelector('.index-grid');
+      if (!grid) return;
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      const msg = document.createElement('div');
+      msg.style.cssText = 'grid-column:1/-1;padding:80px var(--gutter);text-align:center;font-family:var(--serif);font-style:italic;font-size:22px;color:var(--muted);';
+      msg.textContent = 'Workspace not configured — set VITE_AUTOMATOS_WORKSPACE_ID in the deploy env.';
+      grid.appendChild(msg);
+      const section = document.getElementById('fn-feat-section');
+      if (section) section.setAttribute('hidden', '');
+    });
     return;
   }
-  if (!$grid()) return; // not the field-notes page
 
   // ── Fetch ────────────────────────────────────────────────────────────
   async function fetchPosts(page, category) {
@@ -46,9 +59,17 @@
       page: String(page),
     });
     if (category) params.set('category', category);
-    const r = await fetch(`${API_BASE}/posts?${params}`);
-    if (!r.ok) throw new Error(`posts ${r.status}`);
-    return r.json();
+    const url = `${API_BASE}/posts?${params}`;
+    const r = await fetch(url);
+    console.log('[fieldnotes] GET', url, '→', r.status);
+    if (!r.ok) {
+      const body = await r.text().catch(() => '(no body)');
+      console.warn('[fieldnotes] error body:', body.slice(0, 500));
+      throw new Error(`posts ${r.status}`);
+    }
+    const json = await r.json();
+    console.log('[fieldnotes] posts received:', json.total ?? (json.posts || []).length, 'total');
+    return json;
   }
 
   async function fetchCategories() {
