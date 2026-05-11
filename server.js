@@ -108,6 +108,13 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
+// ── Blog post route (dynamic): /blog/{slug} → blog-post.html ─────────
+// Slug pattern keeps it out of the way of asset paths (/blog/image.png etc.).
+app.get(/^\/blog\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.sendFile(resolve(__dirname, "blog-post.html"));
+});
+
 // ── Static files ──────────────────────────────────────────────────────
 app.use(express.static(__dirname, {
   maxAge: "1y",

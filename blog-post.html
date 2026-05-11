@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title id="bpTitle">Loading… — Automatos</title>
+<meta name="description" id="bpDesc" content="" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<!-- OG / Twitter (populated by JS once the post loads) -->
+<meta property="og:title" id="bpOgTitle" content="" />
+<meta property="og:description" id="bpOgDesc" content="" />
+<meta property="og:image" id="bpOgImage" content="" />
+<meta property="og:type" content="article" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<style>
+:root, body[data-mood="bone"] {
+  --bg:#F2EDE4; --bg-2:#ECE6D9; --bg-3:#E2DBC9;
+  --fg:#0F1411; --fg-2:#3A3F3A; --muted:#8A8B83;
+  --rule-c:#D9D2C0; --rule-strong:#B6AE99;
+  --accent:#5B7C68; --accent-ink:#F2EDE4;
+  --serif:"Instrument Serif", Georgia, serif;
+  --sans:"Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:"Geist Mono", ui-monospace, monospace;
+  --gutter: 60px;
+}
+body[data-mood="pitch"] {
+  --bg:#0E1311; --bg-2:#161C19; --bg-3:#1A2220;
+  --fg:#EFE9DD; --fg-2:#C9C2B4; --muted:#8A857C;
+  --rule-c:#23291F; --rule-strong:#3A4138;
+  --accent:#C7B27A; --accent-ink:#0E1311;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+
+/* TOPBAR — mirrors other v2 pages */
+.topbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 16px var(--gutter); border-bottom: 1px solid var(--rule-c); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.brand { font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; text-transform: none; color: var(--fg); display: inline-flex; align-items: center; }
+.brand em { font-style: italic; color: var(--muted); }
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; }
+body[data-mood="pitch"] .brand-mark { background-image: url("images/automatos-mark-white.png"); }
+.topbar nav { display: flex; gap: 28px; justify-content: center; }
+.topbar nav a:hover, .topbar nav a.is-current { color: var(--fg); }
+.topbar > :last-child { text-align: right; display: flex; gap: 16px; justify-content: flex-end; align-items: center; }
+.topbar .cta { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* MASTHEAD */
+.masthead {
+  display: grid; grid-template-columns: 280px 1fr 1fr;
+  border-bottom: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--muted);
+}
+.masthead > div { padding: 18px 28px; border-right: 1px solid var(--rule-c); display: flex; align-items: center; gap: 10px; }
+.masthead > div:last-child { border-right: 0; justify-content: flex-end; }
+.masthead b { color: var(--fg); font-weight: 500; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border: 1px solid var(--rule-strong); border-radius: 999px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); }
+.pill.accent { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* TITLE BLOCK */
+.title-block {
+  padding: 80px var(--gutter) 48px;
+  border-bottom: 1px solid var(--rule-c);
+  display: grid; gap: 28px;
+  max-width: 1280px;
+}
+.title-block h1 {
+  font-family: var(--serif); font-size: clamp(48px, 7vw, 96px);
+  line-height: 1.0; letter-spacing: -0.02em; text-wrap: balance;
+}
+.title-block h1 em { font-style: italic; color: var(--muted); }
+.title-block .dek { font-size: 19px; line-height: 1.55; color: var(--fg-2); max-width: 56ch; }
+
+/* COVER PLATE */
+.cover {
+  border-top: 1px solid var(--rule-c);
+  border-bottom: 1px solid var(--rule-c);
+  background: var(--bg-2);
+  background-size: cover; background-position: center;
+  min-height: 360px; max-height: 540px; aspect-ratio: 16 / 7;
+  position: relative;
+}
+.cover.is-empty {
+  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 10px, transparent 10px 20px);
+  display: grid; place-items: center;
+}
+.cover .cap {
+  position: absolute; left: var(--gutter); bottom: 16px; right: var(--gutter);
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  text-shadow: 0 1px 8px rgba(0,0,0,.45);
+}
+.cover.is-empty .cap { text-shadow: none; }
+
+/* ARTICLE BODY */
+.post-body {
+  max-width: 64ch;
+  margin: 56px auto 72px;
+  padding: 0 var(--gutter);
+  font-family: var(--sans); font-size: 17px; line-height: 1.7;
+  color: var(--fg);
+}
+.post-body > * + * { margin-top: 1.1em; }
+.post-body p { color: var(--fg-2); }
+.post-body h2 {
+  font-family: var(--serif); font-size: 38px; font-style: italic;
+  line-height: 1.1; letter-spacing: -0.01em;
+  margin-top: 2em; color: var(--fg);
+}
+.post-body h3 {
+  font-family: var(--serif); font-size: 26px; font-style: italic;
+  line-height: 1.15; letter-spacing: -0.005em;
+  margin-top: 1.8em; color: var(--fg);
+}
+.post-body h4 {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  margin-top: 1.8em;
+}
+.post-body a { color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+.post-body a:hover { color: var(--fg); border-bottom-color: var(--fg); }
+.post-body strong, .post-body b { color: var(--fg); font-weight: 500; }
+.post-body em, .post-body i { font-style: italic; }
+.post-body blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 6px 0 6px 22px; margin: 1.4em 0;
+  color: var(--fg); font-style: italic; font-family: var(--serif);
+  font-size: 24px; line-height: 1.45;
+}
+.post-body code {
+  font-family: var(--mono); font-size: 0.9em;
+  background: var(--bg-2); border: 1px solid var(--rule-c);
+  padding: 1px 6px; border-radius: 3px; color: var(--fg);
+}
+.post-body pre {
+  background: #0F1411; color: #EFE9DD;
+  padding: 18px 22px; overflow-x: auto;
+  font-family: var(--mono); font-size: 13px; line-height: 1.55;
+  border: 1px solid var(--rule-c);
+  margin: 1.6em 0;
+}
+.post-body pre code { background: transparent; border: 0; padding: 0; color: inherit; font-size: inherit; }
+.post-body img {
+  max-width: 100%; height: auto; display: block;
+  margin: 1.8em auto; border: 1px solid var(--rule-c);
+}
+.post-body ul, .post-body ol { padding-left: 24px; color: var(--fg-2); }
+.post-body li { margin-top: 0.4em; }
+.post-body hr { border: 0; border-top: 1px solid var(--rule-c); margin: 2.4em 0; }
+.post-body table { width: 100%; border-collapse: collapse; margin: 1.6em 0; font-size: 14px; }
+.post-body th, .post-body td { padding: 10px 12px; border-bottom: 1px solid var(--rule-c); text-align: left; }
+.post-body th { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+/* AUTHOR STRIP */
+.author-strip {
+  max-width: 64ch; margin: 0 auto;
+  padding: 24px var(--gutter) 0;
+  border-top: 1px solid var(--rule-c);
+  display: flex; gap: 18px; align-items: baseline;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+}
+.author-strip b { color: var(--fg); font-family: var(--serif); font-style: normal; font-size: 17px; letter-spacing: -0.01em; text-transform: none; font-weight: 500; }
+
+/* RELATED / BACK */
+.back-strip {
+  border-top: 1px solid var(--rule-c);
+  padding: 32px var(--gutter);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+  margin-top: 72px;
+}
+.back-strip a { color: var(--fg); border-bottom: 1px solid var(--fg); padding-bottom: 2px; }
+
+/* FOOTER (compact) */
+.foot {
+  display: flex; justify-content: space-between;
+  padding: 22px var(--gutter);
+  border-top: 1px solid var(--rule-c);
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+}
+
+/* LOADING SKELETON */
+.skeleton { animation: pulse 1.4s ease-in-out infinite; background: var(--bg-2); }
+@keyframes pulse { 0%, 100% { opacity: .85 } 50% { opacity: .55 } }
+.is-loading .skeleton-title { height: 64px; width: 70%; margin-bottom: 16px; }
+.is-loading .skeleton-dek { height: 18px; width: 50%; }
+
+/* ERROR */
+.err {
+  padding: 120px var(--gutter); text-align: center; display: grid; gap: 18px; place-items: center;
+}
+.err h1 { font-family: var(--serif); font-size: 56px; font-style: italic; }
+.err p { color: var(--muted); font-size: 15px; max-width: 48ch; line-height: 1.5; }
+</style>
+</head>
+<body data-mood="bone">
+
+<header class="topbar">
+  <div><a class="brand" href="/"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="/">Platform</a>
+    <a href="/marketplace">Marketplace</a>
+    <a href="/pricing">Pricing</a>
+    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
+    <a href="/field-notes" class="is-current">Field notes</a>
+  </nav>
+  <div>
+    <a href="https://ui.automatos.app/sign-in">Sign in</a>
+    <a data-waitlist href="#" class="cta">Sign up free →</a>
+  </div>
+</header>
+
+<!-- MASTHEAD -->
+<div class="masthead" id="bpMasthead">
+  <div><span class="pill accent" id="bpCategory">Field note</span></div>
+  <div>← <a href="/field-notes">Index</a> &nbsp; · &nbsp; <span id="bpVolume">Volume 01</span></div>
+  <div><b id="bpDate">—</b> · <span id="bpReading">— min read</span></div>
+</div>
+
+<!-- TITLE -->
+<section class="title-block" id="bpTitleBlock">
+  <div>
+    <h1 id="bpHeading"><span class="skeleton skeleton-title" style="display:inline-block"></span></h1>
+    <p class="dek" id="bpDek"><span class="skeleton skeleton-dek" style="display:inline-block"></span></p>
+  </div>
+</section>
+
+<!-- COVER -->
+<div class="cover is-empty" id="bpCover">
+  <div class="cap"><span id="bpCoverFig">Fig. — Field note</span><span id="bpCoverPlate">FN&nbsp;/&nbsp;—</span></div>
+</div>
+
+<!-- BODY -->
+<article class="post-body" id="bpBody">
+  <p style="color:var(--muted)">Loading the note…</p>
+</article>
+
+<div class="author-strip">
+  <span><b id="bpAuthor">—</b></span>
+  <span id="bpAuthorMeta"></span>
+</div>
+
+<div class="back-strip">
+  <a href="/field-notes">← Back to Field notes</a>
+  <span>Automatos · v1.36.04</span>
+</div>
+
+<footer class="foot">
+  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+  <span>Field note · live</span>
+</footer>
+
+<!-- DOMPurify to sanitize CMS HTML before injection (replaces v1's DOMPurify pattern) -->
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js" defer></script>
+
+<script src="_theme.js" defer></script>
+<script src="_config.js" defer></script>
+<script src="_waitlist.js" defer></script>
+<script src="_chat.js" defer></script>
+<script src="_blogpost.js" defer></script>
+</body></html>
