@@ -69,6 +69,12 @@
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]}`;
   }
+  function fmtPlateDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return `${String(d.getDate()).padStart(2,'0')} · ${String(d.getMonth()+1).padStart(2,'0')} · ${String(d.getFullYear()).slice(-2)}`;
+  }
   function pad2(n) { return String(n).padStart(2, '0'); }
   function el(tag, attrs, kids) {
     const n = document.createElement(tag);
@@ -93,27 +99,33 @@
     ];
   }
 
-  // ── Render: a single note card ───────────────────────────────────────
+  // ── Render: a single note card (field-note plate) ────────────────────
   function renderNoteCard(post, fnNum) {
-    const top = el('div', { class: 'top' }, [
-      el('span', { class: 'id', text: `FN. ${pad2(fnNum)}` }),
-      el('span', { class: 'cat', text: post.category || 'Field notes' }),
+    const href = `/blog/${encodeURIComponent(post.slug)}`;
+    const cat = post.category || 'Field notes';
+
+    // Plate: field-note variant. Title becomes the quote (last word italicised).
+    const fnMeta = el('div', { class: 'fn-meta' }, [
+      el('span', { text: `FN · ${pad2(fnNum)} / ${cat}` }),
+      el('span', { text: fmtPlateDate(post.published_at) }),
     ]);
-    const h = el('h3');
-    titleNodes(post.title).forEach(n => h.appendChild(n));
+    const fnQuote = el('div', { class: 'fn-quote' });
+    titleNodes(post.title).forEach(n => fnQuote.appendChild(n));
+    const fnAttr = el('div', {
+      class: 'fn-attr',
+      text: post.excerpt ? `— ${(post.excerpt || '').slice(0, 80)}` : `— ${post.author_name || 'Automatos'}`,
+    });
 
-    const desc = el('p', { class: 'desc', text: post.excerpt || '' });
-    const spacer = el('div');
+    const plate = el('a', { class: 'plate plate-fieldnote', href }, [fnMeta, fnQuote, fnAttr]);
 
+    // Foot row beneath the plate: author/date/category + read link.
     const meta = el('span');
-    const b = el('b', { text: post.author_name || 'Automatos' });
-    meta.appendChild(b);
-    meta.appendChild(document.createTextNode(` · ${fmtShortDate(post.published_at)}`));
-
-    const read = el('a', { class: 'read', href: `/blog/${encodeURIComponent(post.slug)}`, text: 'Read →' });
+    meta.appendChild(el('b', { text: post.author_name || 'Automatos' }));
+    meta.appendChild(document.createTextNode(` · ${fmtShortDate(post.published_at)} · ${cat}`));
+    const read = el('a', { class: 'read', href, text: 'Read →' });
     const foot = el('div', { class: 'foot' }, [meta, read]);
 
-    return el('article', { class: 'note' }, [top, h, desc, spacer, foot]);
+    return el('article', { class: 'note' }, [plate, foot]);
   }
 
   // ── Render: featured (post 0) ────────────────────────────────────────
@@ -123,15 +135,33 @@
 
     const photo = el('div', { class: 'photo' });
     if (post.cover_image_url) {
+      // Real cover image — use it.
       photo.style.backgroundImage = `url("${post.cover_image_url}")`;
       photo.style.backgroundSize = 'cover';
       photo.style.backgroundPosition = 'center';
+      const phCap = el('div', {
+        class: 'ph-cap',
+        style: 'position:absolute;bottom:16px;left:20px;right:20px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);'
+      }, [
+        el('span', { text: `Fig. ${pad2(fnNum)} — ${post.category || 'Field note'}` }),
+        el('span', { text: `FN / ${pad2(fnNum)}` }),
+      ]);
+      photo.appendChild(phCap);
+    } else {
+      // No cover image — render a field-note plate as the figure.
+      const plate = el('div', { class: 'plate plate-fieldnote' });
+      const meta = el('div', { class: 'fn-meta' }, [
+        el('span', { text: `FN · ${pad2(fnNum)} / ${post.category || 'Field note'}` }),
+        el('span', { text: fmtPlateDate(post.published_at) }),
+      ]);
+      const quote = el('div', { class: 'fn-quote' });
+      titleNodes(post.title).forEach(n => quote.appendChild(n));
+      const attr = el('div', { class: 'fn-attr', text: `— ${post.author_name || 'Automatos'} · vol. 01` });
+      plate.appendChild(meta);
+      plate.appendChild(quote);
+      plate.appendChild(attr);
+      photo.appendChild(plate);
     }
-    const phCap = el('div', { class: 'ph-cap' }, [
-      el('span', { text: `Fig. ${pad2(fnNum)} — ${post.category || 'Field note'}` }),
-      el('span', { text: `FN / ${pad2(fnNum)}` }),
-    ]);
-    photo.appendChild(phCap);
 
     const body = el('div', { class: 'body' });
 

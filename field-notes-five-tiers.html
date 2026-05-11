@@ -59,16 +59,14 @@ a { color: inherit; text-decoration: none; }
 .title-block .meta .author { padding-top: 14px; border-top: 1px solid var(--rule-c); }
 .title-block .meta .author b { display: block; font-family: var(--serif); font-style: normal; font-size: 18px; letter-spacing: -0.01em; text-transform: none; font-weight: 500; margin-bottom: 4px; color: var(--fg); }
 
-/* HERO PHOTO */
+/* HERO PHOTO — now hosts an editorial plate */
 .hero-photo {
-  background: var(--bg-3);
-  background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 8px, transparent 8px 16px);
-  aspect-ratio: 16/8;
-  display: grid; place-items: center;
   border-bottom: 1px solid var(--rule-c);
   position: relative;
+  display: grid;
 }
-.hero-photo .ph-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.hero-photo .plate { min-height: 480px; border: 0; }
+.hero-photo .plate-cutaway .ct-stage { top: 130px; bottom: 60px; padding: 0 40px; }
 .hero-photo-cap { display: flex; justify-content: space-between; padding: 12px var(--gutter); font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--rule-c); }
 
 /* BODY — two columns: marginalia + prose */
@@ -203,7 +201,8 @@ body[data-mood="pitch"] [class*="vis-"] {
   filter: brightness(0.92) saturate(0.92);
 }
 </style>
-<link rel="stylesheet" href="_responsive.css?v=20260511f">
+<link rel="stylesheet" href="plates.css?v=20260511p">
+<link rel="stylesheet" href="_responsive.css?v=20260511p">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Automatos">
@@ -261,12 +260,33 @@ body[data-mood="pitch"] [class*="vis-"] {
   </div>
 </section>
 
-<!-- HERO PHOTO -->
+<!-- HERO PLATE — FN.12 cutaway -->
 <div class="hero-photo">
-  <span class="ph-tag">photo · workshop bench · 16:8</span>
+  <div class="plate plate-cutaway">
+    <div class="ct-title">Five tiers <small>Fig. 12 · Router</small></div>
+    <div class="ct-sub"><span>System · Override → Cache → Rules → Semantic → LLM</span><span>Crew · 5 tiers</span></div>
+    <div class="ct-stage">
+      <svg viewBox="0 0 480 220" fill="none" stroke-width="1.2" preserveAspectRatio="xMidYMid meet">
+        <rect x="20" y="30" width="440" height="170" stroke-dasharray="3 3"></rect>
+        <g><circle cx="68" cy="115" r="32"></circle><text x="68" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T0</text><text x="68" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">OVERRIDE</text></g>
+        <g><circle cx="156" cy="115" r="32"></circle><text x="156" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T1</text><text x="156" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">CACHE</text></g>
+        <g><circle cx="240" cy="115" r="32"></circle><text x="240" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T2</text><text x="240" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">RULES</text></g>
+        <g><circle cx="324" cy="115" r="32" class="ink-accent" fill="none"></circle><text x="324" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T2.5</text><text x="324" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">SEMANTIC</text></g>
+        <g><circle cx="412" cy="115" r="32"></circle><text x="412" y="118" text-anchor="middle" font-family="Geist Mono" font-size="11" letter-spacing="2">T3</text><text x="412" y="170" text-anchor="middle" class="ink-muted" font-family="Geist Mono" font-size="8.5" letter-spacing="2">LLM</text></g>
+        <path d="M 100 115 L 122 115"></path><path d="M 122 115 l -5 -3 M 122 115 l -5 3"></path>
+        <path d="M 188 115 L 210 115"></path><path d="M 210 115 l -5 -3 M 210 115 l -5 3"></path>
+        <path d="M 272 115 L 294 115"></path><path d="M 294 115 l -5 -3 M 294 115 l -5 3"></path>
+        <path d="M 356 115 L 378 115"></path><path d="M 378 115 l -5 -3 M 378 115 l -5 3"></path>
+        <text x="240" y="50" text-anchor="middle" font-family="Geist Mono" font-size="8.5" letter-spacing="2" class="ink-muted">CHEAPEST COMPETENT ANSWER WINS</text>
+        <text x="324" y="200" text-anchor="middle" class="ink-accent" font-family="Geist Mono" font-size="8" letter-spacing="2">+ COSINE ≥ 0.95</text>
+      </svg>
+    </div>
+    <div class="ct-stamp">Shipped<b>T 2.5</b></div>
+    <div class="ct-foot"><span>Plate · 012</span><span>Drawn to scale</span></div>
+  </div>
 </div>
 <div class="hero-photo-cap">
-  <span>Fig. 12 — Workshop, the morning we shipped T2.5</span>
+  <span>Fig. 12 — Router cutaway, the morning we shipped T2.5</span>
   <span>Plate&nbsp;/&nbsp;FN12</span>
 </div>
 
@@ -452,10 +472,10 @@ body[data-mood="pitch"] [class*="vis-"] {
   <span>Field Note · 12 · v1.36.04</span>
 </footer>
 
-<script src="_theme.js?v=20260511d" defer></script>
-<script src="_config.js?v=20260511d" defer></script>
-<script src="_nav.js?v=20260511d" defer></script>
-<script src="_waitlist.js?v=20260511d" defer></script>
-<script src="_chat.js?v=20260511d" defer></script>
+<script src="_theme.js?v=20260511p" defer></script>
+<script src="_config.js?v=20260511p" defer></script>
+<script src="_nav.js?v=20260511p" defer></script>
+<script src="_waitlist.js?v=20260511p" defer></script>
+<script src="_chat.js?v=20260511p" defer></script>
 </body>
 </html>
