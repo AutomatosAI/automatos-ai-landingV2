@@ -155,12 +155,17 @@
   }
 
   function attach() {
-    // Find the topbar and insert the toggle into its last cell (the utility column).
-    const topbar = document.querySelector('.topbar');
-    if (!topbar) return; // no topbar on this page (rare)
-
-    const cells = topbar.children;
-    const utilCell = cells.length >= 3 ? cells[cells.length - 1] : null;
+    // Find a host cell for the hamburger. Two known topbar shapes:
+    //   .topbar  > [brand] [nav] [utilities]   — most v2 pages
+    //   .header-row > [brand] [nav] [utilities] — index.html
+    // Prefer the explicit .utilities container, fall back to topbar's last cell.
+    let utilCell = document.querySelector('.utilities');
+    if (!utilCell) {
+      const topbar = document.querySelector('.topbar') || document.querySelector('.header-row');
+      if (!topbar) return; // no topbar on this page
+      const cells = topbar.children;
+      utilCell = cells.length >= 2 ? cells[cells.length - 1] : null;
+    }
     if (!utilCell) return;
 
     const toggle = buildToggle();

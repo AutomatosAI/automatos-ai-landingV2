@@ -18,7 +18,8 @@
 
   :root { --gutter: 40px; }
 
-  /* Topbar — collapses to brand + hamburger; full nav hidden, JS reveals drawer */
+  /* ── Topbars: index uses .header/.header-row/.nav/.utilities,
+     every other page uses .topbar/nav/.util — handle both ────── */
   .topbar { grid-template-columns: 1fr auto !important; padding: 14px var(--gutter); }
   .topbar nav { display: none !important; }
   .topbar > :last-child {
@@ -26,34 +27,68 @@
     justify-content: flex-end;
   }
   .topbar .util, .topbar .cta { font-size: 10.5px; }
-
-  /* Hide secondary topbar items on tablet, leave brand + hamburger + primary CTA */
   .topbar .util:not(.solid):not(.cta) { display: none; }
 
-  /* Hero (index) */
-  .hero-h, h1.hero-h, .hero h1 { font-size: clamp(56px, 8vw, 88px) !important; }
-  .hero-meta { gap: 12px; }
+  /* index header */
+  .header-row {
+    grid-template-columns: 1fr auto !important;
+    gap: 12px !important;
+    padding: 14px var(--gutter) !important;
+  }
+  .nav { display: none !important; }
+  .utilities {
+    display: flex !important; gap: 8px !important; align-items: center;
+    justify-content: flex-end;
+  }
+  /* hide Changelog util on tablet; keep Sign in + Start free */
+  .utilities .util:not(.solid):first-child { display: none; }
+  .util { padding: 9px 12px !important; font-size: 10.5px !important; }
 
-  /* Metrics ledger: 5-col → 2-col, then 3-col on roomy tablets */
-  .metrics { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Hero — landing page (fullbleed photo) + other pages (split layout) */
+  .hero {
+    height: auto !important;
+    min-height: 540px;
+    grid-template-columns: 1fr !important; /* split-hero pages collapse */
+    gap: 40px !important;
+    padding: 56px var(--gutter) !important;
+  }
+  .hero-h, h1.hero-h, .hero h1 { font-size: clamp(56px, 8vw, 88px) !important; }
+  .hero-headline { font-size: clamp(56px, 9vw, 96px) !important; }
+  .hero-content { padding: 32px var(--gutter) !important; }
+  .hero-meta {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    font-size: 10px !important;
+  }
+  .hero-meta span + span { margin-left: 16px !important; }
+  .hero-foot { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+  /* Metrics ledger: 5/6-col → 2-col */
+  .metrics, .metrics-ledger { grid-template-columns: repeat(2, 1fr) !important; }
   .metric { border-right: 1px solid var(--rule-c); }
   .metric:nth-child(2n) { border-right: 0; }
+  .metric-num { font-size: 42px !important; }
 
-  /* Chapter body — collapses 3-col (side | content | aside) to stacked content + aside below */
-  .chapter-body {
-    grid-template-columns: 1fr !important;
+  /* Chapter meta + body */
+  .chapter-meta {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 !important;
   }
+  .chapter-meta > div { padding: 14px 20px !important; }
+  .chapter-meta > div:nth-child(3) { display: none !important; }
+  .chapter-body { grid-template-columns: 1fr !important; }
   .chapter-side { display: none !important; }
-  .chapter-content { padding: 48px var(--gutter); }
-  .chapter-aside { padding: 0 var(--gutter) 48px; }
+  .chapter-content { padding: 48px var(--gutter) !important; }
+  .chapter-aside { padding: 0 var(--gutter) 48px !important; }
   .chapter-h { font-size: clamp(40px, 6.5vw, 64px) !important; }
 
   /* Photo / sketch plates — shorter on tablet */
   .photo-card, .sketch-card, .plate { min-height: 320px; }
 
-  /* Architecture row (Chapter 02) — 4-col → 2-col */
+  /* Architecture row — 3/4-col → 2-col */
   .arch-row { grid-template-columns: repeat(2, 1fr) !important; }
-  .arch-col { border-right: 1px solid var(--rule-c); }
+  .arch-col { border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); }
   .arch-col:nth-child(2n) { border-right: 0; }
 
   /* Doc cards row — 3-col → 1-col on tablet for legibility */
@@ -74,9 +109,9 @@
   }
   .footer-brand { grid-column: 1 / -1; }
 
-  /* Marketplace — featured row */
-  .featured-row { grid-template-columns: 1fr !important; }
-  .pack { border-right: 0 !important; }
+  /* Marketplace — featured packs row */
+  .featured-row, .packs { grid-template-columns: 1fr !important; }
+  .pack { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
   .agent-grid { grid-template-columns: repeat(2, 1fr) !important; }
 
   /* Pricing — 3 tiers → 1 col stacked (more readable than squished 3) */
@@ -121,7 +156,7 @@
 
   html, body { font-size: 15px; }
 
-  /* Topbar */
+  /* Topbar (other pages) */
   .topbar { padding: 12px var(--gutter); font-size: 10px; }
   .brand { font-size: 18px; }
   .brand-mark { width: 18px; height: 18px; margin-right: 8px; }
@@ -130,17 +165,53 @@
   /* Hide Sign in on mobile — drawer will carry it */
   .topbar > :last-child > a:not(.cta):not(.nav-toggle) { display: none; }
 
-  /* Hero */
-  .hero-h, h1.hero-h, .hero h1 { font-size: clamp(40px, 11vw, 60px) !important; line-height: 1.0 !important; }
-  .hero-eye { font-size: 10px !important; }
-  .hero-photo, .hero { min-height: auto; }
-  .hero-meta { gap: 10px !important; font-size: 11px !important; }
-  .hero-meta > div { padding: 12px var(--gutter) !important; }
+  /* Topbar (index — .header / .header-row / .utilities) */
+  .header-row { padding: 10px var(--gutter) !important; gap: 8px !important; }
+  .brand-name { font-size: 18px !important; }
+  .brand-mark { width: 22px !important; height: 22px !important; }
+  /* On mobile: only Start free + hamburger remain in utilities */
+  .utilities .util:not(.solid):not(.nav-toggle) { display: none !important; }
+  .utilities .util.solid { padding: 9px 12px !important; font-size: 9.5px !important; }
+  .util.solid .arrow { font-size: 9px !important; }
 
-  /* Metrics ledger — 5-col → 1-col stacked */
-  .metrics { grid-template-columns: 1fr !important; }
+  /* Hero — landing photo-fullbleed + split-layout pages */
+  .hero {
+    height: auto !important;
+    min-height: 480px;
+    grid-template-columns: 1fr !important;
+    padding: 40px var(--gutter) !important;
+  }
+  .hero-h, h1.hero-h, .hero h1, .hero .hero-headline, .hero-headline {
+    font-size: clamp(30px, 8.5vw, 52px) !important;
+    line-height: 1.02 !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    max-width: none !important;
+  }
+  .hero-headline em { overflow-wrap: anywhere !important; }
+  /* Hide non-essential utility buttons on mobile — only brand + hamburger remain */
+  .utilities .util.solid { display: none !important; }
+  .topbar .cta { display: none !important; }
+  .hero-eye { font-size: 10px !important; }
+  .hero-content { padding: 24px var(--gutter) 28px !important; }
+  .hero-photo { min-height: 320px; aspect-ratio: 4/5; }
+  .hero-meta {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+    padding: 10px 12px !important;
+    font-size: 9.5px !important;
+    width: 100% !important;
+  }
+  .hero-meta > div { padding: 10px var(--gutter) !important; }
+  .hero-meta span + span { margin-left: 0 !important; }
+  .hero-foot { padding: 0 !important; }
+  .hero-foot > * { padding: 16px var(--gutter) !important; }
+
+  /* Metrics ledger — 5/6-col → 1-col stacked */
+  .metrics, .metrics-ledger { grid-template-columns: 1fr !important; }
   .metric { padding: 22px var(--gutter) !important; border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
   .metric .val { font-size: 44px !important; }
+  .metric-num { font-size: 38px !important; }
   .metric .note { font-size: 12.5px !important; max-width: none !important; }
 
   /* Chapter body — single col */
@@ -163,9 +234,9 @@
   /* Hero photo aspect on mobile: portrait friendly */
   .hero-photo { aspect-ratio: 4/5; min-height: 320px; }
 
-  /* Architecture — 4-col → 1-col */
+  /* Architecture — 3/4-col → 1-col */
   .arch-row { grid-template-columns: 1fr !important; }
-  .arch-col { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
+  .arch-col { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 28px var(--gutter) !important; }
 
   /* Doc cards — single col */
   .doc-row { grid-template-columns: 1fr !important; }
@@ -214,7 +285,7 @@
   .section-meta > div:nth-child(3) { display: flex !important; }
 
   /* Marketplace */
-  .featured-row { grid-template-columns: 1fr !important; }
+  .featured-row, .packs { grid-template-columns: 1fr !important; }
   .agent-grid { grid-template-columns: 1fr !important; }
   .pack { padding: 28px var(--gutter) !important; }
   .pack-foot { flex-direction: column; align-items: flex-start; gap: 12px; }
