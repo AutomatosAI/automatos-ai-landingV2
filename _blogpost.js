@@ -136,9 +136,75 @@
     return plate;
   }
 
+  function injectCanonical(slug) {
+    const path = isResearch() ? `/research/${slug}` : `/blog/${slug}`;
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('href', `https://automatos.app${path}`);
+  }
+
+  function injectArticleSchema(post) {
+    const path = isResearch() ? `/research/${post.slug}` : `/blog/${post.slug}`;
+    const url = `https://automatos.app${path}`;
+    const section = isResearch() ? 'Research' : (post.category || 'Field note');
+    const indexUrl = isResearch() ? 'https://automatos.app/research' : 'https://automatos.app/field-notes';
+    const indexName = isResearch() ? 'Research' : 'Field notes';
+
+    const article = {
+      '@context': 'https://schema.org',
+      '@type': isResearch() ? 'ScholarlyArticle' : 'Article',
+      headline: post.title,
+      description: post.seo_description || post.excerpt || '',
+      url,
+      mainEntityOfPage: url,
+      datePublished: post.published_at,
+      dateModified: post.updated_at || post.published_at,
+      author: { '@type': 'Person', name: post.author_name || 'Automatos AI' },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Automatos AI',
+        logo: { '@type': 'ImageObject', url: 'https://automatos.app/images/automatos-mark-black.png' },
+      },
+      articleSection: section,
+      inLanguage: 'en',
+    };
+    if (post.cover_image_url) {
+      article.image = post.cover_image_url.startsWith('http')
+        ? post.cover_image_url
+        : `https://automatos.app${post.cover_image_url}`;
+    }
+    if (Array.isArray(post.tags) && post.tags.length) article.keywords = post.tags.join(', ');
+
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://automatos.app/' },
+        { '@type': 'ListItem', position: 2, name: indexName, item: indexUrl },
+        { '@type': 'ListItem', position: 3, name: post.title, item: url },
+      ],
+    };
+
+    // Remove any previously-injected schemas, then add the two for this post.
+    document.querySelectorAll('script[data-jsonld="post"]').forEach((s) => s.remove());
+    [article, breadcrumb].forEach((data) => {
+      const s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.setAttribute('data-jsonld', 'post');
+      s.textContent = JSON.stringify(data);
+      document.head.appendChild(s);
+    });
+  }
+
   function renderPost(post) {
     document.title = `${post.title} — Automatos`;
     setAttr('bpDesc', 'content', post.seo_description || post.excerpt || '');
+    injectCanonical(post.slug);
+    injectArticleSchema(post);
     setAttr('bpOgTitle', 'content', post.title);
     setAttr('bpOgDesc', 'content', post.seo_description || post.excerpt || '');
     setAttr('bpOgImage', 'content', post.cover_image_url || '');

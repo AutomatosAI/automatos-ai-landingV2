@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+Disallow: /uploads/
+Disallow: /pitch-mode
+Disallow: /styleguide
+Disallow: /_preview.html
+Disallow: /_probe.html
+
+# Allow AI crawlers — they index for citation, which is good for us.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://automatos.app/sitemap.xml

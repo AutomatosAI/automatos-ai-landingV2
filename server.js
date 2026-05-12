@@ -128,6 +128,89 @@ app.get(/^\/research\/?$/, (_req, res) => {
   res.sendFile(resolve(__dirname, "research.html"));
 });
 
+// ── Sitemap: /sitemap.xml ────────────────────────────────────────────
+// Statically-known pages + dynamic /blog/{slug} and /research/{slug}
+// pulled from the CMS API. Cached in-process for 1 hour so we don't
+// hammer the API on every crawler hit.
+const SITE = "https://automatos.app";
+const STATIC_URLS = [
+  { loc: "/",             priority: 1.0, changefreq: "weekly"  },
+  { loc: "/marketplace",  priority: 0.8, changefreq: "weekly"  },
+  { loc: "/pricing",      priority: 0.8, changefreq: "monthly" },
+  { loc: "/contact",      priority: 0.5, changefreq: "yearly"  },
+  { loc: "/terms",        priority: 0.3, changefreq: "yearly"  },
+  { loc: "/field-notes",  priority: 0.9, changefreq: "daily"   },
+  { loc: "/research",     priority: 0.9, changefreq: "weekly"  },
+];
+
+let sitemapCache = { xml: null, at: 0 };
+const SITEMAP_TTL_MS = 60 * 60 * 1000;
+
+function xmlEscape(s) {
+  return String(s).replace(/[<>&"']/g, (c) => ({
+    "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;",
+  }[c]));
+}
+
+async function fetchCmsPosts() {
+  const workspaceId = process.env.VITE_AUTOMATOS_WORKSPACE_ID;
+  if (!workspaceId) return [];
+  try {
+    const url = `https://api.automatos.app/api/widgets/blog/posts?workspace_id=${encodeURIComponent(workspaceId)}&per_page=100&page=1`;
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return data.posts || [];
+  } catch (err) {
+    console.warn("[sitemap] CMS fetch failed:", err.message);
+    return [];
+  }
+}
+
+app.get("/sitemap.xml", async (_req, res) => {
+  res.setHeader("Content-Type", "application/xml; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+
+  const now = Date.now();
+  if (sitemapCache.xml && now - sitemapCache.at < SITEMAP_TTL_MS) {
+    return res.send(sitemapCache.xml);
+  }
+
+  const posts = await fetchCmsPosts();
+  const postUrls = posts.map((p) => ({
+    loc: (p.category === "Research" ? "/research/" : "/blog/") + p.slug,
+    priority: 0.7,
+    changefreq: "monthly",
+    lastmod: p.updated_at || p.published_at || null,
+  }));
+
+  const all = [
+    ...STATIC_URLS.map((u) => ({ ...u, lastmod: null })),
+    ...postUrls,
+  ];
+
+  const lines = ['<?xml version="1.0" encoding="UTF-8"?>'];
+  lines.push('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+  for (const u of all) {
+    lines.push("  <url>");
+    lines.push(`    <loc>${xmlEscape(SITE + u.loc)}</loc>`);
+    if (u.lastmod) {
+      const d = new Date(u.lastmod);
+      if (!isNaN(d.getTime())) {
+        lines.push(`    <lastmod>${d.toISOString().split("T")[0]}</lastmod>`);
+      }
+    }
+    lines.push(`    <changefreq>${u.changefreq}</changefreq>`);
+    lines.push(`    <priority>${u.priority.toFixed(1)}</priority>`);
+    lines.push("  </url>");
+  }
+  lines.push("</urlset>");
+
+  const xml = lines.join("\n");
+  sitemapCache = { xml, at: now };
+  res.send(xml);
+});
+
 // ── Static files ──────────────────────────────────────────────────────
 // Cache strategy:
 //   .html / _config.js  → no-cache (must revalidate every request)

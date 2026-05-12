@@ -1,0 +1,36 @@
+# Automatos AI
+
+> An operating system for autonomous agent teams. Design specialised
+> agents, equip them with skills and knowledge, schedule their work,
+> and run the room from one command centre. Open-source (Apache 2.0),
+> self-host or hosted. Built in Lisbon.
+
+## Platform
+
+- [Home](https://automatos.app/): What Automatos is and the architecture in one page.
+- [Marketplace](https://automatos.app/marketplace): 100+ pre-built agents — Code Reviewer, QA Engineer, Sentinel, Scribe, marketers, Shopify specialists. Install in one click or fork as a starting point.
+- [Pricing](https://automatos.app/pricing): Free forever self-host (Apache 2.0). Hosted plans for teams. BYO model keys; no per-seat charging on self-host.
+
+## Writing
+
+- [Field notes](https://automatos.app/field-notes): Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and pilot operators.
+- [Research](https://automatos.app/research): Original practitioner papers on multi-agent coordination, semantic memory, and AI orchestration. Built and tested on the Automatos platform.
+
+## Architecture (one-paragraph each)
+
+- **Universal router**: five-tier routing (override → cache → rules → semantic → LLM) so the cheapest competent answer wins. Cosine-similarity semantic tier (T2.5) catches 27% of traffic that previously fell to the LLM.
+- **Mission engine**: natural-language goal → directed acyclic graph of tasks. Coordinator stays stateless; agents request capabilities at runtime.
+- **Layered memory**: focus (seconds), working (minutes), short-term (hours), long-term (days), knowledge (corpus). Each layer has its own retrieval and consolidation policy.
+- **Skills + tools**: a tool is a verb; a skill is a hire-able trait that bundles tools, prompts, and policy. Skills are the unit of composition.
+
+## Resources
+
+- [Documentation](https://docs.automatos.app/): Self-host guide, API reference, recipe library.
+- [GitHub](https://github.com/AutomatosAI/automatos-ai): Source. Apache 2.0.
+- [DeepWiki](https://deepwiki.com/AutomatosAI/automatos-ai): AI-powered codebase wiki.
+- [Discord](https://discord.com/channels/1400562549258453155/1400562550713880628): Community + operator chat.
+
+## Contact
+
+- Email: gerard@automatos.app
+- Headquartered in Lisbon, Cais do Sodré.
