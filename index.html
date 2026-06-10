@@ -390,7 +390,7 @@ body[data-mood="pitch"] .hero-backers-line .sep { color: var(--rule-strong); }
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   border-bottom: 1px solid var(--rule-c);
 }
 .metric {
@@ -1129,6 +1129,43 @@ body[data-mood="pitch"] .plate-cutaway svg circle[stroke="#5B7C68"] { stroke: va
 .vis-bars i:nth-child(12){ height: 42%; }
 
 /* ─────────────────────────────────────────────────────────────
+   WORK LOOP — chat · assign · receive
+   ───────────────────────────────────────────────────────────── */
+
+.workloop { border-bottom: 1px solid var(--rule-c); }
+.workloop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.workloop-step {
+  padding: 72px 48px 64px var(--gutter);
+  border-right: 1px solid var(--rule-c);
+}
+.workloop-step + .workloop-step { padding-left: 48px; }
+.workloop-step:last-child { border-right: 0; }
+.workloop-num {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 22px;
+}
+.workloop-h {
+  font-family: var(--serif); font-weight: 400;
+  font-size: 40px; line-height: 1.02; letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.workloop-h em { font-style: italic; color: var(--muted); }
+.workloop-body {
+  margin-top: 18px;
+  font-size: 15px; line-height: 1.55; color: var(--fg-2);
+  max-width: 38ch;
+}
+@media (max-width: 960px) {
+  .workloop-grid { grid-template-columns: 1fr; }
+  .workloop-step { border-right: 0; border-bottom: 1px solid var(--rule-c); padding: 48px var(--gutter) 40px; }
+  .workloop-step:last-child { border-bottom: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
    QUOTE BAND
    ───────────────────────────────────────────────────────────── */
 
@@ -1409,6 +1446,101 @@ html { scroll-behavior: smooth; }
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
+     THE LOOP — chat · assign · receive  (new)
+     ───────────────────────────────────────────────────────── -->
+<section class="workloop" id="loop" data-comment-anchor="workloop" data-screen-label="The loop">
+  <div class="chapter-meta">
+    <div><span class="pill">The loop</span> A day on Automatos</div>
+    <div>Chat → Assign → <b>Receive</b> · run by Auto, your operator</div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;One room · one voice</div>
+  </div>
+  <div class="workloop-grid">
+    <div class="workloop-step">
+      <div class="workloop-num">/01 · Chat</div>
+      <h3 class="workloop-h">Tell Auto what you <em>need.</em></h3>
+      <p class="workloop-body">Auto is the operator in front of your whole workforce — one conversation, any request, his job to route it to the right agent.</p>
+    </div>
+    <div class="workloop-step">
+      <div class="workloop-num">/02 · Assign</div>
+      <h3 class="workloop-h">Work becomes a <em>playbook.</em></h3>
+      <p class="workloop-body">Conversations crystallise into assignments — scheduled, triggered, repeatable. Agents pick them up without being chased.</p>
+    </div>
+    <div class="workloop-step">
+      <div class="workloop-num">/03 · Receive</div>
+      <h3 class="workloop-h">Deliverables, in one <em>place.</em></h3>
+      <p class="workloop-body">Reports, files and drafts land on a single surface. Review, approve, send it back round — the loop tightens every week.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────
+     CHAPTER 01 — WORKFORCE
+     ───────────────────────────────────────────────────────── -->
+<section class="chapter" id="ch-workforce" data-comment-anchor="ch-workforce">
+  <div class="chapter-meta">
+    <div><span class="pill">Chapter 01</span> The workforce</div>
+    <div>Build, install &amp; orchestrate <b>specialised agents</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Marketplace · 100<sup>+</sup> agents</div>
+  </div>
+  <div class="chapter-body">
+    <aside class="chapter-side">
+      <div class="chapter-num">01<small>The workforce</small></div>
+    </aside>
+    <div class="chapter-content">
+      <h2 class="chapter-h">
+        Hire the agents.<br />
+        Equip them with <em>skills.</em><br />
+        Let them work.
+      </h2>
+      <p class="chapter-lead">
+        100+ marketplace agents — Code Reviewer, QA Engineer, Sentinel, Scribe,
+        researcher and marketer roles, Shopify specialists, more. Each one
+        carries its own model config, persona, capabilities and performance
+        history. Install from the marketplace, or build a custom agent in
+        seconds.
+      </p>
+
+      <div class="chapter-list">
+        <div class="chapter-list-item">
+          <span class="num">/01</span>
+          <span class="label"><b>Running a store?</b><span>Install the Shopify Ops pack — inventory sentinel, order triage, refund reviewer, and a daily scribe posting to Slack.</span></span>
+        </div>
+        <div class="chapter-list-item">
+          <span class="num">/02</span>
+          <span class="label"><b>Running an ops team?</b><span>Auto routes the busywork — triage, digests, weekly reports — and escalates only what needs a human.</span></span>
+        </div>
+        <div class="chapter-list-item">
+          <span class="num">/03</span>
+          <span class="label"><b>Building alone?</b><span>Hire one agent in ten minutes. Add skills as the work grows; fork anything in the marketplace.</span></span>
+        </div>
+      </div>
+    </div>
+    <aside class="chapter-aside">
+      <div class="plate plate-watchbill" id="ch01Img">
+        <div class="wb-title">Watch bill <small>Vol. 19 &middot; Wk 04</small></div>
+        <div class="wb-sub"><span>Crew &middot; 100<sup>+</sup> rated</span><span>Drawn &middot; K. Halford</span></div>
+        <table>
+          <thead><tr><th>No.</th><th>Name</th><th>Rating</th><th>Wtch</th></tr></thead>
+          <tbody>
+            <tr><td class="num">01</td><td class="name">Sentinel</td><td>Code Reviewer</td><td class="watch">A</td></tr>
+            <tr><td class="num">02</td><td class="name">Scribe</td><td>QA Engineer</td><td class="watch">A</td></tr>
+            <tr><td class="num">03</td><td class="name">Halberd</td><td>Researcher</td><td class="watch">B</td></tr>
+            <tr><td class="num">04</td><td class="name">Cooper</td><td>Shopify Ops</td><td class="watch">B</td></tr>
+            <tr><td class="num">05</td><td class="name">Marlow</td><td>Growth Strategy</td><td class="watch">C</td></tr>
+            <tr><td class="num">06</td><td class="name">Pemberton</td><td>Social Mgmt</td><td class="watch">C</td></tr>
+            <tr><td class="num">07</td><td class="name">north_lattice</td><td>Indexer</td><td class="watch">&mdash;</td></tr>
+            <tr><td class="num">08</td><td class="name">Veld</td><td>Custom &middot; forked</td><td class="watch">&mdash;</td></tr>
+          </tbody>
+        </table>
+        <div class="wb-stamp">Mustered<b>04 &middot; 26</b></div>
+        <div class="wb-foot"><span>Marketplace &middot; 100<sup>+</sup></span><span>Bring your own</span></div>
+      </div>
+      <div class="photo-caption"><span>Fig. 01 &mdash; Watch bill</span><span>Plate&nbsp;/&nbsp;001</span></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────
      METRICS BAR
      ───────────────────────────────────────────────────────── -->
 <section class="metrics" data-comment-anchor="metrics">
@@ -1423,19 +1555,9 @@ html { scroll-behavior: smooth; }
     <div class="metric-note">Tool integrations — GitHub, Slack, Stripe, Shopify, Notion, Datadog…</div>
   </div>
   <div class="metric">
-    <div class="metric-label">M.03 — Models</div>
-    <div class="metric-value">300<sup>+</sup></div>
-    <div class="metric-note">LLMs through one router. Bring your own keys; mix frontier with cheap.</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">M.04 — Skills</div>
-    <div class="metric-value">150<sup>+</sup></div>
-    <div class="metric-note">Reusable, versioned capability packs that drop onto any agent.</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">M.05 — Playbooks</div>
-    <div class="metric-value">80<sup>+</sup></div>
-    <div class="metric-note">Multi-step playbooks — scheduled, triggered, hand-offs between agents. Drop-in or fork.</div>
+    <div class="metric-label">M.03 — Foundation</div>
+    <div class="metric-value">OSS</div>
+    <div class="metric-note">Apache 2.0. Self-host, fork, audit. The whole platform is open — bring your own model keys.</div>
   </div>
 </section>
 
@@ -1522,185 +1644,6 @@ html { scroll-behavior: smooth; }
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     PLATE / 004 — FROM THE DOCS
-     ───────────────────────────────────────────────────────── -->
-<section class="plate-docs" data-comment-anchor="plate-docs" data-screen-label="Plate 004 — From the docs">
-  <div class="plate-docs-meta">
-    <div><span class="pill">Plate&nbsp;/&nbsp;004</span> From the docs</div>
-    <div>Three pages from <b>/docs</b> · the actual spec, not the marketing</div>
-    <div>↗&nbsp;&nbsp;github.com/AutomatosAI/automatos-ai</div>
-  </div>
-  <div class="plate-docs-grid">
-
-    <a class="doc-card" href="#" data-comment-anchor="doc-router">
-      <div class="doc-card-flag">
-        <span>Fig. 05 — Router</span>
-        <span>Doc&nbsp;/&nbsp;01</span>
-      </div>
-      <h3 class="doc-card-h">Decisions, in&nbsp;<em>tiers.</em></h3>
-      <p class="doc-card-lead">
-        The router escalates progressively. A cache hit returns in milliseconds;
-        an unfamiliar request walks all the way to LLM classification — and the
-        result is cached for next time.
-      </p>
-      <div class="doc-diagram" data-fig="Fig. 05a · routing.py">
-        <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span></div>
-        <div class="sep"></div>
-        <div class="row"><span class="ix">T0</span><span class="nm">override · user</span></div>
-        <div class="row"><span class="ix">T1</span><span class="nm">cache · redis</span></div>
-        <div class="row"><span class="ix">T2</span><span class="nm">rules · triggers · intent</span></div>
-        <div class="row"><span class="ix">T2.5</span><span class="nm">semantic · cosine&nbsp;≥&nbsp;0.95</span></div>
-        <div class="row"><span class="ix">T3</span><span class="nm">llm classify</span></div>
-        <div class="sep"></div>
-        <div class="row"><span class="ix">↓</span><span class="nm">RoutingDecision · logged</span></div>
-        <div class="row indent"><span class="ix">↳</span><span class="nm">corrections feed cache learning</span></div>
-      </div>
-      <p class="doc-quote">
-        "Optimal routing accuracy while minimising latency and cost."
-      </p>
-      <div class="doc-card-foot">
-        <span>/docs/universal-router/_index.md</span>
-        <span>read&nbsp;↗</span>
-      </div>
-    </a>
-
-    <a class="doc-card" href="#" data-comment-anchor="doc-missions">
-      <div class="doc-card-flag">
-        <span>Fig. 06 — Missions</span>
-        <span>Doc&nbsp;/&nbsp;02</span>
-      </div>
-      <h3 class="doc-card-h">Goals into a&nbsp;<em>graph.</em></h3>
-      <p class="doc-card-lead">
-        A natural-language goal becomes a directed acyclic graph of tasks.
-        State lives in the database; the coordinator is stateless and ticks
-        every five seconds.
-      </p>
-      <div class="doc-diagram" data-fig="Fig. 06a · coordinator_service.py">
-        <div class="row"><span class="ix">↓</span><span class="nm">user goal</span></div>
-        <div class="sep"></div>
-        <div class="row"><span class="ix">/01</span><span class="nm">planner.decompose()</span></div>
-        <div class="row"><span class="ix">/02</span><span class="nm">orchestration_run · awaiting&nbsp;approval</span></div>
-        <div class="row"><span class="ix">/03</span><span class="nm">human · approve</span></div>
-        <div class="row"><span class="ix">/04</span><span class="nm">dispatcher · optimistic&nbsp;lock</span></div>
-        <div class="row"><span class="ix">/05</span><span class="nm">agent · execute</span></div>
-        <div class="row"><span class="ix">/06</span><span class="nm">verifier · cross&#8209;model</span></div>
-        <div class="sep"></div>
-        <div class="row"><span class="ix">↓</span><span class="nm">events · budget · telemetry</span></div>
-      </div>
-      <p class="doc-quote">
-        "DB-authoritative; the coordinator reconciles state on every tick."
-      </p>
-      <div class="doc-card-foot">
-        <span>/docs/missions-multi-agent-coordination/_index.md</span>
-        <span>read&nbsp;↗</span>
-      </div>
-    </a>
-
-    <a class="doc-card" href="#" data-comment-anchor="doc-memory">
-      <div class="doc-card-flag">
-        <span>Fig. 07 — Memory</span>
-        <span>Doc&nbsp;/&nbsp;03</span>
-      </div>
-      <h3 class="doc-card-h">Five layers of&nbsp;<em>recall.</em></h3>
-      <p class="doc-card-lead">
-        Sessions live in Redis; short-term memory decays on an Ebbinghaus
-        curve; whatever survives is promoted into long-term semantic facts —
-        searchable, scoped to a workspace.
-      </p>
-      <div class="doc-diagram" data-fig="Fig. 07a · unified_memory_service.py">
-        <div class="row"><span class="ix">L0</span><span class="nm">focus · context window</span></div>
-        <div class="row"><span class="ix">L1</span><span class="nm">session · redis · 24h&nbsp;ttl</span></div>
-        <div class="row"><span class="ix">↓</span><span class="nm">consolidate on expiry</span></div>
-        <div class="row"><span class="ix">L2</span><span class="nm">short&#8209;term · postgres</span></div>
-        <div class="row indent"><span class="ix">·</span><span class="nm">decay = importance · e^(−rate&nbsp;·&nbsp;hours)</span></div>
-        <div class="row"><span class="ix">↓</span><span class="nm">access&#8209;count&nbsp;≥&nbsp;3 · promote</span></div>
-        <div class="row"><span class="ix">L3</span><span class="nm">long&#8209;term · mem0 + qdrant</span></div>
-        <div class="row"><span class="ix">L4</span><span class="nm">knowledge · rag · tools</span></div>
-      </div>
-      <p class="doc-quote">
-        "Sessions promote into facts; facts decay until they earn a place."
-      </p>
-      <div class="doc-card-foot">
-        <span>/docs/memory-system/_index.md</span>
-        <span>read&nbsp;↗</span>
-      </div>
-    </a>
-
-  </div>
-</section>
-
-<!-- ─────────────────────────────────────────────────────────
-     CHAPTER 01 — WORKFORCE
-     ───────────────────────────────────────────────────────── -->
-<section class="chapter" id="ch-workforce" data-comment-anchor="ch-workforce">
-  <div class="chapter-meta">
-    <div><span class="pill">Chapter 01</span> The workforce</div>
-    <div>Build, install &amp; orchestrate <b>specialised agents</b></div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Marketplace · 100<sup>+</sup> agents</div>
-  </div>
-  <div class="chapter-body">
-    <aside class="chapter-side">
-      <div class="chapter-num">01<small>The workforce</small></div>
-    </aside>
-    <div class="chapter-content">
-      <h2 class="chapter-h">
-        Hire the agents.<br />
-        Equip them with <em>skills.</em><br />
-        Let them work.
-      </h2>
-      <p class="chapter-lead">
-        100+ marketplace agents — Code Reviewer, QA Engineer, Sentinel, Scribe,
-        researcher and marketer roles, Shopify specialists, more. Each one
-        carries its own model config, persona, capabilities and performance
-        history. Install from the marketplace, or build a custom agent in
-        seconds.
-      </p>
-
-      <div class="chapter-list">
-        <div class="chapter-list-item">
-          <span class="num">/01</span>
-          <span class="label"><b>Skills, not prompts.</b><span>150+ portable capability packs — system prompt, tool set, output contract — drop onto any agent.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/02</span>
-          <span class="label"><b>Workspace bundles.</b><span>Install a whole team in one click — agents, skills, playbooks and dashboard widgets pre-wired together.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/03</span>
-          <span class="label"><b>Persona &amp; metrics.</b><span>Each agent ships with a persona, model config, and visible performance over time.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/04</span>
-          <span class="label"><b>Build your own.</b><span>From a blank canvas or by forking marketplace agents. Versioned, exportable, testable.</span></span>
-        </div>
-      </div>
-    </div>
-    <aside class="chapter-aside">
-      <div class="plate plate-watchbill" id="ch01Img">
-        <div class="wb-title">Watch bill <small>Vol. 19 &middot; Wk 04</small></div>
-        <div class="wb-sub"><span>Crew &middot; 100<sup>+</sup> rated</span><span>Drawn &middot; K. Halford</span></div>
-        <table>
-          <thead><tr><th>No.</th><th>Name</th><th>Rating</th><th>Wtch</th></tr></thead>
-          <tbody>
-            <tr><td class="num">01</td><td class="name">Sentinel</td><td>Code Reviewer</td><td class="watch">A</td></tr>
-            <tr><td class="num">02</td><td class="name">Scribe</td><td>QA Engineer</td><td class="watch">A</td></tr>
-            <tr><td class="num">03</td><td class="name">Halberd</td><td>Researcher</td><td class="watch">B</td></tr>
-            <tr><td class="num">04</td><td class="name">Cooper</td><td>Shopify Ops</td><td class="watch">B</td></tr>
-            <tr><td class="num">05</td><td class="name">Marlow</td><td>Growth Strategy</td><td class="watch">C</td></tr>
-            <tr><td class="num">06</td><td class="name">Pemberton</td><td>Social Mgmt</td><td class="watch">C</td></tr>
-            <tr><td class="num">07</td><td class="name">north_lattice</td><td>Indexer</td><td class="watch">&mdash;</td></tr>
-            <tr><td class="num">08</td><td class="name">Veld</td><td>Custom &middot; forked</td><td class="watch">&mdash;</td></tr>
-          </tbody>
-        </table>
-        <div class="wb-stamp">Mustered<b>04 &middot; 26</b></div>
-        <div class="wb-foot"><span>Marketplace &middot; 100<sup>+</sup></span><span>Bring your own</span></div>
-      </div>
-      <div class="photo-caption"><span>Fig. 01 &mdash; Watch bill</span><span>Plate&nbsp;/&nbsp;001</span></div>
-    </aside>
-  </div>
-</section>
-
-<!-- ─────────────────────────────────────────────────────────
      CHAPTER 02 — ORCHESTRATE (architecture diagram)
      ───────────────────────────────────────────────────────── -->
 <section class="chapter" id="ch-orchestrate" data-comment-anchor="ch-orchestrate">
@@ -1719,7 +1662,7 @@ html { scroll-behavior: smooth; }
         The <em>right agent</em> takes it.
       </h2>
       <p class="chapter-lead">
-        A four-tier router — cache, rules, semantic, LLM — sends every message
+        A seven-tier router — overrides, cache, rules, semantic, LLM — sends every message
         to the agent best positioned to handle it. Missions chain agents into
         multi-step workflows with scheduling, triggers and inter-agent
         coordination. Sandboxed workspaces let them run code, manage files, and
@@ -1738,10 +1681,6 @@ html { scroll-behavior: smooth; }
         <div class="chapter-list-item">
           <span class="num">/03</span>
           <span class="label"><b>Workspace execution.</b><span>Sandboxed environments — run code, manage files, edit Git.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/04</span>
-          <span class="label"><b>Multi-tenancy.</b><span>Each team isolates their agents, data and config. Default on.</span></span>
         </div>
       </div>
     </div>
@@ -1840,22 +1779,6 @@ html { scroll-behavior: smooth; }
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     QUOTE
-     ───────────────────────────────────────────────────────── -->
-<section class="quote" data-comment-anchor="quote">
-  <div class="quote-meta">Field note&nbsp;/&nbsp;01</div>
-  <p class="quote-body">
-    “The closest thing I've used to <span class="nonitalic">hiring a team</span>
-    — except the team is awake at 3am, knows our codebase, and reports back
-    with what it shipped.”
-  </p>
-  <div class="quote-attr">
-    <b>K. Hollander</b>
-    <span>Head of Ops · Ledger House</span>
-  </div>
-</section>
-
-<!-- ─────────────────────────────────────────────────────────
      CHAPTER 04 — OPEN SOURCE (full-bleed photo band)
      ───────────────────────────────────────────────────────── -->
 <section class="chapter" id="ch-oss" data-comment-anchor="ch-oss">
@@ -1892,10 +1815,6 @@ html { scroll-behavior: smooth; }
         <div class="chapter-list-item">
           <span class="num">/03</span>
           <span class="label"><b>BYO keys.</b><span>OpenAI, Anthropic, Google, DeepSeek, Mistral, Qwen, Llama.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/04</span>
-          <span class="label"><b>Auditable.</b><span>Every routing decision, every tool call, every prompt — in trace.</span></span>
         </div>
       </div>
     </div>
@@ -1935,10 +1854,6 @@ html { scroll-behavior: smooth; }
             <circle cx="300" cy="30" r="5" fill="#5B7C68" stroke="none"></circle>
             <circle cx="300" cy="30" r="14" stroke="#5B7C68" stroke-width="1" stroke-opacity=".45" fill="none"></circle>
             <circle cx="300" cy="30" r="24" stroke="#5B7C68" stroke-width=".5" stroke-opacity=".22" fill="none"></circle>
-            <path d="M200 225 L200 130 L100 130" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
-            <circle cx="200" cy="225" r="2.5" fill="#0F1411" stroke="none"></circle>
-            <text x="96" y="126" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411" text-anchor="end">5-TIER ROUTER</text>
-            <text x="96" y="138" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="end">cache &middot; rules &middot; sem &middot; LLM</text>
             <path d="M280 252 L280 320 L420 320" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
             <circle cx="280" cy="252" r="2.5" fill="#0F1411" stroke="none"></circle>
             <text x="424" y="318" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411">PG &middot; S3 &middot; pgvector</text>
