@@ -18,6 +18,45 @@
   const API_BASE  = (cfg.apiBase || 'https://api.automatos.app') + '/api/widgets/blog';
   const WORKSPACE = cfg.workspaceId;
 
+  // Hand-coded papers that never went through the CMS. Mirror of the
+  // STATIC_POSTS list in _research.js (which powers the /research index):
+  // the index renders the card, this map lets the single-post page render
+  // the paper itself. Body HTML is served statically from content_url — the
+  // same fragment that would paste into a CMS post body. A published CMS
+  // version always wins (see load()), so this is a fallback, not an override.
+  const STATIC_POSTS = {
+    'from-tool-lists-to-operating-graphs': {
+      title: 'From Tool Lists to Operating Graphs',
+      slug: 'from-tool-lists-to-operating-graphs',
+      excerpt: "Why the next bottleneck in AI agents isn't tool use — it's tool selection at scale. The pre-prompt intelligence layer that decides what deserves to enter the prompt at all.",
+      seo_description: "Why the next bottleneck in AI agents isn't tool use — it's tool selection at scale. The pre-prompt intelligence layer that decides what deserves to enter the prompt at all.",
+      cover_image_url: '/images/tool-routing-operating-graphs-cover.png',
+      tags: ['Tool Routing', 'Attention Budget', 'Operating Graphs', 'Prompt Engineering', 'Agent Architecture'],
+      author_name: 'Gerard Kavanagh',
+      published_at: '2026-05-02T00:00:00Z',
+      reading_time_minutes: 15,
+      category: 'Research',
+      content_url: '/uploads/from-tool-lists-to-operating-graphs.html',
+    },
+  };
+
+  // Resolve a static post's body: fetch its content_url (same-origin static
+  // HTML) when no inline content is present. Returns a NEW object — never
+  // mutates the source — and degrades to the untouched post on failure so
+  // the masthead still renders even if the body fetch fails.
+  async function resolveContent(post) {
+    if (post.content || !post.content_url) return post;
+    try {
+      const r = await fetch(post.content_url);
+      if (!r.ok) throw new Error(`content ${r.status}`);
+      const html = await r.text();
+      return { ...post, content: html };
+    } catch (err) {
+      console.warn('[blogpost] static content fetch failed:', err && err.message ? err.message : err);
+      return post;
+    }
+  }
+
   function getSlug() {
     const path = window.location.pathname.replace(/\/+$/, '');
     const m = path.match(/^\/(?:blog|research)\/(.+)$/);
@@ -287,18 +326,29 @@
     adoptResearchContext();
     const slug = getSlug();
     if (!slug) { fail('No post specified.'); return; }
-    if (!WORKSPACE) { fail('Blog config missing.'); return; }
-    try {
-      const url = `${API_BASE}/posts/${encodeURIComponent(slug)}?workspace_id=${encodeURIComponent(WORKSPACE)}`;
-      const r = await fetch(url);
-      if (r.status === 404) { fail(); return; }
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const post = await r.json();
-      renderPost(post);
-    } catch (err) {
-      console.warn('[blogpost] fetch failed:', err && err.message ? err.message : err);
-      fail();
+
+    const staticPost = STATIC_POSTS[slug] || null;
+
+    // Prefer the CMS so a published version always wins; fall back to the
+    // hand-coded static paper when the API 404s, errors, or isn't configured.
+    if (WORKSPACE) {
+      try {
+        const url = `${API_BASE}/posts/${encodeURIComponent(slug)}?workspace_id=${encodeURIComponent(WORKSPACE)}`;
+        const r = await fetch(url);
+        if (r.ok) { renderPost(await r.json()); return; }
+        if (r.status !== 404) throw new Error(`HTTP ${r.status}`);
+        // 404 → fall through to the static fallback below
+      } catch (err) {
+        console.warn('[blogpost] fetch failed:', err && err.message ? err.message : err);
+        // network/HTTP error → fall through to the static fallback below
+      }
     }
+
+    if (staticPost) {
+      renderPost(await resolveContent(staticPost));
+      return;
+    }
+    fail();
   }
 
   if (document.readyState === 'loading') {

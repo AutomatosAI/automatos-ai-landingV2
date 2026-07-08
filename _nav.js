@@ -24,7 +24,8 @@
     { num: '/02', label: 'Marketplace',  href: '/marketplace',    em: null },
     { num: '/03', label: 'Pricing',      href: '/pricing',        em: null },
     { num: '/04', label: 'Docs',         href: 'https://docs.automatos.app/', em: null, external: true },
-    { num: '/05', label: 'Field',        href: '/field-notes',    em: 'notes' },
+    { num: '/05', label: 'Academy',      href: '/academy',        em: null },
+    { num: '/06', label: 'Field',        href: '/field-notes',    em: 'notes' },
   ];
 
   function el(tag, attrs, kids) {
