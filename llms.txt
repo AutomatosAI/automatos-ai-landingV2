@@ -14,6 +14,11 @@
 - [Market Intelligence](https://markets.automatos.app): Crypto market signals with receipts, powered by Automatos AI. Free during the pilot; not financial advice.
 - Editions: Local (open source, Apache 2.0), SaaS (live), Enterprise (your own Kubernetes cluster from a CI-tested Helm chart; single sign-on next).
 
+## Compliance
+
+- [EU AI Act](https://automatos.app/eu-ai-act): Where Automatos stands against the Act, article by article: in the product today, partly there, or on the roadmap. Not certified.
+- [EU AI Act checker](https://automatos.app/eu-ai-act/checker): A free five-question classifier that runs in the browser.
+
 ## Writing
 
 - [Field notes](https://automatos.app/field-notes): Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and pilot operators.

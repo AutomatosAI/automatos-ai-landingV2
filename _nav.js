@@ -96,10 +96,10 @@
     });
 
     const foot = el('div', { class: 'nav-drawer__foot' }, [
-      el('a', { href: 'https://ui.automatos.app/sign-in', text: 'Sign in' }),
+      el('a', { href: 'https://github.com/AutomatosAI/automatos-ai', target: '_blank', rel: 'noopener', text: 'GitHub' }),
       (function () {
-        const a = el('a', { class: 'solid', href: 'https://ui.automatos.app', target: '_blank', rel: 'noopener' });
-        a.appendChild(document.createTextNode('Try Studio '));
+        const a = el('a', { class: 'solid', href: '/contact' });
+        a.appendChild(document.createTextNode('Contact '));
         const arr = document.createElement('span');
         arr.textContent = '→';
         arr.style.fontFamily = 'var(--serif)';
@@ -108,7 +108,6 @@
         return a;
       })(),
       el('div', { class: 'nav-drawer__meta' }, [
-        el('span', { text: 'v1.36.04' }),
         el('span', { text: 'Apache · 2.0' }),
       ]),
     ]);

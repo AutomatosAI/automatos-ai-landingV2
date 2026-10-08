@@ -13,6 +13,8 @@ Static-mock filenames map to future production routes. When porting to Astro/Nex
 | `/terms` | `terms.html` | wired |
 | `/privacy` | `privacy.html` | wired |
 | `/cookies` | `cookies.html` | wired |
+| `/eu-ai-act` | `eu-ai-act.html` | wired |
+| `/eu-ai-act/checker` | `eu-ai-act-checker.html` | wired (route in server.js) |
 | `/field-notes` | `field-notes.html` | wired |
 | `/field-notes/why-the-router-is-five-tiers` | `field-notes-five-tiers.html` | wired (one example article) |
 | `/404` (catch-all) | `404.html` | wired |
@@ -37,7 +39,6 @@ These appear in nav and CTAs but have no mock and no route — decide when porti
 - `/app` — likely redirects to `app.automatos.ai`
 - `/changelog` — could be a `/changelog` page or a Field Notes category
 - `/research` — research papers index (v1 had this; secondary in brief)
-- `/eu-ai-act` — credibility page (v1 had this; secondary in brief)
 
 ## Field Notes — content needs
 

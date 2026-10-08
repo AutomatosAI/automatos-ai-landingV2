@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EU AI Act · Automatos AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2EDE4;--bg-2:#ECE6D9;--bg-3:#E2DBC9;--fg:#0F1411;--fg-2:#3A3F3A;--muted:#8A8B83;--rule-c:#D9D2C0;--rule-strong:#B6AE99;--accent:#5B7C68;--accent-ink:#F2EDE4;--serif:"Instrument Serif",Georgia,serif;--sans:"Geist",sans-serif;--mono:"Geist Mono",monospace;--gutter:60px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:16px var(--gutter);border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand{font-family:var(--serif);font-size:22px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
+.brand em{font-style:italic;color:var(--muted)}
+.brand-mark { display: inline-block; width: 22px; height: 22px; margin-right: 10px; background: url("/images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .brand-mark { background-image: url("/images/automatos-mark-white.png"); } /* brand-mark image swap — patched */
+.topbar nav{display:flex;gap:28px;justify-content:center}
+.topbar nav a:hover{color:var(--fg)}
+.topbar > :last-child{text-align:right;display:flex;gap:16px;justify-content:flex-end;align-items:center}
+.topbar .cta{color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:2px}
+.masthead{display:grid;grid-template-columns:240px 1fr 1fr;border-bottom:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.masthead > div{padding:18px 28px;border-right:1px solid var(--rule-c);display:flex;align-items:center;gap:10px}
+.masthead > div:last-child{border-right:0;justify-content:flex-end}
+.masthead b{color:var(--fg);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg)}
+.title-block{padding:80px var(--gutter) 48px;border-bottom:1px solid var(--rule-c);display:grid;grid-template-columns:1.4fr 1fr;gap:80px;align-items:end}
+.title-block h1{font-family:var(--serif);font-size:88px;line-height:.96;letter-spacing:-.025em;text-wrap:balance}
+.title-block h1 em{font-style:italic;color:var(--muted)}
+.title-block .dek{margin-top:24px;font-size:18px;color:var(--fg-2);max-width:50ch;line-height:1.55}
+.title-block .meta{display:grid;gap:14px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.title-block .meta b{color:var(--fg);font-weight:500}
+.tabs{display:flex;border-bottom:1px solid var(--rule-c)}
+.tabs a{padding:18px 28px;border-right:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tabs a.is-on{color:var(--fg);background:var(--bg-2)}
+.tabs a:hover{color:var(--fg)}
+.body{display:grid;grid-template-columns:240px minmax(0,1fr) 60px;padding:64px var(--gutter) 80px;border-bottom:1px solid var(--rule-c);gap:56px;align-items:start}
+.toc{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);position:sticky;top:24px;display:grid;gap:6px}
+.toc .sec{color:var(--fg);margin-bottom:6px}
+.toc a{padding:5px 0;border-bottom:1px dashed var(--rule-c);display:block}
+.toc a:hover{color:var(--fg)}
+.prose{max-width:68ch;font-size:16.5px;line-height:1.65}
+.prose h2{font-family:var(--serif);font-size:36px;line-height:1.1;letter-spacing:-.015em;margin:48px 0 18px;scroll-margin-top:24px}
+.prose h2 em{font-style:italic;color:var(--muted)}
+.prose h2 .num{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.prose p{margin-bottom:18px;text-wrap:pretty}
+.prose ul{margin:0 0 18px 22px}
+.prose ul li{margin-bottom:6px}
+.prose .plain{padding:14px 18px;background:var(--bg-2);border-left:2px solid var(--accent);margin:8px 0 22px;font-style:italic;font-family:var(--serif);font-size:18px;line-height:1.5}
+.prose .plain b{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:500;display:block;margin-bottom:6px;letter-spacing:.18em}
+.prose code{font-family:var(--mono);font-size:14px;background:var(--bg-2);padding:1px 6px;border:1px solid var(--rule-c)}
+.foot{padding:36px var(--gutter);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+
+/* ── pitch (dark) mode overrides — added by wiring pass ── */
+body[data-mood="pitch"] {
+  --bg:         #0F1411;
+  --bg-2:       #15191A;
+  --bg-3:       #1B2120;
+  --fg:         #F2EDE4;
+  --fg-2:       #C9C3B5;
+  --muted:      #7A8079;
+  --rule-c:     #262B27;
+  --rule-strong:#3A3F3A;
+  --accent:     #7FA08A;
+  --accent-ink: #0F1411;
+}
+body[data-mood="pitch"] img,
+body[data-mood="pitch"] .photo,
+body[data-mood="pitch"] [class*="photo"],
+body[data-mood="pitch"] [class*="vis-"] {
+  filter: brightness(0.92) saturate(0.92);
+}
+
+/* EU AI Act pages (8 Oct 2026): the posture and the checker */
+.aa-wrap{padding:64px var(--gutter) 80px;border-bottom:1px solid var(--rule-c)}
+.aa-sec{max-width:1080px;margin:0 auto 72px}
+.aa-sec:last-child{margin-bottom:0}
+.aa-sec>h2{font-family:var(--serif);font-weight:400;font-size:44px;line-height:1.05;letter-spacing:-.018em;margin-bottom:14px}
+.aa-sec>h2 em{font-style:italic;color:var(--muted)}
+.aa-sec>p.lead{font-size:17px;line-height:1.55;color:var(--fg-2);max-width:62ch;margin-bottom:28px}
+.aa-grid{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--rule-c);border-left:1px solid var(--rule-c)}
+.aa-card{padding:24px;border-right:1px solid var(--rule-c);border-bottom:1px solid var(--rule-c);display:grid;gap:10px;align-content:start}
+.aa-card h3{font-family:var(--serif);font-weight:400;font-size:26px;line-height:1.1}
+.aa-card p,.aa-card li{font-size:14.5px;line-height:1.55;color:var(--fg-2)}
+.aa-card ul{list-style:none;display:grid;gap:8px}
+.aa-card li::before{content:"— ";color:var(--muted)}
+.aa-k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.aa-status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--rule-strong);color:var(--fg-2);white-space:nowrap}
+.aa-status.in{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.aa-status.part,.aa-status.next{border-style:dashed;color:var(--muted)}
+.aa-table-wrap{overflow-x:auto;border:1px solid var(--rule-c)}
+.aa-table{width:100%;border-collapse:collapse;min-width:760px}
+.aa-table th,.aa-table td{text-align:left;vertical-align:top;padding:16px 18px;border-bottom:1px solid var(--rule-c);font-size:14.5px;line-height:1.5}
+.aa-table thead th{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);background:var(--bg-2)}
+.aa-table tbody tr:last-child td,.aa-table tbody tr:last-child th{border-bottom:0}
+.aa-table tbody th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--fg);white-space:nowrap}
+.aa-table td:nth-of-type(1){color:var(--fg);width:22%}
+.aa-table td:nth-of-type(2){color:var(--fg-2)}
+.aa-table td:nth-of-type(3){width:110px}
+.aa-faq details{border-top:1px solid var(--rule-c);padding:18px 0}
+.aa-faq details:last-child{border-bottom:1px solid var(--rule-c)}
+.aa-faq summary{cursor:pointer;font-family:var(--serif);font-size:24px;line-height:1.2;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.aa-faq summary::-webkit-details-marker{display:none}
+.aa-faq summary::after{content:"+";font-family:var(--mono);color:var(--muted)}
+.aa-faq details[open] summary::after{content:"−"}
+.aa-faq details p{margin-top:12px;font-size:15.5px;line-height:1.6;color:var(--fg-2);max-width:72ch}
+.aa-cta{border:1px solid var(--rule-strong);background:var(--bg-2);padding:40px;display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.aa-cta h2{font-family:var(--serif);font-weight:400;font-size:40px;line-height:1.05}
+.aa-cta h2 em{font-style:italic;color:var(--muted)}
+.aa-cta p{font-size:15.5px;line-height:1.55;color:var(--fg-2);margin-top:12px}
+.aa-actions,.ck-actions{display:flex;flex-wrap:wrap;gap:8px}
+.aa-btn,.ck-btn{display:inline-flex;align-items:center;gap:10px;padding:13px 16px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--rule-strong);color:var(--fg);background:transparent;cursor:pointer}
+.aa-btn:hover,.ck-btn:hover{background:var(--bg-3,var(--bg-2))}
+.aa-btn.solid,.ck-btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.aa-btn.solid:hover,.ck-btn.solid:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ck-btn[disabled]{opacity:.4;cursor:not-allowed}
+.aa-note{font-size:13px;line-height:1.6;color:var(--muted);max-width:80ch;border-top:1px solid var(--rule-c);padding-top:20px}
+/* checker */
+.ck{max-width:900px;margin:0 auto;display:grid;gap:22px;scroll-margin-top:24px}
+.ck-q{border:1px solid var(--rule-c);padding:24px;display:grid;gap:12px}
+.ck-q legend{display:flex;gap:14px;align-items:baseline;font-family:var(--serif);font-size:26px;line-height:1.15;padding:0 6px}
+.ck-num{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--muted)}
+.ck-desc{font-size:14.5px;color:var(--fg-2);line-height:1.5}
+.ck-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ck-opt{text-align:left;padding:12px 14px;border:1px solid var(--rule-c);background:var(--bg);font:inherit;font-size:14px;line-height:1.4;color:var(--fg);cursor:pointer}
+.ck-opt:hover{border-color:var(--rule-strong);background:var(--bg-2)}
+.ck-opt[aria-checked="true"]{border-color:var(--fg);background:var(--bg-2);box-shadow:inset 3px 0 0 var(--accent)}
+.ck-opt:focus-visible,.ck-btn:focus-visible,.aa-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ck-submit{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.ck-count{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ck-result{display:grid;gap:18px}
+.ck-tier{border:1px solid var(--rule-strong);padding:28px;border-left-width:6px}
+.ck-tier h2{font-family:var(--serif);font-weight:400;font-size:52px;line-height:1;margin:8px 0 12px}
+.ck-tier p{font-size:16px;line-height:1.55;color:var(--fg-2);max-width:64ch}
+.ck-k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.tier-prohibited .ck-tier{border-left-color:#9b2c1f}
+.tier-high .ck-tier{border-left-color:#b8641b}
+.tier-limited .ck-tier{border-left-color:#b89a2b}
+.tier-minimal .ck-tier{border-left-color:var(--accent)}
+.ck-block{border:1px solid var(--rule-c);padding:22px 24px;display:grid;gap:12px}
+.ck-block h3{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ck-block p{font-size:15px;line-height:1.55;color:var(--fg-2)}
+.ck-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ck-tags span{font-family:var(--mono);font-size:12px;padding:5px 9px;border:1px solid var(--rule-strong)}
+.ck-list{list-style:none;display:grid;gap:8px;font-size:15px;line-height:1.5}
+.ck-list li::before{content:"✓ ";color:var(--accent)}
+.ck-why li::before{content:"→ ";color:var(--muted)}
+.ck-fit{background:var(--bg-2)}
+.ck-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+@media (max-width:900px){.aa-wrap{padding:44px 20px 56px}.aa-grid,.ck-opts{grid-template-columns:1fr}.aa-cta{grid-template-columns:1fr;padding:28px}.aa-sec>h2{font-size:34px}}
+
+</style><link rel="stylesheet" href="/_responsive.css?v=20260511h">
+<!-- Open Graph + Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Automatos AI">
+<meta property="og:url" content="https://automatos.app/eu-ai-act">
+<meta property="og:title" content="EU AI Act · Automatos AI">
+<meta property="og:description" content="Where Automatos stands against the EU AI Act, article by article: what's in the product today, what's partly there, and what's on the roadmap.">
+<meta property="og:image" content="https://automatos.app/images/og/terms.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@automatosai">
+<meta name="twitter:title" content="EU AI Act · Automatos AI">
+<meta name="twitter:description" content="Where Automatos stands against the EU AI Act, article by article: what's in the product today, what's partly there, and what's on the roadmap.">
+<meta name="twitter:image" content="https://automatos.app/images/og/terms.jpg">
+<meta name="description" content="Where Automatos stands against the EU AI Act, article by article: what's in the product today, what's partly there, and what's on the roadmap.">
+<link rel="canonical" href="https://automatos.app/eu-ai-act">
+<script src="/_analytics.js?v=20260512a" defer></script>
+</head><body data-mood="bone" data-screen-label="EU AI Act — posture">
+
+<header class="topbar">
+  <div><a class="brand" href="/"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <nav>
+    <a href="/">The OS</a>
+    <a href="/#family">Family</a>
+    <a href="/#developers">Developers</a>
+    <a href="/academy">Academy</a>
+    <a href="/field-notes">Field notes</a>
+    <a href="/research">Research</a>
+  </nav>
+  <div><a href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">GitHub</a><a href="/contact" class="cta">Contact →</a></div>
+</header>
+
+<div class="masthead">
+  <div><span class="pill">Plate&nbsp;/&nbsp;EU</span> EU AI Act</div>
+  <div>What's in the product, what's partly there, what's next.</div>
+  <div><b>Reviewed</b>&nbsp;· 8 Oct 2026</div>
+</div>
+
+<section class="title-block">
+  <div>
+    <h1>The EU AI Act, <em>honestly.</em></h1>
+    <p class="dek">Where Automatos stands against the Act's obligations, article by article. We mark each one as in the product today, partly there, or on the roadmap, and we only say “in the product” where the code backs it. Automatos is not certified: no notified body certifies most AI Act categories yet.</p>
+  </div>
+  <div class="meta">
+    <div><b>Reviewed</b> · 8 October 2026</div>
+    <div><b>Covers</b> · Automatos OS and Studio</div>
+    <div><b>Free tool</b> · <a href="/eu-ai-act/checker">Classify your system →</a></div>
+  </div>
+</section>
+
+<div class="aa-wrap">
+
+  <section class="aa-sec" id="today">
+    <h2>In the product <em>today.</em></h2>
+    <p class="lead">The pieces a deployer can use now to meet their own obligations.</p>
+    <div class="aa-grid">
+      <article class="aa-card">
+        <span class="aa-k">Art. 14 · Human oversight</span>
+        <h3>Approvals a person controls</h3>
+        <p>Actions that spend money, publish or change things outside the workspace wait for a person. Approvals are granted, denied or revoked from one inbox, a mission's plan is approved before it runs, and missions and agents can be paused.</p>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">Art. 14 · supports Art. 9</span>
+        <h3>A risk class on every gated action</h3>
+        <p>Each gated tool action is classified as read, internal write, publish, external side effect or destructive, and mapped to an oversight tier: monitored, human on the loop, or human approval required. Every approval card shows the tier and why. This is our oversight scheme, not the Annex III classification.</p>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">Art. 12 · Record-keeping</span>
+        <h3>Audit logs kept at least 180 days</h3>
+        <p>Audit and orchestration events are append-only, and a hard floor keeps them for at least 180 days. They are not yet cryptographically tamper-evident.</p>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">Art. 9 · Art. 15</span>
+        <h3>Outputs checked against their brief</h3>
+        <p>A mission's task outputs are verified automatically against the task's success criteria before the work moves on.</p>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">GDPR</span>
+        <h3>Export and erasure</h3>
+        <p>Export a workspace's data as one bundle, or erase the whole workspace. Erasing a data subject removes their memories and reports exactly what could not be removed, rather than hiding the gaps.</p>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">Hosting</span>
+        <h3>Documents and vectors in the EU</h3>
+        <p>Document and vector storage runs on AWS in Ireland (eu-west-1) today. Models run with the provider you choose; bring your own key to control where inference happens.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="aa-sec" id="articles">
+    <h2>Article by <em>article.</em></h2>
+    <p class="lead">The Act's core obligations and where Automatos is on each. Reviewed as the product and the European AI Office's guidance change.</p>
+    <div class="aa-table-wrap">
+      <table class="aa-table">
+        <thead><tr><th scope="col">Article</th><th scope="col">Obligation</th><th scope="col">Where Automatos is</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Art. 5</th><td>Prohibited practices</td><td>A platform-wide filter for prohibited practices (social scoring, manipulation, biometric categorisation) is planned. Today deployers must not configure prohibited uses.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+          <tr><th scope="row">Art. 6 + Annex III</th><td>High-risk classification</td><td>Risk classes and oversight tiers on every gated action. An Annex III tier per agent and mission is planned.</td><td><span class="aa-status part">Partly</span></td></tr>
+          <tr><th scope="row">Art. 9</th><td>Risk management</td><td>Automatic verification of task outputs. An auditor-facing posture view is planned.</td><td><span class="aa-status part">Partly</span></td></tr>
+          <tr><th scope="row">Art. 10</th><td>Data governance</td><td>Provenance tracking for retrieval corpora is planned.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+          <tr><th scope="row">Art. 12</th><td>Record-keeping</td><td>Append-only audit logs with a 180-day floor. Tamper evidence and longer retention for high-risk use are planned.</td><td><span class="aa-status part">Partly</span></td></tr>
+          <tr><th scope="row">Art. 13</th><td>Transparency to deployers</td><td>Generated agent cards (capabilities, limits, oversight needs) are planned.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+          <tr><th scope="row">Art. 14</th><td>Human oversight</td><td>Grant, deny and revoke approvals, mission approval and pause. The policy plane that enforces the tiers ships switched off and says so; a workspace turns it on.</td><td><span class="aa-status in">In product</span></td></tr>
+          <tr><th scope="row">Art. 15</th><td>Accuracy and robustness</td><td>Output verification. Adversarial robustness testing is planned.</td><td><span class="aa-status part">Partly</span></td></tr>
+          <tr><th scope="row">Art. 43</th><td>Conformity assessment support</td><td>A platform-level Annex IV technical-documentation draft. Per-agent documentation and export are planned.</td><td><span class="aa-status part">Partly</span></td></tr>
+          <tr><th scope="row">Art. 50</th><td>Transparency to end users</td><td>A built-in AI-interaction notice for chat, voice and widgets is planned. Until then, add the disclosure in your own copy.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+          <tr><th scope="row">Art. 53–55</th><td>General-purpose AI models</td><td>These obligations sit with the model providers. Showing their disclosures in the model catalogue is planned.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+          <tr><th scope="row">Art. 73</th><td>Serious incident reporting</td><td>An incident-reporting workflow is planned.</td><td><span class="aa-status next">Roadmap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="aa-sec" id="split">
+    <h2>Provider and deployer: <em>who covers what.</em></h2>
+    <p class="lead">The Act splits responsibilities between the provider of an AI system and the deployer who uses it. Automatos provides the platform; the business running agents on it is usually the deployer.</p>
+    <div class="aa-grid">
+      <article class="aa-card">
+        <span class="aa-k">Automatos · provider of the platform</span>
+        <ul>
+          <li>The oversight and approval tooling, and the policy plane</li>
+          <li>Audit logging and its retention</li>
+          <li>Security of the platform</li>
+          <li>The platform's technical documentation</li>
+          <li>The roadmap above, delivered and published here</li>
+        </ul>
+      </article>
+      <article class="aa-card">
+        <span class="aa-k">You · deployer of your use case</span>
+        <ul>
+          <li>Classifying your use case (the checker is a start)</li>
+          <li>Meaningful human oversight: turn the policy plane on</li>
+          <li>Disclosing AI interaction to your end users</li>
+          <li>Risk assessment for your domain</li>
+          <li>Incident reporting to authorities where required</li>
+          <li>Legal counsel for any high-risk deployment</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="aa-sec" id="dates">
+    <h2>The <em>dates.</em></h2>
+    <div class="aa-table-wrap">
+      <table class="aa-table">
+        <thead><tr><th scope="col">From</th><th scope="col">What applies</th><th scope="col">Note</th><th scope="col"></th></tr></thead>
+        <tbody>
+          <tr><th scope="row">1 Aug 2024</th><td>The Act enters into force</td><td>Obligations then phase in.</td><td></td></tr>
+          <tr><th scope="row">2 Feb 2025</th><td>Prohibited practices banned; AI literacy</td><td>Articles 4 and 5.</td><td></td></tr>
+          <tr><th scope="row">2 Aug 2025</th><td>General-purpose AI model rules</td><td>Articles 53–55, for model providers.</td><td></td></tr>
+          <tr><th scope="row">2 Aug 2026</th><td>Most high-risk obligations</td><td>The EU has proposed moving some high-risk deadlines: check current guidance.</td><td></td></tr>
+          <tr><th scope="row">2 Aug 2027</th><td>High-risk AI in regulated products</td><td>Annex I systems.</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="aa-sec aa-faq" id="faq">
+    <h2>Common <em>questions.</em></h2>
+    <details><summary>Is Automatos EU AI Act certified?</summary><p>No, and nobody is yet for most categories: no notified certification body exists for them. This page shows what the platform does today and what's planned, so you can judge for yourself.</p></details>
+    <details><summary>Does using Automatos make my system compliant?</summary><p>Not on its own. Compliance depends on your use case and how you configure it. Automatos gives you human-oversight tooling and audit logs today; several obligations above are still on our roadmap, so plan for them with your counsel.</p></details>
+    <details><summary>Who is the provider and who is the deployer?</summary><p>Automatos provides the platform. The business that builds and runs agents on it is usually the deployer of the resulting AI system, and carries the deployer obligations for its use case.</p></details>
+    <details><summary>What if my use case is high-risk under Annex III?</summary><p>High-risk uses (HR screening, credit scoring, critical infrastructure, education, law enforcement and others) carry the full Chapter III obligations. Several of the platform pieces they need are on our roadmap today. Talk to us and to your own legal counsel before deploying.</p></details>
+    <details><summary>Does this cover GDPR?</summary><p>The AI Act and GDPR are separate. For GDPR, Automatos has workspace export, workspace erasure and data-subject erasure for memories, and our <a href="/privacy">Privacy Policy</a> applies.</p></details>
+    <details><summary>Where is my data?</summary><p>Document and vector storage runs on AWS in Ireland (eu-west-1) today. That's our current deployment, not a contractual residency guarantee. Inference runs with the model provider you choose.</p></details>
+  </section>
+
+  <section class="aa-sec">
+    <div class="aa-cta">
+      <div>
+        <h2>Where does your system <em>land?</em></h2>
+        <p>Five questions give you an indicative risk tier, the articles to review and an obligations checklist. It runs in your browser; nothing is sent.</p>
+      </div>
+      <div class="aa-actions">
+        <a class="aa-btn solid" href="/eu-ai-act/checker">Try the free checker →</a>
+        <a class="aa-btn" href="/contact">Talk to us</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="aa-sec">
+    <p class="aa-note">Last reviewed 8 October 2026. This page describes what the Automatos platform does and plans to do. It is not legal advice; deployers remain responsible for their own compliance with the EU AI Act and national law. Questions: <a href="/contact">contact us</a>.</p>
+  </section>
+</div>
+
+<div data-site-footer></div>
+<script src="/_theme.js?v=20260511d" defer></script>
+<script src="/_config.js?v=20260511d" defer></script>
+<script src="/_nav.js?v=20261008a" defer></script>
+<script src="/_chat.js?v=20260511d" defer></script>
+<script src="/_footer.js?v=20261008a" defer></script>
+</body></html>

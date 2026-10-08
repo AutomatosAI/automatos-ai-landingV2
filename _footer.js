@@ -7,7 +7,7 @@
  *
  * The family footer rules (Studio REDESIGN-PLAN §9, 6–8 Oct 2026):
  *   - the same skeleton on every Automatos site, each in its own skin;
- *   - one copyright line, "© 2026 Automatos AI Ltd";
+ *   - one copyright line, "© 2026 Automatos AI";
  *   - the family column appears on automatos.app only: product sites carry a
  *     single "Powered by Automatos AI" pill that links here;
  *   - the same social icons in the same order (X, Instagram, LinkedIn, GitHub,
@@ -30,7 +30,7 @@
         { label: 'Widgets & Shopify', href: '/#family' },
         { label: 'Enterprise', href: '/#editions' },
       ],
-      partners: ['BudStacks'],
+      partners: ['BudStacks', 'Shopify partners'],
     },
     {
       title: 'Developers',
@@ -55,6 +55,7 @@
         { label: 'Privacy Policy', href: '/privacy' },
         { label: 'Terms of Service', href: '/terms' },
         { label: 'Cookie Policy', href: '/cookies' },
+        { label: 'EU AI Act', href: '/eu-ai-act' },
       ],
     },
   ];
@@ -147,7 +148,7 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
   function render(slot) {
     const year = new Date().getFullYear();
     const foot = el('div', { class: 'sf-foot' }, [
-      el('span', { text: `© ${year} Automatos AI Ltd · Automatos OS is open source under Apache 2.0` }),
+      el('span', { text: `© ${year} Automatos AI · Automatos OS is open source under Apache 2.0` }),
       social(),
     ]);
     const footer = el('footer', { class: 'sf', 'aria-label': 'Site footer' }, [brand(), ...COLUMNS.map(column), foot]);

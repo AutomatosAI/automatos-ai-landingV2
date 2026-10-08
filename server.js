@@ -140,6 +140,8 @@ const STATIC_URLS = [
   { loc: "/terms",        priority: 0.3, changefreq: "yearly"  },
   { loc: "/privacy",      priority: 0.3, changefreq: "yearly"  },
   { loc: "/cookies",      priority: 0.3, changefreq: "yearly"  },
+  { loc: "/eu-ai-act",    priority: 0.7, changefreq: "monthly" },
+  { loc: "/eu-ai-act/checker", priority: 0.7, changefreq: "monthly" },
   { loc: "/field-notes",  priority: 0.9, changefreq: "daily"   },
   { loc: "/research",     priority: 0.9, changefreq: "weekly"  },
 ];
@@ -210,6 +212,13 @@ app.get("/sitemap.xml", async (_req, res) => {
   const xml = lines.join("\n");
   sitemapCache = { xml, at: now };
   res.send(xml);
+});
+
+// ── EU AI Act checker: /eu-ai-act/checker → eu-ai-act-checker.html ────
+// (/eu-ai-act itself is eu-ai-act.html through the static handler.)
+app.get(/^\/eu-ai-act\/checker\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.sendFile(resolve(__dirname, "eu-ai-act-checker.html"));
 });
 
 // ── Retired pages (8 Oct 2026) ───────────────────────────────────────
