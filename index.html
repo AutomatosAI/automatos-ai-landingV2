@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Automatos — An operating system for autonomous agent teams</title>
+<title>Automatos AI — One OS. Any interface.</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1307,7 +1307,7 @@ body[data-mood="pitch"] .plate-cutaway svg circle[stroke="#5B7C68"] { stroke: va
 
 /* ── chapter anchor scroll polish ── */
 html { scroll-behavior: smooth; }
-#ch-workforce, #ch-orchestrate, #ch-commands, #ch-oss { scroll-margin-top: 96px; }
+#os, #family, #editions, #different, #developers, #possible { scroll-margin-top: 96px; }
 
 
 /* footer social icons row */
@@ -1318,23 +1318,127 @@ html { scroll-behavior: smooth; }
 }
 .footer-social a:hover { color: var(--fg); }
 .footer-social svg { width: 18px; height: 18px; }
+
+/* ─────────────────────────────────────────────────────────────
+   ONE OS — the family hub, the family, editions, comparison,
+   lego (8 Oct 2026, REDESIGN-PLAN §10). Built from this page's
+   own tokens and the chapter/plate system above.
+   ───────────────────────────────────────────────────────────── */
+
+.runs-in em { transition: opacity .35s ease; display: inline-block; }
+
+/* plate 001 — the hub */
+.hub-plate { border-bottom: 1px solid var(--rule-c); }
+.hub-stage { padding: 40px var(--gutter) 48px; }
+.hub-svg { width: 100%; height: auto; display: block; max-width: 1240px; margin: 0 auto; overflow: visible; }
+.hub-fade { opacity: 0; animation: hub-fade .8s ease-out forwards; }
+.hub-spoke { stroke-dashoffset: var(--len); animation: hub-draw .6s ease-out forwards; }
+.hub-pop { opacity: 0; transform: scale(.4); animation: hub-pop .45s ease-out forwards; transform-box: view-box; }
+@keyframes hub-fade { to { opacity: 1; } }
+@keyframes hub-draw { to { stroke-dashoffset: 0; } }
+@keyframes hub-pop { to { opacity: 1; transform: scale(1); } }
+.hub-still .hub-fade, .hub-still .hub-pop { opacity: 1; transform: none; animation: none; }
+.hub-still .hub-spoke { stroke-dashoffset: 0; animation: none; }
+.hub-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 32px; margin-top: 18px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.hub-legend span, .hub-chip { display: inline-flex; align-items: center; gap: 8px; }
+.hub-legend span::before, .hub-chip::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dot); flex: none; }
+.hub-chips { display: none; gap: 22px; }
+.hub-chips-title { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; text-align: center; }
+.hub-chips-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.hub-chip { font-size: 13px; padding: 6px 12px; border: 1px solid var(--rule-c); background: var(--bg-2); }
+
+/* the OS modules */
+.os-modules { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 28px; }
+.os-modules span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--rule-c); background: var(--bg-2); color: var(--fg-2); }
+
+/* generic section body under a chapter-meta strip */
+.sec { padding: 60px var(--gutter) 72px; }
+.sec-head { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: end; margin-bottom: 44px; }
+.sec-head .chapter-lead { margin-top: 0; }
+
+/* the family */
+.fam-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule-c); border-left: 1px solid var(--rule-c); }
+.fam-card, .ed-card { padding: 26px 24px 24px; border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; align-content: start; background: var(--bg); }
+.fam-card-you { background: var(--bg-2); }
+.fam-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.fam-row h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.05; letter-spacing: -0.015em; }
+.fam-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 8px; border: 1px solid var(--rule-strong); color: var(--fg-2); white-space: nowrap; }
+.fam-status.is-live { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.fam-status.is-coming, .fam-status.is-building { border-style: dashed; color: var(--muted); }
+.fam-card dl { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font-size: 14px; }
+.fam-card dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.fam-note, .ed-card p { font-size: 14px; line-height: 1.5; color: var(--fg-2); }
+.fam-link { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg); display: inline-flex; gap: 10px; align-items: center; border-top: 1px solid var(--rule-c); padding-top: 14px; }
+.fam-link:hover { color: var(--accent); }
+
+/* editions */
+.ed-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule-c); border-left: 1px solid var(--rule-c); }
+.ed-card { grid-template-rows: auto 1fr auto; }
+.ed-card code { font-family: var(--mono); font-size: 12px; background: var(--bg-2); padding: 1px 5px; }
+.ed-list { list-style: none; display: grid; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.ed-list b { display: block; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+
+/* comparison */
+.cmp-wrap { overflow-x: auto; border: 1px solid var(--rule-c); }
+.cmp { width: 100%; border-collapse: collapse; min-width: 720px; }
+.cmp th, .cmp td { text-align: left; vertical-align: top; padding: 18px 22px; border-bottom: 1px solid var(--rule-c); font-size: 15px; line-height: 1.45; }
+.cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: 0; }
+.cmp thead th { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); background: var(--bg-2); }
+.cmp thead th:last-child { color: var(--fg); }
+.cmp tbody th { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); width: 16%; }
+.cmp td:nth-of-type(1) { color: var(--muted); width: 30%; }
+.cmp td:nth-of-type(2) { color: var(--fg); border-left: 1px solid var(--rule-c); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* lego */
+.lego-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule-c); border-left: 1px solid var(--rule-c); }
+.lego { padding: 26px 24px 28px; border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); display: grid; gap: 10px; align-content: start; }
+.lego h3 { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; letter-spacing: -0.012em; }
+.lego p { font-size: 14px; line-height: 1.5; color: var(--fg-2); }
+.lego-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+
+/* the developers grid is links */
+a.fgrid-cell { color: inherit; }
+a.fgrid-cell:hover { background: var(--bg-2); }
+.closer-right a.cl-item:hover .cl-h { text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 1180px) {
+  .fam-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1080px) {
+  .sec { padding: 48px 24px 56px; }
+  .sec-head { grid-template-columns: 1fr; gap: 20px; }
+  .hub-stage { padding: 28px 16px 36px; }
+  .ed-grid, .lego-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .hub-svg, .hub-legend { display: none; }
+  .hub-chips { display: grid; }
+  .fam-grid, .ed-grid, .lego-grid { grid-template-columns: 1fr; }
+  .fam-row h3 { font-size: 24px; }
+  .cmp th, .cmp td { padding: 14px 16px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .runs-in em { transition: none; }
+}
+
 </style>
 <link rel="stylesheet" href="_responsive.css?v=20260511h">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Automatos">
+<meta property="og:site_name" content="Automatos AI">
 <meta property="og:url" content="https://automatos.app/">
-<meta property="og:title" content="Automatos — An operating system for autonomous agent teams">
-<meta property="og:description" content="Design specialised agents, give them skills and knowledge, and run the room from one command centre. Apache 2.0 — self-host or hosted.">
+<meta property="og:title" content="Automatos AI — One OS. Any interface.">
+<meta property="og:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
 <meta property="og:image" content="https://automatos.app/images/og/default.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@automatosai">
-<meta name="twitter:title" content="Automatos — An operating system for autonomous agent teams">
-<meta name="twitter:description" content="Design specialised agents, give them skills and knowledge, and run the room from one command centre. Apache 2.0 — self-host or hosted.">
+<meta name="twitter:title" content="Automatos AI — One OS. Any interface.">
+<meta name="twitter:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
 <meta name="twitter:image" content="https://automatos.app/images/og/default.jpg">
-<meta name="description" content="Design specialised agents, give them skills and knowledge, and run the room from one command centre. Apache 2.0 — self-host or hosted.">
+<meta name="description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
 <link rel="canonical" href="https://automatos.app/">
 <script src="_analytics.js?v=20260512a" defer></script>
 <script type="application/ld+json">
@@ -1347,7 +1451,7 @@ html { scroll-behavior: smooth; }
       "name": "Automatos AI",
       "url": "https://automatos.app/",
       "logo": "https://automatos.app/images/automatos-mark-black.png",
-      "description": "An operating system for autonomous agent teams. Apache 2.0, self-host or hosted.",
+      "description": "One OS. Any interface. Automatos OS is the open-source, API-first engine behind Automatos Studio, Academy and Market Intelligence.",
       "sameAs": [
         "https://github.com/AutomatosAI/automatos-ai",
         "https://twitter.com/automatosai"
@@ -1380,18 +1484,16 @@ html { scroll-behavior: smooth; }
       <span class="brand-name">Automatos<em>·ai</em></span>
     </a>
     <nav class="nav">
-      <a class="nav-item is-current" href="index.html"><span>Platform</span></a>
-      <a class="nav-item" href="marketplace.html"><span>Marketplace</span></a>
-      <a class="nav-item" href="pricing.html"><span>Pricing</span></a>
-      <a class="nav-item" href="https://docs.automatos.app/" target="_blank" rel="noopener"><span>Docs</span></a>
+      <a class="nav-item is-current" href="index.html"><span>The OS</span></a>
+      <a class="nav-item" href="#family"><span>Family</span></a>
+      <a class="nav-item" href="#developers"><span>Developers</span></a>
       <a class="nav-item" href="academy.html"><span>Academy</span></a>
       <a class="nav-item" href="field-notes.html"><span>Field&nbsp;notes</span></a>
       <a class="nav-item" href="research.html"><span>Research</span></a>
     </nav>
     <div class="utilities">
-      <a class="util" href="#">Changelog <span style="color:var(--muted)">v1.36</span></a>
       <a class="util" href="https://ui.automatos.app/sign-in">Sign in</a>
-      <a class="util solid" href="#" data-waitlist>Start free <span class="arrow">→</span></a>
+      <a class="util solid" href="https://ui.automatos.app" target="_blank" rel="noopener">Try Studio <span class="arrow">→</span></a>
     </div>
   </div>
 </header>
@@ -1407,39 +1509,34 @@ html { scroll-behavior: smooth; }
 
   <div class="hero-content">
     <div class="hero-meta">
-      <span><b>Build</b> · 1.36.04</span>
-      <span><b>Tag</b> · Mission Engine</span>
-      <span><b>Status</b> · Operational</span>
+      <span><b>Automatos&nbsp;AI</b> · The company &amp; the OS</span>
+      <span><b>Open</b> · Apache&nbsp;2.0</span>
+      <span><b>Studio</b> · Live as SaaS</span>
     </div>
 
     <div>
       <h1 class="hero-headline">
-        An operating system<br />
-        for <em>autonomous</em> agent teams.
+        One OS.<br />
+        <em>Any interface.</em>
       </h1>
 
       <div class="hero-foot">
         <div>
           <p class="hero-lead">
-            Automatos is the open platform for AI workforces — design specialised
-            agents, equip them with skills and knowledge, schedule their work,
-            and run the whole room from one command centre.
+            Automatos OS is the engine: an open-source, API-first backend with
+            agents, memory, retrieval, knowledge graphs, NL2SQL, documents and
+            socials. Studio is where you run it. Everything else is built on
+            top of it.
           </p>
           <div class="hero-ctas">
-            <a class="btn solid" href="#">Start building <span class="arrow">→</span></a>
-            <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs <span class="arrow">→</span></a>
+            <a class="btn solid" href="https://ui.automatos.app" target="_blank" rel="noopener">Try Studio <span class="arrow">→</span></a>
+            <a class="btn" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">Self-host <span class="arrow">→</span></a>
           </div>
         </div>
 
         <div class="hero-backers">
-          <div class="eyebrow">Built&nbsp;on · the&nbsp;frontier · and&nbsp;the&nbsp;open</div>
-          <div class="hero-backers-line">
-            <em>OpenRouter</em><span class="sep">/</span>
-            <em>Anthropic</em><span class="sep">/</span>
-            <em>OpenAI</em><span class="sep">/</span>
-            <em>Google</em><span class="sep">/</span>
-            <em>Llama</em>
-          </div>
+          <div class="eyebrow">Runs in</div>
+          <div class="hero-backers-line runs-in" aria-live="polite"><em id="runsIn">Automatos Studio</em></div>
         </div>
       </div>
     </div>
@@ -1447,118 +1544,125 @@ html { scroll-behavior: smooth; }
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     THE LOOP — chat · assign · receive  (new)
+     PLATE 001 — THE FAMILY HUB
      ───────────────────────────────────────────────────────── -->
-<section class="workloop" id="loop" data-comment-anchor="workloop" data-screen-label="The loop">
+<section class="hub-plate" data-comment-anchor="hub" data-screen-label="Plate 001 — One OS">
   <div class="chapter-meta">
-    <div><span class="pill">The loop</span> A day on Automatos</div>
-    <div>Chat → Assign → <b>Receive</b> · run by Auto, your operator</div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;One room · one voice</div>
+    <div><span class="pill">Plate 001</span> One OS</div>
+    <div>The&nbsp;<b>engine</b>&nbsp;in the middle, every interface around it</div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Powered by Automatos AI</div>
   </div>
-  <div class="workloop-grid">
-    <div class="workloop-step">
-      <div class="workloop-num">/01 · Chat</div>
-      <h3 class="workloop-h">Tell Auto what you <em>need.</em></h3>
-      <p class="workloop-body">Auto is the operator in front of your whole workforce — one conversation, any request, his job to route it to the right agent.</p>
-    </div>
-    <div class="workloop-step">
-      <div class="workloop-num">/02 · Assign</div>
-      <h3 class="workloop-h">Work becomes a <em>playbook.</em></h3>
-      <p class="workloop-body">Conversations crystallise into assignments — scheduled, triggered, repeatable. Agents pick them up without being chased.</p>
-    </div>
-    <div class="workloop-step">
-      <div class="workloop-num">/03 · Receive</div>
-      <h3 class="workloop-h">Deliverables, in one <em>place.</em></h3>
-      <p class="workloop-body">Reports, files and drafts land on a single surface. Review, approve, send it back round — the loop tightens every week.</p>
-    </div>
-  </div>
+  <div class="hub-stage" data-family-hub></div>
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     CHAPTER 01 — WORKFORCE
+     CHAPTER 01 — THE OS
      ───────────────────────────────────────────────────────── -->
-<section class="chapter" id="ch-workforce" data-comment-anchor="ch-workforce">
+<section class="chapter" id="os" data-comment-anchor="ch-os">
   <div class="chapter-meta">
-    <div><span class="pill">Chapter 01</span> The workforce</div>
-    <div>Build, install &amp; orchestrate <b>specialised agents</b></div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Marketplace · 100<sup>+</sup> agents</div>
+    <div><span class="pill">Chapter 01</span> The OS</div>
+    <div><b>Headless</b>&nbsp;· API first · open source</div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;github.com/AutomatosAI</div>
   </div>
   <div class="chapter-body">
     <aside class="chapter-side">
-      <div class="chapter-num">01<small>The workforce</small></div>
+      <div class="chapter-num">01<small>The OS</small></div>
     </aside>
     <div class="chapter-content">
       <h2 class="chapter-h">
-        Hire the agents.<br />
-        Equip them with <em>skills.</em><br />
-        Let them work.
+        One engine underneath.<br />
+        <em>Any interface</em> on top.
       </h2>
       <p class="chapter-lead">
-        100+ marketplace agents — Code Reviewer, QA Engineer, Sentinel, Scribe,
-        researcher and marketer roles, Shopify specialists, more. Each one
-        carries its own model config, persona, capabilities and performance
-        history. Install from the marketplace, or build a custom agent in
-        seconds.
+        Automatos OS has no screen of its own. Agents, memory, retrieval,
+        graphs, NL2SQL, documents, socials and the harness that governs them
+        all sit behind one API. Studio is the first interface; widgets, chat
+        channels, our own products and yours are others.
       </p>
+
+      <div class="os-modules" aria-label="The OS modules">
+        <span>Auto</span><span>Agents</span><span>Memory</span><span>RAG</span><span>NL2SQL</span><span>Knowledge graphs</span><span>Documents</span><span>Socials</span><span>Analytics</span><span>Harness · governance, budgets, standards</span><span>Chat channels</span><span>1,000+ apps</span>
+      </div>
 
       <div class="chapter-list">
         <div class="chapter-list-item">
           <span class="num">/01</span>
-          <span class="label"><b>Running a store?</b><span>Install the Shopify Ops pack — inventory sentinel, order triage, refund reviewer, and a daily scribe posting to Slack.</span></span>
+          <span class="label"><b>API first.</b><span>Everything Studio does goes through the same API your own app can call.</span></span>
         </div>
         <div class="chapter-list-item">
           <span class="num">/02</span>
-          <span class="label"><b>Running an ops team?</b><span>Auto routes the busywork — triage, digests, weekly reports — and escalates only what needs a human.</span></span>
+          <span class="label"><b>Modules with walls.</b><span>17 feature modules whose boundaries CI enforces on every change.</span></span>
         </div>
         <div class="chapter-list-item">
           <span class="num">/03</span>
-          <span class="label"><b>Building alone?</b><span>Hire one agent in ten minutes. Add skills as the work grows; fork anything in the marketplace.</span></span>
+          <span class="label"><b>MCP.</b><span>Agents in Claude Code and Codex sessions call the OS's tools over MCP today.</span></span>
+        </div>
+        <div class="chapter-list-item">
+          <span class="num">/04</span>
+          <span class="label"><b>Apache 2.0.</b><span>Fork it, audit it, self-host it. Bring your own model keys.</span></span>
         </div>
       </div>
     </div>
     <aside class="chapter-aside">
-      <div class="plate plate-watchbill" id="ch01Img">
-        <div class="wb-title">Watch bill <small>Vol. 19 &middot; Wk 04</small></div>
-        <div class="wb-sub"><span>Crew &middot; 100<sup>+</sup> rated</span><span>Drawn &middot; K. Halford</span></div>
-        <table>
-          <thead><tr><th>No.</th><th>Name</th><th>Rating</th><th>Wtch</th></tr></thead>
-          <tbody>
-            <tr><td class="num">01</td><td class="name">Sentinel</td><td>Code Reviewer</td><td class="watch">A</td></tr>
-            <tr><td class="num">02</td><td class="name">Scribe</td><td>QA Engineer</td><td class="watch">A</td></tr>
-            <tr><td class="num">03</td><td class="name">Halberd</td><td>Researcher</td><td class="watch">B</td></tr>
-            <tr><td class="num">04</td><td class="name">Cooper</td><td>Shopify Ops</td><td class="watch">B</td></tr>
-            <tr><td class="num">05</td><td class="name">Marlow</td><td>Growth Strategy</td><td class="watch">C</td></tr>
-            <tr><td class="num">06</td><td class="name">Pemberton</td><td>Social Mgmt</td><td class="watch">C</td></tr>
-            <tr><td class="num">07</td><td class="name">north_lattice</td><td>Indexer</td><td class="watch">&mdash;</td></tr>
-            <tr><td class="num">08</td><td class="name">Veld</td><td>Custom &middot; forked</td><td class="watch">&mdash;</td></tr>
-          </tbody>
-        </table>
-        <div class="wb-stamp">Mustered<b>04 &middot; 26</b></div>
-        <div class="wb-foot"><span>Marketplace &middot; 100<sup>+</sup></span><span>Bring your own</span></div>
+      <div class="plate plate-cutaway" id="ch04Img">
+        <div class="ct-title">Cutaway <small>Plate &middot; 002</small></div>
+        <div class="ct-sub"><span>The hull &middot; annotated</span><span>Apache &middot; 2.0</span></div>
+        <div class="ct-stamp">Open<b>stack</b></div>
+        <div class="ct-stage">
+          <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#0F1411">
+            <line x1="20" y1="220" x2="580" y2="220" stroke-width="1" stroke-dasharray="3 4" opacity=".4"></line>
+            <line x1="20" y1="226" x2="580" y2="226" stroke-width=".5" opacity=".2"></line>
+            <path d="M20 232 Q80 228, 140 232 T260 232 T380 232 T500 232 T580 232" stroke-width=".5" opacity=".3"></path>
+            <path d="M60 220 Q72 200, 110 195 L490 195 Q528 200, 540 220 L515 295 Q300 318, 85 295 Z" stroke-width="2" fill="rgba(91,124,104,.05)"></path>
+            <line x1="80" y1="195" x2="520" y2="195" stroke-width="1.5"></line>
+            <line x1="90" y1="252" x2="510" y2="252" stroke-width="1" stroke-dasharray="2 3" opacity=".5"></line>
+            <line x1="160" y1="198" x2="160" y2="292" stroke-width="1" opacity=".5"></line>
+            <line x1="240" y1="198" x2="240" y2="295" stroke-width="1" opacity=".5"></line>
+            <line x1="320" y1="198" x2="320" y2="297" stroke-width="1" opacity=".5"></line>
+            <line x1="400" y1="198" x2="400" y2="295" stroke-width="1" opacity=".5"></line>
+            <line x1="470" y1="198" x2="470" y2="290" stroke-width="1" opacity=".5"></line>
+            <text x="120" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">ORCH</text>
+            <text x="200" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">ROUTER</text>
+            <text x="280" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">MEM</text>
+            <text x="360" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">TOOL</text>
+            <text x="435" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">AUTH</text>
+            <text x="498" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">OBS</text>
+            <text x="120" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">FastAPI</text>
+            <text x="200" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">5-tier</text>
+            <text x="280" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">Postgres</text>
+            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; A2A</text>
+            <text x="435" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OAuth &middot; JWT</text>
+            <text x="498" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OpenTel</text>
+            <line x1="300" y1="195" x2="300" y2="40" stroke-width="1.5"></line>
+            <rect x="290" y="46" width="20" height="14" stroke-width="1.5"></rect>
+            <line x1="285" y1="46" x2="315" y2="46" stroke-width="1.5"></line>
+            <circle cx="300" cy="30" r="5" fill="#5B7C68" stroke="none"></circle>
+            <circle cx="300" cy="30" r="14" stroke="#5B7C68" stroke-width="1" stroke-opacity=".45" fill="none"></circle>
+            <circle cx="300" cy="30" r="24" stroke="#5B7C68" stroke-width=".5" stroke-opacity=".22" fill="none"></circle>
+            <path d="M280 252 L280 320 L420 320" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
+            <circle cx="280" cy="252" r="2.5" fill="#0F1411" stroke="none"></circle>
+            <text x="424" y="318" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411">PG &middot; S3 &middot; pgvector</text>
+            <path d="M300 30 L180 30 L120 30" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
+            <text x="115" y="28" font-family="Geist Mono" font-size="8" letter-spacing="1.5" fill="#0F1411" text-anchor="end">PHAROS</text>
+            <text x="115" y="40" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="end">heading &middot; signal</text>
+            <g opacity=".7">
+              <line x1="60" y1="340" x2="160" y2="340" stroke-width="1"></line>
+              <line x1="60" y1="336" x2="60" y2="344" stroke-width="1"></line>
+              <line x1="110" y1="338" x2="110" y2="342" stroke-width="1"></line>
+              <line x1="160" y1="336" x2="160" y2="344" stroke-width="1"></line>
+              <text x="110" y="354" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="middle">SCALE &middot; 1 : 200</text>
+            </g>
+            <g transform="translate(540,340)" opacity=".7">
+              <circle r="9" stroke-width=".75"></circle>
+              <path d="M0 -9 L2 0 L0 2 L-2 0 Z" fill="#0F1411"></path>
+              <text x="0" y="-12" text-anchor="middle" font-family="Geist Mono" font-size="6" fill="#0F1411">N</text>
+            </g>
+          </svg>
+        </div>
+        <div class="ct-foot"><span>Next.js &middot; FastAPI &middot; Postgres &middot; S3</span><span>BYO keys &middot; self-host</span></div>
       </div>
-      <div class="photo-caption"><span>Fig. 01 &mdash; Watch bill</span><span>Plate&nbsp;/&nbsp;001</span></div>
+      <div class="photo-caption"><span>Fig. 02 &mdash; Cutaway</span><span>Plate&nbsp;/&nbsp;002</span></div>
     </aside>
-  </div>
-</section>
-
-<!-- ─────────────────────────────────────────────────────────
-     METRICS BAR
-     ───────────────────────────────────────────────────────── -->
-<section class="metrics" data-comment-anchor="metrics">
-  <div class="metric">
-    <div class="metric-label">M.01 — Marketplace</div>
-    <div class="metric-value">100<sup>+</sup></div>
-    <div class="metric-note">Pre-built agents, ready to install from the community marketplace.</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">M.02 — Tooling</div>
-    <div class="metric-value">1,000<sup>+</sup></div>
-    <div class="metric-note">Tool integrations — GitHub, Slack, Stripe, Shopify, Notion, Datadog…</div>
-  </div>
-  <div class="metric">
-    <div class="metric-label">M.03 — Foundation</div>
-    <div class="metric-value">OSS</div>
-    <div class="metric-note">Apache 2.0. Self-host, fork, audit. The whole platform is open — bring your own model keys.</div>
   </div>
 </section>
 
@@ -1645,367 +1749,254 @@ html { scroll-behavior: smooth; }
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     CHAPTER 02 — ORCHESTRATE (architecture diagram)
+     CHAPTER 02 — THE FAMILY
      ───────────────────────────────────────────────────────── -->
-<section class="chapter" id="ch-orchestrate" data-comment-anchor="ch-orchestrate">
+<section class="chapter" id="family" data-comment-anchor="ch-family">
   <div class="chapter-meta">
-    <div><span class="pill">Chapter 02</span> Orchestration</div>
-    <div>The <b>Universal Router</b> &amp; mission engine</div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Architecture · v1.36</div>
+    <div><span class="pill">Chapter 02</span> The family</div>
+    <div>One engine ·&nbsp;<b>many businesses</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Powered by Automatos AI</div>
   </div>
-  <div class="chapter-body">
-    <aside class="chapter-side">
-      <div class="chapter-num">02<small>Orchestration</small></div>
-    </aside>
-    <div class="chapter-content">
-      <h2 class="chapter-h">
-        One message in.<br />
-        The <em>right agent</em> takes it.
-      </h2>
-      <p class="chapter-lead">
-        A seven-tier router — overrides, cache, rules, semantic, LLM — sends every message
-        to the agent best positioned to handle it. Missions chain agents into
-        multi-step workflows with scheduling, triggers and inter-agent
-        coordination. Sandboxed workspaces let them run code, manage files, and
-        touch real Git repos.
-      </p>
-
-      <div class="chapter-list">
-        <div class="chapter-list-item">
-          <span class="num">/01</span>
-          <span class="label"><b>Universal Router.</b><span>Cache → rules → semantic → LLM. Right agent, every time.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/02</span>
-          <span class="label"><b>Missions &amp; Playbooks.</b><span>Multi-step automations with schedules, triggers and hand-offs.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/03</span>
-          <span class="label"><b>Workspace execution.</b><span>Sandboxed environments — run code, manage files, edit Git.</span></span>
-        </div>
-      </div>
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="chapter-h">Build the engine once.<br /><em>Sell it many ways.</em></h2>
+      <p class="chapter-lead">Each product has one buyer, one promise and one button. The OS underneath is the same for all of them, so a new business costs a front end, not a platform. Every one carries <b>Powered by Automatos AI</b>.</p>
     </div>
-    <aside class="chapter-aside">
-      <div class="schematic">
-        <div class="schematic-head"><span>schema · router.flow</span><span>OPS&nbsp;/&nbsp;v1.36</span></div>
-        <div class="schematic-body">
-          <div class="flow-row">
-            <div class="flow-node"><small>in</small><b>Message</b></div>
-            <div class="flow-arrow"></div>
-            <div class="flow-node accent"><small>tier 1–4</small><b>Universal Router</b></div>
-            <div class="flow-arrow"></div>
-            <div class="flow-node"><small>out</small><b>Agent</b></div>
-          </div>
-          <div class="flow-stack">
-            <div class="flow-chip">cache</div>
-            <div class="flow-chip">rules</div>
-            <div class="flow-chip on">semantic</div>
-            <div class="flow-chip">llm</div>
-            <div class="flow-chip">trace</div>
-            <div class="flow-chip">cost</div>
-          </div>
-          <div class="flow-row">
-            <div class="flow-node"><small>tool</small><b>GitHub</b></div>
-            <div class="flow-arrow"></div>
-            <div class="flow-node fill"><small>workspace</small><b>Sandbox</b></div>
-            <div class="flow-arrow"></div>
-            <div class="flow-node"><small>store</small><b>Knowledge</b></div>
-          </div>
-        </div>
-        <div class="schematic-foot"><span>routing · cost-aware</span><span>p50&nbsp;52ms</span></div>
-      </div>
-      <div class="photo-caption"><span>Fig. 02 — Mission engine</span><span>Plate&nbsp;/&nbsp;002</span></div>
-    </aside>
+    <div class="fam-grid">
+      <article class="fam-card">
+        <div class="fam-row"><h3>Automatos Studio</h3><span class="fam-status is-live">Live</span></div>
+        <dl><dt>For</dt><dd>Owners and small teams</dd><dt>Promise</dt><dd>Run your business in your brand</dd></dl>
+        <p class="fam-note">The control panel for the OS: Command Centre, board, documents, brand kit, socials and the marketplace. Live today as SaaS; also runs locally as open source.</p>
+        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Sign in <span>↗</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>Academy</h3><span class="fam-status is-live">Live</span></div>
+        <dl><dt>For</dt><dd>Learners</dd><dt>Promise</dt><dd>Free certification prep, with a tutor</dd></dl>
+        <p class="fam-note">Courses and a tutor at academy.automatos.app, with a mobile app on its way to the stores.</p>
+        <a class="fam-link" href="https://academy.automatos.app" target="_blank" rel="noopener">Start a track <span>↗</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>Market Intelligence</h3><span class="fam-status is-live">Live pilot</span></div>
+        <dl><dt>For</dt><dd>Crypto traders</dd><dt>Promise</dt><dd>Signals with receipts</dd></dl>
+        <p class="fam-note">The cockpit, plans, replay and a trade journal at markets.automatos.app. Free during the pilot. Not financial advice.</p>
+        <a class="fam-link" href="https://markets.automatos.app" target="_blank" rel="noopener">Open the cockpit <span>↗</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>Widgets</h3><span class="fam-status is-built">Built</span></div>
+        <dl><dt>For</dt><dd>Any website</dd><dt>Promise</dt><dd>Your site, AI-driven, in your brand</dd></dl>
+        <p class="fam-note">Chat and blog widgets that run on the OS and are managed in Studio. This site's field notes are served by one.</p>
+        <a class="fam-link" href="#developers">For developers <span>→</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>Shopify app</h3><span class="fam-status is-building">In development</span></div>
+        <dl><dt>For</dt><dd>Store owners</dd><dt>Promise</dt><dd>Your store, AI-driven</dd></dl>
+        <p class="fam-note">A working Shopify app with a theme extension. The App Store listing follows once setup on install is fully automatic.</p>
+        <a class="fam-link" href="contact.html">Ask about early access <span>→</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming</span></div>
+        <dl><dt>For</dt><dd>Regulated firms</dd><dt>Promise</dt><dd>The OS in your own cluster</dd></dl>
+        <p class="fam-note">A Helm chart exists and is tested in CI. Single sign-on and cloud plugins come next.</p>
+        <a class="fam-link" href="#editions">See the editions <span>→</span></a>
+      </article>
+      <article class="fam-card">
+        <div class="fam-row"><h3>BudStacks</h3><span class="fam-status is-partner">Partner</span></div>
+        <dl><dt>For</dt><dd>BudStacks customers</dd><dt>Promise</dt><dd>Add Automatos to your plan</dd></dl>
+        <p class="fam-note">Our first partner, and the model for every platform that offers the OS to its own customers.</p>
+        <a class="fam-link" href="contact.html">Become a partner <span>→</span></a>
+      </article>
+      <article class="fam-card fam-card-you">
+        <div class="fam-row"><h3>Your app</h3><span class="fam-status is-built">API · MCP</span></div>
+        <dl><dt>For</dt><dd>Developers and companies</dd><dt>Promise</dt><dd>Your own front end on the same OS</dd></dl>
+        <p class="fam-note">A voice assistant, a bot in a chat channel, or your own product, all over the same API.</p>
+        <a class="fam-link" href="#developers">Start building <span>→</span></a>
+      </article>
+    </div>
   </div>
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     CHAPTER 03 — COMMAND CENTRE / KNOWLEDGE / COST (3-column)
+     CHAPTER 03 — EDITIONS
      ───────────────────────────────────────────────────────── -->
-<section class="chapter" id="ch-commands" data-comment-anchor="ch-commands">
+<section class="chapter" id="editions" data-comment-anchor="ch-editions">
   <div class="chapter-meta">
-    <div><span class="pill">Chapter 03</span> Visibility</div>
-    <div>The <b>command centre</b>, knowledge &amp; cost</div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Single&nbsp;/&nbsp;pane</div>
+    <div><span class="pill">Chapter 03</span> Editions</div>
+    <div>Three ways to&nbsp;<b>run it</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;One OS · one Studio</div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="chapter-h">Local, SaaS or Enterprise.<br /><em>The same OS.</em></h2>
+      <p class="chapter-lead">The same engine and the same Studio, wherever it needs to run.</p>
+    </div>
+    <div class="ed-grid">
+      <article class="ed-card">
+        <div class="fam-row"><h3>Local</h3><span class="fam-status is-built">Open source</span></div>
+        <p>Free, on your own machine, Apache 2.0 and public on GitHub. Agents can work on your own Claude Code or other CLI subscription. <code>docker compose up</code> and it's yours.</p>
+        <a class="fam-link" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">Get the code <span>↗</span></a>
+      </article>
+      <article class="ed-card">
+        <div class="fam-row"><h3>SaaS</h3><span class="fam-status is-live">Live</span></div>
+        <p>Hosted Automatos Studio. Nothing to install: sign in, upload a logo and tell Auto what you need.</p>
+        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Try Studio <span>↗</span></a>
+      </article>
+      <article class="ed-card">
+        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming</span></div>
+        <p>The same OS in your own Kubernetes cluster, for firms that can't send data out.</p>
+        <ul class="ed-list">
+          <li><b>Today</b> A Helm chart, linted and tested in CI. S3 storage and Bedrock models on AWS. A Prometheus, Grafana and Loki monitoring stack.</li>
+          <li><b>Next</b> Single sign-on (OIDC), Azure plugins beyond Azure OpenAI, and the monitoring stack packaged with the chart.</li>
+        </ul>
+        <a class="fam-link" href="contact.html">Book a proof of concept <span>→</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────
+     CHAPTER 04 — WHY WE'RE DIFFERENT
+     ───────────────────────────────────────────────────────── -->
+<section class="chapter" id="different" data-comment-anchor="ch-different">
+  <div class="chapter-meta">
+    <div><span class="pill">Chapter 04</span> Not another Jarvis</div>
+    <div>Every line on the right is&nbsp;<b>in the code today</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Not on a roadmap</div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="chapter-h">A Jarvis is an app.<br /><em>We're what apps run on.</em></h2>
+      <p class="chapter-lead">Plenty of AI operating systems are a chat window and a voice. Here's what's underneath this one.</p>
+    </div>
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead><tr><th scope="col"><span class="sr">Aspect</span></th><th scope="col">A typical AI “OS”</th><th scope="col">Automatos</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">What it is</th><td>A chat window in front of a model</td><td>A headless OS with an API. Studio, widgets, chat channels and our own products are all interfaces to it</td></tr>
+          <tr><th scope="row">Output</th><td>Answers you copy somewhere else</td><td>Invoices, letters, spreadsheets, social posts and video, rendered from your brand kit and saved with a share link</td></tr>
+          <tr><th scope="row">Control</th><td>Does whatever the model decides</td><td>A board of tickets. Money and publishing need a person's yes, and an approval is tied to the exact content that was approved</td></tr>
+          <tr><th scope="row">Architecture</th><td>One app</td><td>17 feature modules whose boundaries CI enforces. Swap models today</td></tr>
+          <tr><th scope="row">Business</th><td>One user</td><td>Workspaces, roles, plans and render quotas, and partners who offer it to their own customers</td></tr>
+          <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0), SaaS live today, and your own Kubernetes cluster</td></tr>
+          <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 14,000 backend tests in CI, and a nightly harness where customer personas grade the real outputs</td></tr>
+          <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website and store widgets, Claude Code sessions, the Academy, Market Intelligence, and chat channels: WhatsApp, Telegram, Slack and Discord today</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────
+     CHAPTER 05 — DEVELOPERS
+     ───────────────────────────────────────────────────────── -->
+<section class="chapter" id="developers" data-comment-anchor="ch-developers">
+  <div class="chapter-meta">
+    <div><span class="pill">Chapter 05</span> Developers</div>
+    <div>The API, MCP, the widgets and the&nbsp;<b>source</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;docs.automatos.app</div>
   </div>
   <div class="fgrid">
     <aside class="chapter-side">
-      <div class="chapter-num">03<small>Visibility</small></div>
+      <div class="chapter-num">05<small>Developers</small></div>
     </aside>
 
-    <div class="fgrid-cell">
-      <div class="fgrid-num"><span>/.01</span><span>Command centre</span></div>
+    <a class="fgrid-cell" href="https://docs.automatos.app/" target="_blank" rel="noopener">
+      <div class="fgrid-num"><span>/.01</span><span>API</span></div>
       <div>
-        <h3 class="fgrid-h">See your <em>whole</em> workforce at a glance.</h3>
-        <p class="fgrid-body" style="margin-top:18px;">
-          Live agent status, scheduled routines, completion metrics, agent
-          reports. Auto — the operator — surfaces what needs attention, so
-          you don't have to chase your team.
-        </p>
-        <div class="fgrid-vis vis-dotgrid" style="margin-top:24px;"></div>
+        <h3 class="fgrid-h">One API for <em>everything</em> Studio does.</h3>
+        <p class="fgrid-body" style="margin-top:18px;">Agents, tasks, documents, knowledge and socials, over the same API the product uses. Build your own front end on it.</p>
       </div>
-      <div class="fgrid-foot"><span>Open command centre</span><span>→</span></div>
-    </div>
+      <div class="fgrid-foot"><span>Read the docs</span><span>↗</span></div>
+    </a>
 
-    <div class="fgrid-cell">
-      <div class="fgrid-num"><span>/.02</span><span>Knowledge</span></div>
+    <a class="fgrid-cell" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">
+      <div class="fgrid-num"><span>/.02</span><span>Open source</span></div>
       <div>
-        <h3 class="fgrid-h">Knowledge bases<br />with <em>cloud sync.</em></h3>
-        <p class="fgrid-body" style="margin-top:18px;">
-          Upload documents, sync folders from Dropbox or S3, let the platform
-          chunk, embed and index automatically. Agents get RAG-powered access
-          to everything you've ever written.
-        </p>
-        <div class="fgrid-vis vis-stripes" style="margin-top:24px;"></div>
+        <h3 class="fgrid-h">Fork it, audit it, <em>run it.</em></h3>
+        <p class="fgrid-body" style="margin-top:18px;">Apache 2.0: the orchestrator, the frontend and the services. Next.js, FastAPI, Postgres and S3, with your own model keys.</p>
       </div>
-      <div class="fgrid-foot"><span>How it indexes</span><span>→</span></div>
-    </div>
+      <div class="fgrid-foot"><span>GitHub</span><span>↗</span></div>
+    </a>
 
-    <div class="fgrid-cell">
-      <div class="fgrid-num"><span>/.03</span><span>Cost</span></div>
+    <a class="fgrid-cell" href="https://deepwiki.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">
+      <div class="fgrid-num"><span>/.03</span><span>MCP &amp; widgets</span></div>
       <div>
-        <h3 class="fgrid-h">Know what<br />the workforce <em>costs.</em></h3>
-        <p class="fgrid-body" style="margin-top:18px;">
-          Track every API call across every model. Per-agent and per-request
-          spend, usage trends, projections. No surprise bills — route cheap
-          for heartbeat, frontier for reasoning.
-        </p>
-        <div class="fgrid-vis vis-bars" style="margin-top:24px;">
-          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        </div>
+        <h3 class="fgrid-h">Plug in from <em>anywhere.</em></h3>
+        <p class="fgrid-body" style="margin-top:18px;">Agent sessions call the OS's tools over MCP. Chat and blog widgets put it on any website with one snippet.</p>
       </div>
-      <div class="fgrid-foot"><span>Cost analytics</span><span>→</span></div>
-    </div>
+      <div class="fgrid-foot"><span>DeepWiki</span><span>↗</span></div>
+    </a>
   </div>
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     CHAPTER 04 — OPEN SOURCE (full-bleed photo band)
+     CHAPTER 06 — WHAT IT MAKES POSSIBLE
      ───────────────────────────────────────────────────────── -->
-<section class="chapter" id="ch-oss" data-comment-anchor="ch-oss">
+<section class="chapter" id="possible" data-comment-anchor="ch-possible">
   <div class="chapter-meta">
-    <div><span class="pill">Chapter 04</span> Foundation</div>
-    <div><b>Open&nbsp;source</b> · self-hostable · audit-friendly</div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;github.com/AutomatosAI</div>
+    <div><span class="pill">Chapter 06</span> Lego, for a business</div>
+    <div>Every piece&nbsp;<b>reusable</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;A front end, not a rebuild</div>
   </div>
-  <div class="chapter-body">
-    <aside class="chapter-side">
-      <div class="chapter-num">04<small>Foundation</small></div>
-    </aside>
-    <div class="chapter-content">
-      <h2 class="chapter-h">
-        An <em>open</em> stack —<br />
-        not a black box.
-      </h2>
-      <p class="chapter-lead">
-        Apache 2.0. The whole platform — orchestrator, frontend, services —
-        ships under a license you can fork, audit, and run on your own
-        infrastructure. Next.js · FastAPI · Postgres · S3 · OpenRouter.
-        No vendor wall.
-      </p>
-
-      <div class="chapter-list">
-        <div class="chapter-list-item">
-          <span class="num">/01</span>
-          <span class="label"><b>Apache 2.0.</b><span>Fork it. Ship a private build. Contribute back when ready.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/02</span>
-          <span class="label"><b>Self-host.</b><span>Docker-compose up on your own infra in under five minutes.</span></span>
-        </div>
-        <div class="chapter-list-item">
-          <span class="num">/03</span>
-          <span class="label"><b>BYO keys.</b><span>OpenAI, Anthropic, Google, DeepSeek, Mistral, Qwen, Llama.</span></span>
-        </div>
-      </div>
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="chapter-h">BudStacks is<br /><em>just the start.</em></h2>
+      <p class="chapter-lead">Every piece of the OS can be reused, so every new way to reach customers is a front end and a partnership, not a rebuild.</p>
     </div>
-    <aside class="chapter-aside">
-      <div class="plate plate-cutaway" id="ch04Img">
-        <div class="ct-title">Cutaway <small>Plate &middot; 004</small></div>
-        <div class="ct-sub"><span>The hull &middot; annotated</span><span>Apache &middot; 2.0</span></div>
-        <div class="ct-stamp">Open<b>stack</b></div>
-        <div class="ct-stage">
-          <svg viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#0F1411">
-            <line x1="20" y1="220" x2="580" y2="220" stroke-width="1" stroke-dasharray="3 4" opacity=".4"></line>
-            <line x1="20" y1="226" x2="580" y2="226" stroke-width=".5" opacity=".2"></line>
-            <path d="M20 232 Q80 228, 140 232 T260 232 T380 232 T500 232 T580 232" stroke-width=".5" opacity=".3"></path>
-            <path d="M60 220 Q72 200, 110 195 L490 195 Q528 200, 540 220 L515 295 Q300 318, 85 295 Z" stroke-width="2" fill="rgba(91,124,104,.05)"></path>
-            <line x1="80" y1="195" x2="520" y2="195" stroke-width="1.5"></line>
-            <line x1="90" y1="252" x2="510" y2="252" stroke-width="1" stroke-dasharray="2 3" opacity=".5"></line>
-            <line x1="160" y1="198" x2="160" y2="292" stroke-width="1" opacity=".5"></line>
-            <line x1="240" y1="198" x2="240" y2="295" stroke-width="1" opacity=".5"></line>
-            <line x1="320" y1="198" x2="320" y2="297" stroke-width="1" opacity=".5"></line>
-            <line x1="400" y1="198" x2="400" y2="295" stroke-width="1" opacity=".5"></line>
-            <line x1="470" y1="198" x2="470" y2="290" stroke-width="1" opacity=".5"></line>
-            <text x="120" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">ORCH</text>
-            <text x="200" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">ROUTER</text>
-            <text x="280" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">MEM</text>
-            <text x="360" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">TOOL</text>
-            <text x="435" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">AUTH</text>
-            <text x="498" y="225" font-family="Geist Mono" font-size="9" letter-spacing="1.5" fill="#0F1411" text-anchor="middle">OBS</text>
-            <text x="120" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">FastAPI</text>
-            <text x="200" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">5-tier</text>
-            <text x="280" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">Postgres</text>
-            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; A2A</text>
-            <text x="435" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OAuth &middot; JWT</text>
-            <text x="498" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OpenTel</text>
-            <line x1="300" y1="195" x2="300" y2="40" stroke-width="1.5"></line>
-            <rect x="290" y="46" width="20" height="14" stroke-width="1.5"></rect>
-            <line x1="285" y1="46" x2="315" y2="46" stroke-width="1.5"></line>
-            <circle cx="300" cy="30" r="5" fill="#5B7C68" stroke="none"></circle>
-            <circle cx="300" cy="30" r="14" stroke="#5B7C68" stroke-width="1" stroke-opacity=".45" fill="none"></circle>
-            <circle cx="300" cy="30" r="24" stroke="#5B7C68" stroke-width=".5" stroke-opacity=".22" fill="none"></circle>
-            <path d="M280 252 L280 320 L420 320" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
-            <circle cx="280" cy="252" r="2.5" fill="#0F1411" stroke="none"></circle>
-            <text x="424" y="318" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411">PG &middot; S3 &middot; pgvector</text>
-            <path d="M300 30 L180 30 L120 30" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
-            <text x="115" y="28" font-family="Geist Mono" font-size="8" letter-spacing="1.5" fill="#0F1411" text-anchor="end">PHAROS</text>
-            <text x="115" y="40" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="end">heading &middot; signal</text>
-            <g opacity=".7">
-              <line x1="60" y1="340" x2="160" y2="340" stroke-width="1"></line>
-              <line x1="60" y1="336" x2="60" y2="344" stroke-width="1"></line>
-              <line x1="110" y1="338" x2="110" y2="342" stroke-width="1"></line>
-              <line x1="160" y1="336" x2="160" y2="344" stroke-width="1"></line>
-              <text x="110" y="354" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="middle">SCALE &middot; 1 : 200</text>
-            </g>
-            <g transform="translate(540,340)" opacity=".7">
-              <circle r="9" stroke-width=".75"></circle>
-              <path d="M0 -9 L2 0 L0 2 L-2 0 Z" fill="#0F1411"></path>
-              <text x="0" y="-12" text-anchor="middle" font-family="Geist Mono" font-size="6" fill="#0F1411">N</text>
-            </g>
-          </svg>
-        </div>
-        <div class="ct-foot"><span>Next.js &middot; FastAPI &middot; Postgres &middot; S3</span><span>BYO keys &middot; self-host</span></div>
-      </div>
-      <div class="photo-caption"><span>Fig. 04 &mdash; Cutaway</span><span>Plate&nbsp;/&nbsp;004</span></div>
-    </aside>
+    <div class="lego-grid">
+      <div class="lego"><span class="lego-tag">Partners</span><h3>White-label inside other platforms</h3><p>BudStacks users can add Automatos to their plan. Any platform whose customers run small businesses can do the same: their brand, our OS.</p></div>
+      <div class="lego"><span class="lego-tag">Verticals</span><h3>A package per trade</h3><p>A café, a salon, an accountant, a store. One install brings the agents, playbooks, templates and setup questions that trade needs.</p></div>
+      <div class="lego"><span class="lego-tag">Distribution</span><h3>The app stores</h3><p>The Academy app for learners, and the Shopify App Store for stores once our app is listed. Distribution we don't have to build.</p></div>
+      <div class="lego"><span class="lego-tag">Interfaces</span><h3>Your own front end</h3><p>A voice assistant, a screen on the wall, a bot in WhatsApp or Telegram, or a company's own product, all over the same API.</p></div>
+      <div class="lego"><span class="lego-tag">Enterprise</span><h3>The OS in your cluster</h3><p>A Helm chart exists today. Single sign-on and cloud plugins come next, for firms that can't send data out.</p></div>
+      <div class="lego"><span class="lego-tag">Community</span><h3>A marketplace people build for</h3><p>People publish agents and playbooks, and soon templates; others install them in one click. Auto is the guide.</p></div>
+    </div>
   </div>
 </section>
 
 <!-- ─────────────────────────────────────────────────────────
-     CLOSER + CHANGELOG
+     CLOSER
      ───────────────────────────────────────────────────────── -->
 <section class="closer" data-comment-anchor="closer">
   <div class="closer-left">
-    <div class="eyebrow">Get&nbsp;started · sign&nbsp;up</div>
+    <div class="eyebrow">Get&nbsp;started</div>
     <h2 class="closer-h" style="margin-top:18px;">
-      Hire your first agent<br />
-      in <em>ten minutes.</em>
+      One OS.<br />
+      <em>Pick your door.</em>
     </h2>
     <p class="closer-sub">
-      Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub —
-      give it a knowledge base, and put it on a schedule. The first run is
-      on&nbsp;us.
+      Run your business in Studio, learn in the Academy, trade with Market
+      Intelligence, or build your own interface on the open-source OS.
     </p>
     <div class="closer-ctas">
-      <a class="btn-light solid" href="#" data-waitlist>Sign up free <span class="arrow">→</span></a>
+      <a class="btn-light solid" href="https://ui.automatos.app" target="_blank" rel="noopener">Try Studio <span class="arrow">→</span></a>
       <a class="btn-light" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">Self-host <span class="arrow">→</span></a>
-      <a class="btn-light" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs</a>
-    </div>
-    <div class="plate-start-foot" style="margin-top:28px;">
-      <span><span class="dot"></span>OpenRouter&#8209;native</span>
-      <span><span class="dot"></span>20+ channels via Composio</span>
-      <span><span class="dot"></span>Self-host or hosted</span>
-      <span><span class="dot"></span>No card required</span>
+      <a class="btn-light" href="contact.html">Talk to us</a>
     </div>
   </div>
   <div class="closer-right">
-    <div class="eyebrow">Recently / shipped</div>
+    <div class="eyebrow">Find&nbsp;your&nbsp;door</div>
     <div class="changelog">
-      <div class="cl-item">
-        <div class="cl-date">2026·05·02</div>
-        <div>
-          <div class="cl-h">Mission scheduler v2 — <em>cron-style</em> triggers, fan-out hand-offs.</div>
-          <div class="cl-body">PRD 142. Read the post-mortem on what changed under the hood.</div>
-        </div>
-      </div>
-      <div class="cl-item">
-        <div class="cl-date">2026·04·19</div>
-        <div>
-          <div class="cl-h">Shopify pack — <em>12 agents,</em> 32 skills, store-ops widgets.</div>
-          <div class="cl-body">Install once; workspace turns into a running e-commerce back office.</div>
-        </div>
-      </div>
-      <div class="cl-item">
-        <div class="cl-date">2026·04·06</div>
-        <div>
-          <div class="cl-h">Cost projections — <em>per agent,</em> per request, per route.</div>
-          <div class="cl-body">Frontier vs cheap routing visualised against historic load.</div>
-        </div>
-      </div>
+      <a class="cl-item" href="https://ui.automatos.app" target="_blank" rel="noopener">
+        <div class="cl-date">Owners</div>
+        <div><div class="cl-h">Automatos <em>Studio</em></div><div class="cl-body">Your business, in your brand, run with Auto.</div></div>
+      </a>
+      <a class="cl-item" href="https://academy.automatos.app" target="_blank" rel="noopener">
+        <div class="cl-date">Learners</div>
+        <div><div class="cl-h">The <em>Academy</em></div><div class="cl-body">Free certification prep, with a tutor.</div></div>
+      </a>
+      <a class="cl-item" href="https://markets.automatos.app" target="_blank" rel="noopener">
+        <div class="cl-date">Traders</div>
+        <div><div class="cl-h">Market <em>Intelligence</em></div><div class="cl-body">Signals with receipts. Free during the pilot.</div></div>
+      </a>
+      <a class="cl-item" href="contact.html">
+        <div class="cl-date">Firms</div>
+        <div><div class="cl-h"><em>Enterprise</em> &amp; partners</div><div class="cl-body">The OS in your cluster, or inside your platform.</div></div>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- ─────────────────────────────────────────────────────────
-     FOOTER
-     ───────────────────────────────────────────────────────── -->
-<footer class="footer" data-comment-anchor="footer">
-  <div class="footer-brand">
-    <a class="brand" href="index.html">
-      <span class="brand-mark"></span>
-      <span class="brand-name">Automatos<em>·ai</em></span>
-    </a>
-    <div class="footer-brand-tag">
-      An <em>operating&nbsp;system</em> for autonomous agent&nbsp;teams.
-    </div>
-  </div>
-  <div class="footer-col">
-    <h6>Solutions</h6>
-    <ul>
-      <li><a href="https://ui.automatos.app" target="_blank" rel="noopener">Automatos AI Platform</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h6>Company</h6>
-    <ul>
-      <li><a href="#">About</a></li>
-      <li><a href="marketplace.html">Marketplace</a></li>
-      <li><a href="field-notes.html">Blog</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h6>Resources</h6>
-    <ul>
-      <li><a href="research.html">Research</a></li>
-      <li><a href="https://docs.automatos.app/" target="_blank" rel="noopener">Documentation</a></li>
-      <li><a href="https://deepwiki.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">DeepWiki</a></li>
-      <li><a href="https://discord.com/channels/1400562549258453155/1400562550713880628" target="_blank" rel="noopener">Discord</a></li>
-    </ul>
-  </div>
-  <div class="footer-col">
-    <h6>Legal</h6>
-    <ul>
-      <li><a href="#">Privacy Policy</a></li>
-      <li><a href="terms.html">Terms of Service</a></li>
-      <li><a href="#">Cookie Policy</a></li>
-      <li><a href="#">EU AI Act Posture</a></li>
-    </ul>
-  </div>
-
-  <div class="footer-rule"></div>
-  <div class="footer-foot">
-    <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0 · v1.36.04</span>
-    <div class="footer-social">
-      <a href="https://x.com/automatosai" target="_blank" rel="noopener" aria-label="X (Twitter)">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </a>
-      <a href="https://www.instagram.com/automatosai" target="_blank" rel="noopener" aria-label="Instagram">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/company/automatos-ai" target="_blank" rel="noopener" aria-label="LinkedIn">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-      </a>
-      <a href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener" aria-label="GitHub">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-      </a>
-      <a href="https://discord.com/channels/1400562549258453155/1400562550713880628" target="_blank" rel="noopener" aria-label="Discord">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
-      </a>
-    </div>
-  </div>
-</footer>
+<div data-site-footer></div>
 
 <!-- ─────────────────────────────────────────────────────────
      TWEAKS PANEL (disabled — replaced by _theme.js + _hero-picker.js)
@@ -2132,8 +2123,24 @@ ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<TweakApp />)
 <script src="_theme.js?v=20260511d" defer></script>
 <script src="_hero-picker.js?v=20260511d" defer></script>
 <script src="_config.js?v=20260511d" defer></script>
-<script src="_nav.js?v=20260511d" defer></script>
+<script src="_nav.js?v=20261008a" defer></script>
 <script src="_waitlist.js?v=20260511d" defer></script>
 <script src="_chat.js?v=20260511d" defer></script>
+<script src="_hub.js?v=20261008a" defer></script>
+<script src="_footer.js?v=20261008a" defer></script>
+<script>
+/* "Runs in …": the interfaces on one OS, one at a time. */
+(function () {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var words = ["Automatos Studio", "a Telegram chat", "your website", "a WhatsApp chat", "the Academy", "Market Intelligence", "your own app, over the API"];
+  var i = 0;
+  setInterval(function () {
+    var el = document.getElementById("runsIn");
+    if (!el) return;
+    el.style.opacity = "0";
+    setTimeout(function () { i = (i + 1) % words.length; el.textContent = words[i]; el.style.opacity = "1"; }, 350);
+  }, 2400);
+})();
+</script>
 </body>
 </html>

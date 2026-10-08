@@ -135,10 +135,11 @@ app.get(/^\/research\/?$/, (_req, res) => {
 const SITE = "https://automatos.app";
 const STATIC_URLS = [
   { loc: "/",             priority: 1.0, changefreq: "weekly"  },
-  { loc: "/marketplace",  priority: 0.8, changefreq: "weekly"  },
-  { loc: "/pricing",      priority: 0.8, changefreq: "monthly" },
+  { loc: "/academy",      priority: 0.6, changefreq: "monthly" },
   { loc: "/contact",      priority: 0.5, changefreq: "yearly"  },
   { loc: "/terms",        priority: 0.3, changefreq: "yearly"  },
+  { loc: "/privacy",      priority: 0.3, changefreq: "yearly"  },
+  { loc: "/cookies",      priority: 0.3, changefreq: "yearly"  },
   { loc: "/field-notes",  priority: 0.9, changefreq: "daily"   },
   { loc: "/research",     priority: 0.9, changefreq: "weekly"  },
 ];
@@ -210,6 +211,14 @@ app.get("/sitemap.xml", async (_req, res) => {
   sitemapCache = { xml, at: now };
   res.send(xml);
 });
+
+// ── Retired pages (8 Oct 2026) ───────────────────────────────────────
+// automatos.app sells the family, not a product: each product prices itself
+// on its own site, and Studio's site carries its marketplace. Old links land
+// on the family section instead of a 404.
+for (const path of ["/pricing", "/pricing.html", "/marketplace", "/marketplace.html"]) {
+  app.get(path, (_req, res) => res.redirect(301, "/#family"));
+}
 
 // ── Static files ──────────────────────────────────────────────────────
 // Cache strategy:

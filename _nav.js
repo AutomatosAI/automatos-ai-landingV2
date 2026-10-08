@@ -20,12 +20,13 @@
   // Canonical nav — mirrors the desktop topbar across pages. Edit here
   // and every page picks up the change.
   const NAV_ITEMS = [
-    { num: '/01', label: 'Platform',     href: '/',               em: null },
-    { num: '/02', label: 'Marketplace',  href: '/marketplace',    em: null },
-    { num: '/03', label: 'Pricing',      href: '/pricing',        em: null },
-    { num: '/04', label: 'Docs',         href: 'https://docs.automatos.app/', em: null, external: true },
-    { num: '/05', label: 'Academy',      href: '/academy',        em: null },
-    { num: '/06', label: 'Field',        href: '/field-notes',    em: 'notes' },
+    { num: '/01', label: 'The',          href: '/',               em: 'OS' },
+    { num: '/02', label: 'Family',       href: '/#family',        em: null },
+    { num: '/03', label: 'Developers',   href: '/#developers',    em: null },
+    { num: '/04', label: 'Academy',      href: '/academy',        em: null },
+    { num: '/05', label: 'Field',        href: '/field-notes',    em: 'notes' },
+    { num: '/06', label: 'Research',     href: '/research',       em: null },
+    { num: '/07', label: 'Docs',         href: 'https://docs.automatos.app/', em: null, external: true },
   ];
 
   function el(tag, attrs, kids) {
@@ -97,8 +98,8 @@
     const foot = el('div', { class: 'nav-drawer__foot' }, [
       el('a', { href: 'https://ui.automatos.app/sign-in', text: 'Sign in' }),
       (function () {
-        const a = el('a', { class: 'solid', href: '#', 'data-waitlist': '' });
-        a.appendChild(document.createTextNode('Start free '));
+        const a = el('a', { class: 'solid', href: 'https://ui.automatos.app', target: '_blank', rel: 'noopener' });
+        a.appendChild(document.createTextNode('Try Studio '));
         const arr = document.createElement('span');
         arr.textContent = '→';
         arr.style.fontFamily = 'var(--serif)';

@@ -51,10 +51,13 @@ stay hidden.
 
 ## Architecture
 
-- **Static HTML pages**: `index`, `marketplace`, `pricing`, `contact`,
-  `field-notes`, `field-notes-five-tiers`, `pitch-mode`, `styleguide`,
-  `terms`, `404`, `landing-mobile`, `states-and-motion`.
-- **Shared scripts**: `_theme.js` (bone/pitch toggle), `_hero-picker.js`
+- **Static HTML pages**: `index` (One OS, the family, editions), `academy`,
+  `contact`, `field-notes`, `field-notes-five-tiers`, `research`,
+  `blog-post`, `terms`, `privacy`, `cookies`, `404`, plus the dev pages
+  `pitch-mode`, `styleguide`, `landing-mobile`, `states-and-motion`.
+  `/pricing` and `/marketplace` redirect to `/#family` (8 Oct 2026: each
+  product prices itself on its own site).
+- **Shared scripts**: `_footer.js` (the family footer on every page), `_hub.js` (the home page's family hub), `_theme.js` (bone/pitch toggle), `_hero-picker.js`
   (hero image picker), `_waitlist.js` (Sign-up popup), `_chat.js` (Automatos
   chat widget), `_config.js` (runtime config carrier).
 - **Server**: `server.js` — Express + nodemailer for `/api/contact`,

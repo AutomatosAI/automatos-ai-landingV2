@@ -1,15 +1,18 @@
 # Automatos AI
 
-> An operating system for autonomous agent teams. Design specialised
-> agents, equip them with skills and knowledge, schedule their work,
-> and run the room from one command centre. Open-source (Apache 2.0),
-> self-host or hosted. Built in Lisbon.
+> One OS. Any interface. Automatos OS is the open-source (Apache 2.0),
+> API-first engine: agents, memory, retrieval, knowledge graphs, NL2SQL,
+> documents and socials, governed by a harness of budgets, standards and
+> approvals. Automatos Studio is where you run it; Academy and Market
+> Intelligence are products built on it. Built in Lisbon.
 
-## Platform
+## The OS and the family
 
-- [Home](https://automatos.app/): What Automatos is and the architecture in one page.
-- [Marketplace](https://automatos.app/marketplace): 100+ pre-built agents — Code Reviewer, QA Engineer, Sentinel, Scribe, marketers, Shopify specialists. Install in one click or fork as a starting point.
-- [Pricing](https://automatos.app/pricing): Free forever self-host (Apache 2.0). Hosted plans for teams. BYO model keys; no per-seat charging on self-host.
+- [Home](https://automatos.app/): What Automatos OS is, the products that run on it, the editions and the architecture.
+- [Automatos Studio](https://ui.automatos.app): The control panel for the OS and your business. Live as SaaS; also runs locally from the open-source repo.
+- [Academy](https://academy.automatos.app): Free certification prep with a tutor, powered by Automatos AI.
+- [Market Intelligence](https://markets.automatos.app): Crypto market signals with receipts, powered by Automatos AI. Free during the pilot; not financial advice.
+- Editions: Local (open source, Apache 2.0), SaaS (live), Enterprise (your own Kubernetes cluster from a CI-tested Helm chart; single sign-on next).
 
 ## Writing
 
@@ -25,7 +28,7 @@
 
 ## Resources
 
-- [Documentation](https://docs.automatos.app/): Self-host guide, API reference, recipe library.
+- [Documentation](https://docs.automatos.app/): Self-host guide, API reference.
 - [GitHub](https://github.com/AutomatosAI/automatos-ai): Source. Apache 2.0.
 - [DeepWiki](https://deepwiki.com/AutomatosAI/automatos-ai): AI-powered codebase wiki.
 - [Discord](https://discord.com/channels/1400562549258453155/1400562550713880628): Community + operator chat.
