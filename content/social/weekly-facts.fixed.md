@@ -55,7 +55,7 @@
     stat_1: 400+|Skills in the Studio marketplace
     stat_2: 5+|File types parsed natively
     stat_3: 1,000+|Apps through Composio
-    card_1: Code & docs|Code Canvas: your workspace files in an editor, where an agent edits files and runs commands.
+    card_1: Code & docs|Code Canvas opens your workspace files in an editor, where an agent edits files and runs commands.
     card_2: Data & integrations|Connect Postgres, Snowflake, Slack, Linear — one auth, one config.
   cta: Tour the workspace →
 
