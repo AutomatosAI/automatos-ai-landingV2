@@ -155,6 +155,16 @@ body[data-mood="pitch"] [class*="vis-"] {
     const help = document.getElementById('contactHelp');
     const btn  = document.getElementById('contactSubmit');
 
+    // Links with data-topic (the aside below) open this form with that topic
+    // picked. Delegated, because the aside is parsed after this script runs.
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest ? e.target.closest('a[data-topic]') : null;
+      if (!link) return;
+      form.querySelectorAll('input[name="topic"]').forEach((radio) => {
+        radio.checked = radio.value === link.dataset.topic;
+      });
+    });
+
     function setBtn(text) {
       while (btn.firstChild) btn.removeChild(btn.firstChild);
       btn.appendChild(document.createTextNode(text + ' '));
@@ -200,7 +210,7 @@ body[data-mood="pitch"] [class*="vis-"] {
 
   <aside class="aside">
     <div class="blk"><span class="lbl">Looking for…</span><h3>Self-hosters &amp; <em>tinkerers</em></h3><p>The repo is the fastest path. Issues, discussions, and a community Discord live there.</p><a class="lnk" href="https://github.com/AutomatosAI">github.com/AutomatosAI →</a></div>
-    <div class="blk"><span class="lbl">Looking for…</span><h3>Enterprise &amp; <em>regulated</em> teams</h3><p>SOC 2, EU residency, SSO, named SE. Book a 30-minute call and we'll start with your constraints.</p><a class="lnk" href="#">Talk to sales →</a></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Enterprise &amp; <em>regulated</em> teams</h3><p>Enterprise is coming soon: the same OS in your own cluster, with a licence, committed credits and consultancy. We're building it now. Tell us what you need.</p><a class="lnk" href="#contactForm" data-topic="Sales · Enterprise">Contact Automatos →</a></div>
     <div class="blk"><span class="lbl">Looking for…</span><h3>Researchers &amp; <em>writers</em></h3><p>Press kit, brand assets, founder bios — all in one folder. Press contact replies same day.</p><a class="lnk" href="#">Press kit →</a></div>
     <div class="blk"><span class="lbl">Office</span><h3>Lisbon · <em>Cais do Sodré</em></h3><p>Rua de São Paulo · 1200-470 Lisboa · Portugal</p></div>
   </aside>
