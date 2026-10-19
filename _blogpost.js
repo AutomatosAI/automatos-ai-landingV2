@@ -18,6 +18,16 @@
   const API_BASE  = (cfg.apiBase || 'https://api.automatos.app') + '/api/widgets/blog';
   const WORKSPACE = cfg.workspaceId;
 
+  // The one Organization every Automatos page describes: the same @id as the
+  // Organization node on index.html, so post schema links to it, not to a
+  // second, anonymous Organization.
+  const ORG = {
+    '@type': 'Organization',
+    '@id': 'https://automatos.app/#organization',
+    name: 'Automatos AI',
+    url: 'https://automatos.app',
+  };
+
   // Hand-coded papers that never went through the CMS. Mirror of the
   // STATIC_POSTS list in _research.js (which powers the /research index):
   // the index renders the card, this map lets the single-post page render
@@ -84,7 +94,7 @@
   // Schema.org author: a person for people; for an agent-written post, the
   // organisation that runs the agent (an AI agent is not a Person).
   function schemaAuthor(post) {
-    if (post.author_agent_id) return { '@type': 'Organization', name: 'Automatos AI' };
+    if (post.author_agent_id) return { ...ORG };
     return { '@type': 'Person', name: post.author_name || 'Automatos AI' };
   }
   function setText(id, v) { const el = document.getElementById(id); if (el && v != null) el.textContent = v; }
@@ -216,8 +226,7 @@
       dateModified: post.updated_at || post.published_at,
       author: schemaAuthor(post),
       publisher: {
-        '@type': 'Organization',
-        name: 'Automatos AI',
+        ...ORG,
         logo: { '@type': 'ImageObject', url: 'https://automatos.app/images/automatos-mark-black.png' },
       },
       articleSection: section,

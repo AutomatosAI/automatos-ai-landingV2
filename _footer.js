@@ -9,15 +9,18 @@
  *   - the same skeleton on every Automatos site, each in its own skin;
  *   - one copyright line, "© 2026 Automatos AI";
  *   - the same social icons in the same order (X, Instagram, LinkedIn,
- *     GitHub); legal links point to the one canonical set on this site.
+ *     GitHub); legal links point to the one canonical set on this site;
+ *   - outlet sites (Studio, Academy, Markets) also carry a "Powered by
+ *     Automatos AI" pill that links to automatos.app.
  *
  * The family row (19 Oct 2026, replacing the old family column): every
  * Automatos site ends its footer with one row, "The Automatos AI family",
  * linking the four sites in a fixed order. The current site's own entry is
- * shown without a link and marked aria-current="page".
+ * shown without a link and marked aria-current="true" (the row lists sites,
+ * not pages, so "page" would be the wrong token).
  *
- * Styled from the host page's own variables (--bg, --fg, --muted, --rule-c,
- * --serif, --mono, --gutter), so it follows the page's mood.
+ * Styled from the host page's own variables (--bg, --fg, --fg-2, --muted,
+ * --rule-c, --serif, --mono, --gutter), so it follows the page's mood.
  */
 (function () {
   if (window.__automatosFooter) return;
@@ -92,14 +95,14 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
 .sf-social a { color: var(--muted); }
 .sf-social a:hover { color: var(--fg); }
 .sf-social svg { width: 18px; height: 18px; display: block; }
-.sf-family { grid-column: 1 / -1; margin-top: -26px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 22px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--muted); }
+.sf-family { grid-column: 1 / -1; margin-top: -26px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 22px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--fg-2, var(--fg)); }
 .sf-family-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
 .sf-family ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 22px; }
 .sf-family a, .sf-family [aria-current] { display: inline-block; padding: 6px 0; }
 .sf-family a { color: var(--fg); }
 .sf-family a:hover, .sf-family a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
-.sf-family [aria-current] { color: var(--muted); }
-@media (max-width: 1080px) { .sf { grid-template-columns: repeat(2, 1fr); padding: 56px 24px 28px; } .sf-brand { grid-column: 1 / -1; } }
+.sf-family [aria-current] { color: var(--fg-2, var(--fg)); }
+@media (max-width: 1080px) { .sf { grid-template-columns: repeat(3, 1fr); padding: 56px 24px 28px; } .sf-brand { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .sf { grid-template-columns: 1fr; } }
 `;
 
@@ -157,7 +160,7 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
   // The current site's entry is plain text marked aria-current, never a self-link.
   function familyEntry(item) {
     const node = item.current
-      ? el('span', { 'aria-current': 'page', text: item.label })
+      ? el('span', { 'aria-current': 'true', text: item.label })
       : el('a', { href: item.href, text: item.label });
     return el('li', null, [node]);
   }
