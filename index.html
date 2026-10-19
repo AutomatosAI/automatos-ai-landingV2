@@ -1631,7 +1631,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
             <text x="120" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">FastAPI</text>
             <text x="200" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">5-tier</text>
             <text x="280" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">Postgres</text>
-            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; A2A</text>
+            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; API</text>
             <text x="435" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OAuth &middot; JWT</text>
             <text x="498" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OpenTel</text>
             <line x1="300" y1="195" x2="300" y2="40" stroke-width="1.5"></line>
@@ -1690,8 +1690,9 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <span class="arch-col-tag">5 tiers</span>
       </div>
       <p class="arch-col-lead">
-        Every incoming message walks the same five tiers — fast deterministic
-        rules first (T2a–T2c), semantic and LLM only when they earn it.
+        Every incoming message walks the same five tiers: override and cache,
+        then rules and triggers (T2a, T2b), then semantic matching (T2.5) with
+        keyword intent (T2c) as its fallback, and the LLM only when they miss.
       </p>
       <div class="arch-rows">
         <div class="arch-row"><span class="ix">T0</span><span class="nm">Override</span><span class="meta">user</span></div>
@@ -1790,9 +1791,9 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <a class="fam-link" href="#developers">For developers <span>→</span></a>
       </article>
       <article class="fam-card">
-        <div class="fam-row"><h3>Shopify app</h3><span class="fam-status is-building">In development</span></div>
+        <div class="fam-row"><h3>Shopify app</h3><span class="fam-status is-building">Next</span></div>
         <dl><dt>For</dt><dd>Store owners</dd><dt>Promise</dt><dd>Your store, AI-driven</dd></dl>
-        <p class="fam-note">A working Shopify app with a theme extension. The App Store listing follows once setup on install is fully automatic.</p>
+        <p class="fam-note">12 Shopify agent templates in the Studio marketplace, in two packages: Shopify Management and Shopify Development. A Shopify App Store app is next; it is not available yet.</p>
         <a class="fam-link" href="contact.html">Ask about the Shopify app <span>→</span></a>
       </article>
       <article class="fam-card">
@@ -1880,8 +1881,8 @@ a.fgrid-cell:hover { background: var(--bg-2); }
           <tr><th scope="row">Architecture</th><td>One app</td><td>17 feature modules, with CI checking the boundaries between them (19 Oct 2026). Swap models today</td></tr>
           <tr><th scope="row">Business</th><td>One user</td><td>Workspaces, roles, plans and render quotas, and partners who offer it to their own customers</td></tr>
           <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0) today. The same code runs as hosted Studio (beta opens November 2026), and a Helm chart for Kubernetes is tested in CI</td></tr>
-          <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 17,000 backend tests run in CI on every push to main (19 Oct 2026), and a harness where customer personas grade the real outputs in overnight runs</td></tr>
-          <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website and store widgets, Claude Code sessions, the Automatos Academy tutor, Automatos Markets' AI analysts when switched on, and chat channels: Telegram, Slack, Discord and WhatsApp, plus a generic webhook</td></tr>
+          <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 17,000 backend tests passed in CI on main (19 Oct 2026), and a harness where customer personas grade the real outputs in overnight runs</td></tr>
+          <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website widgets, Claude Code sessions, the Automatos Academy tutor, Automatos Markets' AI analysts when switched on, and chat channels: Telegram, Slack, Discord and WhatsApp, plus a generic webhook</td></tr>
         </tbody>
       </table>
     </div>
@@ -1951,7 +1952,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
       <div class="lego"><span class="lego-tag">Distribution</span><h3>The app stores</h3><p>The Academy app for learners, and the Shopify App Store for stores once our app is listed. Distribution we don't have to build.</p></div>
       <div class="lego"><span class="lego-tag">Interfaces</span><h3>Your own front end</h3><p>A voice assistant, a screen on the wall, a bot in WhatsApp or Telegram, or a company's own product, all over the same API.</p></div>
       <div class="lego"><span class="lego-tag">Enterprise · coming soon</span><h3>The OS in your cluster</h3><p>A Helm chart exists today. Single sign-on and cloud plugins come next, for firms that can't send data out.</p></div>
-      <div class="lego"><span class="lego-tag">Community</span><h3>A marketplace people build for</h3><p>People publish agents and playbooks, and soon templates; others install them in one click. Auto is the guide.</p></div>
+      <div class="lego"><span class="lego-tag">Community</span><h3>A marketplace people build for</h3><p>From November 2026, people can submit agents and Playbooks to the Studio marketplace for others to install in one click. Workspace templates are coming. Auto is the guide.</p></div>
     </div>
   </div>
 </section>
