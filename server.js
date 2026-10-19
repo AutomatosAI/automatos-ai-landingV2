@@ -115,6 +115,13 @@ app.get(/^\/blog\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
   res.sendFile(resolve(__dirname, "blog-post.html"));
 });
 
+// ── Blog index: /blog → /field-notes ─────────────────────────────────
+// There is no blog index page; CMS post bodies and older READMEs link /blog.
+// The slug route above needs at least one slug character, so no overlap.
+app.get(/^\/blog\/?$/, (req, res) => {
+  res.redirect(301, `/field-notes${req.url.slice(req.path.length)}`);
+});
+
 // ── Research paper route: /research/{slug} → blog-post.html ──────────
 // Same API shape (the post is just categorised "Research"), same renderer.
 app.get(/^\/research\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {

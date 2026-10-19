@@ -18,6 +18,7 @@ Static-mock filenames map to future production routes. When porting to Astro/Nex
 | `/field-notes` | `field-notes.html` | wired |
 | `/research` | `research.html` | wired (route in server.js; `/research/` 301 → `/research`) |
 | `/blog/{slug}`, `/research/{slug}` | `blog-post.html` | wired (routes in server.js; posts from the CMS API) |
+| `/blog` | — | 301 → `/field-notes` (no blog index page) |
 | `/field-notes/why-the-router-is-five-tiers` | `field-notes-five-tiers.html` | not served (draft; see README) |
 | `/404` (catch-all) | `404.html` | wired |
 
