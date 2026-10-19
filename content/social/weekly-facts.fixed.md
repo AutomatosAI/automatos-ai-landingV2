@@ -54,7 +54,7 @@
     eyebrow: WORKSPACE TOOLS
     stat_1: 10+|Built-in tools, ready on day one
     stat_2: 5+|File types parsed natively
-    stat_3: 20+|Third-party integrations
+    stat_3: 1,000+|Apps through Composio
     card_1: Code & docs|Edit, search, refactor across repos and notebooks in one editor surface.
     card_2: Data & integrations|Connect Postgres, Snowflake, Slack, Linear — one auth, one config.
   cta: Tour the workspace →
@@ -80,9 +80,9 @@
   required_fields:
     headline: SMART|ROUTING.@brick|RIGHT AGENT,|EVERY TIME.
     eyebrow: WHY IT MATTERS
-    stat_1: 95%|Task-routing accuracy
+    stat_1: 200+|Built-in platform actions
     stat_2: 30+|Skills matched per route
-    stat_3: 99.9%|System uptime
+    stat_3: 400+|Models through OpenRouter
     card_1: Skill matching|Each task is scored against every available agent's skill graph in milliseconds.
     card_2: Load balancing|Hot agents shed work to cool replicas — no single-agent bottleneck.
   cta: How routing works →
@@ -112,5 +112,5 @@
     subline: Structured briefs and clean task handoffs — content moves from draft to live in hours, not days.
     feature_1: Briefs that brief|Designer-ready specs auto-generated from the source playbook
     feature_2: Coordinated handoffs|Reviewers, editors, publishers — each gets just their slice
-    feature_3: Faster cycles|Average time-to-publish dropped from 3 days to 4 hours
+    feature_3: Human sign-off|Nothing publishes or spends without a person's approval
   cta: Approval workflow →
