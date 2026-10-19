@@ -36,7 +36,6 @@
 - [Documentation](https://docs.automatos.app/): Self-host guide, API reference.
 - [GitHub](https://github.com/AutomatosAI/automatos-ai): Source. Apache 2.0.
 - [DeepWiki](https://deepwiki.com/AutomatosAI/automatos-ai): AI-powered codebase wiki.
-- [Discord](https://discord.com/channels/1400562549258453155/1400562550713880628): Community + operator chat.
 
 ## Contact
 
