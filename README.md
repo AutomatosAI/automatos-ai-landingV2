@@ -52,17 +52,21 @@ stay hidden.
 ## Architecture
 
 - **Static HTML pages**: `index` (One OS, the family, editions), `academy`,
-  `contact`, `field-notes`, `field-notes-five-tiers`, `research`,
-  `blog-post`, `terms`, `privacy`, `cookies`, `eu-ai-act`,
-  `eu-ai-act-checker` (served at `/eu-ai-act/checker`), `404`, plus the dev pages
-  `pitch-mode`, `styleguide`, `landing-mobile`, `states-and-motion`.
+  `contact`, `field-notes`, `research`, `blog-post`, `terms`, `privacy`,
+  `cookies`, `eu-ai-act`, `eu-ai-act-checker` (served at `/eu-ai-act/checker`)
+  and `404`. `server.js` serves only an allow-list of these pages and their
+  assets (plus `images/`); every other path returns 404. `field-notes-five-tiers`
+  is a draft and is not served. The dev pages (`pitch-mode`, `styleguide`,
+  `landing-mobile`, `states-and-motion`) and the design artefacts live in
+  `design/`, which is neither served nor copied into the image.
   `/pricing` and `/marketplace` redirect to `/#family` (8 Oct 2026: each
   product prices itself on its own site).
 - **Shared scripts**: `_footer.js` (the family footer on every page), `_hub.js` (the home page's family hub), `_aiact-checker.js` (the EU AI Act checker), `_theme.js` (bone/pitch toggle), `_hero-picker.js`
   (hero image picker), `_chat.js` (Automatos
   chat widget), `_config.js` (runtime config carrier).
-- **Server**: `server.js` — Express + nodemailer for `/api/contact`,
-  static for everything else, runtime envsubst for `_config.js`.
+- **Server**: `server.js` — Express + nodemailer for `/api/contact`, an
+  explicit allow-list for static files (add a file there when a live page
+  starts to load it), runtime envsubst for `_config.js`.
 
 ## Known gaps (post-deploy iterations)
 

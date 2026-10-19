@@ -39,7 +39,7 @@ html,body{background:#1f1d18;color:var(--fg);font-family:var(--sans);font-size:1
 .topbar-mock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 24px;border:1px solid var(--rule-c);background:var(--bg);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .topbar-mock .brand{font-family:var(--serif);font-size:18px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
 .topbar-mock .brand em{font-style:italic;color:var(--muted)}
-.topbar-mock .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.topbar-mock .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("../images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("../images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
 .topbar-mock nav{display:flex;gap:22px;justify-content:center}
 .topbar-mock nav a{color:var(--muted)}
 .topbar-mock > :last-child{display:flex;gap:14px;justify-content:flex-end}
@@ -48,7 +48,7 @@ html,body{background:#1f1d18;color:var(--fg);font-family:var(--sans);font-size:1
 .topbar-mock.inv{background:#0F1411;color:#8A8B83;border-color:#2A2E2A}
 .topbar-mock.inv .brand{color:#F2EDE4}
 .topbar-mock.inv .brand em{color:#8A8B83}
-.topbar-mock.inv .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.topbar-mock.inv .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("../images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("../images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
 
 /* mobile drawer */
 .phone{width:280px;border:1px solid var(--rule-c);background:var(--bg);overflow:hidden;align-self:start}
@@ -450,5 +450,5 @@ body[data-mood="pitch"] [class*="vis-"] {
 <footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Audit pass · v1.36.04</span></footer>
 
 </div>
-<script src="_theme.js" defer></script>
+<script src="../_theme.js" defer></script>
 </body></html>
