@@ -251,6 +251,11 @@ app.get(/^\/eu-ai-act\/checker\/?$/, (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(resolve(__dirname, "eu-ai-act-checker.html"));
 });
+// The clean URL /eu-ai-act-checker served the checker until the allow-list
+// (Oct 2026); send it to the canonical route, keeping any query string.
+app.get(/^\/eu-ai-act-checker\/?$/, (req, res) => {
+  res.redirect(301, `/eu-ai-act/checker${req.url.slice(req.path.length)}`);
+});
 
 // ── Retired pages (8 Oct 2026) ───────────────────────────────────────
 // automatos.app sells the family, not a product: each product prices itself

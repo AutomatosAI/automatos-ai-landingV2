@@ -53,8 +53,8 @@ stay hidden.
 
 - **Static HTML pages**: `index` (One OS, the family, editions), `academy`,
   `contact`, `field-notes`, `research`, `blog-post`, `terms`, `privacy`,
-  `cookies`, `eu-ai-act`, `eu-ai-act-checker` (served at `/eu-ai-act/checker`)
-  and `404`. `server.js` serves only an allow-list of these pages and their
+  `cookies`, `eu-ai-act`, `eu-ai-act-checker` (served at `/eu-ai-act/checker`;
+  `/eu-ai-act-checker` redirects there) and `404`. `server.js` serves only an allow-list of these pages and their
   assets (plus `images/`); every other path returns 404. `field-notes-five-tiers`
   is a draft and is not served. The dev pages (`pitch-mode`, `styleguide`,
   `landing-mobile`, `states-and-motion`) and the design artefacts live in

@@ -14,7 +14,7 @@ Static-mock filenames map to future production routes. When porting to Astro/Nex
 | `/privacy` | `privacy.html` | wired |
 | `/cookies` | `cookies.html` | wired |
 | `/eu-ai-act` | `eu-ai-act.html` | wired |
-| `/eu-ai-act/checker` | `eu-ai-act-checker.html` | wired (route in server.js) |
+| `/eu-ai-act/checker` | `eu-ai-act-checker.html` | wired (route in server.js; `/eu-ai-act-checker` 301 → `/eu-ai-act/checker`) |
 | `/field-notes` | `field-notes.html` | wired |
 | `/research` | `research.html` | wired (route in server.js; `/research/` 301 → `/research`) |
 | `/blog/{slug}`, `/research/{slug}` | `blog-post.html` | wired (routes in server.js; posts from the CMS API) |
