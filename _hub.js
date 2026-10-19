@@ -22,7 +22,7 @@
     { key: 'studio', title: 'Run it in Studio', rx: 310, ry: 200, startDeg: -90, colour: 'var(--fg)', font: 'var(--sans)', size: 14, weight: 400,
       items: ['Board', 'Calendar', 'Socials', 'Documents', 'Templates', 'Brand kit', 'Missions', 'Playbooks', 'Marketplace'] },
     { key: 'outlets', title: 'Powered by Automatos AI', rx: 445, ry: 282, startDeg: -112.5, colour: 'var(--accent)', font: 'var(--sans)', size: 16, weight: 600,
-      items: ['Studio', 'Academy', 'Market Intelligence', 'Shopify', 'Widgets', 'BudStacks', 'Enterprise · coming soon', 'Your app · API · MCP'] },
+      items: ['Studio', 'Academy', 'Markets', 'Shopify', 'Widgets', 'BudStacks', 'Enterprise · coming soon', 'Your app · API · MCP'] },
   ];
   const W = 1000, H = 660, CX = W / 2, CY = H / 2, PAD = 120;
   const NS = 'http://www.w3.org/2000/svg';

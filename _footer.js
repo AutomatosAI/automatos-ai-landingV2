@@ -26,7 +26,7 @@
       links: [
         { label: 'Automatos Studio', href: 'https://studio.automatos.app/#waitlist', external: true },
         { label: 'Academy', href: 'https://academy.automatos.app', external: true },
-        { label: 'Market Intelligence', href: 'https://markets.automatos.app', external: true },
+        { label: 'Automatos Markets', href: 'https://markets.automatos.app', external: true },
         { label: 'Widgets & Shopify', href: '/#family' },
         { label: 'Enterprise', href: '/#editions' },
       ],
@@ -127,7 +127,7 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
     const tag = el('p', { class: 'sf-tag' });
     tag.appendChild(document.createTextNode('One OS. '));
     tag.appendChild(el('em', { text: 'Any interface.' }));
-    const note = el('p', { class: 'sf-note', text: 'Automatos OS is the open-source engine. Studio, Academy and Market Intelligence run on it, and so can your own app.' });
+    const note = el('p', { class: 'sf-note', text: 'Automatos OS is the open-source engine. Studio, Academy and Markets run on it, and so can your own app.' });
     return el('div', { class: 'sf-brand' }, [mark, tag, note]);
   }
 
