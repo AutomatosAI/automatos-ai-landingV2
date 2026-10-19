@@ -105,7 +105,7 @@
       body.style.maxWidth = 'none';
       body.style.padding = '0';
     }
-    document.title = 'Note not found — Automatos';
+    document.title = 'Note not found · Automatos AI';
   }
 
   // Wait for DOMPurify to be available (CDN script is defer-loaded)
@@ -240,7 +240,7 @@
   }
 
   function renderPost(post) {
-    document.title = `${post.title} — Automatos`;
+    document.title = `${post.title} · Automatos AI`;
     setAttr('bpDesc', 'content', post.seo_description || post.excerpt || '');
     injectCanonical(post.slug);
     injectArticleSchema(post);
