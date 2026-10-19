@@ -25,7 +25,7 @@
       title: 'The family',
       links: [
         { label: 'Automatos Studio', href: 'https://studio.automatos.app/#waitlist', external: true },
-        { label: 'Academy', href: 'https://academy.automatos.app', external: true },
+        { label: 'Automatos Academy', href: 'https://academy.automatos.app', external: true },
         { label: 'Automatos Markets', href: 'https://markets.automatos.app', external: true },
         { label: 'Widgets & Shopify', href: '/#family' },
         { label: 'Enterprise', href: '/#editions' },

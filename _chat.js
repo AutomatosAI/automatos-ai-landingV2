@@ -92,7 +92,7 @@
       position: 'bottom-right',
       theme: mood === 'pitch' ? 'dark' : 'light',
       title: 'Auto · AI assistant',
-      greeting: 'Hi, I\'m Auto, Automatos\'s AI assistant. Ask about Automatos, the agents or the platform.',
+      greeting: 'Hi, I\'m Auto, Automatos\'s AI assistant. Ask me anything about Automatos, the agents or the platform.',
       ...(cfg.chatAgentId ? { agentId: cfg.chatAgentId } : {}),
       themeOverrides: paletteFor(mood),
     });
