@@ -146,9 +146,8 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
   }
 
   function render(slot) {
-    const year = new Date().getFullYear();
     const foot = el('div', { class: 'sf-foot' }, [
-      el('span', { text: `© ${year} Automatos AI · Automatos OS is open source under Apache 2.0` }),
+      el('span', { text: '© 2026 Automatos AI · Automatos OS is open source under Apache 2.0' }),
       social(),
     ]);
     const footer = el('footer', { class: 'sf', 'aria-label': 'Site footer' }, [brand(), ...COLUMNS.map(column), foot]);
