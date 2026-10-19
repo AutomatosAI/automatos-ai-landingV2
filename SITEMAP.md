@@ -16,18 +16,20 @@ Static-mock filenames map to future production routes. When porting to Astro/Nex
 | `/eu-ai-act` | `eu-ai-act.html` | wired |
 | `/eu-ai-act/checker` | `eu-ai-act-checker.html` | wired (route in server.js) |
 | `/field-notes` | `field-notes.html` | wired |
-| `/field-notes/why-the-router-is-five-tiers` | `field-notes-five-tiers.html` | wired (one example article) |
+| `/research` | `research.html` | wired (route in server.js; `/research/` 301 → `/research`) |
+| `/blog/{slug}`, `/research/{slug}` | `blog-post.html` | wired (routes in server.js; posts from the CMS API) |
+| `/field-notes/why-the-router-is-five-tiers` | `field-notes-five-tiers.html` | not served (draft; see README) |
 | `/404` (catch-all) | `404.html` | wired |
 
 ## Internal / system
 
 | Production route | Mock file | Notes |
 |---|---|---|
-| `/_styleguide` (dev only) | `styleguide.html` | source of truth for primitives |
-| `/_pitch-mode` (dev only) | `pitch-mode.html` | dark-mode coverage spec |
-| `/_states-and-motion` (dev only) | `states-and-motion.html` | hover/focus/loading + schematic motion spec |
-| n/a | `landing-mobile.html` | desktop reference for 375 + 768 breakpoints — collapse into `index.html` responsive at port time |
-| n/a | `_preview.html` | local mock browser, not part of production site |
+| n/a (not served) | `design/styleguide.html` | source of truth for primitives |
+| n/a (not served) | `design/pitch-mode.html` | dark-mode coverage spec |
+| n/a (not served) | `design/states-and-motion.html` | hover/focus/loading + schematic motion spec |
+| n/a (not served) | `design/landing-mobile.html` | desktop reference for 375 + 768 breakpoints — collapse into `index.html` responsive at port time |
+| n/a (not served) | `design/_preview.html` | local mock browser, not part of production site |
 
 ## Routes that don't exist yet (placeholder `href="#"`)
 
@@ -38,7 +40,6 @@ These appear in nav and CTAs but have no mock and no route — decide when porti
 - `/sign-in` — likely redirects to `app.automatos.ai/sign-in`
 - `/app` — likely redirects to `app.automatos.ai`
 - `/changelog` — could be a `/changelog` page or a Field Notes category
-- `/research` — research papers index (v1 had this; secondary in brief)
 
 ## Field Notes — content needs
 

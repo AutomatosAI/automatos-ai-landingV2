@@ -1,10 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /uploads/
-Disallow: /pitch-mode
-Disallow: /styleguide
-Disallow: /_preview.html
-Disallow: /_probe.html
 
 # Allow AI crawlers — they index for citation, which is good for us.
 User-agent: GPTBot
