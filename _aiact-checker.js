@@ -76,7 +76,7 @@
     limited: { label: 'Limited risk',
       summary: 'Your system falls under the transparency obligations of Article 50. No conformity assessment is required, but users must be clearly informed when they interact with AI or consume AI-generated content.',
       obligations: ['Clearly disclose AI interaction to users (Art. 50(1)).', 'Mark AI-generated content as machine-readable synthetic content (Art. 50(2)).', 'Label deep-fakes and AI image, audio or video output (Art. 50(4)).', 'Keep records sufficient to demonstrate transparency compliance.'],
-      fit: "Automatos doesn't add an AI-interaction notice for you yet; it's on our roadmap. Until then, add the disclosure in your own chat, voice or widget copy. Every approval and audit event is still logged for at least 180 days." },
+      fit: "Automatos's built-in AI-interaction notices and generated-media marking are being built now. Until they ship, add the disclosure in your own chat, voice or widget copy. Every approval and audit event is still logged for at least 180 days." },
     minimal: { label: 'Minimal risk',
       summary: 'Your system sits in the minimal-risk tier. The EU AI Act imposes no mandatory obligations, but voluntary codes of conduct (Art. 95) and AI literacy (Art. 4) still apply.',
       obligations: ['Adopt a voluntary code of conduct to demonstrate good practice (Art. 95).', 'Make sure the staff operating the AI have sufficient AI literacy (Art. 4).', 'Keep basic records so you can demonstrate your classification if challenged.'],
