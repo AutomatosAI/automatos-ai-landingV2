@@ -292,6 +292,18 @@ const PUBLIC_ASSETS = [
   "_blogpost.js", "_aiact-checker.js",
   "uploads/from-tool-lists-to-operating-graphs.html", // fetched by _blogpost.js
 ];
+// ── Clean URLs with a trailing slash: /contact/ → /contact ───────────
+// The allow-list below matches exact paths, so /contact/ used to 404. Each
+// clean page answers its slashed form with a 301 to the canonical URL,
+// keeping any query string. /research/ has its own route above; /eu-ai-act/
+// is matched exactly, so /eu-ai-act/checker/ keeps its own route.
+const SLASHED_CLEAN_URL = new RegExp(
+  `^/(${CLEAN_URL_PAGES.filter((name) => name !== "index").join("|")})/$`,
+);
+app.get(SLASHED_CLEAN_URL, (req, res) => {
+  res.redirect(301, `/${req.params[0]}${req.url.slice(req.path.length)}`);
+});
+
 const PUBLIC_FILES = new Map([
   ["/", "index.html"],
   ...CLEAN_URL_PAGES.flatMap((name) => [
