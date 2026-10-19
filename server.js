@@ -123,7 +123,13 @@ app.get(/^\/research\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
 });
 
 // ── Research index: /research → research.html ────────────────────────
-app.get(/^\/research\/?$/, (_req, res) => {
+// research.html loads its assets by relative path, so /research/ (with the
+// slash) would resolve them under /research/ and 404. Redirect it to the
+// canonical URL, keeping any query string.
+app.get(/^\/research\/$/, (req, res) => {
+  res.redirect(301, `/research${req.url.slice(req.path.length)}`);
+});
+app.get(/^\/research$/, (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(resolve(__dirname, "research.html"));
 });
