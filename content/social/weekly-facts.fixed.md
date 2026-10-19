@@ -41,7 +41,7 @@
     eyebrow: HOW IT FITS TOGETHER
     card_1: Sequenced steps|A playbook is an ordered, named graph of agent steps. Reads like a recipe, runs like a CI job.
     card_2: Multi-agent ready|Hand off between agents mid-graph — the harness routes context automatically.
-    card_3: Repeatable|Same input, same output. Playbooks are deterministic by default; randomness is opt-in.
+    card_3: Repeatable|Same steps every run. Run a playbook by hand, on a cron schedule or from a trigger.
   cta: Build your first playbook →
 
 - id: 2026-w18-wed-workspace-tools
@@ -52,10 +52,10 @@
   required_fields:
     headline: THE|WORKSPACE.@brick|EVERYTHING|IN ONE PLACE.
     eyebrow: WORKSPACE TOOLS
-    stat_1: 10+|Built-in tools, ready on day one
+    stat_1: 400+|Skills in the Studio marketplace
     stat_2: 5+|File types parsed natively
     stat_3: 1,000+|Apps through Composio
-    card_1: Code & docs|Edit, search, refactor across repos and notebooks in one editor surface.
+    card_1: Code & docs|Code Canvas: your workspace files in an editor, where an agent edits files and runs commands.
     card_2: Data & integrations|Connect Postgres, Snowflake, Slack, Linear — one auth, one config.
   cta: Tour the workspace →
 
@@ -76,15 +76,15 @@
   day: Friday
   template: stats
   topic: Routing
-  headline: SMART|ROUTING.@brick|RIGHT AGENT,|EVERY TIME.
+  headline: SMART|ROUTING.@brick|RULES|FIRST.
   required_fields:
-    headline: SMART|ROUTING.@brick|RIGHT AGENT,|EVERY TIME.
+    headline: SMART|ROUTING.@brick|RULES|FIRST.
     eyebrow: WHY IT MATTERS
     stat_1: 200+|Built-in platform actions
-    stat_2: 30+|Skills matched per route
+    stat_2: 20+|Playbooks in the Studio marketplace
     stat_3: 400+|Models through OpenRouter
-    card_1: Skill matching|Each task is scored against every available agent's skill graph in milliseconds.
-    card_2: Load balancing|Hot agents shed work to cool replicas — no single-agent bottleneck.
+    card_1: Skill matching|Tasks the rules don't settle are scored against every available agent's skill graph.
+    card_2: Rules first|Cache and rules answer first; semantic and LLM tiers run only when they're needed.
   cta: How routing works →
 
 - id: 2026-w18-sat-renderer
