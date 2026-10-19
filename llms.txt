@@ -23,7 +23,7 @@
 ## Writing
 
 - [Field notes](https://automatos.app/field-notes): Operator-first writing on routing, missions, memory, and the field.
-- [Research](https://automatos.app/research): Original practitioner papers on multi-agent coordination, semantic memory, and AI orchestration. Built and tested on the Automatos platform.
+- [Research](https://automatos.app/research): Practitioner papers from the team building Automatos, on multi-agent coordination, semantic memory and AI orchestration.
 
 ## Architecture (one-paragraph each)
 
