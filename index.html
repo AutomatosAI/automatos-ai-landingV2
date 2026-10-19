@@ -1360,7 +1360,7 @@ html { scroll-behavior: smooth; }
 .fam-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule-c); border-left: 1px solid var(--rule-c); }
 .fam-card, .ed-card { padding: 26px 24px 24px; border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; align-content: start; background: var(--bg); }
 .fam-card-you { background: var(--bg-2); }
-.fam-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.fam-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 12px; }
 .fam-row h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.05; letter-spacing: -0.015em; }
 .fam-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 8px; border: 1px solid var(--rule-strong); color: var(--fg-2); white-space: nowrap; }
 .fam-status.is-live { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
@@ -1512,7 +1512,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     <div class="hero-meta">
       <span><b>Automatos&nbsp;AI</b> · The company &amp; the OS</span>
       <span><b>Open</b> · Apache&nbsp;2.0</span>
-      <span><b>Studio</b> · Live as SaaS</span>
+      <span><b>Studio</b> · Hosted beta opens November 2026</span>
     </div>
 
     <div>
@@ -1765,10 +1765,10 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     </div>
     <div class="fam-grid">
       <article class="fam-card">
-        <div class="fam-row"><h3>Automatos Studio</h3><span class="fam-status is-live">Live</span></div>
+        <div class="fam-row"><h3>Automatos Studio</h3><span class="fam-status is-coming">Beta opens November 2026</span></div>
         <dl><dt>For</dt><dd>Owners and small teams</dd><dt>Promise</dt><dd>Run your business in your brand</dd></dl>
-        <p class="fam-note">The control panel for the OS: Command Centre, board, documents, brand kit, socials and the marketplace. Live today as SaaS; also runs locally as open source.</p>
-        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Automatos Studio <span>↗</span></a>
+        <p class="fam-note">The control panel for the OS: Command Centre, board, documents, brand kit, socials and the marketplace. Hosted beta opens November 2026 · Join the waitlist. Runs locally today as open source (Apache 2.0).</p>
+        <a class="fam-link" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">Join the waitlist <span>↗</span></a>
       </article>
       <article class="fam-card">
         <div class="fam-row"><h3>Academy</h3><span class="fam-status is-live">Live</span></div>
@@ -1837,9 +1837,9 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <a class="fam-link" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">Get the code <span>↗</span></a>
       </article>
       <article class="ed-card">
-        <div class="fam-row"><h3>SaaS</h3><span class="fam-status is-live">Live</span></div>
-        <p>Hosted Automatos Studio. Nothing to install: sign in, upload a logo and tell Auto what you need.</p>
-        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Automatos Studio <span>↗</span></a>
+        <div class="fam-row"><h3>SaaS</h3><span class="fam-status is-coming">Beta opens November 2026</span></div>
+        <p>Hosted Automatos Studio. Hosted beta opens November 2026 · Join the waitlist. Nothing to install: upload a logo and tell Auto what you need.</p>
+        <a class="fam-link" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">Join the waitlist <span>↗</span></a>
       </article>
       <article class="ed-card">
         <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming</span></div>
@@ -1878,7 +1878,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
           <tr><th scope="row">Control</th><td>Does whatever the model decides</td><td>A board of tickets. Money and publishing need a person's yes, and an approval is tied to the exact content that was approved</td></tr>
           <tr><th scope="row">Architecture</th><td>One app</td><td>17 feature modules whose boundaries CI enforces. Swap models today</td></tr>
           <tr><th scope="row">Business</th><td>One user</td><td>Workspaces, roles, plans and render quotas, and partners who offer it to their own customers</td></tr>
-          <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0), SaaS live today, and your own Kubernetes cluster</td></tr>
+          <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0) today, a hosted beta from November 2026, and your own Kubernetes cluster (coming soon)</td></tr>
           <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 14,000 backend tests in CI, and a nightly harness where customer personas grade the real outputs</td></tr>
           <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website and store widgets, Claude Code sessions, the Academy, Market Intelligence, and chat channels: WhatsApp, Telegram, Slack and Discord today</td></tr>
         </tbody>
@@ -1978,9 +1978,9 @@ a.fgrid-cell:hover { background: var(--bg-2); }
   <div class="closer-right">
     <div class="eyebrow">Find&nbsp;your&nbsp;door</div>
     <div class="changelog">
-      <a class="cl-item" href="https://ui.automatos.app" target="_blank" rel="noopener">
+      <a class="cl-item" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">
         <div class="cl-date">Owners</div>
-        <div><div class="cl-h">Automatos <em>Studio</em></div><div class="cl-body">Your business, in your brand, run with Auto.</div></div>
+        <div><div class="cl-h">Automatos <em>Studio</em></div><div class="cl-body">Your business, in your brand, run with Auto. Hosted beta opens November 2026 · Join the waitlist.</div></div>
       </a>
       <a class="cl-item" href="https://academy.automatos.app" target="_blank" rel="noopener">
         <div class="cl-date">Learners</div>

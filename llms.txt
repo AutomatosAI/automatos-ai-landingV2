@@ -9,10 +9,10 @@
 ## The OS and the family
 
 - [Home](https://automatos.app/): What Automatos OS is, the products that run on it, the editions and the architecture.
-- [Automatos Studio](https://ui.automatos.app): The control panel for the OS and your business. Live as SaaS; also runs locally from the open-source repo.
+- [Automatos Studio](https://studio.automatos.app/#waitlist): The control panel for the OS and your business. Hosted beta opens November 2026 · Join the waitlist. Also runs locally today from the open-source repo (Apache 2.0).
 - [Academy](https://academy.automatos.app): Free certification prep with a tutor, powered by Automatos AI.
 - [Market Intelligence](https://markets.automatos.app): Crypto market signals with receipts, powered by Automatos AI. Free during the pilot; not financial advice.
-- Editions: Local (open source, Apache 2.0), SaaS (live), Enterprise (your own Kubernetes cluster from a CI-tested Helm chart; single sign-on next).
+- Editions: Local (open source, Apache 2.0, available today), SaaS (hosted beta opens November 2026), Enterprise (coming soon · contact Automatos; a CI-tested Helm chart exists, single sign-on next).
 
 ## Compliance
 
