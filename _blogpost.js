@@ -91,11 +91,12 @@
     const name = post.author_name || 'Automatos';
     return post.author_agent_id ? `${name} · AI agent` : name;
   }
-  // Schema.org author: a person for people; for an agent-written post, the
-  // organisation that runs the agent (an AI agent is not a Person).
+  // Schema.org author: a person for people; for an agent-written post, or a
+  // post with no author name, the organisation (an AI agent is not a Person,
+  // and neither is the company).
   function schemaAuthor(post) {
-    if (post.author_agent_id) return { ...ORG };
-    return { '@type': 'Person', name: post.author_name || 'Automatos AI' };
+    if (post.author_agent_id || !post.author_name) return { ...ORG };
+    return { '@type': 'Person', name: post.author_name };
   }
   function setText(id, v) { const el = document.getElementById(id); if (el && v != null) el.textContent = v; }
   function setAttr(id, attr, v) { const el = document.getElementById(id); if (el && v != null) el.setAttribute(attr, v); }

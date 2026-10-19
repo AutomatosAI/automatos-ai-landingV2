@@ -16,8 +16,7 @@
  * The family row (19 Oct 2026, replacing the old family column): every
  * Automatos site ends its footer with one row, "The Automatos AI family",
  * linking the four sites in a fixed order. The current site's own entry is
- * shown without a link and marked aria-current="true" (the row lists sites,
- * not pages, so "page" would be the wrong token).
+ * shown without a link and marked aria-current="page".
  *
  * Styled from the host page's own variables (--bg, --fg, --fg-2, --muted,
  * --rule-c, --serif, --mono, --gutter), so it follows the page's mood.
@@ -101,7 +100,7 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
 .sf-family a, .sf-family [aria-current] { display: inline-block; padding: 6px 0; }
 .sf-family a { color: var(--fg); }
 .sf-family a:hover, .sf-family a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
-.sf-family [aria-current] { color: var(--fg-2, var(--fg)); }
+.sf-family [aria-current] { color: var(--fg-2, var(--fg)); font-weight: 600; }
 @media (max-width: 1080px) { .sf { grid-template-columns: repeat(3, 1fr); padding: 56px 24px 28px; } .sf-brand { grid-column: 1 / -1; } }
 @media (max-width: 560px) { .sf { grid-template-columns: 1fr; } }
 `;
@@ -160,7 +159,7 @@ body[data-mood="pitch"] .sf-mark i { background-image: url("/images/automatos-ma
   // The current site's entry is plain text marked aria-current, never a self-link.
   function familyEntry(item) {
     const node = item.current
-      ? el('span', { 'aria-current': 'true', text: item.label })
+      ? el('span', { 'aria-current': 'page', text: item.label })
       : el('a', { href: item.href, text: item.label });
     return el('li', null, [node]);
   }
