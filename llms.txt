@@ -16,7 +16,7 @@
 
 ## Compliance
 
-- [EU AI Act](https://automatos.app/eu-ai-act): Where Automatos stands against the Act, article by article: in the product today, partly there, or on the roadmap. Not certified.
+- [EU AI Act](https://automatos.app/eu-ai-act): Where Automatos stands against the Act, article by article: in the product today, partly there, in progress, or on the roadmap. Not certified.
 - [EU AI Act checker](https://automatos.app/eu-ai-act/checker): A free five-question classifier that runs in the browser.
 
 ## Writing
