@@ -63,7 +63,8 @@
   const RANK = { prohibited: 4, high: 3, limited: 2, minimal: 1 };
 
   // fit: how Automatos helps, per tier. Kept to what the platform does today
-  // (checked against the code, 8 Oct 2026; the posture page has the detail).
+  // (checked against the code, 8 Oct 2026; the high-risk line rechecked 19 Oct 2026
+  // to match the posture page, which has the detail).
   const TIERS = {
     prohibited: { label: 'Prohibited',
       summary: 'Your described use case falls under the Article 5 prohibited practices. This system cannot be placed on the market or put into service in the EU.',
@@ -72,7 +73,7 @@
     high: { label: 'High risk',
       summary: 'Your answers point to high risk. A high-risk system can be deployed in the EU, but you must meet the full Chapter III provider and deployer obligations before placing it on the market.',
       obligations: ['Implement a risk-management system across the lifecycle (Art. 9).', 'Enforce data governance, lineage and bias mitigation (Art. 10).', 'Keep logs with appropriate retention (Art. 12).', 'Publish transparency and user instructions (Art. 13).', 'Design meaningful human oversight (Art. 14).', 'Meet accuracy, robustness and cybersecurity requirements (Art. 15).', 'Register the system in the EU database before deployment (Art. 49; EU database, Art. 71).', 'Report serious incidents within statutory timelines (Art. 73).'],
-      fit: "Automatos gives you the oversight pieces today: every gated action carries a risk class and an oversight tier, approvals can be granted, denied or revoked, missions can be paused, and audit logs are kept for at least 180 days. Other Chapter III pieces (Annex III classification, tamper-evident logs, per-agent documentation, incident reporting) are on our roadmap, so plan for them with your counsel." },
+      fit: "Automatos gives you oversight pieces today: social posts wait for your approval before they publish, board work can be set to ask before it runs, a platform action that stops for approval shows its risk class and oversight tier on the card, approvals can be granted, denied or revoked, missions can be paused, and audit logs are kept for at least 180 days. Classifying every tool call by risk needs the policy plane, which ships switched off. Other Chapter III pieces (Annex III classification, tamper-evident logs, per-agent documentation, incident reporting) are on our roadmap, so plan for them with your counsel." },
     limited: { label: 'Limited risk',
       summary: 'Your system falls under the transparency obligations of Article 50. No conformity assessment is required, but users must be clearly informed when they interact with AI or consume AI-generated content.',
       obligations: ['Clearly disclose AI interaction to users (Art. 50(1)).', 'Mark AI-generated content as machine-readable synthetic content (Art. 50(2)).', 'Label deep-fakes and AI image, audio or video output (Art. 50(4)).', 'Keep records sufficient to demonstrate transparency compliance.'],

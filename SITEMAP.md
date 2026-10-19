@@ -4,7 +4,7 @@ Static-mock filenames map to future production routes. When porting to Astro/Nex
 
 ## Public routes
 
-Every clean URL below also answers its trailing-slash form (`/contact/`, `/eu-ai-act/`, `/field-notes/` and so on) with a 301 to the slashless path, keeping the query string (server.js `SLASHED_CLEAN_URL`).
+Trailing slashes (server.js): `/academy/`, `/contact/`, `/terms/`, `/privacy/`, `/cookies/`, `/eu-ai-act/`, `/field-notes/` and `/research/` answer with a 301 to the slashless path, keeping the query string (`SLASHED_CLEAN_URL`; `/research/` has its own route). `/eu-ai-act/checker/`, `/blog/{slug}/` and `/research/{slug}/` serve the page directly (200). `/blog/` 301s to `/field-notes`, and `/pricing/` and `/marketplace/` 301 to `/#family`, the same as their slashless forms.
 
 | Production route | Mock file | Status |
 |---|---|---|
