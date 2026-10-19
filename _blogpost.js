@@ -18,6 +18,16 @@
   const API_BASE  = (cfg.apiBase || 'https://api.automatos.app') + '/api/widgets/blog';
   const WORKSPACE = cfg.workspaceId;
 
+  // The one Organization every Automatos page describes: the same @id as the
+  // Organization node on index.html, so post schema links to it, not to a
+  // second, anonymous Organization.
+  const ORG = {
+    '@type': 'Organization',
+    '@id': 'https://automatos.app/#organization',
+    name: 'Automatos AI',
+    url: 'https://automatos.app',
+  };
+
   // Hand-coded papers that never went through the CMS. Mirror of the
   // STATIC_POSTS list in _research.js (which powers the /research index):
   // the index renders the card, this map lets the single-post page render
@@ -75,6 +85,19 @@
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
+  // Byline: posts written by an Automatos agent carry author_agent_id in the
+  // blog API, and their byline says so: AI authors are labelled as AI.
+  function byline(post) {
+    const name = post.author_name || 'Automatos';
+    return post.author_agent_id ? `${name} · AI agent` : name;
+  }
+  // Schema.org author: a person for people; for an agent-written post, or a
+  // post with no author name, the organisation (an AI agent is not a Person,
+  // and neither is the company).
+  function schemaAuthor(post) {
+    if (post.author_agent_id || !post.author_name) return { ...ORG };
+    return { '@type': 'Person', name: post.author_name };
+  }
   function setText(id, v) { const el = document.getElementById(id); if (el && v != null) el.textContent = v; }
   function setAttr(id, attr, v) { const el = document.getElementById(id); if (el && v != null) el.setAttribute(attr, v); }
 
@@ -105,7 +128,7 @@
       body.style.maxWidth = 'none';
       body.style.padding = '0';
     }
-    document.title = 'Note not found — Automatos';
+    document.title = 'Note not found · Automatos AI';
   }
 
   // Wait for DOMPurify to be available (CDN script is defer-loaded)
@@ -169,7 +192,7 @@
 
     const attr = document.createElement('div');
     attr.className = 'fn-attr';
-    attr.textContent = `— ${post.author_name || 'Automatos'} · vol. 01`;
+    attr.textContent = `— ${byline(post)} · vol. 01`;
 
     plate.appendChild(meta); plate.appendChild(quote); plate.appendChild(attr);
     return plate;
@@ -202,10 +225,9 @@
       mainEntityOfPage: url,
       datePublished: post.published_at,
       dateModified: post.updated_at || post.published_at,
-      author: { '@type': 'Person', name: post.author_name || 'Automatos AI' },
+      author: schemaAuthor(post),
       publisher: {
-        '@type': 'Organization',
-        name: 'Automatos AI',
+        ...ORG,
         logo: { '@type': 'ImageObject', url: 'https://automatos.app/images/automatos-mark-black.png' },
       },
       articleSection: section,
@@ -240,7 +262,7 @@
   }
 
   function renderPost(post) {
-    document.title = `${post.title} — Automatos`;
+    document.title = `${post.title} · Automatos AI`;
     setAttr('bpDesc', 'content', post.seo_description || post.excerpt || '');
     injectCanonical(post.slug);
     injectArticleSchema(post);
@@ -303,7 +325,7 @@
       appendSanitisedHTML(body, post.content || '');
     });
 
-    setText('bpAuthor', post.author_name || 'Automatos');
+    setText('bpAuthor', byline(post));
     const meta = [];
     if (post.published_at) meta.push(fmtDate(post.published_at));
     if (post.category) meta.push(post.category);

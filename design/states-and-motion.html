@@ -39,7 +39,7 @@ html,body{background:#1f1d18;color:var(--fg);font-family:var(--sans);font-size:1
 .topbar-mock{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 24px;border:1px solid var(--rule-c);background:var(--bg);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .topbar-mock .brand{font-family:var(--serif);font-size:18px;letter-spacing:-.01em;text-transform:none;color:var(--fg);display:inline-flex;align-items:center}
 .topbar-mock .brand em{font-style:italic;color:var(--muted)}
-.topbar-mock .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.topbar-mock .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("../images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("../images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
 .topbar-mock nav{display:flex;gap:22px;justify-content:center}
 .topbar-mock nav a{color:var(--muted)}
 .topbar-mock > :last-child{display:flex;gap:14px;justify-content:flex-end}
@@ -48,7 +48,7 @@ html,body{background:#1f1d18;color:var(--fg);font-family:var(--sans);font-size:1
 .topbar-mock.inv{background:#0F1411;color:#8A8B83;border-color:#2A2E2A}
 .topbar-mock.inv .brand{color:#F2EDE4}
 .topbar-mock.inv .brand em{color:#8A8B83}
-.topbar-mock.inv .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.topbar-mock.inv .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("../images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("../images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
 
 /* mobile drawer */
 .phone{width:280px;border:1px solid var(--rule-c);background:var(--bg);overflow:hidden;align-self:start}
@@ -189,7 +189,7 @@ body[data-mood="pitch"] [class*="vis-"] {
       <div class="topbar-mock">
         <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
         <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
-        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Sign up free →</a></div>
+        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Join the waitlist →</a></div>
       </div>
       <span class="lbl">Light · 76px tall · serif wordmark · full nav</span>
     </div>
@@ -197,7 +197,7 @@ body[data-mood="pitch"] [class*="vis-"] {
       <div class="topbar-mock scrolled">
         <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
         <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
-        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Sign up free →</a></div>
+        <div><a>Sign in</a><a style="color:var(--fg);border-bottom:1px solid var(--fg);padding-bottom:1px;">Join the waitlist →</a></div>
       </div>
       <span class="lbl">Reduces to 56px after 120px scroll · adds 1px rule + soft shadow</span>
     </div>
@@ -205,7 +205,7 @@ body[data-mood="pitch"] [class*="vis-"] {
       <div class="topbar-mock inv">
         <div><a class="brand"><span class="mk"></span>Automatos<em>·ai</em></a></div>
         <nav><a>Platform</a><a>Marketplace</a><a>Pricing</a><a>Docs</a><a>Field notes</a></nav>
-        <div><a>Sign in</a><a style="color:#F2EDE4;border-bottom:1px solid #F2EDE4;padding-bottom:1px;">Sign up free →</a></div>
+        <div><a>Sign in</a><a style="color:#F2EDE4;border-bottom:1px solid #F2EDE4;padding-bottom:1px;">Join the waitlist →</a></div>
       </div>
       <span class="lbl">Inverts when overlapping a dark hero photo · borders desaturate</span>
     </div>
@@ -221,7 +221,7 @@ body[data-mood="pitch"] [class*="vis-"] {
           <a>Field <em>notes</em> <span class="arr">→</span></a>
           <a>Contact <span class="arr">→</span></a>
         </div>
-        <div class="drawer-foot">v1.36.04 · Open · Apache 2.0<a>Sign up free →</a></div>
+        <div class="drawer-foot">v1.36.04 · Open · Apache 2.0<a>Join the waitlist →</a></div>
       </div>
       <div style="flex:1;">
         <div class="phone">
@@ -267,7 +267,7 @@ body[data-mood="pitch"] [class*="vis-"] {
       <div class="success">
         <div class="ck">✓</div>
         <h3>Note <em>received.</em></h3>
-        <p>Thanks, Maren. We read every one — expect a reply from a human within one business day.</p>
+        <p>Thanks, Maren. We read every one. We reply within two working days.</p>
         <span class="ref">REF · 2026-05-10 · #4F2A</span>
       </div>
       <span class="lbl">Replaces the form in place · sage tint · ref number for support</span>
@@ -407,12 +407,12 @@ body[data-mood="pitch"] [class*="vis-"] {
 
   <!-- Solid button states -->
   <div class="grid cols-3">
-    <div class="cell"><span class="tag">Btn solid · default</span><a class="btn solid">Sign up free <span class="arrow">→</span></a><span class="lbl">Pitch ink on bone · 1px border same as fill</span></div>
-    <div class="cell"><span class="tag">Btn solid · hover</span><a class="btn solid hover">Sign up free <span class="arrow">→</span></a><span class="lbl">Fill darkens to #2A2E2A · no shadow · cursor pointer</span></div>
-    <div class="cell"><span class="tag">Btn solid · focus</span><a class="btn solid focus">Sign up free <span class="arrow">→</span></a><span class="lbl">2px sage outline at 2px offset · keyboard only</span></div>
-    <div class="cell"><span class="tag">Btn solid · active</span><a class="btn solid active">Sign up free <span class="arrow">→</span></a><span class="lbl">1px translateY · darker fill held during press</span></div>
-    <div class="cell"><span class="tag">Btn solid · disabled</span><a class="btn solid disabled">Sign up free <span class="arrow">→</span></a><span class="lbl">40% opacity · cursor not-allowed · no hover</span></div>
-    <div class="cell"><span class="tag">Btn solid · loading</span><a class="btn solid loading">Sign up free <span class="arrow">→</span></a><span class="lbl">Label hidden · 12px spinner in bone · width preserved</span></div>
+    <div class="cell"><span class="tag">Btn solid · default</span><a class="btn solid">Join the waitlist <span class="arrow">→</span></a><span class="lbl">Pitch ink on bone · 1px border same as fill</span></div>
+    <div class="cell"><span class="tag">Btn solid · hover</span><a class="btn solid hover">Join the waitlist <span class="arrow">→</span></a><span class="lbl">Fill darkens to #2A2E2A · no shadow · cursor pointer</span></div>
+    <div class="cell"><span class="tag">Btn solid · focus</span><a class="btn solid focus">Join the waitlist <span class="arrow">→</span></a><span class="lbl">2px sage outline at 2px offset · keyboard only</span></div>
+    <div class="cell"><span class="tag">Btn solid · active</span><a class="btn solid active">Join the waitlist <span class="arrow">→</span></a><span class="lbl">1px translateY · darker fill held during press</span></div>
+    <div class="cell"><span class="tag">Btn solid · disabled</span><a class="btn solid disabled">Join the waitlist <span class="arrow">→</span></a><span class="lbl">40% opacity · cursor not-allowed · no hover</span></div>
+    <div class="cell"><span class="tag">Btn solid · loading</span><a class="btn solid loading">Join the waitlist <span class="arrow">→</span></a><span class="lbl">Label hidden · 12px spinner in bone · width preserved</span></div>
   </div>
 
   <!-- Ghost button states -->
@@ -447,8 +447,8 @@ body[data-mood="pitch"] [class*="vis-"] {
   </div>
 </section>
 
-<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Audit pass · v1.36.04</span></footer>
+<footer class="foot"><span>© 2026 Automatos AI · Apache&nbsp;2.0</span><span>Audit pass · v1.36.04</span></footer>
 
 </div>
-<script src="_theme.js" defer></script>
+<script src="../_theme.js" defer></script>
 </body></html>

@@ -52,7 +52,7 @@ a { color: inherit; text-decoration: none; }
 }
 .pg .brand { font-family: var(--serif); font-size: 18px; letter-spacing: -0.01em; color: var(--fg); display: inline-flex; align-items: center; text-transform: none; }
 .pg .brand em { font-style: italic; color: var(--muted); }
-.pg .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
+.pg .brand .mk { display: inline-block; width: 18px; height: 18px; margin-right: 8px; background: url("../images/automatos-mark-black.png") center/contain no-repeat; vertical-align: middle; } body[data-mood="pitch"] .mk { background-image: url("../images/automatos-mark-white.png"); } /* brand-mark image swap — patched */-mk
 .pg .menu { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg); }
 .pg .menu-icon { display: inline-block; width: 18px; height: 12px; position: relative; vertical-align: middle; margin-left: 8px; }
 .pg .menu-icon::before, .pg .menu-icon::after {
@@ -326,7 +326,7 @@ body[data-mood="pitch"] [class*="vis-"] {
               <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
               <div class="sep"></div>
               <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user</span></div>
-              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">~5ms</span></div>
+              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">redis</span></div>
               <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern</span></div>
               <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">≥0.95</span></div>
               <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify</span></div>
@@ -344,10 +344,10 @@ body[data-mood="pitch"] [class*="vis-"] {
             <div>Pilot · last 30d</div>
           </div>
           <div class="metrics">
-            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Marketplace agents available now.</div></div>
-            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">150<em>+</em></div><div class="note">Portable capability packs.</div></div>
-            <div class="metric"><div class="lbl">M.03 — Channels</div><div class="val">20<em>+</em></div><div class="note">Slack, Gmail, GitHub, Linear…</div></div>
-            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host or hosted.</div></div>
+            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Ready-made agents in the Studio marketplace.</div></div>
+            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">400<em>+</em></div><div class="note">Skills in the Studio marketplace.</div></div>
+            <div class="metric"><div class="lbl">M.03 — Apps</div><div class="val">1,000<em>+</em></div><div class="note">Apps through Composio — GitHub, Slack, Stripe, Shopify…</div></div>
+            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host today; hosted beta opens November 2026.</div></div>
           </div>
         </section>
 
@@ -379,35 +379,28 @@ body[data-mood="pitch"] [class*="vis-"] {
           </div>
         </section>
 
-        <!-- Field note -->
-        <div class="field-note">
-          <div class="meta"><span>Field&nbsp;Note · 03 / 12</span><span>Operator · EU</span></div>
-          <p class="quote">"It stopped being something I prompted and started being something the team checked in with."</p>
-          <div class="attr"><b>Maren K.</b> · ops lead, 40-person legal team</div>
-        </div>
-
         <!-- CTA -->
         <section class="cta">
           <div class="eye">Get started · Apache 2.0</div>
           <h2>Hire your<br />first agent in<br /><em>ten minutes.</em></h2>
-          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — and put it on a schedule. The first run is on us.</p>
+          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — and put it on a schedule.</p>
           <div class="actions">
-            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a class="btn solid" href="https://studio.automatos.app/#waitlist">Join the waitlist <span class="arrow">→</span></a>
             <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host</a>
           </div>
-          <div class="stamp"><span class="dot"></span>OpenRouter-native · EU residency</div>
+          <div class="stamp"><span class="dot"></span>OpenRouter-native</div>
         </section>
 
         <!-- Foot -->
         <footer class="foot">
-          <span>© 2026 Automatos&nbsp;Labs</span>
+          <span>© 2026 Automatos AI</span>
           <span>v1.36.04</span>
         </footer>
 
         <!-- Sticky bottom -->
         <div class="stickybar">
           <span>Mobile · 375</span>
-          <a data-waitlist href="#">Sign up free →</a>
+          <a href="https://studio.automatos.app/#waitlist">Join the waitlist →</a>
         </div>
 
       </div>
@@ -426,7 +419,7 @@ body[data-mood="pitch"] [class*="vis-"] {
             <a href="#">Platform</a>
             <a href="#">Marketplace</a>
             <a href="#">Pricing</a>
-            <a data-waitlist href="#" style="color:var(--fg); border-bottom:1px solid var(--fg); padding-bottom:1px;">Sign up →</a>
+            <a href="https://studio.automatos.app/#waitlist" style="color:var(--fg); border-bottom:1px solid var(--fg); padding-bottom:1px;">Join the waitlist →</a>
           </div>
         </header>
 
@@ -440,7 +433,7 @@ body[data-mood="pitch"] [class*="vis-"] {
           <h1>Hire the agents.<br /><em>Equip</em> them with skills.<br />Run the <em>room.</em></h1>
           <p class="lead">Automatos is the open platform for AI workforces — design specialised agents, equip them with skills and knowledge, schedule their work, and run the whole room from one command centre.</p>
           <div class="actions">
-            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a class="btn solid" href="https://studio.automatos.app/#waitlist">Join the waitlist <span class="arrow">→</span></a>
             <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
             <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs</a>
           </div>
@@ -461,7 +454,7 @@ body[data-mood="pitch"] [class*="vis-"] {
               <div class="row"><span class="ix">↓</span><span class="nm">RequestEnvelope</span><span class="meta"></span></div>
               <div class="sep"></div>
               <div class="row"><span class="ix">T0</span><span class="nm">override</span><span class="meta">user</span></div>
-              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">redis · ~5ms</span></div>
+              <div class="row"><span class="ix">T1</span><span class="nm">cache</span><span class="meta">redis</span></div>
               <div class="row"><span class="ix">T2</span><span class="nm">rules</span><span class="meta">pattern</span></div>
               <div class="row"><span class="ix">T2.5</span><span class="nm">semantic</span><span class="meta">cosine ≥ 0.95</span></div>
               <div class="row"><span class="ix">T3</span><span class="nm">llm</span><span class="meta">classify</span></div>
@@ -477,10 +470,10 @@ body[data-mood="pitch"] [class*="vis-"] {
             <div>↗&nbsp;Honest pilot numbers</div>
           </div>
           <div class="metrics">
-            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Marketplace agents available now.</div></div>
-            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">150<em>+</em></div><div class="note">Portable capability packs.</div></div>
-            <div class="metric"><div class="lbl">M.03 — Channels</div><div class="val">20<em>+</em></div><div class="note">Slack, Gmail, GitHub, Linear…</div></div>
-            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host or hosted.</div></div>
+            <div class="metric"><div class="lbl">M.01 — Agents</div><div class="val">100<em>+</em></div><div class="note">Ready-made agents in the Studio marketplace.</div></div>
+            <div class="metric"><div class="lbl">M.02 — Skills</div><div class="val">400<em>+</em></div><div class="note">Skills in the Studio marketplace.</div></div>
+            <div class="metric"><div class="lbl">M.03 — Apps</div><div class="val">1,000<em>+</em></div><div class="note">Apps through Composio — GitHub, Slack, Stripe, Shopify…</div></div>
+            <div class="metric"><div class="lbl">M.04 — Foundation</div><div class="val">OSS</div><div class="note">Apache 2.0. Self-host today; hosted beta opens November 2026.</div></div>
           </div>
         </section>
 
@@ -512,31 +505,24 @@ body[data-mood="pitch"] [class*="vis-"] {
               <div class="head"><span class="id">Pack&nbsp;/&nbsp;04</span><span class="tag">View all</span></div>
               <h3>+ 9 <em>more</em></h3>
               <p class="desc">Inbox Triage · Engineering Hygiene · Customer Sentinel · Research Desk · Recruiter's Room · Compliance Watch — and more.</p>
-              <div class="row"><span class="k">See</span><a href="marketplace.html" style="color:var(--fg); border-bottom: 1px solid var(--fg);">Marketplace →</a></div>
             </article>
           </div>
         </section>
 
-        <div class="field-note">
-          <div class="meta"><span>Field&nbsp;Note · 03 / 12</span><span>Operator · EU · 2026-04</span></div>
-          <p class="quote">"It stopped being something I prompted and started being something the team checked in with. That was the day it crossed."</p>
-          <div class="attr"><b>Maren K.</b> · ops lead, 40-person legal team</div>
-        </div>
-
         <section class="cta">
           <div class="eye">Get started · Apache 2.0 · OpenRouter-native</div>
           <h2>Hire your first agent in <em>ten minutes.</em></h2>
-          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — give it a knowledge base, and put it on a schedule. The first run is on us.</p>
+          <p>Pick a role, plug in your channels — Slack, Telegram, Gmail, GitHub — give it a knowledge base, and put it on a schedule.</p>
           <div class="actions">
-            <a data-waitlist class="btn solid" href="#">Sign up free <span class="arrow">→</span></a>
+            <a class="btn solid" href="https://studio.automatos.app/#waitlist">Join the waitlist <span class="arrow">→</span></a>
             <a target="_blank" rel="noopener" class="btn" href="https://github.com/AutomatosAI/automatos-ai">Self-host <span class="arrow">→</span></a>
             <a class="btn" href="https://docs.automatos.app/" target="_blank" rel="noopener">Read the docs</a>
           </div>
-          <div class="stamp"><span class="dot"></span>OpenRouter-native · 20+ channels via Composio · EU residency</div>
+          <div class="stamp"><span class="dot"></span>OpenRouter-native · Telegram, Slack, Discord, WhatsApp</div>
         </section>
 
         <footer class="foot">
-          <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
+          <span>© 2026 Automatos AI · Apache&nbsp;2.0</span>
           <span>Tablet · 768</span>
         </footer>
 
@@ -546,9 +532,8 @@ body[data-mood="pitch"] [class*="vis-"] {
 
 </div>
 
-<script src="_theme.js" defer></script>
-<script src="_config.js" defer></script>
-<script src="_waitlist.js" defer></script>
-<script src="_chat.js" defer></script>
+<script src="../_theme.js" defer></script>
+<script src="../_config.js" defer></script>
+<script src="../_chat.js" defer></script>
 </body>
 </html>

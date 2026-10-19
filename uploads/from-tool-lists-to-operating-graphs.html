@@ -25,7 +25,7 @@
 
 <p>This post is about what replaces it.</p>
 
-<p>We've been building Automatos as a multi-tenant AI operations system: hundreds of internal capabilities, multiple specialist agents, a marketplace, layered memory, user-installed skills, workspace-scoped data, and a single orchestrator agent ("Auto") that has to coordinate across all of them. The naive tool-list pattern made it about ten percent of the way before falling over.</p>
+<p>We've been building Automatos as a multi-tenant AI operations system: a large set of internal capabilities, multiple specialist agents, a marketplace, layered memory, user-installed skills, workspace-scoped data, and a single orchestrator agent ("Auto") that has to coordinate across all of them. The naive tool-list pattern fell over early.</p>
 
 <p>What follows is the architectural arc we've worked through, the research it connects to, and the direction we think serious agent systems will move in.</p>
 
@@ -162,7 +162,7 @@
 
 <h2>The semantic action index</h2>
 
-<p>With everything else in place, an agent with roughly a hundred platform actions still has to read about all of them on every turn — unless we change what enters the prompt.</p>
+<p>With everything else in place, an agent with a large catalogue of platform actions still has to read about all of them on every turn — unless we change what enters the prompt.</p>
 
 <p>If the user asks "how's my website doing?" the prompt shouldn't allocate equal attention to agent deletion, marketplace installation, file operations, and infrastructure logs. It should rank actions semantically against the query and inject only the documentation likely to matter.</p>
 
@@ -299,4 +299,4 @@
 
 <hr />
 
-<p><em>This research was conducted on the <a href="https://automatos.app">Automatos AI platform</a>, where multi-agent missions coordinate specialized agents across research, analysis, and content workflows. Questions or pushback? <a href="mailto:gerard@automatos.app">gerard@automatos.app</a>.</em></p>
+<p><em>This research was conducted on the <a href="https://automatos.app">Automatos AI platform</a>, where multi-agent missions coordinate specialized agents across research, analysis, and content workflows. Questions or pushback? <a href="https://automatos.app/contact">Write to us through the contact form</a>.</em></p>

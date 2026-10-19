@@ -115,6 +115,13 @@ app.get(/^\/blog\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
   res.sendFile(resolve(__dirname, "blog-post.html"));
 });
 
+// ── Blog index: /blog → /field-notes ─────────────────────────────────
+// There is no blog index page; CMS post bodies and older READMEs link /blog.
+// The slug route above needs at least one slug character, so no overlap.
+app.get(/^\/blog\/?$/, (req, res) => {
+  res.redirect(301, `/field-notes${req.url.slice(req.path.length)}`);
+});
+
 // ── Research paper route: /research/{slug} → blog-post.html ──────────
 // Same API shape (the post is just categorised "Research"), same renderer.
 app.get(/^\/research\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
@@ -123,7 +130,13 @@ app.get(/^\/research\/([A-Za-z0-9_\-]+)\/?$/, (_req, res) => {
 });
 
 // ── Research index: /research → research.html ────────────────────────
-app.get(/^\/research\/?$/, (_req, res) => {
+// research.html loads its assets by relative path, so /research/ (with the
+// slash) would resolve them under /research/ and 404. Redirect it to the
+// canonical URL, keeping any query string.
+app.get(/^\/research\/$/, (req, res) => {
+  res.redirect(301, `/research${req.url.slice(req.path.length)}`);
+});
+app.get(/^\/research$/, (_req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(resolve(__dirname, "research.html"));
 });
@@ -135,16 +148,25 @@ app.get(/^\/research\/?$/, (_req, res) => {
 const SITE = "https://automatos.app";
 const STATIC_URLS = [
   { loc: "/",             priority: 1.0, changefreq: "weekly"  },
-  { loc: "/marketplace",  priority: 0.8, changefreq: "weekly"  },
-  { loc: "/pricing",      priority: 0.8, changefreq: "monthly" },
+  { loc: "/academy",      priority: 0.6, changefreq: "monthly" },
   { loc: "/contact",      priority: 0.5, changefreq: "yearly"  },
   { loc: "/terms",        priority: 0.3, changefreq: "yearly"  },
+  { loc: "/privacy",      priority: 0.3, changefreq: "yearly"  },
+  { loc: "/cookies",      priority: 0.3, changefreq: "yearly"  },
+  { loc: "/eu-ai-act",    priority: 0.7, changefreq: "monthly" },
+  { loc: "/eu-ai-act/checker", priority: 0.7, changefreq: "monthly" },
   { loc: "/field-notes",  priority: 0.9, changefreq: "daily"   },
   { loc: "/research",     priority: 0.9, changefreq: "weekly"  },
+];
+// Posts served from this repo rather than the CMS (_research.js STATIC_POSTS).
+const STATIC_POST_URLS = [
+  { loc: "/research/from-tool-lists-to-operating-graphs", priority: 0.7, changefreq: "monthly", lastmod: "2026-05-02" },
 ];
 
 let sitemapCache = { xml: null, at: 0 };
 const SITEMAP_TTL_MS = 60 * 60 * 1000;
+const CMS_PER_PAGE = 50;   // the blog API rejects per_page above 50 with HTTP 422
+const CMS_MAX_PAGES = 20;  // safety stop for the page loop
 
 function xmlEscape(s) {
   return String(s).replace(/[<>&"']/g, (c) => ({
@@ -155,16 +177,25 @@ function xmlEscape(s) {
 async function fetchCmsPosts() {
   const workspaceId = process.env.VITE_AUTOMATOS_WORKSPACE_ID;
   if (!workspaceId) return [];
+  let posts = [];
   try {
-    const url = `https://api.automatos.app/api/widgets/blog/posts?workspace_id=${encodeURIComponent(workspaceId)}&per_page=100&page=1`;
-    const r = await fetch(url);
-    if (!r.ok) return [];
-    const data = await r.json();
-    return data.posts || [];
+    for (let page = 1; page <= CMS_MAX_PAGES; page += 1) {
+      const url = `https://api.automatos.app/api/widgets/blog/posts?workspace_id=${encodeURIComponent(workspaceId)}&per_page=${CMS_PER_PAGE}&page=${page}`;
+      const r = await fetch(url);
+      if (!r.ok) {
+        console.warn(`[sitemap] CMS page ${page} returned HTTP ${r.status}`);
+        break;
+      }
+      const data = await r.json();
+      const batch = data.posts || [];
+      posts = [...posts, ...batch];
+      const totalPages = Number(data.total_pages) || 1;
+      if (batch.length < CMS_PER_PAGE || page >= totalPages) break;
+    }
   } catch (err) {
     console.warn("[sitemap] CMS fetch failed:", err.message);
-    return [];
   }
+  return posts;
 }
 
 app.get("/sitemap.xml", async (_req, res) => {
@@ -184,10 +215,13 @@ app.get("/sitemap.xml", async (_req, res) => {
     lastmod: p.updated_at || p.published_at || null,
   }));
 
-  const all = [
+  const candidates = [
     ...STATIC_URLS.map((u) => ({ ...u, lastmod: null })),
+    ...STATIC_POST_URLS,
     ...postUrls,
   ];
+  // A static post that later lands in the CMS must not be listed twice.
+  const all = candidates.filter((u, i) => candidates.findIndex((v) => v.loc === u.loc) === i);
 
   const lines = ['<?xml version="1.0" encoding="UTF-8"?>'];
   lines.push('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
@@ -211,32 +245,90 @@ app.get("/sitemap.xml", async (_req, res) => {
   res.send(xml);
 });
 
-// ── Static files ──────────────────────────────────────────────────────
+// ── EU AI Act checker: /eu-ai-act/checker → eu-ai-act-checker.html ────
+// (/eu-ai-act itself is eu-ai-act.html through the allow-list below.)
+app.get(/^\/eu-ai-act\/checker\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+  res.sendFile(resolve(__dirname, "eu-ai-act-checker.html"));
+});
+// The clean URL /eu-ai-act-checker served the checker until the allow-list
+// (Oct 2026); send it to the canonical route, keeping any query string.
+app.get(/^\/eu-ai-act-checker\/?$/, (req, res) => {
+  res.redirect(301, `/eu-ai-act/checker${req.url.slice(req.path.length)}`);
+});
+
+// ── Retired pages (8 Oct 2026) ───────────────────────────────────────
+// automatos.app sells the family, not a product: each product prices itself
+// on its own site, and Studio's site carries its marketplace. Old links land
+// on the family section instead of a 404.
+for (const path of ["/pricing", "/pricing.html", "/marketplace", "/marketplace.html"]) {
+  app.get(path, (_req, res) => res.redirect(301, "/#family"));
+}
+
+// ── Static files: an explicit allow-list ─────────────────────────────
+// The repo also holds design artefacts, briefs, uploads and this server's
+// own source, and none of it is public. Only the pages and assets below
+// (plus /images/) are served; every other path falls through to the 404
+// handler. When a live page starts to load a new local file, add it here.
+//
 // Cache strategy:
 //   .html / _config.js  → no-cache (must revalidate every request)
 //   _*.js  / _*.css     → 60s, must-revalidate (shared loaders that we ship to often)
 //   images, fonts, etc. → 30d (fingerprint by URL if needed later)
-app.use(express.static(__dirname, {
+const CLEAN_URL_PAGES = [
+  "index", "academy", "contact", "terms", "privacy", "cookies",
+  "eu-ai-act", "field-notes", "research",
+];
+const HTML_ONLY_PAGES = [
+  "eu-ai-act-checker.html", // canonical URL: /eu-ai-act/checker (route above)
+  "blog-post.html",         // canonical URLs: /blog/{slug} and /research/{slug}
+];
+const PUBLIC_ASSETS = [
+  "llms.txt", "robots.txt",
+  "plates.css", "_responsive.css",
+  "_config.js", // written by hydrateConfig() at startup; not in git
+  "_theme.js", "_nav.js", "_footer.js", "_chat.js", "_analytics.js",
+  "_hub.js", "_hero-picker.js", "_fieldnotes.js", "_research.js",
+  "_blogpost.js", "_aiact-checker.js",
+  "uploads/from-tool-lists-to-operating-graphs.html", // fetched by _blogpost.js
+];
+const PUBLIC_FILES = new Map([
+  ["/", "index.html"],
+  ...CLEAN_URL_PAGES.flatMap((name) => [
+    [`/${name}`, `${name}.html`],
+    [`/${name}.html`, `${name}.html`],
+  ]),
+  ...[...HTML_ONLY_PAGES, ...PUBLIC_ASSETS].map((file) => [`/${file}`, file]),
+]);
+const THIRTY_DAYS_S = 30 * 24 * 60 * 60;
+
+function cacheControlFor(file) {
+  const base = file.split("/").pop() || "";
+  if (file.endsWith(".html")) return "no-store, no-cache, must-revalidate";
+  if (base === "_config.js") return "no-cache";
+  // Shared loaders + stylesheets — keep short so we can iterate
+  if (/^_.+\.(js|css)$/.test(base)) return "public, max-age=60, must-revalidate";
+  return `public, max-age=${THIRTY_DAYS_S}`;
+}
+
+app.use((req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  const file = PUBLIC_FILES.get(req.path);
+  if (!file) return next();
+  res.setHeader("Cache-Control", cacheControlFor(file));
+  res.sendFile(resolve(__dirname, file), (err) => {
+    if (!err || res.headersSent) return;
+    res.removeHeader("Cache-Control"); // e.g. _config.js not hydrated yet
+    next();
+  });
+});
+
+// Images are the one folder served whole: page art, OG cards and the
+// covers CMS posts link to (images/semantic-field-memory-cover.png).
+app.use("/images", express.static(join(__dirname, "images"), {
   maxAge: "30d",
-  immutable: false,
-  index: "index.html",
-  extensions: ["html"],
-  setHeaders(res, filePath) {
-    const base = filePath.split("/").pop() || "";
-    if (filePath.endsWith(".html")) {
-      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-      return;
-    }
-    if (base === "_config.js") {
-      res.setHeader("Cache-Control", "no-cache");
-      return;
-    }
-    // Shared loaders + stylesheets — keep short so we can iterate
-    if (/^_.+\.(js|css)$/.test(base)) {
-      res.setHeader("Cache-Control", "public, max-age=60, must-revalidate");
-      return;
-    }
-  },
+  index: false,
+  redirect: false,
 }));
 
 // ── 404 ───────────────────────────────────────────────────────────────

@@ -78,34 +78,34 @@ body[data-mood="pitch"] [class*="vis-"] {
 </style><link rel="stylesheet" href="_responsive.css?v=20260511h">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Automatos">
+<meta property="og:site_name" content="Automatos AI">
 <meta property="og:url" content="https://automatos.app/contact">
-<meta property="og:title" content="Contact — Send us a note · Automatos">
-<meta property="og:description" content="Reply within one business day. Product, sales, partnerships, press, security. Lisbon — Cais do Sodré.">
+<meta property="og:title" content="Contact — Send us a note · Automatos AI">
+<meta property="og:description" content="We reply within two working days. Product, sales, partnerships, press, security. Built in Lisbon.">
 <meta property="og:image" content="https://automatos.app/images/og/contact.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@automatosai">
-<meta name="twitter:title" content="Contact — Send us a note · Automatos">
-<meta name="twitter:description" content="Reply within one business day. Product, sales, partnerships, press, security. Lisbon — Cais do Sodré.">
+<meta name="twitter:title" content="Contact — Send us a note · Automatos AI">
+<meta name="twitter:description" content="We reply within two working days. Product, sales, partnerships, press, security. Built in Lisbon.">
 <meta name="twitter:image" content="https://automatos.app/images/og/contact.jpg">
-<meta name="description" content="Reply within one business day. Product, sales, partnerships, press, security. Lisbon — Cais do Sodré.">
+<meta name="description" content="We reply within two working days. Product, sales, partnerships, press, security. Built in Lisbon.">
 <link rel="canonical" href="https://automatos.app/contact">
 <script src="_analytics.js?v=20260512a" defer></script>
 </head><body data-mood="bone" data-screen-label="Contact">
 
 <header class="topbar">
-  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <div><a class="brand" href="/"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
   <nav>
-    <a href="index.html">Platform</a>
-    <a href="marketplace.html">Marketplace</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
-    <a href="academy.html">Academy</a>
-    <a href="field-notes.html">Field notes</a>
+    <a href="/">The OS</a>
+    <a href="/#family">Family</a>
+    <a href="/#developers">Developers</a>
+    <a href="/academy">Academy</a>
+    <a href="/field-notes">Field notes</a>
+    <a href="/research">Research</a>
   </nav>
-  <div><a href="https://ui.automatos.app/sign-in">Sign in</a><a data-waitlist href="#" class="cta">Sign up free →</a></div>
+  <div><a href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">GitHub</a><a href="/contact" class="cta">Contact →</a></div>
 </header>
 
 <section class="hero">
@@ -114,21 +114,21 @@ body[data-mood="pitch"] [class*="vis-"] {
     <h1 class="hero-h">Send us<br />a <em>note.</em></h1>
   </div>
   <div class="hero-meta">
-    <div><b>Reply</b> — within one business day, usually less.</div>
-    <div><b>EU office</b> — Lisbon · Mon–Fri 09:00–18:00 WET.</div>
-    <div><b>Press</b> — <a href="mailto:press@automatos.ai">press@automatos.ai</a></div>
-    <div><b>Security</b> — <a href="mailto:security@automatos.ai">security@automatos.ai</a> · PGP available.</div>
+    <div><b>Reply</b> — We reply within two working days.</div>
+    <div><b>Location</b> — Built in Lisbon.</div>
+    <div><b>Press</b> — <a href="mailto:press@automatos.app">press@automatos.app</a></div>
+    <div><b>Security</b> — <a href="mailto:security@automatos.app">security@automatos.app</a></div>
   </div>
 </section>
 
 <section style="padding:40px var(--gutter);border-bottom:1px solid var(--rule-c);">
-  <p style="max-width:64ch;font-size:17px;line-height:1.6;color:var(--fg-2);">Send us a note about the product, sales, partnerships, press, or security. We read every message that comes through this form and reply within one business day from our Lisbon office, Cais do Sodré. If your question is about self-hosting on Apache 2.0, the <a href="https://docs.automatos.app/" style="color:var(--accent);">documentation</a> covers most setup questions faster than email will. For anything else — operator pilots, custom integrations, agency partnerships, or a security disclosure — the form below routes to the right person on the team.</p>
+  <p style="max-width:64ch;font-size:17px;line-height:1.6;color:var(--fg-2);">Send us a note about the product, sales, partnerships, press, or security. We read every message that comes through this form. We reply within two working days. If your question is about self-hosting on Apache 2.0, the <a href="https://docs.automatos.app/" style="color:var(--accent);">documentation</a> covers most setup questions faster than email will. For anything else — beta access, custom integrations, agency partnerships, or a security disclosure — the form below reaches the team.</p>
 </section>
 
 <div class="section-meta">
   <div><span class="pill">Plate&nbsp;/&nbsp;F</span> Form</div>
   <div>Tell us what you're building. A sentence or two is fine.</div>
-  <div>↗&nbsp;&nbsp;<a href="mailto:hello@automatos.ai">hello@automatos.ai</a></div>
+  <div>↗&nbsp;&nbsp;<a href="mailto:hello@automatos.app">hello@automatos.app</a></div>
 </div>
 
 <div class="layout">
@@ -154,6 +154,16 @@ body[data-mood="pitch"] [class*="vis-"] {
     if (!form) return;
     const help = document.getElementById('contactHelp');
     const btn  = document.getElementById('contactSubmit');
+
+    // Links with data-topic (the aside below) open this form with that topic
+    // picked. Delegated, because the aside is parsed after this script runs.
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest ? e.target.closest('a[data-topic]') : null;
+      if (!link) return;
+      form.querySelectorAll('input[name="topic"]').forEach((radio) => {
+        radio.checked = radio.value === link.dataset.topic;
+      });
+    });
 
     function setBtn(text) {
       while (btn.firstChild) btn.removeChild(btn.firstChild);
@@ -188,7 +198,7 @@ body[data-mood="pitch"] [class*="vis-"] {
         btn.textContent = 'Sent ✓';
       } catch (err) {
         if (help) {
-          help.textContent = (err && err.message) || 'Could not send. Try again or email hello@automatos.ai';
+          help.textContent = (err && err.message) || 'Could not send. Try again or email hello@automatos.app';
           help.style.color = '#b53b2b';
         }
         btn.disabled = false;
@@ -199,17 +209,17 @@ body[data-mood="pitch"] [class*="vis-"] {
   </script>
 
   <aside class="aside">
-    <div class="blk"><span class="lbl">Looking for…</span><h3>Self-hosters &amp; <em>tinkerers</em></h3><p>The repo is the fastest path. Issues, discussions, and a community Discord live there.</p><a class="lnk" href="https://github.com/AutomatosAI">github.com/AutomatosAI →</a></div>
-    <div class="blk"><span class="lbl">Looking for…</span><h3>Enterprise &amp; <em>regulated</em> teams</h3><p>SOC 2, EU residency, SSO, named SE. Book a 30-minute call and we'll start with your constraints.</p><a class="lnk" href="#">Talk to sales →</a></div>
-    <div class="blk"><span class="lbl">Looking for…</span><h3>Researchers &amp; <em>writers</em></h3><p>Press kit, brand assets, founder bios — all in one folder. Press contact replies same day.</p><a class="lnk" href="#">Press kit →</a></div>
-    <div class="blk"><span class="lbl">Office</span><h3>Lisbon · <em>Cais do Sodré</em></h3><p>Rua de São Paulo · 1200-470 Lisboa · Portugal</p></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Self-hosters &amp; <em>tinkerers</em></h3><p>The repo is the fastest path. Issues and discussions live there.</p><a class="lnk" href="https://github.com/AutomatosAI">github.com/AutomatosAI →</a></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Enterprise &amp; <em>regulated</em> teams</h3><p>Enterprise is coming soon: the same OS in your own cluster, with a licence, committed credits and consultancy. We're building it now. Tell us what you need.</p><a class="lnk" href="#contactForm" data-topic="Sales · Enterprise">Contact Automatos →</a></div>
+    <div class="blk"><span class="lbl">Looking for…</span><h3>Researchers &amp; <em>writers</em></h3><p>Press and research: write to us through the form on this page. We reply within two working days.</p></div>
+    <div class="blk"><span class="lbl">Location</span><h3>Built in <em>Lisbon</em></h3><p>Portugal · EU</p></div>
   </aside>
 </div>
 
-<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Contact · v1.36.04</span></footer>
+<div data-site-footer></div>
 <script src="_theme.js?v=20260511d" defer></script>
 <script src="_config.js?v=20260511d" defer></script>
-<script src="_nav.js?v=20260511d" defer></script>
-<script src="_waitlist.js?v=20260511d" defer></script>
+<script src="_nav.js?v=20261008a" defer></script>
+<script src="_footer.js?v=20261019a" defer></script>
 <script src="_chat.js?v=20260511d" defer></script>
 </body></html>

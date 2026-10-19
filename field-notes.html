@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Automatos · Field Notes</title>
+<title>Field Notes · Automatos AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -98,10 +98,6 @@ a { color: inherit; text-decoration: none; }
 .sub-strip { padding: 64px var(--gutter); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-columns: 1.4fr 1fr; gap: 60px; align-items: end; }
 .sub-h { font-family: var(--serif); font-size: 56px; line-height: 1.0; letter-spacing: -0.02em; text-wrap: balance; }
 .sub-h em { font-style: italic; color: var(--muted); }
-.sub-form { display: flex; gap: 0; border: 1px solid var(--rule-strong); }
-.sub-form input { flex: 1; appearance: none; background: transparent; border: 0; outline: none; padding: 16px 18px; font-family: var(--serif); font-size: 22px; letter-spacing: -0.01em; color: var(--fg); }
-.sub-form input::placeholder { color: var(--muted); font-style: italic; }
-.sub-form button { padding: 16px 22px; background: var(--fg); color: var(--bg); border: 0; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; }
 .sub-stamp { margin-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 
 .foot { padding: 36px var(--gutter); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
@@ -131,19 +127,19 @@ body[data-mood="pitch"] [class*="vis-"] {
 <link rel="stylesheet" href="_responsive.css?v=20260511u">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Automatos">
+<meta property="og:site_name" content="Automatos AI">
 <meta property="og:url" content="https://automatos.app/field-notes">
-<meta property="og:title" content="Field notes — Notes from the field · Automatos">
-<meta property="og:description" content="Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and our pilot operators.">
+<meta property="og:title" content="Field notes — Notes from the field · Automatos AI">
+<meta property="og:description" content="Operator-first writing on routing, missions, memory, and the field.">
 <meta property="og:image" content="https://automatos.app/images/og/field-notes.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@automatosai">
-<meta name="twitter:title" content="Field notes — Notes from the field · Automatos">
-<meta name="twitter:description" content="Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and our pilot operators.">
+<meta name="twitter:title" content="Field notes — Notes from the field · Automatos AI">
+<meta name="twitter:description" content="Operator-first writing on routing, missions, memory, and the field.">
 <meta name="twitter:image" content="https://automatos.app/images/og/field-notes.jpg">
-<meta name="description" content="Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and our pilot operators.">
+<meta name="description" content="Operator-first writing on routing, missions, memory, and the field.">
 <link rel="canonical" href="https://automatos.app/field-notes">
 <script src="_analytics.js?v=20260512a" defer></script>
 <script type="application/ld+json">
@@ -152,12 +148,14 @@ body[data-mood="pitch"] [class*="vis-"] {
   "@type": "Blog",
   "@id": "https://automatos.app/field-notes#blog",
   "url": "https://automatos.app/field-notes",
-  "name": "Automatos · Field Notes",
+  "name": "Field Notes · Automatos AI",
   "description": "Operator-first writing on routing, missions, memory, and the field.",
   "inLanguage": "en",
   "publisher": {
     "@type": "Organization",
+    "@id": "https://automatos.app/#organization",
     "name": "Automatos AI",
+    "url": "https://automatos.app",
     "logo": "https://automatos.app/images/automatos-mark-black.png"
   }
 }
@@ -166,18 +164,18 @@ body[data-mood="pitch"] [class*="vis-"] {
 <body data-mood="bone" data-screen-label="Field Notes — Index">
 
 <header class="topbar">
-  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <div><a class="brand" href="/"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
   <nav>
-    <a href="index.html">Platform</a>
-    <a href="marketplace.html">Marketplace</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
-    <a href="#" class="is-current">Field notes</a>
-    <a href="research.html">Research</a>
+    <a href="/">The OS</a>
+    <a href="/#family">Family</a>
+    <a href="/#developers">Developers</a>
+    <a href="/academy">Academy</a>
+    <a href="/field-notes" class="is-current">Field notes</a>
+    <a href="/research">Research</a>
   </nav>
   <div>
-    <a href="https://ui.automatos.app/sign-in">Sign in</a>
-    <a data-waitlist href="#" class="cta">Sign up free →</a>
+    <a href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">GitHub</a>
+    <a href="/contact" class="cta">Contact →</a>
   </div>
 </header>
 
@@ -193,22 +191,22 @@ body[data-mood="pitch"] [class*="vis-"] {
     </h1>
   </div>
   <div class="hero-meta">
-    <div><b>Cadence</b> — weekly, plus or minus.</div>
-    <div><b>Voice</b> — operator-first. No hype.</div>
+    <div><b>Cadence</b> — published when there's something to report.</div>
+    <div><b>Voice</b> — operator-first.</div>
     <div><b>Subjects</b> — router, missions, memory, the field.</div>
-    <div><b>Authors</b> — the team and our pilot operators.</div>
+    <div><b>Authors</b> — named on each post.</div>
   </div>
 </section>
 
 <section class="section" style="padding:40px var(--gutter);border-bottom:1px solid var(--rule-c);">
-  <p style="max-width:64ch;font-size:17px;line-height:1.6;color:var(--fg-2);">Field notes is the running engineering log from inside the Automatos platform — short, operator-first writing on how the router decides, how missions become directed acyclic graphs, how the memory layers fall over and recover, and how a real agent team behaves in production. Most posts are 3–10 minutes. New entries land weekly, plus or minus, from the team and our pilot operators. No hype, no thought-leadership, no posts about "the future of AI". The posts below are paper-thin slices of the actual day-to-day: cache hit rates, configuration regressions, mission engine diagrams, why the coordinator ticks every five seconds.</p>
+  <p style="max-width:64ch;font-size:17px;line-height:1.6;color:var(--fg-2);">Engineering notes and articles from the Automatos team and its agents, on routing, missions, memory and running agents for a business.</p>
 </section>
 
 <!-- FEATURED — filled from API by _fieldnotes.js -->
 <section class="section" data-comment-anchor="fn-feat" id="fn-feat-section" hidden>
   <div class="section-meta">
-    <div><span class="pill accent">Featured</span> This week</div>
-    <div>The longest piece this volume — read it first.</div>
+    <div><span class="pill accent">Featured</span> Start here</div>
+    <div>Read this one first.</div>
     <div id="fn-feat-meta">↗</div>
   </div>
   <div class="featured"></div>
@@ -234,25 +232,18 @@ body[data-mood="pitch"] [class*="vis-"] {
 
 <!-- SUBSCRIBE -->
 <section class="sub-strip">
-  <h2 class="sub-h">A note in your<br />inbox, <em>weekly.</em></h2>
+  <h2 class="sub-h">New notes,<br /><em>announced.</em></h2>
   <div>
-    <form class="sub-form" onsubmit="event.preventDefault();">
-      <input type="email" placeholder="you@operator.eu" />
-      <button type="submit">Subscribe →</button>
-    </form>
-    <div class="sub-stamp">No tracking pixels. Unsubscribe in one click.</div>
+    <div class="sub-stamp">New notes are announced on <a href="https://x.com/automatosai" target="_blank" rel="noopener" style="color:var(--accent);">X</a> and <a href="https://www.linkedin.com/company/automatos-ai" target="_blank" rel="noopener" style="color:var(--accent);">LinkedIn</a>.</div>
   </div>
 </section>
 
-<footer class="foot">
-  <span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span>
-  <span>Field notes · v1.36.04</span>
-</footer>
+<div data-site-footer></div>
 
 <script src="_theme.js?v=20260511u" defer></script>
 <script src="_config.js?v=20260511u" defer></script>
-<script src="_nav.js?v=20260511u" defer></script>
-<script src="_waitlist.js?v=20260511u" defer></script>
+<script src="_nav.js?v=20261008a" defer></script>
+<script src="_footer.js?v=20261019a" defer></script>
 <script src="_chat.js?v=20260511u" defer></script>
 <script src="_fieldnotes.js?v=20260511u" defer></script>
 </body>

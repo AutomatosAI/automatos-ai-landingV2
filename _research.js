@@ -106,6 +106,12 @@
     return `${String(d.getDate()).padStart(2,'0')} · ${String(d.getMonth()+1).padStart(2,'0')} · ${String(d.getFullYear()).slice(-2)}`;
   }
   function pad2(n) { return String(n).padStart(2, '0'); }
+  // Byline: posts written by an Automatos agent carry author_agent_id in the
+  // blog API, and their byline says so: AI authors are labelled as AI.
+  function byline(post) {
+    const name = post.author_name || 'Automatos';
+    return post.author_agent_id ? `${name} · AI agent` : name;
+  }
   function el(tag, attrs, kids) {
     const n = document.createElement(tag);
     if (attrs) for (const k in attrs) {
@@ -138,13 +144,13 @@
     titleNodes(post.title).forEach(n => fnQuote.appendChild(n));
     const fnAttr = el('div', {
       class: 'fn-attr',
-      text: post.excerpt ? `— ${(post.excerpt || '').slice(0, 80)}` : `— ${post.author_name || 'Automatos'}`,
+      text: post.excerpt ? `— ${(post.excerpt || '').slice(0, 80)}` : `— ${byline(post)}`,
     });
 
     const plate = el('a', { class: 'plate plate-fieldnote', href }, [fnMeta, fnQuote, fnAttr]);
 
     const meta = el('span');
-    meta.appendChild(el('b', { text: post.author_name || 'Automatos' }));
+    meta.appendChild(el('b', { text: byline(post) }));
     const minutes = post.reading_time_minutes ? ` · ${post.reading_time_minutes} min` : '';
     meta.appendChild(document.createTextNode(` · ${fmtShortDate(post.published_at)}${minutes}`));
     const read = el('a', { class: 'read', href, text: 'Read paper →' });
@@ -166,7 +172,7 @@
     ]);
     const quote = el('div', { class: 'fn-quote' });
     titleNodes(post.title).forEach(n => quote.appendChild(n));
-    const attr = el('div', { class: 'fn-attr', text: `— ${post.author_name || 'Automatos'} · vol. 01` });
+    const attr = el('div', { class: 'fn-attr', text: `— ${byline(post)} · vol. 01` });
     plate.appendChild(meta);
     plate.appendChild(quote);
     plate.appendChild(attr);
@@ -184,7 +190,7 @@
     const dek = el('p', { class: 'dek', text: post.excerpt || '' });
     const spacer = el('div');
     const author = el('div', { class: 'author' }, [
-      el('span', null, [ el('b', { text: post.author_name || 'Automatos' }) ]),
+      el('span', null, [ el('b', { text: byline(post) }) ]),
       el('span', { text: post.published_at ? fmtShortDate(post.published_at) : '' }),
     ]);
     const read = el('a', { class: 'read', href: `/research/${encodeURIComponent(post.slug)}`, text: 'Read the paper →' });

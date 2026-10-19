@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Automatos · Terms of Service</title>
+<title>Terms of Service · Automatos AI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -32,6 +32,7 @@ a{color:inherit;text-decoration:none}
 .tabs a{padding:18px 28px;border-right:1px solid var(--rule-c);font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .tabs a.is-on{color:var(--fg);background:var(--bg-2)}
 .tabs a:hover{color:var(--fg)}
+@media (max-width:720px){.tabs a{padding:14px 12px}}
 .body{display:grid;grid-template-columns:240px minmax(0,1fr) 60px;padding:64px var(--gutter) 80px;border-bottom:1px solid var(--rule-c);gap:56px;align-items:start}
 .toc{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);position:sticky;top:24px;display:grid;gap:6px}
 .toc .sec{color:var(--fg);margin-bottom:6px}
@@ -72,16 +73,16 @@ body[data-mood="pitch"] [class*="vis-"] {
 </style><link rel="stylesheet" href="_responsive.css?v=20260511h">
 <!-- Open Graph + Twitter -->
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Automatos">
+<meta property="og:site_name" content="Automatos AI">
 <meta property="og:url" content="https://automatos.app/terms">
-<meta property="og:title" content="Terms of Service · Automatos">
+<meta property="og:title" content="Terms of Service · Automatos AI">
 <meta property="og:description" content="The fine print, plainly. Service terms for hosted Automatos. Self-host is Apache 2.0.">
 <meta property="og:image" content="https://automatos.app/images/og/terms.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@automatosai">
-<meta name="twitter:title" content="Terms of Service · Automatos">
+<meta name="twitter:title" content="Terms of Service · Automatos AI">
 <meta name="twitter:description" content="The fine print, plainly. Service terms for hosted Automatos. Self-host is Apache 2.0.">
 <meta name="twitter:image" content="https://automatos.app/images/og/terms.jpg">
 <meta name="description" content="The fine print, plainly. Service terms for hosted Automatos. Self-host is Apache 2.0.">
@@ -90,44 +91,42 @@ body[data-mood="pitch"] [class*="vis-"] {
 </head><body data-mood="bone" data-screen-label="Legal — Terms">
 
 <header class="topbar">
-  <div><a class="brand" href="index.html"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
+  <div><a class="brand" href="/"><span class="brand-mark"></span>Automatos<em>·ai</em></a></div>
   <nav>
-    <a href="index.html">Platform</a>
-    <a href="marketplace.html">Marketplace</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="https://docs.automatos.app/" target="_blank" rel="noopener">Docs</a>
-    <a href="academy.html">Academy</a>
-    <a href="field-notes.html">Field notes</a>
+    <a href="/">The OS</a>
+    <a href="/#family">Family</a>
+    <a href="/#developers">Developers</a>
+    <a href="/academy">Academy</a>
+    <a href="/field-notes">Field notes</a>
+    <a href="/research">Research</a>
   </nav>
-  <div><a href="https://ui.automatos.app/sign-in">Sign in</a><a data-waitlist href="#" class="cta">Sign up free →</a></div>
+  <div><a href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">GitHub</a><a href="/contact" class="cta">Contact →</a></div>
 </header>
 
 <div class="masthead">
   <div><span class="pill">Plate&nbsp;/&nbsp;LGL</span> Legal</div>
   <div>The plain-language version sits beside each clause.</div>
-  <div><b>Effective</b> · 10 May 2026</div>
+  <div><b>Effective</b> · 21 Oct 2026</div>
 </div>
 
 <section class="title-block">
   <div>
     <h1>Terms of <em>Service</em>.</h1>
-    <p class="dek">A working agreement between you and Automatos Labs, Lda. The italic blocks are the plain-language summary — those don't override the legal text, but they're how we'd explain it over coffee.</p>
+    <p class="dek">A working agreement between you and Automatos AI. The italic blocks are the plain-language summary — those don't override the legal text, but they're how we'd explain it over coffee.</p>
   </div>
   <div class="meta">
-    <div><b>Effective</b> · 10 May 2026</div>
-    <div><b>Version</b> · 2.1</div>
-    <div><b>Replaces</b> · v2.0 (12 Feb 2026)</div>
+    <div><b>Effective</b> · 21 Oct 2026</div>
+    <div><b>Version</b> · 2.2</div>
+    <div><b>Replaces</b> · v2.1 (10 May 2026)</div>
     <div><b>Jurisdiction</b> · Portugal · EU</div>
   </div>
 </section>
 
 <nav class="tabs">
-  <a class="is-on" href="#">Terms of Service</a>
-  <a href="#">Privacy</a>
-  <a href="#">DPA</a>
-  <a href="#">Sub-processors</a>
-  <a href="#">Acceptable Use</a>
-  <a href="#">Security</a>
+  <a class="is-on" href="/terms">Terms of Service</a>
+  <a href="/privacy">Privacy</a>
+  <a href="/cookies">Cookies</a>
+  <a href="/eu-ai-act">EU AI Act</a>
 </nav>
 
 <article class="body">
@@ -158,27 +157,26 @@ body[data-mood="pitch"] [class*="vis-"] {
     <div class="plain"><b>In plain words</b>You're 18+, your details are real, and your agents' actions are your actions.</div>
 
     <h2 id="s3"><span class="num">Section 03</span>The <em>service</em></h2>
-    <p>"Service" means the Automatos hosted platform at <code>app.automatos.ai</code>, the Marketplace, this website, and any official client libraries. The open-source Automatos codebase, distributed under Apache 2.0 from <code>github.com/AutomatosAI/automatos-ai</code>, is governed by its license, not these Terms — though if you bring it back to our hosted infrastructure, the relevant clauses below apply.</p>
+    <p>"Service" means the Automatos hosted platform at <code>ui.automatos.app</code>, the Marketplace, this website, and any official client libraries. The open-source Automatos codebase, distributed under Apache 2.0 from <code>github.com/AutomatosAI/automatos-ai</code>, is governed by its license, not these Terms — though if you bring it back to our hosted infrastructure, the relevant clauses below apply.</p>
 
     <h2 id="s4"><span class="num">Section 04</span>Your <em>data</em></h2>
-    <p>You retain ownership of all data you upload, generate, or process through the Service — including knowledge bases, mission outputs, agent configurations, and routing logs. We process your data only to provide and improve the Service, in accordance with our DPA.</p>
+    <p>You retain ownership of all data you upload, generate, or process through the Service — including knowledge bases, mission outputs, agent configurations, and routing logs. We process your data only to provide and improve the Service, as described in our <a href="/privacy">Privacy Policy</a>.</p>
     <ul>
       <li>We do not train models on your data.</li>
       <li>We do not sell your data, ever.</li>
       <li>You can export your data at any time as a single bundle.</li>
-      <li>EU customers can pin all storage to our Frankfurt region.</li>
     </ul>
-    <div class="plain"><b>In plain words</b>Your data is your data. We don't train on it, sell it, or move it across regions without your say-so.</div>
+    <div class="plain"><b>In plain words</b>Your data is your data. We don't train on it or sell it, and you can export it any time.</div>
 
     <h2 id="s5"><span class="num">Section 05</span>Models &amp; <em>API keys</em></h2>
-    <p>Automatos is bring-your-own-keys. You are responsible for any fees charged by upstream model providers (OpenRouter, Anthropic, OpenAI, Google, or any other provider you connect). The router may select among the keys you've connected based on cost and capability rules — those rules are visible and editable in your workspace.</p>
+    <p>During the beta, after a one-time trial, the AI runs on your own provider keys on every plan, and your provider bills you for that usage. You are responsible for any fees charged by the providers you connect (OpenRouter, Anthropic, OpenAI, Google or any other). The router may select among the keys you've connected based on cost and capability rules, which are visible and editable in your workspace.</p>
 
     <h2 id="s6"><span class="num">Section 06</span>Acceptable <em>use</em></h2>
-    <p>You agree not to use the Service to: (a) violate any law; (b) infringe intellectual property rights; (c) generate or distribute material that exploits minors, incites violence, or harasses; (d) attempt to extract our systems' source code or model weights; or (e) operate at a scale that compromises Service availability for other customers. The full Acceptable Use Policy is linked above.</p>
+    <p>You agree not to use the Service to: (a) violate any law; (b) infringe intellectual property rights; (c) generate or distribute material that exploits minors, incites violence, or harasses; (d) attempt to extract our systems' source code or model weights; or (e) operate at a scale that compromises Service availability for other customers.</p>
 
     <h2 id="s7"><span class="num">Section 07</span>Fees &amp; <em>cancellation</em></h2>
-    <p>Paid plans bill monthly or annually in advance. You can cancel from your workspace settings at any time; cancellation takes effect at the end of the current billing period. We do not pro-rate refunds for partial periods, but we will pro-rate genuine errors on our part — just write in.</p>
-    <div class="plain"><b>In plain words</b>Cancel any time, no clawback. We don't refund partial months unless we messed up.</div>
+    <p>Nothing is charged during the beta. When billing opens, this section will set out renewal, cancellation and refunds.</p>
+    <div class="plain"><b>In plain words</b>Nothing is charged during the beta.</div>
 
     <h2 id="s8"><span class="num">Section 08</span>Open source &amp; <em>intellectual property</em></h2>
     <p>The core Automatos codebase is open source under Apache 2.0. Our trademarks ("Automatos", the plate mark) are not licensed under Apache 2.0 — you can use the code, fork it, sell services on top of it, but please don't pass off your fork as ours. Marketplace agents and skills are licensed individually; check each listing.</p>
@@ -193,17 +191,17 @@ body[data-mood="pitch"] [class*="vis-"] {
     <p>These Terms are governed by the laws of Portugal. Any dispute will be resolved in the courts of Lisbon, except that consumers may also bring claims in their place of residence.</p>
 
     <h2 id="s12"><span class="num">Section 12</span>Contact</h2>
-    <p>Legal: <a href="mailto:legal@automatos.ai"><code>legal@automatos.ai</code></a> · Security: <a href="mailto:security@automatos.ai"><code>security@automatos.ai</code></a> · Press: <a href="mailto:press@automatos.ai"><code>press@automatos.ai</code></a> · Postal: Automatos Labs, Lda · Rua de São Paulo · 1200-470 Lisboa · Portugal.</p>
+    <p>Legal: <a href="mailto:legal@automatos.app"><code>legal@automatos.app</code></a> · Security: <a href="mailto:security@automatos.app"><code>security@automatos.app</code></a> · Press: <a href="mailto:press@automatos.app"><code>press@automatos.app</code></a>.</p>
 
-    <p style="margin-top:48px;padding-top:18px;border-top:1px solid var(--rule-c);font-family:var(--mono);font-size:12px;color:var(--muted);">— v2.1 · effective 10 May 2026 · supersedes v2.0</p>
+    <p style="margin-top:48px;padding-top:18px;border-top:1px solid var(--rule-c);font-family:var(--mono);font-size:12px;color:var(--muted);">— v2.2 · effective 21 Oct 2026 · supersedes v2.1</p>
   </div>
   <div></div>
 </article>
 
-<footer class="foot"><span>© 2026 Automatos&nbsp;Labs · Apache&nbsp;2.0</span><span>Legal · v1.36.04</span></footer>
+<div data-site-footer></div>
 <script src="_theme.js?v=20260511d" defer></script>
 <script src="_config.js?v=20260511d" defer></script>
-<script src="_nav.js?v=20260511d" defer></script>
-<script src="_waitlist.js?v=20260511d" defer></script>
+<script src="_nav.js?v=20261008a" defer></script>
 <script src="_chat.js?v=20260511d" defer></script>
+<script src="_footer.js?v=20261019a" defer></script>
 </body></html>
