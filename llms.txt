@@ -3,32 +3,33 @@
 > One OS. Any interface. Automatos OS is the open-source (Apache 2.0),
 > API-first engine: agents, memory, retrieval, knowledge graphs, NL2SQL,
 > documents and socials, governed by a harness of budgets, standards and
-> approvals. Automatos Studio is where you run it; Academy and Market
-> Intelligence are products built on it. Built in Lisbon.
+> approvals. Automatos Studio is where you run it. The Automatos Academy
+> tutor runs on it; Automatos Markets' AI analysts are built on it and run
+> when switched on. Built in Lisbon.
 
 ## The OS and the family
 
 - [Home](https://automatos.app/): What Automatos OS is, the products that run on it, the editions and the architecture.
-- [Automatos Studio](https://ui.automatos.app): The control panel for the OS and your business. Live as SaaS; also runs locally from the open-source repo.
-- [Academy](https://academy.automatos.app): Free certification prep with a tutor, powered by Automatos AI.
-- [Market Intelligence](https://markets.automatos.app): Crypto market signals with receipts, powered by Automatos AI. Free during the pilot; not financial advice.
-- Editions: Local (open source, Apache 2.0), SaaS (live), Enterprise (your own Kubernetes cluster from a CI-tested Helm chart; single sign-on next).
+- [Automatos Studio](https://studio.automatos.app/#waitlist): The control panel for the OS and your business. Hosted beta opens November 2026 · Join the waitlist. Also runs locally today from the open-source repo (Apache 2.0).
+- [Automatos Academy](https://academy.automatos.app): Free certification prep with an AI tutor, powered by Automatos AI.
+- [Automatos Markets](https://markets.automatos.app): A read-only crypto market-intelligence product, powered by Automatos AI. Free during the pilot; not financial advice.
+- Editions: Local (open source, Apache 2.0, available today), SaaS (hosted beta opens November 2026), Enterprise (coming soon · contact Automatos; a CI-tested Helm chart exists, single sign-on next).
 
 ## Compliance
 
-- [EU AI Act](https://automatos.app/eu-ai-act): Where Automatos stands against the Act, article by article: in the product today, partly there, or on the roadmap. Not certified.
+- [EU AI Act](https://automatos.app/eu-ai-act): Where Automatos stands against the Act, article by article: in the product today, partly there, in progress, or on the roadmap. Not certified.
 - [EU AI Act checker](https://automatos.app/eu-ai-act/checker): A free five-question classifier that runs in the browser.
 
 ## Writing
 
-- [Field notes](https://automatos.app/field-notes): Operator-first writing on routing, missions, memory, and the field. Weekly plus or minus. From the team and pilot operators.
-- [Research](https://automatos.app/research): Original practitioner papers on multi-agent coordination, semantic memory, and AI orchestration. Built and tested on the Automatos platform.
+- [Field notes](https://automatos.app/field-notes): Operator-first writing on routing, missions, memory, and the field.
+- [Research](https://automatos.app/research): Practitioner papers from the team building Automatos, on multi-agent coordination, semantic memory and AI orchestration.
 
 ## Architecture (one-paragraph each)
 
-- **Universal router**: five-tier routing (override → cache → rules → semantic → LLM) so the cheapest competent answer wins. Cosine-similarity semantic tier (T2.5) catches 27% of traffic that previously fell to the LLM.
+- **Universal router**: five-tier routing (override → cache → rules → semantic → LLM) so the cheapest competent answer wins.
 - **Mission engine**: natural-language goal → directed acyclic graph of tasks. Coordinator stays stateless; agents request capabilities at runtime.
-- **Layered memory**: focus (seconds), working (minutes), short-term (hours), long-term (days), knowledge (corpus). Each layer has its own retrieval and consolidation policy.
+- **Layered memory**: focus (the context window), working (Redis, 24-hour TTL), short-term (Postgres, with time-based decay), long-term (Qdrant; hosted, opt-in on the local edition), knowledge (RAG and NL2SQL, called as tools).
 - **Skills + tools**: a tool is a verb; a skill is a hire-able trait that bundles tools, prompts, and policy. Skills are the unit of composition.
 
 ## Resources
@@ -36,9 +37,8 @@
 - [Documentation](https://docs.automatos.app/): Self-host guide, API reference.
 - [GitHub](https://github.com/AutomatosAI/automatos-ai): Source. Apache 2.0.
 - [DeepWiki](https://deepwiki.com/AutomatosAI/automatos-ai): AI-powered codebase wiki.
-- [Discord](https://discord.com/channels/1400562549258453155/1400562550713880628): Community + operator chat.
 
 ## Contact
 
-- Email: gerard@automatos.app
-- Headquartered in Lisbon, Cais do Sodré.
+- [Contact form](https://automatos.app/contact): We reply within two working days.
+- Built in Lisbon.

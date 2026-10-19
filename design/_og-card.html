@@ -79,10 +79,10 @@
   .brand em { font-style: italic; opacity: 0.65; }
   .brand-mark {
     width: 30px; height: 30px;
-    background: url("images/automatos-mark-white.png") center/contain no-repeat;
+    background: url("../images/automatos-mark-white.png") center/contain no-repeat;
   }
   body[data-mood="bone"] .brand-mark {
-    background-image: url("images/automatos-mark-black.png");
+    background-image: url("../images/automatos-mark-black.png");
   }
   .eye { padding: 6px 14px; border: 1px solid currentColor; border-radius: 999px; }
   .title-wrap { position: absolute; left: 72px; right: 72px; bottom: 110px; }
@@ -128,7 +128,7 @@
     var p = new URLSearchParams(window.location.search);
     var title = p.get('title');
     var eye   = p.get('eye');
-    var img   = p.get('img') || 'images/ship.jpeg';
+    var img   = p.get('img') || '../images/ship.jpeg';
     var stamp = p.get('stamp');
     var theme = p.get('theme') === 'bone' ? 'bone' : 'pitch';
     document.body.setAttribute('data-mood', theme);

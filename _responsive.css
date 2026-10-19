@@ -40,7 +40,7 @@
     display: flex !important; gap: 8px !important; align-items: center;
     justify-content: flex-end;
   }
-  /* hide Changelog util on tablet; keep Sign in + Start free */
+  /* hide the plain GitHub util on tablet; keep the solid Contact */
   .utilities .util:not(.solid):first-child { display: none; }
   .util { padding: 9px 12px !important; font-size: 10.5px !important; }
 
@@ -123,16 +123,6 @@
   }
   .footer-brand { grid-column: 1 / -1; }
 
-  /* Marketplace — featured packs row */
-  .featured-row, .packs { grid-template-columns: 1fr !important; }
-  .pack { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
-  .agent-grid { grid-template-columns: repeat(2, 1fr) !important; }
-
-  /* Pricing — 3 tiers → 1 col stacked (more readable than squished 3) */
-  .tier-grid { grid-template-columns: 1fr !important; }
-  .tier { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
-  .compare { overflow-x: auto; }
-
   /* Contact */
   .layout { grid-template-columns: 1fr !important; }
   .form { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
@@ -180,12 +170,13 @@
   .related-meta > div { padding: 12px var(--gutter) !important; border-right: 0 !important; border-bottom: 1px solid var(--rule-c); justify-content: flex-start !important; }
   .related { grid-template-columns: 1fr !important; }
   .related .note { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 28px var(--gutter) !important; min-height: auto !important; }
+  /* CTA strip (academy) */
   .cta-strip {
     grid-template-columns: 1fr !important;
-    padding: 48px var(--gutter) !important;
+    padding: 56px var(--gutter) !important;
     gap: 28px !important;
   }
-  .cta-h { font-size: clamp(36px, 9vw, 56px) !important; }
+  .cta-h { font-size: clamp(40px, 6.5vw, 56px) !important; }
 
   /* Masthead */
   .masthead { grid-template-columns: 1fr 1fr !important; }
@@ -274,43 +265,16 @@
   /* ── Index — Closer changelog stays in same column on tablet ── */
   .cl-item { grid-template-columns: 64px 1fr !important; gap: 14px !important; }
 
-  /* ── Marketplace — toolbar (search | filter | sort) + channels grid ── */
-  .toolbar { grid-template-columns: 1fr !important; }
-  .toolbar > * { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); }
-  .toolbar > *:last-child { border-bottom: 0; }
-  .channels { grid-template-columns: repeat(4, 1fr) !important; }
-  .channels .channel { border-bottom: 1px solid var(--rule-c); }
-  .channels .channel:nth-child(4n) { border-right: 0; }
-  /* Inline-styled featured/agent grids that use repeat(3,1fr) inline */
-  [style*="repeat(3, 1fr)"], [style*="repeat(3,1fr)"] {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  /* ── Pricing — 4 tiers → 2 cols on tablet, FAQ 2 → 1, CTA strip stack ── */
-  .tiers { grid-template-columns: 1fr 1fr !important; }
-  .tier { border-right: 0 !important; }
-  .tier:nth-child(odd) { border-right: 1px solid var(--rule-c) !important; }
-  .tier { border-bottom: 1px solid var(--rule-c); }
-  .compare { overflow-x: auto; }
-  .compare > div { white-space: nowrap; }
-  .faq { grid-template-columns: 1fr !important; }
-  .cta-strip { grid-template-columns: 1fr !important; gap: 28px !important; padding: 56px var(--gutter) !important; }
-  .cta-h { font-size: clamp(40px, 6.5vw, 56px) !important; }
-
-  /* ── Field-notes — sub-strip footer ── */
+  /* ── Field notes and research — sub-strip footer ── */
   .sub-strip { grid-template-columns: 1fr !important; gap: 28px !important; padding: 48px var(--gutter) !important; }
 
   /* ── Terms — title block ── */
   .title-block { grid-template-columns: 1fr !important; gap: 28px !important; }
 
-  /* ── Pitch-mode page — every band is 1.x fr / 1fr or 5-col ── */
-  .pg-pitch .hero-content,
+  /* ── Index — hero content and chapters stack ── */
   .hero-content { grid-template-columns: 1fr !important; gap: 36px !important; }
-  /* pitch-mode .chapter is split — give it space */
   .chapter:not(.field-note) { grid-template-columns: 1fr !important; gap: 40px !important; padding: 56px var(--gutter) !important; }
   .chapter h2 { font-size: clamp(40px, 6vw, 56px) !important; }
-  .fnote { grid-template-columns: 1fr !important; gap: 32px !important; padding: 56px var(--gutter) !important; }
-  .cta { grid-template-columns: 1fr !important; gap: 32px !important; padding: 64px var(--gutter) !important; }
 
   /* ── 404 — main grid stacks ── */
   main { grid-template-columns: 1fr !important; }
@@ -332,14 +296,14 @@
   .brand-mark { width: 18px; height: 18px; margin-right: 8px; }
   .topbar .cta { font-size: 9.5px; padding-bottom: 1px; }
 
-  /* Hide Sign in on mobile — drawer will carry it */
+  /* Hide the topbar's plain links on mobile — the drawer carries them */
   .topbar > :last-child > a:not(.cta):not(.nav-toggle) { display: none; }
 
   /* Topbar (index — .header / .header-row / .utilities) */
   .header-row { padding: 10px var(--gutter) !important; gap: 8px !important; }
   .brand-name { font-size: 18px !important; }
   .brand-mark { width: 22px !important; height: 22px !important; }
-  /* On mobile: only Start free + hamburger remain in utilities */
+  /* On mobile: hide the plain utils (the solid one is hidden below too) */
   .utilities .util:not(.solid):not(.nav-toggle) { display: none !important; }
   .utilities .util.solid { padding: 9px 12px !important; font-size: 9.5px !important; }
   .util.solid .arrow { font-size: 9px !important; }
@@ -466,19 +430,6 @@
   }
   .section-meta > div:last-child { border-bottom: 0; justify-content: flex-start !important; }
   .section-meta > div:nth-child(3) { display: flex !important; }
-
-  /* Marketplace */
-  .featured-row, .packs { grid-template-columns: 1fr !important; }
-  .agent-grid { grid-template-columns: 1fr !important; }
-  .pack { padding: 28px var(--gutter) !important; }
-  .pack-foot { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .pack-foot .btn { width: 100%; justify-content: center; }
-
-  /* Pricing — 1-col, sticky CTAs flow inline */
-  .tier-grid { grid-template-columns: 1fr !important; }
-  .tier { padding: 32px var(--gutter) !important; }
-  .compare { font-size: 12px; }
-  .compare table { min-width: 540px; }
 
   /* Contact */
   .form { padding: 32px var(--gutter) !important; }
@@ -688,54 +639,10 @@
   .cl-body { font-size: 12.5px !important; }
 
   /* ════════════════════════════════════════════════════════════════
-     PAGES-WIDE MOBILE — marketplace, pricing, pitch-mode, 404
+     PAGES-WIDE MOBILE — CTA strip, sub strip, terms, index chapters, 404
      ════════════════════════════════════════════════════════════════ */
 
-  /* Marketplace toolbar — search/filter/sort all stack */
-  .toolbar { grid-template-columns: 1fr !important; }
-  .toolbar > * {
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--rule-c) !important;
-    padding: 14px var(--gutter) !important;
-  }
-  .toolbar > *:last-child { border-bottom: 0 !important; }
-  .search { gap: 10px !important; }
-
-  /* Marketplace channels grid — 8-col → 2-col */
-  .channels { grid-template-columns: repeat(2, 1fr) !important; }
-  .channels .channel {
-    border-right: 1px solid var(--rule-c) !important;
-    border-bottom: 1px solid var(--rule-c);
-    padding: 20px 12px !important;
-    font-size: 14px !important;
-  }
-  .channels .channel:nth-child(2n) { border-right: 0 !important; }
-
-  /* Any inline-styled repeat(3,1fr) on marketplace stacks fully */
-  [style*="repeat(3, 1fr)"], [style*="repeat(3,1fr)"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Pricing — tiers stack, CTA strip stack */
-  .tiers { grid-template-columns: 1fr !important; }
-  .tier { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 32px var(--gutter) !important; }
-  .tier:last-child { border-bottom: 0; }
-
-  /* Pricing compare — keep horizontal scroll, narrow font */
-  .compare {
-    overflow-x: auto;
-    grid-template-columns: 1.6fr repeat(4, minmax(110px, 1fr)) !important;
-    min-width: 540px;
-  }
-  .compare > div { white-space: normal !important; padding: 12px 14px !important; font-size: 12.5px !important; }
-
-  /* FAQ */
-  .faq { grid-template-columns: 1fr !important; }
-  .faq > div { padding: 24px var(--gutter) !important; }
-  .faq-q { font-size: 18px !important; }
-  .faq-a { font-size: 13.5px !important; }
-
-  /* Shared CTA strip used on marketplace/pricing/field-notes */
+  /* CTA strip (academy) */
   .cta-strip {
     grid-template-columns: 1fr !important;
     gap: 24px !important;
@@ -743,10 +650,8 @@
     align-items: start !important;
   }
   .cta-h { font-size: clamp(36px, 8.5vw, 52px) !important; }
-  .cta-actions { flex-direction: column; align-items: stretch; gap: 8px !important; }
-  .cta-actions .btn { justify-content: center; }
 
-  /* Sub strip (field-notes footer) */
+  /* Sub strip (field notes and research footer) */
   .sub-strip {
     grid-template-columns: 1fr !important;
     gap: 24px !important;
@@ -761,8 +666,7 @@
   }
   .title-block h1 { font-size: clamp(38px, 10vw, 60px) !important; }
 
-  /* Pitch-mode — every 2-col band stacks */
-  .pg-pitch .hero-content,
+  /* Index — hero content and chapters stack */
   .hero-content {
     grid-template-columns: 1fr !important;
     gap: 28px !important;
@@ -774,16 +678,6 @@
   }
   .chapter h2 { font-size: clamp(34px, 9vw, 52px) !important; }
   .chapter p { font-size: 15px !important; max-width: none !important; }
-  .fnote {
-    grid-template-columns: 1fr !important;
-    gap: 22px !important;
-    padding: 40px var(--gutter) !important;
-  }
-  .cta {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-    padding: 48px var(--gutter) !important;
-  }
 
   /* 404 — main 2-col stacks */
   main {
@@ -792,10 +686,6 @@
   main > * { border-right: 0 !important; border-bottom: 1px solid var(--rule-c); padding: 32px var(--gutter) !important; }
   main > *:last-child { border-bottom: 0; }
   .where a { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; padding: 12px 0 !important; font-size: 10.5px !important; }
-
-  /* Marketplace pack — desktop has multi-row grid template, keep but tighten gap */
-  .pack { grid-template-rows: auto !important; gap: 16px !important; }
-  .pack-includes .row { grid-template-columns: 60px 1fr !important; gap: 8px !important; font-size: 11px !important; }
 }
 
 

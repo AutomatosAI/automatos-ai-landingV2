@@ -1360,9 +1360,9 @@ html { scroll-behavior: smooth; }
 .fam-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule-c); border-left: 1px solid var(--rule-c); }
 .fam-card, .ed-card { padding: 26px 24px 24px; border-right: 1px solid var(--rule-c); border-bottom: 1px solid var(--rule-c); display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; align-content: start; background: var(--bg); }
 .fam-card-you { background: var(--bg-2); }
-.fam-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.fam-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 12px; }
 .fam-row h3 { font-family: var(--serif); font-weight: 400; font-size: 28px; line-height: 1.05; letter-spacing: -0.015em; }
-.fam-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 8px; border: 1px solid var(--rule-strong); color: var(--fg-2); white-space: nowrap; }
+.fam-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 8px; border: 1px solid var(--rule-strong); color: var(--fg-2); white-space: normal; }
 .fam-status.is-live { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 .fam-status.is-coming, .fam-status.is-building { border-style: dashed; color: var(--muted); }
 .fam-card dl { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font-size: 14px; }
@@ -1430,16 +1430,16 @@ a.fgrid-cell:hover { background: var(--bg-2); }
 <meta property="og:site_name" content="Automatos AI">
 <meta property="og:url" content="https://automatos.app/">
 <meta property="og:title" content="Automatos AI — One OS. Any interface.">
-<meta property="og:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
+<meta property="og:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Automatos Studio and the Automatos Academy tutor run on it, and so can your app.">
 <meta property="og:image" content="https://automatos.app/images/og/default.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@automatosai">
 <meta name="twitter:title" content="Automatos AI — One OS. Any interface.">
-<meta name="twitter:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
+<meta name="twitter:description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Automatos Studio and the Automatos Academy tutor run on it, and so can your app.">
 <meta name="twitter:image" content="https://automatos.app/images/og/default.jpg">
-<meta name="description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Studio, Academy and Market Intelligence run on it, and so can your app.">
+<meta name="description" content="Automatos OS is the open-source, API-first engine: agents, memory, retrieval, graphs, NL2SQL, documents and socials. Automatos Studio and the Automatos Academy tutor run on it, and so can your app.">
 <link rel="canonical" href="https://automatos.app/">
 <script src="_analytics.js?v=20260512a" defer></script>
 <script type="application/ld+json">
@@ -1452,7 +1452,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
       "name": "Automatos AI",
       "url": "https://automatos.app/",
       "logo": "https://automatos.app/images/automatos-mark-black.png",
-      "description": "One OS. Any interface. Automatos OS is the open-source, API-first engine behind Automatos Studio, Academy and Market Intelligence.",
+      "description": "One OS. Any interface. Automatos OS is the open-source, API-first engine behind Automatos Studio and the Automatos Academy tutor.",
       "sameAs": [
         "https://github.com/AutomatosAI/automatos-ai",
         "https://twitter.com/automatosai"
@@ -1512,7 +1512,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     <div class="hero-meta">
       <span><b>Automatos&nbsp;AI</b> · The company &amp; the OS</span>
       <span><b>Open</b> · Apache&nbsp;2.0</span>
-      <span><b>Studio</b> · Live as SaaS</span>
+      <span><b>Studio</b> · Hosted beta opens November 2026</span>
     </div>
 
     <div>
@@ -1582,7 +1582,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
       </p>
 
       <div class="os-modules" aria-label="The OS modules">
-        <span>Auto</span><span>Agents</span><span>Memory</span><span>RAG</span><span>NL2SQL</span><span>Knowledge graphs</span><span>Documents</span><span>Socials</span><span>Analytics</span><span>Harness · governance, budgets, standards</span><span>Chat channels</span><span>1,000+ apps</span>
+        <span>Auto</span><span>Agents</span><span>Memory</span><span>RAG</span><span>NL2SQL</span><span>Knowledge graphs</span><span>Documents</span><span>Socials</span><span>Analytics</span><span>Harness · governance, budgets, standards</span><span>Chat channels</span><span>1,000+ apps through Composio (local edition: your own Composio key)</span>
       </div>
 
       <div class="chapter-list">
@@ -1592,7 +1592,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         </div>
         <div class="chapter-list-item">
           <span class="num">/02</span>
-          <span class="label"><b>Modules with walls.</b><span>17 feature modules whose boundaries CI enforces on every change.</span></span>
+          <span class="label"><b>Modules with walls.</b><span>17 feature modules. An import-linter check in CI fails any new import between them (count on main, 19 Oct 2026).</span></span>
         </div>
         <div class="chapter-list-item">
           <span class="num">/03</span>
@@ -1631,7 +1631,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
             <text x="120" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">FastAPI</text>
             <text x="200" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">5-tier</text>
             <text x="280" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">Postgres</text>
-            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; A2A</text>
+            <text x="360" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">MCP &middot; API</text>
             <text x="435" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OAuth &middot; JWT</text>
             <text x="498" y="278" font-family="Geist Mono" font-size="7.5" letter-spacing="1.2" fill="#8A8B83" text-anchor="middle">OpenTel</text>
             <line x1="300" y1="195" x2="300" y2="40" stroke-width="1.5"></line>
@@ -1642,7 +1642,8 @@ a.fgrid-cell:hover { background: var(--bg-2); }
             <circle cx="300" cy="30" r="24" stroke="#5B7C68" stroke-width=".5" stroke-opacity=".22" fill="none"></circle>
             <path d="M280 252 L280 320 L420 320" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
             <circle cx="280" cy="252" r="2.5" fill="#0F1411" stroke="none"></circle>
-            <text x="424" y="318" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411">PG &middot; S3 &middot; pgvector</text>
+            <text x="424" y="314" font-family="Geist Mono" font-size="8" letter-spacing="1.2" fill="#0F1411">PG &middot; S3 &middot; pgvector (local)</text>
+            <text x="424" y="326" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83">S3 Vectors (hosted)</text>
             <path d="M300 30 L180 30 L120 30" stroke-width=".5" stroke-dasharray="2 2" opacity=".55"></path>
             <text x="115" y="28" font-family="Geist Mono" font-size="8" letter-spacing="1.5" fill="#0F1411" text-anchor="end">PHAROS</text>
             <text x="115" y="40" font-family="Geist Mono" font-size="7" letter-spacing="1" fill="#8A8B83" text-anchor="end">heading &middot; signal</text>
@@ -1678,7 +1679,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     </div>
     <div class="plate-arch-label-foot">
       <span>Fig. 03 — Router · Mission · Memory</span>
-      <span>Open · Apache&nbsp;2.0 · v1.36.04</span>
+      <span>Open · Apache&nbsp;2.0</span>
     </div>
   </div>
   <div class="plate-arch-grid">
@@ -1686,15 +1687,16 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     <div class="arch-col">
       <div class="arch-col-head">
         <span class="arch-col-name">Router</span>
-        <span class="arch-col-tag">7 tiers</span>
+        <span class="arch-col-tag">5 tiers</span>
       </div>
       <p class="arch-col-lead">
-        Every incoming message walks the same ladder — fast deterministic
-        rules first, semantic and LLM only when they earn it.
+        Every incoming message walks the same five tiers: override and cache,
+        then rules and triggers (T2a, T2b), then semantic matching (T2.5) with
+        keyword intent (T2c) as its fallback, and the LLM only when they miss.
       </p>
       <div class="arch-rows">
         <div class="arch-row"><span class="ix">T0</span><span class="nm">Override</span><span class="meta">user</span></div>
-        <div class="arch-row"><span class="ix">T1</span><span class="nm">Cache</span><span class="meta">redis · ~5ms</span></div>
+        <div class="arch-row"><span class="ix">T1</span><span class="nm">Cache</span><span class="meta">redis</span></div>
         <div class="arch-row"><span class="ix">T2a</span><span class="nm">Rules</span><span class="meta">source · pattern</span></div>
         <div class="arch-row"><span class="ix">T2b</span><span class="nm">Triggers</span><span class="meta">jira · webhook</span></div>
         <div class="arch-row"><span class="ix">T2.5</span><span class="nm">Semantic</span><span class="meta">cosine · 0.95</span></div>
@@ -1738,9 +1740,9 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <div class="arch-row"><span class="ix">L0</span><span class="nm">Focus</span><span class="meta">context window</span></div>
         <div class="arch-row"><span class="ix">L1</span><span class="nm">Working</span><span class="meta">redis · 24h</span></div>
         <div class="arch-row"><span class="ix">L2</span><span class="nm">Short&nbsp;term</span><span class="meta">postgres · decay</span></div>
-        <div class="arch-row"><span class="ix">L3</span><span class="nm">Long&nbsp;term</span><span class="meta">mem0 · qdrant</span></div>
+        <div class="arch-row"><span class="ix">L3</span><span class="nm">Long&nbsp;term</span><span class="meta">qdrant · hosted; opt-in locally</span></div>
         <div class="arch-row"><span class="ix">L4</span><span class="nm">Knowledge</span><span class="meta">rag · nl2sql</span></div>
-        <div class="arch-row"><span class="ix">·</span><span class="nm">Field&nbsp;memory</span><span class="meta">qdrant · shared</span></div>
+        <div class="arch-row"><span class="ix">·</span><span class="nm">Field&nbsp;memory</span><span class="meta">qdrant · shared; opt-in locally</span></div>
         <div class="arch-row"><span class="ix">·</span><span class="nm">Daily&nbsp;logs</span><span class="meta">temporal</span></div>
       </div>
       <div class="arch-col-foot"><a href="https://docs.automatos.app/" target="_blank" rel="noopener">↗&nbsp;&nbsp;/docs/memory-system</a></div>
@@ -1765,22 +1767,22 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     </div>
     <div class="fam-grid">
       <article class="fam-card">
-        <div class="fam-row"><h3>Automatos Studio</h3><span class="fam-status is-live">Live</span></div>
+        <div class="fam-row"><h3>Automatos Studio</h3><span class="fam-status is-coming">Beta opens November 2026</span></div>
         <dl><dt>For</dt><dd>Owners and small teams</dd><dt>Promise</dt><dd>Run your business in your brand</dd></dl>
-        <p class="fam-note">The control panel for the OS: Command Centre, board, documents, brand kit, socials and the marketplace. Live today as SaaS; also runs locally as open source.</p>
-        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Automatos Studio <span>↗</span></a>
+        <p class="fam-note">The control panel for the OS: Command Centre, board, documents, brand kit, socials and the marketplace. Hosted beta opens November 2026 · Join the waitlist. Runs locally today as open source (Apache 2.0).</p>
+        <a class="fam-link" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">Join the waitlist <span>↗</span></a>
       </article>
       <article class="fam-card">
-        <div class="fam-row"><h3>Academy</h3><span class="fam-status is-live">Live</span></div>
-        <dl><dt>For</dt><dd>Learners</dd><dt>Promise</dt><dd>Free certification prep, with a tutor</dd></dl>
-        <p class="fam-note">Courses and a tutor at academy.automatos.app, with a mobile app on its way to the stores.</p>
-        <a class="fam-link" href="https://academy.automatos.app" target="_blank" rel="noopener">The Academy <span>↗</span></a>
+        <div class="fam-row"><h3>Automatos Academy</h3><span class="fam-status is-live">Live</span></div>
+        <dl><dt>For</dt><dd>Learners</dd><dt>Promise</dt><dd>Free certification prep, with an AI tutor</dd></dl>
+        <p class="fam-note">Courses and an AI tutor at academy.automatos.app, with a mobile app on its way to the stores.</p>
+        <a class="fam-link" href="https://academy.automatos.app" target="_blank" rel="noopener">Automatos Academy <span>↗</span></a>
       </article>
       <article class="fam-card">
-        <div class="fam-row"><h3>Market Intelligence</h3><span class="fam-status is-live">Live pilot</span></div>
+        <div class="fam-row"><h3>Automatos Markets</h3><span class="fam-status is-live">Live pilot</span></div>
         <dl><dt>For</dt><dd>Crypto traders</dd><dt>Promise</dt><dd>Signals with receipts</dd></dl>
-        <p class="fam-note">The cockpit, plans, replay and a trade journal at markets.automatos.app. Free during the pilot. Not financial advice.</p>
-        <a class="fam-link" href="https://markets.automatos.app" target="_blank" rel="noopener">Market Intelligence <span>↗</span></a>
+        <p class="fam-note">The cockpit, plans, replay and a trade journal at markets.automatos.app. Built by Automatos AI: a deterministic core computes every number, and its AI analysts run on the OS when switched on. Free during the pilot. Not financial advice.</p>
+        <a class="fam-link" href="https://markets.automatos.app" target="_blank" rel="noopener">Automatos Markets <span>↗</span></a>
       </article>
       <article class="fam-card">
         <div class="fam-row"><h3>Widgets</h3><span class="fam-status is-built">Built</span></div>
@@ -1789,15 +1791,15 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <a class="fam-link" href="#developers">For developers <span>→</span></a>
       </article>
       <article class="fam-card">
-        <div class="fam-row"><h3>Shopify app</h3><span class="fam-status is-building">In development</span></div>
+        <div class="fam-row"><h3>Shopify app</h3><span class="fam-status is-building">Next</span></div>
         <dl><dt>For</dt><dd>Store owners</dd><dt>Promise</dt><dd>Your store, AI-driven</dd></dl>
-        <p class="fam-note">A working Shopify app with a theme extension. The App Store listing follows once setup on install is fully automatic.</p>
-        <a class="fam-link" href="contact.html">Ask about early access <span>→</span></a>
+        <p class="fam-note">12 Shopify agent templates in the Studio marketplace, in two packages: Shopify Management and Shopify Development. A Shopify App Store app is next; it is not available yet.</p>
+        <a class="fam-link" href="contact.html">Ask about the Shopify app <span>→</span></a>
       </article>
       <article class="fam-card">
-        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming</span></div>
+        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming soon · Contact Automatos</span></div>
         <dl><dt>For</dt><dd>Regulated firms</dd><dt>Promise</dt><dd>The OS in your own cluster</dd></dl>
-        <p class="fam-note">A Helm chart exists and is tested in CI. Single sign-on and cloud plugins come next.</p>
+        <p class="fam-note">A Helm chart exists and is tested in CI. Single sign-on and more cloud providers come next.</p>
         <a class="fam-link" href="#editions">See the editions <span>→</span></a>
       </article>
       <article class="fam-card">
@@ -1837,19 +1839,19 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <a class="fam-link" href="https://github.com/AutomatosAI/automatos-ai" target="_blank" rel="noopener">Get the code <span>↗</span></a>
       </article>
       <article class="ed-card">
-        <div class="fam-row"><h3>SaaS</h3><span class="fam-status is-live">Live</span></div>
-        <p>Hosted Automatos Studio. Nothing to install: sign in, upload a logo and tell Auto what you need.</p>
-        <a class="fam-link" href="https://ui.automatos.app" target="_blank" rel="noopener">Automatos Studio <span>↗</span></a>
+        <div class="fam-row"><h3>SaaS</h3><span class="fam-status is-coming">Beta opens November 2026</span></div>
+        <p>Hosted Automatos Studio. Hosted beta opens November 2026 · Join the waitlist. Once it opens, there's nothing to install: upload a logo and tell Auto what you need.</p>
+        <a class="fam-link" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">Join the waitlist <span>↗</span></a>
       </article>
       <article class="ed-card">
-        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming</span></div>
-        <p>The same OS in your own Kubernetes cluster, for firms that can't send data out.</p>
+        <div class="fam-row"><h3>Enterprise</h3><span class="fam-status is-coming">Coming soon · Contact Automatos</span></div>
+        <p>The same OS in your own cluster, with a licence, committed credits and consultancy. We're building it now. Tell us what you need.</p>
         <ul class="ed-list">
           <li><b>Today</b> A Helm chart, linted and tested in CI. S3 storage and Bedrock models on AWS. A Prometheus, Grafana and Loki monitoring stack.</li>
-          <li><b>Next</b> Single sign-on (OIDC), Azure plugins beyond Azure OpenAI, and the monitoring stack packaged with the chart.</li>
+          <li><b>Next</b> Single sign-on (OIDC), more Azure services beyond Azure OpenAI, and the monitoring stack packaged with the chart.</li>
           <li><b>Compliance</b> <a href="/eu-ai-act" class="ed-inline">Our EU AI Act posture, article by article →</a></li>
         </ul>
-        <a class="fam-link" href="contact.html">Book a proof of concept <span>→</span></a>
+        <a class="fam-link" href="contact.html">Contact Automatos <span>→</span></a>
       </article>
     </div>
   </div>
@@ -1861,8 +1863,8 @@ a.fgrid-cell:hover { background: var(--bg-2); }
 <section class="chapter" id="different" data-comment-anchor="ch-different">
   <div class="chapter-meta">
     <div><span class="pill">Chapter 04</span> Not another Jarvis</div>
-    <div>Every line on the right is&nbsp;<b>in the code today</b></div>
-    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Not on a roadmap</div>
+    <div>What's underneath,&nbsp;<b>row by row</b></div>
+    <div style="justify-content: flex-end;">↗&nbsp;&nbsp;Not a demo</div>
   </div>
   <div class="sec">
     <div class="sec-head">
@@ -1876,11 +1878,11 @@ a.fgrid-cell:hover { background: var(--bg-2); }
           <tr><th scope="row">What it is</th><td>A chat window in front of a model</td><td>A headless OS with an API. Studio, widgets, chat channels and our own products are all interfaces to it</td></tr>
           <tr><th scope="row">Output</th><td>Answers you copy somewhere else</td><td>Invoices, letters, spreadsheets, social posts and video, rendered from your brand kit and saved with a share link</td></tr>
           <tr><th scope="row">Control</th><td>Does whatever the model decides</td><td>A board of tickets. Money and publishing need a person's yes, and an approval is tied to the exact content that was approved</td></tr>
-          <tr><th scope="row">Architecture</th><td>One app</td><td>17 feature modules whose boundaries CI enforces. Swap models today</td></tr>
+          <tr><th scope="row">Architecture</th><td>One app</td><td>17 feature modules, with CI checking the boundaries between them (19 Oct 2026). Swap models today</td></tr>
           <tr><th scope="row">Business</th><td>One user</td><td>Workspaces, roles, plans and render quotas, and partners who offer it to their own customers</td></tr>
-          <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0), SaaS live today, and your own Kubernetes cluster</td></tr>
-          <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 14,000 backend tests in CI, and a nightly harness where customer personas grade the real outputs</td></tr>
-          <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website and store widgets, Claude Code sessions, the Academy, Market Intelligence, and chat channels: WhatsApp, Telegram, Slack and Discord today</td></tr>
+          <tr><th scope="row">Where it runs</th><td>Their cloud</td><td>Local and open source (Apache 2.0) today. The same code runs as hosted Studio (beta opens November 2026), and a Helm chart for Kubernetes is tested in CI</td></tr>
+          <tr><th scope="row">Proof</th><td>A demo video</td><td>Over 17,000 backend tests passed in CI on main (19 Oct 2026), and a harness where customer personas grade the real outputs in overnight runs</td></tr>
+          <tr><th scope="row">Interfaces</th><td>One</td><td>Studio, website widgets, Claude Code sessions, the Automatos Academy tutor, Automatos Markets' AI analysts when switched on, and chat channels: Telegram, Slack, Discord and WhatsApp, plus a generic webhook</td></tr>
         </tbody>
       </table>
     </div>
@@ -1946,11 +1948,11 @@ a.fgrid-cell:hover { background: var(--bg-2); }
     </div>
     <div class="lego-grid">
       <div class="lego"><span class="lego-tag">Partners</span><h3>White-label inside other platforms</h3><p>BudStacks users can add Automatos to their plan, and we're working with a few Shopify partners. Any platform whose customers run small businesses can do the same: their brand, our OS.</p></div>
-      <div class="lego"><span class="lego-tag">Verticals</span><h3>A package per trade</h3><p>A café, a salon, an accountant, a store. One install brings the agents, playbooks, templates and setup questions that trade needs.</p></div>
-      <div class="lego"><span class="lego-tag">Distribution</span><h3>The app stores</h3><p>The Academy app for learners, and the Shopify App Store for stores once our app is listed. Distribution we don't have to build.</p></div>
+      <div class="lego"><span class="lego-tag">Verticals</span><h3>Packages, one install each</h3><p>A package brings the agents and Playbooks a job needs. Three in the Studio marketplace: Socials, Shopify Management and Shopify Development. More trades are planned.</p></div>
+      <div class="lego"><span class="lego-tag">Distribution</span><h3>The app stores</h3><p>The Academy app for learners once it is in the stores, and the Shopify App Store once our app is listed. Distribution we don't have to build.</p></div>
       <div class="lego"><span class="lego-tag">Interfaces</span><h3>Your own front end</h3><p>A voice assistant, a screen on the wall, a bot in WhatsApp or Telegram, or a company's own product, all over the same API.</p></div>
-      <div class="lego"><span class="lego-tag">Enterprise</span><h3>The OS in your cluster</h3><p>A Helm chart exists today. Single sign-on and cloud plugins come next, for firms that can't send data out.</p></div>
-      <div class="lego"><span class="lego-tag">Community</span><h3>A marketplace people build for</h3><p>People publish agents and playbooks, and soon templates; others install them in one click. Auto is the guide.</p></div>
+      <div class="lego"><span class="lego-tag">Enterprise · coming soon</span><h3>The OS in your cluster</h3><p>A Helm chart exists today. Single sign-on and more cloud providers come next, for firms that can't send data out.</p></div>
+      <div class="lego"><span class="lego-tag">Community</span><h3>A marketplace people build for</h3><p>From November 2026, people can submit agents and Playbooks to the Studio marketplace for others to install in one click. Workspace templates are coming. Auto is the guide.</p></div>
     </div>
   </div>
 </section>
@@ -1966,8 +1968,8 @@ a.fgrid-cell:hover { background: var(--bg-2); }
       <em>Pick your door.</em>
     </h2>
     <p class="closer-sub">
-      Run your business in Studio, learn in the Academy, trade with Market
-      Intelligence, or build your own interface on the open-source OS.
+      Run your business in Studio, learn in the Academy, read the crypto
+      markets in Automatos Markets, or build your own interface on the open-source OS.
     </p>
     <div class="closer-ctas">
       <a class="btn-light solid" href="#family">Meet the family <span class="arrow">→</span></a>
@@ -1978,21 +1980,21 @@ a.fgrid-cell:hover { background: var(--bg-2); }
   <div class="closer-right">
     <div class="eyebrow">Find&nbsp;your&nbsp;door</div>
     <div class="changelog">
-      <a class="cl-item" href="https://ui.automatos.app" target="_blank" rel="noopener">
+      <a class="cl-item" href="https://studio.automatos.app/#waitlist" target="_blank" rel="noopener">
         <div class="cl-date">Owners</div>
-        <div><div class="cl-h">Automatos <em>Studio</em></div><div class="cl-body">Your business, in your brand, run with Auto.</div></div>
+        <div><div class="cl-h">Automatos <em>Studio</em></div><div class="cl-body">Your business, in your brand, run with Auto. Hosted beta opens November 2026 · Join the waitlist.</div></div>
       </a>
       <a class="cl-item" href="https://academy.automatos.app" target="_blank" rel="noopener">
         <div class="cl-date">Learners</div>
-        <div><div class="cl-h">The <em>Academy</em></div><div class="cl-body">Free certification prep, with a tutor.</div></div>
+        <div><div class="cl-h">Automatos <em>Academy</em></div><div class="cl-body">Free certification prep, with an AI tutor.</div></div>
       </a>
       <a class="cl-item" href="https://markets.automatos.app" target="_blank" rel="noopener">
         <div class="cl-date">Traders</div>
-        <div><div class="cl-h">Market <em>Intelligence</em></div><div class="cl-body">Signals with receipts. Free during the pilot.</div></div>
+        <div><div class="cl-h">Automatos <em>Markets</em></div><div class="cl-body">Signals with receipts. Free during the pilot.</div></div>
       </a>
       <a class="cl-item" href="contact.html">
         <div class="cl-date">Firms</div>
-        <div><div class="cl-h"><em>Enterprise</em> &amp; partners</div><div class="cl-body">The OS in your cluster, or inside your platform.</div></div>
+        <div><div class="cl-h"><em>Enterprise</em> &amp; partners</div><div class="cl-body">Enterprise: coming soon · Contact Automatos. Partners: the OS inside your platform.</div></div>
       </a>
     </div>
   </div>
@@ -2008,7 +2010,7 @@ a.fgrid-cell:hover { background: var(--bg-2); }
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="design/tweaks-panel.jsx"></script>
 END DISABLED BLOCK -->
 
 <script type="text/babel" data-disabled="true" style="display:none">
@@ -2133,7 +2135,7 @@ ReactDOM.createRoot(document.getElementById("tweaks-root")).render(<TweakApp />)
 /* "Runs in …": the interfaces on one OS, one at a time. */
 (function () {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var words = ["Automatos Studio", "a Telegram chat", "your website", "a WhatsApp chat", "the Academy", "Market Intelligence", "your own app, over the API"];
+  var words = ["Automatos Studio", "a Telegram chat", "your website", "a WhatsApp chat", "the Academy", "your own app, over the API"];
   var i = 0;
   setInterval(function () {
     var el = document.getElementById("runsIn");

@@ -91,8 +91,8 @@
       widget: 'chat',
       position: 'bottom-right',
       theme: mood === 'pitch' ? 'dark' : 'light',
-      title: 'Auto',
-      greeting: 'Hi — I\'m Auto. Ask about Automatos, the agents, or the platform.',
+      title: 'Auto · AI assistant',
+      greeting: 'Hi, I\'m Auto, Automatos\'s AI assistant. Ask me anything about Automatos, the agents or the platform.',
       ...(cfg.chatAgentId ? { agentId: cfg.chatAgentId } : {}),
       themeOverrides: paletteFor(mood),
     });
