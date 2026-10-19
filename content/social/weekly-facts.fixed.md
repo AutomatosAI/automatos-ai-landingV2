@@ -11,7 +11,7 @@
 #   - `Heading|Body` — heading should be ≤ 28 chars, body ≤ 160 chars.
 #
 # Stat grammar:
-#   - `Value|Body` — value ≤ 4 chars (e.g. "10+", "95%", "$2B"), body ≤ 60 chars.
+#   - `Value|Body` — value ≤ 6 chars (e.g. "10+", "$2B", "1,000+"), body ≤ 60 chars.
 
 - week_start: 2026-05-04
 - owner: SOCIAL OPS
@@ -109,7 +109,7 @@
     status: ACTIVE
     eyebrow: PROCESS
     headline: READY|FOR@brick|APPROVAL.
-    subline: Structured briefs and clean task handoffs — content moves from draft to live in hours, not days.
+    subline: Structured briefs and clean task handoffs, and a person signs off before anything publishes.
     feature_1: Briefs that brief|Designer-ready specs auto-generated from the source playbook
     feature_2: Coordinated handoffs|Reviewers, editors, publishers — each gets just their slice
     feature_3: Human sign-off|Nothing publishes or spends without a person's approval
