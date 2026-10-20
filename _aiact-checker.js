@@ -64,7 +64,8 @@
 
   // fit: how Automatos helps, per tier. Kept to what the platform does today
   // (checked against the code, 8 Oct 2026; the high-risk line rechecked 19 Oct 2026
-  // to match the posture page, which has the detail).
+  // to match the posture page, which has the detail; the Article 50 line rechecked
+  // 20 Oct 2026, PRD-264 EUAI-15, and kept word for word with the page's Art. 50 row).
   const TIERS = {
     prohibited: { label: 'Prohibited',
       summary: 'Your described use case falls under the Article 5 prohibited practices. This system cannot be placed on the market or put into service in the EU.',
@@ -77,7 +78,7 @@
     limited: { label: 'Limited risk',
       summary: 'Your system falls under the transparency obligations of Article 50. No conformity assessment is required, but users must be clearly informed when they interact with AI or consume AI-generated content.',
       obligations: ['Clearly disclose AI interaction to users (Art. 50(1)).', 'Mark AI-generated content as machine-readable synthetic content (Art. 50(2)).', 'Label deep-fakes and AI image, audio or video output (Art. 50(4)).', 'Keep records sufficient to demonstrate transparency compliance.'],
-      fit: "Automatos's built-in AI-interaction notices and generated-media marking are being built now. Until they ship, add the disclosure in your own chat, voice or widget copy. Every approval and audit event is still logged for at least 180 days." },
+      fit: "In the product, always on: every chat widget shows an “AI” badge and an opening notice, every in-app chat shows “Auto is an AI” and pauses if a theme hides it, channel bots say they are an AI and for whom before their first reply, and Auto Live voice says so at the start of the call. The videos, images and audio Automatos renders carry the IPTC “AI-generated” mark and a signed C2PA manifest, and anyone can check a file on the /verify page without an account. You still add, as the deployer, the deep-fake disclosure where you publish (Art. 50(4)) and a notice for any emotion recognition or biometric categorisation you run (Art. 50(3)). Every approval and audit event is logged for at least 180 days." },
     minimal: { label: 'Minimal risk',
       summary: 'Your system sits in the minimal-risk tier, which carries no obligations of its own. AI literacy (Art. 4) applies to every provider and deployer, and voluntary codes of conduct (Art. 95) are encouraged.',
       obligations: ['Adopt a voluntary code of conduct to demonstrate good practice (Art. 95).', 'Take measures that support the AI literacy of the staff who operate the AI (Art. 4).', 'Keep basic records so you can demonstrate your classification if challenged.'],
