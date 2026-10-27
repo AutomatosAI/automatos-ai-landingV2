@@ -559,11 +559,11 @@
       "title": "Alert emails on sign-up and first open",
       "description": "As an admin, I want an email when a new investor signs up or first opens the deck.",
       "acceptanceCriteria": [
-        "server/investors/alerts.js: createAlerts({db, transport, to, from, baseUrl}) implementing the hooks W1-07 and W1-11 call; sign-up email (subject 'New investor: <name> (<firm>)', body: name, email, firm, type, cheque size, source, link https://automatos.app/investors/admin/investors/<id>); first-open email (subject '<name> (<firm>) opened <title>', link to the investor); both plain text plus HTML with EVERY investor-supplied value HTML-escaped",
-        "Exactly-once: an INSERT ... ON CONFLICT DO NOTHING into alerts_sent decides whether to send; sending happens after the response path (setImmediate) and a failure is logged (console.error without the body) and never fails the request",
-        "The transport reuses the site's SMTP variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, the same defaults as server.js's contact form) through an injectable factory; recipients from INVESTOR_ALERT_EMAILS; with no recipients or no SMTP_USER the hooks are no-ops with one warning at start",
-        "Tests (PGlite + fake transport): one email per sign-up across two profile saves, one per investor per document across repeated opens, escaping of <script> in name and firm, transport failure does not change the API response",
-        "npm test passes"
+        "server/investors/alerts.js: createAlerts({db, transport, to, from, baseUrl}) implementing the hooks W1-07 and W1-11 call; sign-up email (subject 'New investor: <name> (<firm>)', body: name, email, firm, type, cheque size, source, link https://automatos.app/investors/admin/investors/<id>); first-open email (subject '<name> (<firm>) opened <title>', link to the investor); both plain text plus HTML with EVERY investor-supplied value HTML-escaped → DONE — alerts.js createAlerts({db, transport, to, from, baseUrl}) returns the signup/firstOpen hooks; alert-messages.js builds both emails (subjects as specified, admin link https://automatos.app/investors/admin/investors/<id>), text + HTML with every value escaped and one-lined (alerts.test.js: subjects, rows, link, escaping)",
+        "Exactly-once: an INSERT ... ON CONFLICT DO NOTHING into alerts_sent decides whether to send; sending happens after the response path (setImmediate) and a failure is logged (console.error without the body) and never fails the request → DONE — CLAIM_SQL INSERT ... ON CONFLICT DO NOTHING RETURNING decides the send; callAlert defers with setImmediate and logs name + safe code only (tests: repeated and concurrent hooks send once, callAlert runs after setImmediate, failure logged without address/body)",
+        "The transport reuses the site's SMTP variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, the same defaults as server.js's contact form) through an injectable factory; recipients from INVESTOR_ALERT_EMAILS; with no recipients or no SMTP_USER the hooks are no-ops with one warning at start → DONE — config.js alerts.smtp reads SMTP_HOST/PORT/USER/PASS exactly as server.js (SMTP_DEFAULTS mail.privateemail.com:465, secure true); deps.createTransport injectable; recipients INVESTOR_ALERT_EMAILS; none or no SMTP_USER/SMTP_PASS → NO_ALERTS + one 'alert emails off' warning at start (tests in alerts.test.js and config.test.js)",
+        "Tests (PGlite + fake transport): one email per sign-up across two profile saves, one per investor per document across repeated opens, escaping of <script> in name and firm, transport failure does not change the API response → DONE — alerts.test.js over PGlite + fake transport: one email across two PUT /me, one per investor per document across repeated opens (none for downloads), <script> in name and firm escaped end to end, rejected sendMail leaves PUT /me and POST /link answers unchanged; plus a real nodemailer stream-transport build",
+        "npm test passes → DONE — npm test: 18 files, 463 tests pass"
       ],
       "files": [
         "server/investors/alerts.js",
@@ -571,8 +571,8 @@
         "server/investors/__tests__/alerts.test.js"
       ],
       "priority": 18,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (b5be369): no packages added (nodemailer is the site's existing dependency). New module alert-messages.js (pure: escapeHtml, investorUrl, signupMessage, firstOpenMessage; labels mirror investors/src/strings.ts profile lists, keep them in sync). alerts.js exports ALERT_BASE_URL, ALERT_FROM_NAME, NO_ALERTS, callAlert (now setImmediate; logs 'Error (EAUTH)'-style name + code), createAlerts (hooks resolve true when sent, false when already sent, reject on claim/send failure) and alertsFromConfig(config.alerts, {db, createTransport}) → {alerts, off}. config.js alerts = {to, smtp: {host, port, user, pass} | null} and exports SMTP_DEFAULTS. index.js: deps.alerts still overrides (route tests), deps.createTransport is the nodemailer factory seam; start() logs '[investors] alert emails off: <reason>' once when off (only when the portal is not disabled), so a test counting logger.warn on a ready portal without INVESTOR_ALERT_EMAILS sees that line. nodemailer mutates address objects: never pass it a frozen from/to. A failed send keeps its alerts_sent row (no retry, never a duplicate). W1-19 e2e: no SMTP in CI, so the portal logs the off warning and sends nothing."
     },
     {
       "id": "W1-19",
