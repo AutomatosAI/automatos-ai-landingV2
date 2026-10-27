@@ -8,9 +8,11 @@
  * site is untouched. start() opens the database and applies the migrations
  * (KP8); a failure there disables the portal, never the site (KP4). The
  * factory only wires things together and never throws; start() never
- * rejects.
+ * rejects. Once ready, every path but /health passes the investor guard
+ * (auth.js) and every /admin path the admin gate (KP3).
  */
 import express from "express";
+import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } from "./auth.js";
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
@@ -23,6 +25,8 @@ import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
  * @property {Logger} [logger]
  * @property {(options: {connectionString: string, logger: Logger}) => import("./db.js").Db} [createDb]
  * @property {string} [migrationsDir]
+ * @property {import("./auth.js").Verifier} [verifier] tests only: production verifies with Clerk
+ * @property {import("./auth.js").UserLookup} [userLookup] tests only: production asks Clerk
  */
 
 /**
@@ -48,24 +52,102 @@ function initialStatus(config) {
 
 /** @param {() => Readonly<PortalStatus>} getStatus */
 function requireReady(getStatus) {
-  return (_req, res, next) => {
+  return function readyGate(_req, res, next) {
     const { state } = getStatus();
     if (state === "ready") return next();
     return res.status(503).json({ error: "portal_unavailable", state });
   };
 }
 
-/** @param {() => Readonly<PortalStatus>} getStatus */
-function createApiRouter(getStatus) {
+/** @type {import("express").RequestHandler} */
+function noStore(_req, res, next) {
+  res.set("Cache-Control", "no-store");
+  next();
+}
+
+const MAX_LOGGED_MESSAGE = 300;
+
+/**
+ * An error message fit for one log line: control characters (a forged line
+ * break) replaced, and cut short.
+ * @param {unknown} err
+ */
+function logLine(err) {
+  const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+  return message.replace(/[\u0000-\u001f\u007f]+/g, " ").slice(0, MAX_LOGGED_MESSAGE);
+}
+
+/**
+ * Last in the router: a JSON error, never a stack trace (KP15). Client errors
+ * keep their status; anything else is logged with the path (no query string)
+ * and answered 500.
+ * @param {Logger} logger
+ * @returns {import("express").ErrorRequestHandler}
+ */
+function portalErrors(logger) {
+  return function portalError(err, req, res, next) {
+    if (res.headersSent) return next(err);
+    const status = Number(err?.status);
+    if (status >= 400 && status < 500) return res.status(status).json({ error: "bad_request" });
+    logger.error(`[investors] ${req.method} ${req.baseUrl}${req.path} failed: ${logLine(err)}`);
+    return res.status(500).json({ error: "internal_error" });
+  };
+}
+
+/**
+ * Route order is the security model (KP3): GET /health is the only route
+ * before the investor guard, and the admin gate sits on /admin before any
+ * admin route. Later stories add their routes between the admin gate and the
+ * 404; __tests__/route-coverage.test.js walks this stack to prove it.
+ * @param {() => Readonly<PortalStatus>} getStatus
+ * @param {{investorGuard: import("express").RequestHandler, logger: Logger}} guards
+ */
+function createApiRouter(getStatus, { investorGuard, logger }) {
   const router = express.Router();
-  router.use((_req, res, next) => {
-    res.set("Cache-Control", "no-store");
-    next();
-  });
+  router.use(noStore);
   router.get("/health", (_req, res) => res.json({ state: getStatus().state }));
   router.use(requireReady(getStatus));
+  router.use(investorGuard);
+  router.use("/admin", requireAdmin);
   router.use((_req, res) => res.status(404).json({ error: "not_found" }));
+  router.use(portalErrors(logger));
   return router;
+}
+
+/** Disabled for want of the secret key: the guard is never reached (503), and refuses if it were. */
+const refuse = async () => {
+  throw new Error("the portal has no Clerk secret key");
+};
+
+/**
+ * @param {import("./config.js").PortalConfig} config
+ * @param {PortalDeps} deps
+ */
+function authDeps(config, deps) {
+  const { secretKey, authorizedParties } = config.clerk;
+  return {
+    verifier: deps.verifier ?? (secretKey ? createClerkVerifier({ secretKey, authorizedParties }) : refuse),
+    userLookup: deps.userLookup ?? (secretKey ? createUserLookup({ secretKey }) : refuse),
+  };
+}
+
+/**
+ * The routers exist before the database does; the ready gate guarantees
+ * start() has set it before any guarded route asks.
+ * @param {() => import("./db.js").Db | null} current
+ * @returns {import("./db.js").Db}
+ */
+function lateBoundDb(current) {
+  const open = () => {
+    const db = current();
+    if (!db) throw new Error("the investors database is not open");
+    return db;
+  };
+  return Object.freeze({
+    query: (text, params) => open().query(text, params),
+    tx: (fn) => open().tx(fn),
+    end: () => open().end(),
+  });
 }
 
 /** @param {unknown} err */
@@ -112,8 +194,10 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   let current = initialStatus(config);
   /** @type {Promise<Readonly<PortalStatus>> | null} */
   let starting = null;
-  /** @type {import("./db.js").Db | null} set once ready; the routes of later stories read it */
+  /** @type {import("./db.js").Db | null} set once ready; routes reach it through `db` */
   let database = null;
+  const db = lateBoundDb(() => database);
+  const investorGuard = requireInvestor({ ...authDeps(config, deps), db, admins: config.admins, logger: log });
 
   const status = () => current;
 
@@ -133,7 +217,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   }
 
   return Object.freeze({
-    apiRouter: createApiRouter(status),
+    apiRouter: createApiRouter(status, { investorGuard, logger: log }),
     appRouter: express.Router(),
     /** Runs once; later calls return the same promise. */
     start: () => {

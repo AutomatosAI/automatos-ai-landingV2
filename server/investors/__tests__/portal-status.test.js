@@ -5,6 +5,7 @@ import express from "express";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createInvestorsPortal } from "../index.js";
+import { ADA, bearer, fakeAuthDeps } from "./helpers/fake-clerk.js";
 import { createTestDb } from "./helpers/test-db.js";
 
 const COMPLETE = Object.freeze({
@@ -142,13 +143,21 @@ describe("apiRouter while starting and when ready", () => {
   });
 
   it("passes requests on once ready (an unknown path is a JSON 404, not the site's page)", async () => {
-    const { portal } = portalWith(COMPLETE);
+    const { portal } = portalWith(COMPLETE, fakeAuthDeps());
     await portal.start();
     const app = hostApp(portal);
     expect((await request(app).get("/api/investors/health")).body).toEqual({ state: "ready" });
-    const res = await request(app).get("/api/investors/no-such-path");
+    const res = await request(app).get("/api/investors/no-such-path").set("Authorization", bearer(ADA.id));
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: "not_found" });
+  });
+
+  it("once ready, asks for a token before anything but /health (a JSON 401, not the site's page)", async () => {
+    const { portal } = portalWith(COMPLETE, fakeAuthDeps());
+    await portal.start();
+    const res = await request(hostApp(portal)).get("/api/investors/no-such-path");
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({ error: "unauthenticated" });
   });
 });
 
