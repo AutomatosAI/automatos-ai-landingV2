@@ -44,21 +44,37 @@ interface TextRowProps {
   readonly optional?: boolean;
   readonly placeholder?: string;
   readonly list?: string;
+  /** One line under the control, read with it by screen readers. */
+  readonly hint?: string;
 }
 
-function TextRow({ form, field, label, optional, placeholder, list }: TextRowProps) {
+/** The control's aria-describedby: its error and its hint, when it has them. */
+function describedBy(...ids: readonly (string | undefined)[]): string | undefined {
+  return ids.filter(Boolean).join(" ") || undefined;
+}
+
+function TextRow({ form, field, label, optional, placeholder, list, hint }: TextRowProps) {
+  const hintId = `${documentFieldId(field)}-hint`;
   return (
     <FormField id={documentFieldId(field)} label={label} optional={optional} error={errorFor(form, field)}>
       {(control) => (
-        <Input
-          {...control}
-          autoComplete="off"
-          placeholder={placeholder}
-          list={list}
-          value={form.values[field]}
-          disabled={form.disabled}
-          onChange={(event) => form.set(field, event.target.value)}
-        />
+        <>
+          <Input
+            {...control}
+            aria-describedby={describedBy(control["aria-describedby"], hint && hintId)}
+            autoComplete="off"
+            placeholder={placeholder}
+            list={list}
+            value={form.values[field]}
+            disabled={form.disabled}
+            onChange={(event) => form.set(field, event.target.value)}
+          />
+          {hint && (
+            <p id={hintId} className="text-xs text-muted-foreground">
+              {hint}
+            </p>
+          )}
+        </>
       )}
     </FormField>
   );
@@ -115,6 +131,7 @@ export function DocumentFields({ form }: { readonly form: DocumentFieldsBinding 
         label={fields.category.label}
         placeholder={fields.category.placeholder}
         list={CATEGORY_LIST_ID}
+        hint={strings.admin.documents.pitchHint}
       />
       <datalist id={CATEGORY_LIST_ID}>
         {form.categories.map((category) => (

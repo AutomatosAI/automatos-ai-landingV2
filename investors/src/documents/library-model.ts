@@ -70,3 +70,45 @@ export function viewerFor(kind: DocumentKind): DocumentViewer | null {
   if (opensInViewer(kind)) return "pdf";
   return kind === "video" ? "video" : null;
 }
+
+/** The home page's pitch block (W3-03): the deck and the video, each null when there is none. */
+export interface FeaturedPitch {
+  readonly deck: InvestorDocument | null;
+  readonly video: InvestorDocument | null;
+}
+
+const PITCH_PREFIX = "pitch";
+
+/** "Pitch", " pitch deck ", "PITCH": the categories the pitch block picks from. */
+export function isPitchCategory(category: string): boolean {
+  return groupKey(category).startsWith(PITCH_PREFIX);
+}
+
+/**
+ * Among the pitch documents, the first PDF is the deck and the first video
+ * the video, in the admin's order. The investor's list holds only published
+ * documents with a file (the server's), so nothing else is filtered here.
+ */
+export function pickFeaturedPitch(documents: readonly InvestorDocument[]): FeaturedPitch {
+  const pitch = documents.filter((document) => isPitchCategory(document.category));
+  return {
+    deck: pitch.find((document) => viewerFor(document.kind) === "pdf") ?? null,
+    video: pitch.find((document) => viewerFor(document.kind) === "video") ?? null,
+  };
+}
+
+export function hasFeaturedPitch(pitch: FeaturedPitch): boolean {
+  return pitch.deck !== null || pitch.video !== null;
+}
+
+/**
+ * The groups below the pitch block: every category in the admin's order, as
+ * groupByCategory has them, without the featured deck and video; a group
+ * they leave empty goes. The other pitch documents stay in their group.
+ */
+export function groupsBelowPitch(documents: readonly InvestorDocument[], pitch: FeaturedPitch): readonly DocumentGroup[] {
+  const featured = new Set([pitch.deck?.id, pitch.video?.id]);
+  return groupByCategory(documents)
+    .map((group) => ({ ...group, documents: group.documents.filter((document) => !featured.has(document.id)) }))
+    .filter((group) => group.documents.length > 0);
+}

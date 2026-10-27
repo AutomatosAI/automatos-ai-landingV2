@@ -45,6 +45,15 @@ export const strings = {
   home: {
     title: "Investor portal",
     intro: "Everything we share with investors, in one place. Read a document here or download it.",
+    /** The pitch block (W3-03): the 'Pitch' deck and video, above the documents. */
+    pitchTitle: "The pitch",
+    pitch: {
+      slides: (count: number) => (count === 1 ? "1 slide" : `${count} slides`),
+      viewDeck: "View the deck",
+      downloadDeck: "Download PDF",
+      play: "Play",
+      downloadVideo: "Download video",
+    },
   },
   /** The published documents (US-006): on the home page and, with search, on the Documents page. */
   library: {
@@ -271,6 +280,7 @@ export const strings = {
       newDocument: "New document",
       empty: "No documents yet. Create one, then upload its file.",
       storageUnavailable: "File storage is not set up yet, so documents cannot be managed.",
+      pitchHint: "Category 'Pitch' puts a PDF and a video at the top of the investor home page.",
       tableLabel: "Documents",
       columns: {
         title: "Title",

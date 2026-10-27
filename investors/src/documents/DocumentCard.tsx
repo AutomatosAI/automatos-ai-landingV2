@@ -37,8 +37,15 @@ function OpenButton({ document, action }: { readonly document: InvestorDocument;
   );
 }
 
-/** Also the viewer's toolbar button and its fallback when a document cannot be shown. */
-export function DownloadButton({ document, action }: { readonly document: InvestorDocument; readonly action: DownloadAction }) {
+interface DownloadButtonProps {
+  readonly document: InvestorDocument;
+  readonly action: DownloadAction;
+  /** The words on the button: "Download" unless a caller names the file (the pitch block's "Download PDF"). */
+  readonly label?: string;
+}
+
+/** Also the viewer's toolbar button, its fallback when a document cannot be shown, and the pitch block's downloads. */
+export function DownloadButton({ document, action, label = copy.download }: DownloadButtonProps) {
   return (
     <Button
       type="button"
@@ -46,10 +53,10 @@ export function DownloadButton({ document, action }: { readonly document: Invest
       variant="outline"
       onClick={action.download}
       disabled={action.busy}
-      aria-label={copy.actionLabel(copy.download, document.title)}
+      aria-label={copy.actionLabel(label, document.title)}
     >
       <Download aria-hidden="true" />
-      {action.busy ? copy.preparing : copy.download}
+      {action.busy ? copy.preparing : label}
     </Button>
   );
 }
