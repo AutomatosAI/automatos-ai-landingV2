@@ -410,12 +410,12 @@
       "title": "Portal shell, home and the document library",
       "description": "As an investor, I want everything available in one place and to open or download any of it.",
       "acceptanceCriteria": [
-        "investors/src/layout/ (ported shell from the reference Dashboard + InvestorSidebar, KP12): sidebar on desktop, a sheet menu on phones; links Home, Documents, Profile, and Admin for admins; the account menu; the site's mood (KP13)",
-        "Home (/investors): a short intro line from strings.ts and the published documents grouped by category; each card shows title, description, a kind icon (lucide), size and updated date, with Open and Download buttons; Download calls link {mode:'download'} and navigates to the URL (attachment); Open: pdf → /investors/documents/:id (W1-13), any other kind → download",
-        "Documents (/investors/documents): the same list with a search box (title, description, category; client-side) ported from the reference DataRoom",
-        "Empty state: 'Documents are on their way.' with the contact email; loading skeletons; errors through the client mapping (W1-06)",
-        "Unit tests: grouping and ordering, search filter, size and date formatting",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/layout/ (ported shell from the reference Dashboard + InvestorSidebar, KP12): sidebar on desktop, a sheet menu on phones; links Home, Documents, Profile, and Admin for admins; the account menu; the site's mood (KP13) → DONE — layout/PortalLayout (header + AccountMenu, Sidebar md+, NavSheet on phones via components/ui/sheet.tsx), layout/nav.ts portalNav (Home, Documents, Profile, Admin for admins; none before the profile), MoodToggle (saveMood under automatos-mood); portal-layout.test.tsx 7 tests",
+        "Home (/investors): a short intro line from strings.ts and the published documents grouped by category; each card shows title, description, a kind icon (lucide), size and updated date, with Open and Download buttons; Download calls link {mode:'download'} and navigates to the URL (attachment); Open: pdf → /investors/documents/:id (W1-13), any other kind → download → DONE — pages/Home.tsx via documents/LibraryPage: strings.home.intro, groupByCategory in server order, DocumentCard (KindIcon lucide, kind · size · Updated date, Open/Download); Download POSTs {mode:'download'} then navigateTo(url); Open: pdf → Link /documents/:id, others download; library.test.tsx",
+        "Documents (/investors/documents): the same list with a search box (title, description, category; client-side) ported from the reference DataRoom → DONE — pages/Documents.tsx: SearchableLibrary (client-side filterDocuments over title, description, category; results count, no-match + clear); library.test.tsx search cases",
+        "Empty state: 'Documents are on their way.' with the contact email; loading skeletons; errors through the client mapping (W1-06) → DONE — EmptyLibrary ('Documents are on their way.' + hello@ mailto), LibrarySkeleton (aria-busy), list errors → ApiErrorPage(screenForError), link errors → linkFailureMessage under the card (404 reloads the list)",
+        "Unit tests: grouping and ordering, search filter, size and date formatting → DONE — library-model.test.ts (grouping/order, search, facts: size + date), messages.test.ts, download.test.ts, nav.test.ts, saveMood tests; App/profile tests moved off the placeholder",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck, lint (0 warnings), test (33 files, 393 tests) and build pass (6e0e469); no INVESTORS_E2E_FAKE_AUTH in dist"
       ],
       "files": [
         "investors/src/layout/**",
@@ -429,8 +429,8 @@
         "investors/package-lock.json"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (6e0e469): no packages added. Routes: PortalGate > PortalLayout (layout/) > index Home, documents, documents/:id (PlaceholderPage: W1-13 swaps in the viewer), profile, admin/*, * → Navigate HOME. AppShell now takes children and wraps only the teaser, loading and status pages; AppHeader takes a menu slot. documents/: documents-api.ts (investorDocumentSchema, fetchDocuments, requestDocumentLink(id, 'inline'|'download') → {url (http(s) only), expiresIn}), use-documents.ts (documentsKey(userId) = ['documents', userId]), download.ts + navigate.ts (navigateTo(url) = location.assign; page tests vi.mock '@/documents/navigate'), messages.ts linkFailureMessage/isGone (W1-13 reuses them for the viewer's link), library-model.ts, kinds.ts (DOCUMENT_KINDS moved here; admin/documents-api re-exports). api/link-url.ts holds the http(s) link schema (admin uses it). lib/paths.ts: DOCUMENTS_PATH, documentPath(id). strings.ts: nav, mood, home, library (KIND_LABELS shared with admin). Fixture investorDocument() in src/test/fixtures.ts. W1-16/W1-17 admin links stay in AdminGate's ADMIN_LINKS; the sidebar shows one Admin link. The main chunk is 520 kB (was 492 kB: the sheet brings Radix Dialog in), so vite build prints its 500 kB advisory; the build passes and no limit was changed."
     },
     {
       "id": "W1-13",
