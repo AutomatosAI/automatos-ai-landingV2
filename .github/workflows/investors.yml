@@ -1,0 +1,120 @@
+name: investors
+
+# The investor portal: the API under server/investors (vitest over Postgres),
+# the app under investors/ (typecheck, lint, unit tests, build) and the image.
+# Job ids are the job names the wave's acceptance gate reads: keep them as they are.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: investors-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        # A throwaway database for this job only; the tests drop and recreate
+        # the investors schema in it.
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: investors_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d investors_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      # Set: test-db.js uses pg against this service instead of PGlite, and
+      # vitest.config.js runs the test files one at a time.
+      INVESTORS_TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/investors_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+
+  app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: investors
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: investors/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: The production build has no E2E fake auth (KP10)
+        run: |
+          if grep -rl 'INVESTORS_E2E_FAKE_AUTH' dist; then
+            echo "::error::investors/dist contains the E2E fake-auth marker (only build:e2e may)"
+            exit 1
+          fi
+          echo "investors/dist: no E2E fake-auth marker"
+
+  # Playwright smoke and screenshots (W1-19): the E2E build (fake auth, KP10)
+  # served by vite preview, every API call mocked. CI only (KP6).
+  e2e:
+    needs: app
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: investors
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: investors/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build:e2e
+      - run: npx playwright test
+      # Upload paths are from the workspace root (defaults.run applies to run steps only).
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: investors-e2e-screenshots
+          path: investors/e2e/screenshots
+          if-no-files-found: warn
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: investors-e2e-report
+          path: investors/playwright-report
+          if-no-files-found: warn
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image (no push)
+        run: docker build --tag automatos-landing-v2:ci .

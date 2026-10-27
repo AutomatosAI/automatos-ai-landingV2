@@ -5,3 +5,10 @@ node_modules
 _config.js
 *.log
 .DS_Store
+
+# Investor portal app (investors/): dependencies, builds and Playwright output
+investors/node_modules
+investors/dist
+investors/dist-e2e
+investors/test-results
+investors/playwright-report

@@ -14,6 +14,7 @@ import compression from "compression";
 import { resolve, dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync, writeFileSync, existsSync } from "fs";
+import { createInvestorsPortal } from "./server/investors/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 80;
@@ -30,7 +31,9 @@ function hydrateConfig() {
   const out = tpl
     .replace(/\$\{VITE_AUTOMATOS_PUBLIC_KEY\}/g,   process.env.VITE_AUTOMATOS_PUBLIC_KEY   || "")
     .replace(/\$\{VITE_AUTOMATOS_WORKSPACE_ID\}/g, process.env.VITE_AUTOMATOS_WORKSPACE_ID || "")
-    .replace(/\$\{VITE_AUTOMATOS_CHAT_AGENT_ID\}/g, process.env.VITE_AUTOMATOS_CHAT_AGENT_ID || "");
+    .replace(/\$\{VITE_AUTOMATOS_CHAT_AGENT_ID\}/g, process.env.VITE_AUTOMATOS_CHAT_AGENT_ID || "")
+    // Investor portal: only a well-formed Clerk publishable key, so a bad value can never break _config.js.
+    .replace(/\$\{CLERK_PUBLISHABLE_KEY\}/g, () => (/^pk_(test|live)_[A-Za-z0-9+/=]+$/.test(process.env.CLERK_PUBLISHABLE_KEY || "") ? process.env.CLERK_PUBLISHABLE_KEY : ""));
   writeFileSync(outPath, out, "utf8");
   console.log("[config] _config.js hydrated from env");
 }
@@ -38,6 +41,20 @@ hydrateConfig();
 
 const app = express();
 app.use(compression());
+
+// ── Investor portal API: /api/investors ──────────────────────────────
+// Mounted before the global express.json() so portal routes own their body
+// parsing. Optional: without its config the portal answers 503 on its own
+// paths and every other route behaves as before (server/investors/index.js).
+const investorsPortal = createInvestorsPortal({ env: process.env });
+app.use("/api/investors", investorsPortal.apiRouter);
+
+// ── Investor portal app: /investors ──────────────────────────────────
+// The React app's build (investors/dist): its hashed assets, and its
+// index.html for every other path under /investors. Mounted before the
+// allow-list below; it serves nothing outside /investors.
+app.use("/investors", investorsPortal.appRouter);
+
 app.use(express.json());
 
 // ── SMTP transporter (lazy) ───────────────────────────────────────────
@@ -356,4 +373,5 @@ app.use((_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Automatos v2 landing on port ${PORT}`);
+  investorsPortal.start().catch((err) => console.error("[investors] portal start failed:", err.message));
 });
