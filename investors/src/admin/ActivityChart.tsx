@@ -3,23 +3,11 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { strings } from "@/strings";
 
+import { CHART_HEIGHT, RULE, TICK, TOOLTIP_STYLE } from "./chart-style";
 import type { SeriesDay } from "./overview-api";
 import { CHART_LINES, chartSummary, hasActivity, toChartRows } from "./overview-model";
 
 const copy = strings.admin.overview.chart;
-
-const CHART_HEIGHT = 220;
-
-// The site's tokens (KP13): thin rules, mono ticks, square corners, no glow.
-const TICK = { fontSize: 10, fill: "var(--muted)", fontFamily: "var(--mono)" } as const;
-const RULE = "var(--rule-c)";
-const TOOLTIP_STYLE = {
-  backgroundColor: "var(--bg-2)",
-  border: `1px solid ${RULE}`,
-  borderRadius: "var(--radius)",
-  color: "var(--fg)",
-  fontSize: 12,
-} as const;
 
 function Legend() {
   return (

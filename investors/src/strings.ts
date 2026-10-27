@@ -279,6 +279,7 @@ export const strings = {
         preview: "Preview",
         moveUp: "Move up",
         moveDown: "Move down",
+        stats: "Stats",
         edit: "Edit",
         delete: "Delete",
       },
@@ -287,6 +288,85 @@ export const strings = {
       preview: {
         blocked: "The browser blocked the new tab. Allow pop-ups for this page, then try again.",
         failed: "The preview could not be opened. Please try again.",
+      },
+    },
+    /** One document's analytics (US-015): who read a version, how far, and where they stopped. */
+    stats: {
+      back: "All documents",
+      intro: "Who read this version, how far they got and how long they spent on each page.",
+      missing: {
+        title: "Document not found",
+        body: "This document no longer exists. It may have been deleted.",
+      },
+      version: {
+        label: "Version",
+        option: (version: number, current: boolean) => (current ? `Version ${version} (current)` : `Version ${version}`),
+        older: "This is an older version. Its pages are charted over the current file's page count.",
+      },
+      kpis: {
+        label: "Key numbers for this version",
+        readers: "Readers",
+        readersDetail: "Opened, read or downloaded it",
+        opens: "Opens",
+        opensDetail: "Every open counts",
+        downloads: "Downloads",
+        downloadsDetail: "Every download counts",
+        avgTime: "Average time",
+        avgTimeDetail: "On its pages, per reader",
+        notPagedDetail: "Time is recorded on PDF pages only",
+        none: "—",
+      },
+      pages: {
+        title: "Pages",
+        notPdf: "Pages are charted for PDF documents only. The readers are listed below.",
+        noPageCount: "The page count of this PDF is not known, so its pages cannot be charted.",
+        noReaders: "No one has read this version yet.",
+      },
+      pageLabel: (page: number) => `Page ${page}`,
+      dwell: {
+        title: "Time per page",
+        caption: "Average time on each page, over the readers who viewed it",
+        series: "Average time",
+        tick: (seconds: number) => `${seconds} s`,
+        summary: (pages: number, longest: { page: number; time: string } | null) =>
+          longest === null
+            ? `Average time on each of ${pages} pages: none recorded.`
+            : `Average time on each of ${pages} pages; the longest is page ${longest.page}, ${longest.time}.`,
+      },
+      reach: {
+        title: "Readers reaching each page",
+        caption: "Share of this version's readers who got to each page or further",
+        series: "Readers reaching it",
+        tick: (percent: number) => `${percent}%`,
+        value: (percent: number, readers: number) => `${percent}% (${readers} ${readers === 1 ? "reader" : "readers"})`,
+        summary: (first: number, last: number, lastPage: number, drop: { after: number; from: number; to: number } | null) =>
+          `${first}% of readers reached page 1 and ${last}% reached page ${lastPage}.` +
+          (drop === null ? "" : ` The largest drop is after page ${drop.after}, from ${drop.from}% to ${drop.to}%.`),
+      },
+      readers: {
+        title: "Readers",
+        tableLabel: "Readers of this version",
+        columns: {
+          investor: "Investor",
+          furthestPage: "Furthest page",
+          time: "Time",
+          downloaded: "Downloaded",
+          lastOpened: "Last opened",
+        },
+        unnamed: "No name given",
+        yes: "Yes",
+        no: "No",
+        none: "—",
+        empty: "No readers for this version yet.",
+      },
+      notes: {
+        label: "How it is counted",
+        items: [
+          "Readers: everyone who opened, read or downloaded this version, including those who only downloaded it or left before a page was counted (furthest page 0), so page 1 is often below 100%.",
+          "Average time: time on its pages, averaged over every reader.",
+          "Time per page: each reader's total time on that page, averaged over the readers who viewed it.",
+          "Readers are listed newest open first; a reader with no open (Last opened —) only downloaded it.",
+        ],
       },
     },
     upload: {
