@@ -10,12 +10,16 @@
  * factory only wires things together and never throws; start() never
  * rejects. Once ready, every path but /health passes the investor guard
  * (auth.js) and every /admin path the admin gate (KP3).
+ *
+ * appRouter, mounted at /investors, serves the React app's build whatever
+ * the API's state (static.js).
  */
 import express from "express";
 import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } from "./auth.js";
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
+import { APP_DIST_DIR, createAppRouter } from "./static.js";
 
 /** @typedef {"disabled" | "starting" | "ready"} PortalState */
 /** @typedef {{state: PortalState, reason?: string}} PortalStatus */
@@ -25,6 +29,7 @@ import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
  * @property {Logger} [logger]
  * @property {(options: {connectionString: string, logger: Logger}) => import("./db.js").Db} [createDb]
  * @property {string} [migrationsDir]
+ * @property {string} [appDistDir] the app's build (investors/dist)
  * @property {import("./auth.js").Verifier} [verifier] tests only: production verifies with Clerk
  * @property {import("./auth.js").UserLookup} [userLookup] tests only: production asks Clerk
  */
@@ -188,6 +193,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
     logger: deps.logger ?? console,
     createDb: deps.createDb ?? createDb,
     migrationsDir: deps.migrationsDir ?? MIGRATIONS_DIR,
+    appDistDir: deps.appDistDir ?? APP_DIST_DIR,
   });
   const log = resolved.logger;
   const config = readPortalConfig(env);
@@ -218,7 +224,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
 
   return Object.freeze({
     apiRouter: createApiRouter(status, { investorGuard, logger: log }),
-    appRouter: express.Router(),
+    appRouter: createAppRouter({ distDir: resolved.appDistDir, logger: log }),
     /** Runs once; later calls return the same promise. */
     start: () => {
       starting = starting ?? boot();

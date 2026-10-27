@@ -47,6 +47,12 @@ app.use(compression());
 const investorsPortal = createInvestorsPortal({ env: process.env });
 app.use("/api/investors", investorsPortal.apiRouter);
 
+// ── Investor portal app: /investors ──────────────────────────────────
+// The React app's build (investors/dist): its hashed assets, and its
+// index.html for every other path under /investors. Mounted before the
+// allow-list below; it serves nothing outside /investors.
+app.use("/investors", investorsPortal.appRouter);
+
 app.use(express.json());
 
 // ── SMTP transporter (lazy) ───────────────────────────────────────────
