@@ -226,10 +226,10 @@
       "title": "Document analytics API",
       "description": "As an admin, I want to see where readers drop off in the deck.",
       "acceptanceCriteria": [
-        "GET /admin/documents/:id/stats?version (requireAdmin; default the current version): uniqueReaders, opens, downloads, avgTimeMs (per reader, page_view sum), pages [{page, avgDwellMs, readersReached, pctReached}] for 1..page_count (zero-filled), readers [{investorId, name, firm, furthestPage, timeMs, downloaded, lastOpenAt}] ordered by lastOpenAt desc; versions [numbers that have events]",
-        "Computed in SQL (generate_series for pages); a document without page_count returns pages []",
-        "Tests (PGlite with fixture events across two versions): version filter, zero-filled pages, pctReached monotonic non-increasing, reader ordering, non-admin 403",
-        "npm test passes"
+        "GET /admin/documents/:id/stats?version (requireAdmin; default the current version): uniqueReaders, opens, downloads, avgTimeMs (per reader, page_view sum), pages [{page, avgDwellMs, readersReached, pctReached}] for 1..page_count (zero-filled), readers [{investorId, name, firm, furthestPage, timeMs, downloaded, lastOpenAt}] ordered by lastOpenAt desc; versions [numbers that have events] → DONE — f4f15c6: route in routes/admin-documents.js (showStats), shape in queries/document-stats.js documentStats(); admin-document-stats.test.js asserts every field for v2 and v1 of a five-page deck",
+        "Computed in SQL (generate_series for pages); a document without page_count returns pages [] → DONE — f4f15c6: SUMMARY_SQL, PAGES_SQL (generate_series(1, d.page_count), LATERAL dwell and reach), READERS_SQL, VERSIONS_SQL; test: a document with pageCount null answers pages []",
+        "Tests (PGlite with fixture events across two versions): version filter, zero-filled pages, pctReached monotonic non-increasing, reader ordering, non-admin 403 → DONE — f4f15c6: 13 tests in server/investors/__tests__/admin-document-stats.test.js (version filter, zero-filled pages, pctReached non-increasing and rounded 33.3, reader ordering, 403 non-admin, plus 400/404/401/503)",
+        "npm test passes → DONE — npm test: 20 files, 502 tests passed"
       ],
       "files": [
         "server/investors/routes/admin-documents.js",
@@ -237,8 +237,8 @@
         "server/investors/__tests__/admin-document-stats.test.js"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (f4f15c6): no packages added. GET /admin/documents/:id/stats?version answers {document (toDocument), version (the one answered; default the current), versions (numbers with events, NEWEST FIRST: the current version may be missing when unread, so the picker should add document.version), uniqueReaders, opens, downloads, avgTimeMs, pages [{page, avgDwellMs, readersReached, pctReached}], readers [{investorId, name, firm, furthestPage, timeMs, downloaded, lastOpenAt}]}. Rules W2-06 must label: a reader is any investor with an event of that version (open, download, page_view, video_progress), so download-only readers and opens with no page recorded count with furthestPage 0 (page 1 is rarely 100%); avgTimeMs averages page_view time over every reader; avgDwellMs averages each reader total on that page over the readers who viewed it; pctReached is 0..100 with one decimal (0 when no readers); readers order: lastOpenAt desc, lastOpenAt null (download only) last; pages is [] when pageCount is null (video and other kinds: the empty state); older versions are charted over the CURRENT page_count, their furthestPage uncapped. ?version is a whole number 1..2147483647 (MAX_VERSION in queries/document-stats.js) else 400 invalid {fields:{version:invalid}}; an unknown version answers zeros; 404 not_found for unknown/non-uuid ids; 503 storage_unavailable without S3 (the documents gate). routes/admin-documents.js exports statsQuerySchema and is now 436 lines (was 406). W2-09 e2e: the stats screen calls GET /admin/documents/:id/stats (add it to e2e/fixtures/api.ts)."
     },
     {
       "id": "W2-06",
