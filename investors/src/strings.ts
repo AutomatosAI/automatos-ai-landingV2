@@ -193,12 +193,13 @@ export const strings = {
   /** Words inside the UI kit's own parts (components/ui). */
   ui: {
     close: "Close",
+    notifications: "Notifications",
   },
   /** The admin area (/investors/admin): only admins see it, and the server checks every call (KP3). */
   admin: {
     label: "Admin",
     navLabel: "Admin sections",
-    nav: { overview: "Overview", documents: "Documents", investors: "Investors" },
+    nav: { overview: "Overview", documents: "Documents", investors: "Investors", sections: "Sections" },
     /** The admin overview (US-011): counts over a rolling 7 days, a chart of 30 UTC days. */
     overview: {
       title: "Overview",
@@ -340,6 +341,65 @@ export const strings = {
       deleting: "Deleting…",
       cancel: "Cancel",
       failed: "The document could not be deleted. Please try again.",
+    },
+    /** The section editor (US-016): the overview, team, FAQ and contact text, in markdown. */
+    sections: {
+      title: "Sections",
+      intro: "The text investors read on the home page and the Team, FAQ and Contact pages. Investors see a section only once it is published.",
+      listLabel: "Sections",
+      places: {
+        overview: "Home page, above the documents",
+        team: "Team page",
+        faq: "FAQ page",
+        contact: "Contact page, above the team's email",
+      },
+      published: "Published",
+      notPublished: "Not published",
+      lastSaved: (when: string) => `Last saved ${when}`,
+      neverSaved: "Not edited yet",
+      edit: "Edit",
+      editLabel: (title: string) => `Edit ${title}`,
+      back: "All sections",
+      editTitle: (title: string) => `Edit ${title}`,
+      missing: "There is no section at this address.",
+      fields: {
+        title: { label: "Title" },
+        published: {
+          label: "Published",
+          hint: "Investors see this section only while it is published.",
+        },
+        body: {
+          label: "Text",
+          hint: "Markdown: # for a heading, - for a list item, [words](https://…) for a link. HTML is not shown.",
+          count: (used: string, max: string) => `${used} of ${max} characters`,
+        },
+      },
+      errors: {
+        bodyInvalid: "The text holds characters that cannot be saved. Remove them and try again.",
+      },
+      preview: {
+        label: "Preview",
+        hint: "As investors will see it once saved and published.",
+      },
+      save: "Save",
+      saving: "Saving…",
+      dirty: "Unsaved changes",
+      clean: "No unsaved changes",
+      saved: (title: string, published: boolean) =>
+        published ? `${title} saved. Investors see this version.` : `${title} saved. It is not published, so investors do not see it.`,
+      saveFailed: (title: string) => `${title} was not saved`,
+      failures: {
+        fields: "Some fields need a look before saving.",
+        gone: "This section no longer exists. Reload the page.",
+        signIn: "Your session has ended. Copy your text somewhere safe, then sign in again.",
+        other: "Your text is still here. Check the connection, then save again.",
+      },
+      leave: {
+        title: "Leave without saving?",
+        body: "Your changes to this section have not been saved. If you leave, they are lost.",
+        stay: "Keep editing",
+        leave: "Leave",
+      },
     },
     /** The investors table (US-012). Its view (search, filters, sort, page) is kept in the address. */
     investors: {

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 import { useMe } from "@/api/me";
@@ -9,17 +9,23 @@ import { cn } from "@/lib/utils";
 import { ApiErrorPage } from "@/pages/ApiErrorPage";
 import { strings } from "@/strings";
 
+import { ADMIN_SECTIONS_PATH } from "./section-paths";
+
 const copy = strings.admin;
+
+// The toasts (the section editor's saved/failed) load with the admin area: investors never download them.
+const Toaster = lazy(() => import("@/components/ui/sonner").then((module) => ({ default: module.Toaster })));
 
 /**
  * The admin sections, in nav order. `end`: the overview is /admin itself, so
  * it is not marked current on its sub-pages; Investors stays current on an
- * investor's page.
+ * investor's page, Sections in a section's editor.
  */
 const ADMIN_LINKS = [
   { to: ADMIN_PATH, label: copy.nav.overview, end: true },
   { to: ADMIN_DOCUMENTS_PATH, label: copy.nav.documents, end: false },
   { to: ADMIN_INVESTORS_PATH, label: copy.nav.investors, end: false },
+  { to: ADMIN_SECTIONS_PATH, label: copy.nav.sections, end: false },
 ] as const;
 
 function AdminLayout() {
@@ -45,6 +51,9 @@ function AdminLayout() {
       </nav>
       <Suspense fallback={<PageLoading />}>
         <Outlet />
+      </Suspense>
+      <Suspense fallback={null}>
+        <Toaster />
       </Suspense>
     </div>
   );

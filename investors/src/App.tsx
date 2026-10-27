@@ -22,6 +22,10 @@ const AdminInvestors = lazy(() => import("@/pages/admin/Investors").then((module
 const AdminInvestorDetail = lazy(() =>
   import("@/pages/admin/InvestorDetail").then((module) => ({ default: module.AdminInvestorDetail })),
 );
+const AdminSections = lazy(() => import("@/pages/admin/Sections").then((module) => ({ default: module.AdminSections })));
+const AdminSectionEditor = lazy(() =>
+  import("@/pages/admin/Sections").then((module) => ({ default: module.AdminSectionEditor })),
+);
 
 export function App() {
   useClearCacheOnSignOut();
@@ -42,6 +46,8 @@ export function App() {
               <Route path="documents" element={<AdminDocuments />} />
               <Route path="investors" element={<AdminInvestors />} />
               <Route path="investors/:id" element={<AdminInvestorDetail />} />
+              <Route path="sections" element={<AdminSections />} />
+              <Route path="sections/:slug" element={<AdminSectionEditor />} />
             </Route>
             <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
           </Route>
