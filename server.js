@@ -31,7 +31,9 @@ function hydrateConfig() {
   const out = tpl
     .replace(/\$\{VITE_AUTOMATOS_PUBLIC_KEY\}/g,   process.env.VITE_AUTOMATOS_PUBLIC_KEY   || "")
     .replace(/\$\{VITE_AUTOMATOS_WORKSPACE_ID\}/g, process.env.VITE_AUTOMATOS_WORKSPACE_ID || "")
-    .replace(/\$\{VITE_AUTOMATOS_CHAT_AGENT_ID\}/g, process.env.VITE_AUTOMATOS_CHAT_AGENT_ID || "");
+    .replace(/\$\{VITE_AUTOMATOS_CHAT_AGENT_ID\}/g, process.env.VITE_AUTOMATOS_CHAT_AGENT_ID || "")
+    // Investor portal: only a well-formed Clerk publishable key, so a bad value can never break _config.js.
+    .replace(/\$\{CLERK_PUBLISHABLE_KEY\}/g, () => (/^pk_(test|live)_[A-Za-z0-9+/=]+$/.test(process.env.CLERK_PUBLISHABLE_KEY || "") ? process.env.CLERK_PUBLISHABLE_KEY : ""));
   writeFileSync(outPath, out, "utf8");
   console.log("[config] _config.js hydrated from env");
 }

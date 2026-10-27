@@ -95,7 +95,7 @@ listening, and the API answers 503 until they finish.
 |---|---|---|
 | `INVESTORS_DATABASE_URL` | Postgres connection string for the portal's own role; its data lives in schema `investors`. | yes |
 | `CLERK_SECRET_KEY` | Clerk secret key: verifies sign-in tokens and reads the signed-in user's name and email. | yes |
-| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key, handed to the app at runtime through `_config.js`. | yes |
+| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key, handed to the app at runtime through `_config.js`. A value that is not a `pk_test_`/`pk_live_` key is left out, and the app shows its signed-out page saying the portal is unavailable. | yes |
 | `INVESTORS_AUTHORIZED_PARTIES` | Comma-separated origins a sign-in token may come from. Defaults to `https://automatos.app`. | optional |
 | `INVESTOR_ADMIN_CLERK_IDS` | Comma-separated Clerk user ids allowed into the admin area. Empty → no admins. | for the admin area |
 | `INVESTOR_DOCS_BUCKET` | Private S3 bucket that holds the documents. | for documents: all four, or the document routes answer 503 |

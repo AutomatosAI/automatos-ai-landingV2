@@ -13,5 +13,6 @@ window.AUTOMATOS_CONFIG = {
   publicKey:   "${VITE_AUTOMATOS_PUBLIC_KEY}",
   workspaceId: "${VITE_AUTOMATOS_WORKSPACE_ID}",
   chatAgentId: "${VITE_AUTOMATOS_CHAT_AGENT_ID}",
+  clerkPublishableKey: "${CLERK_PUBLISHABLE_KEY}",
   apiBase:     "https://api.automatos.app",
 };
