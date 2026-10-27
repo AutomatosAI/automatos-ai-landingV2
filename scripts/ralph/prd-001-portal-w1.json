@@ -390,10 +390,10 @@
       "title": "Investor documents API: list and open/download links with server-written events",
       "description": "As an investor, I want to open or download any published document; as the team, we want each open and download recorded by the server (KP16).",
       "acceptanceCriteria": [
-        "server/investors/routes/documents.js under requireInvestor: GET /documents → published documents with a file, ordered, fields id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, updatedAt (no s3_key); POST /documents/:id/link {mode:'inline'|'download'} → {url, expiresIn:300} and writes document_open or document_download (with document_version) in the same request; unpublished, missing or file-less → 404; rate limit 30/min per investor",
-        "After writing a document_open for a document with alert_on_first_open, calls the alerts hook with (investor, document) when this is the investor's first open of that document (the hook stays a no-op until W1-18)",
-        "Tests (PGlite + fake store): list hides unpublished and file-less; link writes the right event type and version; 404 cases; first-open hook called once across two opens; 429 on the 31st call",
-        "npm test passes"
+        "server/investors/routes/documents.js under requireInvestor: GET /documents → published documents with a file, ordered, fields id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, updatedAt (no s3_key); POST /documents/:id/link {mode:'inline'|'download'} → {url, expiresIn:300} and writes document_open or document_download (with document_version) in the same request; unpublished, missing or file-less → 404; rate limit 30/min per investor → DONE — routes/documents.js createDocumentsRouter mounted in index.js createRoutes after the admin documents router; LIST_SQL/SHARE_SQL filter published AND s3_key IS NOT NULL; toInvestorDocument picks the 11 fields; event inserted in the same db.tx as the presign; perInvestorLimit 30/min on the link route",
+        "After writing a document_open for a document with alert_on_first_open, calls the alerts hook with (investor, document) when this is the investor's first open of that document (the hook stays a no-op until W1-18) → DONE — issueLink: document_open + alert_on_first_open + no earlier document_open (under a lock on the investor row) → callAlert(logger, \"firstOpen\", () => alerts.firstOpen(investor, document)) after commit; NO_ALERTS until W1-18",
+        "Tests (PGlite + fake store): list hides unpublished and file-less; link writes the right event type and version; 404 cases; first-open hook called once across two opens; 429 on the 31st call → DONE — __tests__/documents.test.js, 21 tests: list hides unpublished and file-less, inline/download write document_open/document_download with the row version, 404 for unpublished/file-less/unknown/malformed ids, first-open hook once across two opens (and per investor, not on download), 429 on the 31st call, 500 and no event when signing fails, 503 without storage",
+        "npm test passes → DONE — npm test: 13 files, 362 tests passed"
       ],
       "files": [
         "server/investors/routes/documents.js",
@@ -401,8 +401,8 @@
         "server/investors/__tests__/documents.test.js"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (f4001c8): no packages added. routes/documents.js exports LINK_LIMIT_PER_MINUTE (30), LINK_MODES {inline: document_open/inline, download: document_download/attachment}, toInvestorDocument (the library fields) and createDocumentsRouter({db, store, alerts, logger}). Answers: GET /documents {documents: [{id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, updatedAt}]} ordered sort_order, created_at, id; POST /documents/:id/link {mode} -> {url, expiresIn: 300}; 404 not_found (unpublished, file-less, unknown or non-uuid id), 400 invalid {fields:{mode: required|invalid_option}}, 429 rate_limited, 503 storage_unavailable without S3 (both routes). The event row has session_id NULL (the link takes no session: W1-14 may not assume one) and page NULL; every link writes one event (no dedupe), so W1-15 counts opens as rows. firstOpen(investor, document) gets req.investor (name, firm, email...) and the toInvestorDocument fields (id, title...); it is called only when no earlier document_open by that investor exists, checked under a FOR NO KEY UPDATE lock on the investor row, after commit via callAlert: W1-18 still dedupes through alerts_sent. documents.js now exports documentIdParam (router.param id) and storageUnavailable; createRoutes in index.js builds ONE store and ONE alerts object and passes them to every router that needs them (append later routers there). Security review: nothing exploitable; LOWs left as designed: per-process in-memory limiter, no dedupe of repeated opens."
     },
     {
       "id": "W1-12",
