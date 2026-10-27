@@ -7,3 +7,5 @@ export const ROUTER_FUTURE = { v7_startTransition: true, v7_relativeSplatPath: t
 /** App routes, relative to the basename. */
 export const HOME_PATH = "/";
 export const PROFILE_PATH = "/profile";
+export const ADMIN_PATH = "/admin";
+export const ADMIN_DOCUMENTS_PATH = "/admin/documents";

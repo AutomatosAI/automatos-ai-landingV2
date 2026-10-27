@@ -1,3 +1,4 @@
+import type { AdminDocument } from "@/admin/documents-api";
 import type { Me } from "@/api/me";
 
 /** A new investor as GET /me answers before the profile is saved (KP5: invented). */
@@ -34,3 +35,29 @@ export const ADA_ME: Me = {
   },
   profileComplete: true,
 };
+
+/** The same investor as an admin (INVESTOR_ADMIN_CLERK_IDS on the server). */
+export const ADMIN_ME: Me = { ...ADA_ME, isAdmin: true };
+
+/** An invented document as the admin API answers it. */
+export function adminDocument(overrides: Partial<AdminDocument> = {}): AdminDocument {
+  return {
+    id: "00000000-0000-4000-8000-0000000000d1",
+    title: "Example deck",
+    description: "The company in twelve slides.",
+    category: "Pitch",
+    kind: "pdf",
+    fileName: "example-deck.pdf",
+    contentType: "application/pdf",
+    sizeBytes: 1_572_864,
+    pageCount: 12,
+    version: 1,
+    sortOrder: 0,
+    published: false,
+    alertOnFirstOpen: false,
+    hasFile: true,
+    createdAt: "2026-10-20T12:00:00.000Z",
+    updatedAt: "2026-10-21T12:00:00.000Z",
+    ...overrides,
+  };
+}

@@ -1,5 +1,6 @@
 import { ApiError } from "@/api/errors";
 import type { Me, ProfileBody } from "@/api/me";
+import { textError } from "@/lib/text-checks";
 import { strings } from "@/strings";
 
 import { CHEQUE_SIZES, INVESTOR_TYPES, SOURCES, oneOfOrBlank, type ChequeSize, type InvestorType, type Source } from "./options";
@@ -74,16 +75,6 @@ export function isLinkedInUrl(value: string): boolean {
   const host = url.hostname;
   const onLinkedIn = host === LINKEDIN_HOST || host.endsWith(`.${LINKEDIN_HOST}`);
   return url.protocol === "https:" && onLinkedIn && url.username === "" && url.password === "" && url.port === "";
-}
-
-const hasControlChar = (value: string) => [...value].some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127);
-
-function textError(value: string, max: number, required: boolean): string | null {
-  const trimmed = value.trim();
-  if (required && trimmed === "") return "required";
-  if (trimmed.length > max) return "too_long";
-  if (hasControlChar(trimmed)) return "invalid";
-  return null;
 }
 
 function linkedinError(value: string): string | null {
