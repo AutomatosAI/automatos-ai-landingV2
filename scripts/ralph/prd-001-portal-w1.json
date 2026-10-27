@@ -242,12 +242,12 @@
       "title": "Dockerfile build stage and the investors CI workflow",
       "description": "As the team, I need the app built into the Railway image and every PR checked in CI (KP18).",
       "acceptanceCriteria": [
-        "Dockerfile: a first stage FROM node:22-alpine AS investors-build that copies investors/package.json and package-lock.json, runs npm ci --ignore-scripts, copies investors/ and runs npm run build; the runtime stage moves to node:22-alpine, installs root production deps with npm ci --omit=dev --ignore-scripts --no-audit --no-fund, copies the site, then COPY --from=investors-build /build/investors/dist ./investors/dist; CMD unchanged (node server.js)",
-        ".dockerignore adds investors/node_modules, investors/dist, investors/dist-e2e, investors/test-results, investors/playwright-report, server/investors/__tests__",
-        ".github/workflows/investors.yml: on pull_request and push to main; permissions contents: read; concurrency per ref with cancel-in-progress; jobs (Node 22, actions/setup-node with npm cache): 'server' (root npm ci --ignore-scripts; Postgres 16 service; INVESTORS_TEST_DATABASE_URL set; npm test), 'app' (investors: npm ci --ignore-scripts, typecheck, lint, test, build, then fail if grep -r 'INVESTORS_E2E_FAKE_AUTH' investors/dist finds anything), 'docker' (docker build . with no push)",
-        "README.md gains an 'Investor portal' section: what it is, the variable NAMES from KP4/KP9/KP11/W1-18 (no values), and that it is optional (KP4)",
-        "No local docker or CI run (KP6): the workflow is validated by a YAML parse (node -e with a tiny parser is not available: use python3 -c 'import yaml' if present, else review by reading) and by the wave's one CI run",
-        "npm test and the investors checks still pass"
+        "Dockerfile: a first stage FROM node:22-alpine AS investors-build that copies investors/package.json and package-lock.json, runs npm ci --ignore-scripts, copies investors/ and runs npm run build; the runtime stage moves to node:22-alpine, installs root production deps with npm ci --omit=dev --ignore-scripts --no-audit --no-fund, copies the site, then COPY --from=investors-build /build/investors/dist ./investors/dist; CMD unchanged (node server.js) → DONE — Dockerfile: investors-build stage (node:22-alpine, npm ci --ignore-scripts, npm run build), a site stage that drops investors/ source, runtime node:22-alpine with npm ci --omit=dev --ignore-scripts --no-audit --no-fund, COPY --from=investors-build /build/investors/dist ./investors/dist, CMD node server.js; gate check PASS (60f3cb7)",
+        ".dockerignore adds investors/node_modules, investors/dist, investors/dist-e2e, investors/test-results, investors/playwright-report, server/investors/__tests__ → DONE — .dockerignore adds the six paths (60f3cb7)",
+        ".github/workflows/investors.yml: on pull_request and push to main; permissions contents: read; concurrency per ref with cancel-in-progress; jobs (Node 22, actions/setup-node with npm cache): 'server' (root npm ci --ignore-scripts; Postgres 16 service; INVESTORS_TEST_DATABASE_URL set; npm test), 'app' (investors: npm ci --ignore-scripts, typecheck, lint, test, build, then fail if grep -r 'INVESTORS_E2E_FAKE_AUTH' investors/dist finds anything), 'docker' (docker build . with no push) → DONE — .github/workflows/investors.yml: pull_request + push main, contents read, concurrency per ref cancel-in-progress, jobs server (Postgres 16 service, INVESTORS_TEST_DATABASE_URL, npm test), app (npm ci, typecheck, lint, test, build, grep -rl marker fails), docker (docker build, no push); Node 22 with npm cache",
+        "README.md gains an 'Investor portal' section: what it is, the variable NAMES from KP4/KP9/KP11/W1-18 (no values), and that it is optional (KP4) → DONE — README.md Investor portal section: what it is, optional (KP4), the ten variable names in a table (no values), the checks",
+        "No local docker or CI run (KP6): the workflow is validated by a YAML parse (node -e with a tiny parser is not available: use python3 -c 'import yaml' if present, else review by reading) and by the wave's one CI run → DONE — python3 yaml (PyYAML 6.0.3) parses it: triggers, permissions, concurrency and the 3 jobs with their steps listed; no docker or CI run locally",
+        "npm test and the investors checks still pass → DONE — root npm test 159/159; investors typecheck, lint, test 13/13, build green; npm ci (root and investors/) succeed against both lockfiles"
       ],
       "files": [
         "Dockerfile",
@@ -256,8 +256,8 @@
         "README.md"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (60f3cb7): no packages added. Dockerfile has THREE stages: investors-build (/build/investors, npm ci --ignore-scripts then npm run build), site (COPY . . then rm -rf investors, so the runtime never carries app source) and the runtime (node:22-alpine, root npm ci --omit=dev --ignore-scripts, COPY --from=site /site/ ./, COPY --from=investors-build /build/investors/dist ./investors/dist). The image runs as root because server.js writes _config.js into /app at start: keep it that way. investors.yml jobs are ids only (no name:), since the gate matches job names exactly; W1-19 adds job e2e (needs: app) in the same style (setup-node 22, cache-dependency-path investors/package-lock.json, defaults.run.working-directory investors). The server job sets INVESTORS_TEST_DATABASE_URL, so CI runs every server test over real Postgres 16 one file at a time: new tests must hold at most one test database at a time and must not depend on PGlite-only behaviour. README.md has an Investor portal section with a variable table: a story that adds a variable adds its row."
     },
     {
       "id": "W1-06",
