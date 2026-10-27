@@ -105,6 +105,19 @@ export const strings = {
       label: (title: string) => `${title}, video`,
       failed: "Download it to watch it on your device, or try again.",
     },
+    /** Present mode: the PDF as a slideshow, full screen (W3-02). */
+    present: {
+      start: "Present",
+      label: (title: string) => `${title}, slideshow`,
+      toolbarLabel: "Slideshow",
+      slideOf: (page: number, count: number) => `Slide ${page} of ${count}`,
+      slideLabel: (title: string, page: number, count: number) => `${title}, slide ${page} of ${count}`,
+      previous: "Previous slide",
+      next: "Next slide",
+      fullscreen: "Full screen",
+      exit: "Exit",
+      exitLabel: "Exit slideshow",
+    },
   },
   /**
    * The admins' markdown pages (US-009): the overview on the home page, and
