@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  /* The canvas takes body's background (html has none), so overscroll matches the mood. */
+  body {
+    @apply min-h-dvh bg-background font-sans text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+    transition: background-color 0.35s ease, color 0.35s ease;
+  }
+}

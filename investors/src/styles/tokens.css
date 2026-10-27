@@ -1,0 +1,73 @@
+/*
+ * The site's look (automatos.app index.html and _theme.js): its type, its two
+ * moods, and the shadcn tokens mapped onto them (KP13). The mood is
+ * data-mood on <body> (src/theme/mood.ts); tailwind.config.ts reads only the
+ * --ui-* names, so the site's own --muted and --accent keep their meaning.
+ */
+
+:root {
+  --serif: "Instrument Serif", "Times New Roman", serif;
+  --sans: "Geist", -apple-system, "Helvetica Neue", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --radius: 2px;
+}
+
+/* bone: also the default until the mood is applied */
+:root,
+body[data-mood="bone"] {
+  --bg: #F2EDE4;
+  --bg-2: #ECE6DA;
+  --fg: #0F1411;
+  --fg-2: #2C3531;
+  --muted: #6E6960;
+  --rule-c: rgba(15, 20, 17, 0.14);
+  --rule-strong: rgba(15, 20, 17, 0.32);
+  --accent: oklch(0.45 0.06 155);
+  --accent-ink: #F2EDE4;
+  --danger: oklch(0.50 0.15 28);
+  color-scheme: light;
+}
+
+body[data-mood="pitch"] {
+  --bg: #0E1311;
+  --bg-2: #161C19;
+  --fg: #EFE9DD;
+  --fg-2: #C9C2B4;
+  --muted: #8A857C;
+  --rule-c: rgba(239, 233, 221, 0.14);
+  --rule-strong: rgba(239, 233, 221, 0.32);
+  --accent: oklch(0.78 0.10 95);
+  --accent-ink: #0E1311;
+  --danger: oklch(0.72 0.13 28);
+  color-scheme: dark;
+}
+
+/*
+ * Declared on body, where the mood changes the values above: a custom
+ * property is resolved on the element that declares it, so declared on
+ * :root these would keep bone's values in pitch.
+ */
+body {
+  --ui-background: var(--bg);
+  --ui-foreground: var(--fg);
+  --ui-card: var(--bg);
+  --ui-card-foreground: var(--fg);
+  --ui-popover: var(--bg-2);
+  --ui-popover-foreground: var(--fg);
+  /* the site's solid button: ink on paper, the accent on hover */
+  --ui-primary: var(--fg);
+  --ui-primary-foreground: var(--bg);
+  --ui-brand: var(--accent);
+  --ui-brand-foreground: var(--accent-ink);
+  --ui-secondary: var(--bg-2);
+  --ui-secondary-foreground: var(--fg);
+  --ui-muted: var(--bg-2);
+  --ui-muted-foreground: var(--muted);
+  --ui-accent: var(--bg-2);
+  --ui-accent-foreground: var(--fg);
+  --ui-destructive: var(--danger);
+  --ui-destructive-foreground: var(--bg);
+  --ui-border: var(--rule-c);
+  --ui-input: var(--rule-strong);
+  --ui-ring: var(--accent);
+}

@@ -68,6 +68,63 @@ stay hidden.
   explicit allow-list for static files (add a file there when a live page
   starts to load it), runtime envsubst for `_config.js`.
 
+## Investor portal
+
+`/investors` is a signed-in area for investors: a document library with a PDF
+viewer and downloads, and an admin area to upload documents and see who opened
+what. Two parts:
+
+- **App**: `investors/`, a Vite + React + TypeScript project with its own
+  `package.json`. The Dockerfile builds it in its own stage; the runtime image
+  carries only `investors/dist`, which `server/investors/static.js` serves at
+  `/investors`.
+- **API**: `server/investors/`, an Express router that `server.js` mounts at
+  `/api/investors`, with its SQL migrations (`server/investors/migrations/`,
+  applied at startup by `migrate.js`) and its tests.
+
+**It is optional.** Without its required variables, or when a migration fails,
+the portal is disabled and logs why: `/api/investors/*` answers
+`503 {"error":"portal_unavailable"}`, `/investors` says the portal is
+unavailable, and every other page of the site is served as before. Startup
+never fails because of the portal: migrations run after the server starts
+listening, and the API answers 503 until they finish.
+
+### Env vars (set on Railway)
+
+| Var | Purpose | Required |
+|---|---|---|
+| `INVESTORS_DATABASE_URL` | Postgres connection string for the portal's own role; its data lives in schema `investors`. | yes |
+| `CLERK_SECRET_KEY` | Clerk secret key: verifies sign-in tokens and reads the signed-in user's name and email. | yes |
+| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key, handed to the app at runtime through `_config.js`. A value that is not a `pk_test_`/`pk_live_` key is left out, and the app shows its signed-out page saying the portal is unavailable. | yes |
+| `INVESTORS_AUTHORIZED_PARTIES` | Comma-separated origins a sign-in token may come from. Defaults to `https://automatos.app`. | optional |
+| `INVESTOR_ADMIN_CLERK_IDS` | Comma-separated Clerk user ids allowed into the admin area. Empty → no admins. | for the admin area |
+| `INVESTOR_DOCS_BUCKET` | Private S3 bucket that holds the documents. | for documents: all four, or the document routes answer 503 |
+| `INVESTOR_DOCS_REGION` | That bucket's region. | for documents |
+| `INVESTOR_DOCS_ACCESS_KEY_ID` | Access key of an IAM user limited to that bucket. | for documents |
+| `INVESTOR_DOCS_SECRET_ACCESS_KEY` | That access key's secret. | for documents |
+| `INVESTOR_ALERT_EMAILS` | Comma-separated recipients of the sign-up and first-open emails (each sent once per investor, or per investor and document). They go out through the contact form's `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` and `SMTP_PASS`, with its defaults, from `SMTP_USER`. Empty, or no `SMTP_USER`/`SMTP_PASS` → no alerts, and one warning at start. A failed send is logged and not retried. | optional |
+
+### Checks
+
+`.github/workflows/investors.yml` runs on every pull request and on pushes to
+`main`: **server** (`npm test` against a Postgres 16 service), **app**
+(typecheck, lint, unit tests and build in `investors/`; the production build
+must not contain the E2E fake-auth marker), **e2e** (after app: Playwright,
+Chromium only, against `npm run build:e2e` served by `vite preview`, every API
+call mocked; full-page screenshots of each screen at 1280 and 390 px wide are
+uploaded as the `investors-e2e-screenshots` artifact, the HTML report as
+`investors-e2e-report`) and **docker** (the image build, no push). Playwright
+runs in CI only.
+
+```sh
+npm test                                # server tests (vitest, in-process PGlite)
+npm --prefix investors run typecheck    # also: lint, test, build
+```
+
+`INVESTORS_TEST_DATABASE_URL` points the server tests at a real Postgres
+instead of PGlite (CI sets it to its service database). The tests drop the
+`investors` schema in that database, so never point it at one that matters.
+
 ## Known gaps (post-deploy iterations)
 
 - `field-notes.html` is currently 12 hand-written `.note` cards. Once live,

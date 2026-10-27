@@ -1,0 +1,602 @@
+{
+  "project": "Automatos company site (automatos-ai-landingV2): investor portal",
+  "prd": "$RALPH_PRIVATE_PRD (private repo, READ ONLY: never copy its private sections into this public repo)",
+  "branchName": "feat/investor-portal-1",
+  "base": "origin/main",
+  "worktree": "<workspace>/.worktrees/automatos-ai-landingV2/feat+investor-portal-1",
+  "description": "Wave 1 (the core) of the investor portal at automatos.app/investors: a React app served by the site's Express server, Clerk sign-in, a short investor profile, a document library with a PDF viewer and downloads, per-page reading events, an admin area (document upload, overview, investors table and detail) and admin alert emails. Data lives in Postgres schema 'investors' (its own role); files in a private S3 bucket. Wave 2 (sections, video, document analytics, CSV, privacy text, footer link) is a later kit.",
+  "decisions": [
+    {
+      "id": "KP1",
+      "text": "FILES. A story may create or change ONLY: investors/** (the React app), server/investors/** (the API, its SQL migrations and its tests), vitest.config.js (root), server.js (ADDITIVE ONLY: the portal import, its mount lines and the Clerk key in hydrateConfig; the public allow-list arrays CLEAN_URL_PAGES, HTML_ONLY_PAGES and PUBLIC_ASSETS stay byte-identical), _config.js.template (one added line), Dockerfile, .dockerignore, package.json, package-lock.json (root), .github/workflows/investors.yml (new), README.md (a 'Investor portal' section), and this kit's files under scripts/ralph/. Never: any existing .html page, any _*.js or *.css of the public site, images/, uploads/, content/, design/, .github/workflows/malware-scan.yml, .gitignore entries that un-ignore anything."
+    },
+    {
+      "id": "KP2",
+      "text": "DEPENDENCIES: only these, each installed with 'npm install --save-exact --ignore-scripts <name>@<major>' (or the exact version given) and recorded in the DONE note. ROOT dependencies: the existing compression, express, nodemailer, plus @clerk/backend@3, pg@8, @aws-sdk/client-s3@3, @aws-sdk/s3-request-presigner@3, zod@3, express-rate-limit@7. ROOT devDependencies: vitest@3, supertest@7, @electric-sql/pglite@0.5. investors/ dependencies: react@18, react-dom@18, react-router-dom@6, @tanstack/react-query@5, @clerk/clerk-react@5, react-pdf@9, pdfjs-dist (exactly the version react-pdf@9 depends on, 4.8.69), recharts@2, lucide-react@0, class-variance-authority@0.7, clsx@2, tailwind-merge@2 (NOT 3: v3 is Tailwind 4 only), tailwindcss-animate@1, sonner@2, zod@3, any @radix-ui/react-* package. investors/ devDependencies: vite@6, @vitejs/plugin-react@4, typescript@5, tailwindcss@3, postcss@8, autoprefixer@10, eslint@9, @eslint/js@9, typescript-eslint@8, eslint-plugin-react-hooks@5, eslint-plugin-react-refresh@0, globals, vitest@3, jsdom@26, @testing-library/react@16, @testing-library/jest-dom@6, @types/react@18, @types/react-dom@18, @types/node@22, @playwright/test@1.64.1 (exact). Anything else: RALPH_BLOCKED with the reason. The gate enforces the list and the majors."
+    },
+    {
+      "id": "KP3",
+      "text": "SERVER-SIDE ENFORCEMENT. Every /api/investors route except GET /api/investors/health goes through the auth middleware; identity (clerk user id, email, investor id) comes ONLY from the verified Clerk token, never from a body, query, header other than Authorization, or cookie; admin = the token's Clerk user id is in INVESTOR_ADMIN_CLERK_IDS (comma-separated), checked on the server for every /admin route. A blocked investor gets 403 on every investor route. Unpublished documents are 404 to investors. A test enumerates the router stack and fails if any route other than /health lacks the middleware."
+    },
+    {
+      "id": "KP4",
+      "text": "NEVER BREAK THE SITE. The portal is optional. Missing config (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, or the S3 variables for document routes) or a failed migration puts the portal in 'disabled' with a logged reason: /api/investors/* answers 503 {error:'portal_unavailable'} and /investors serves the app, which shows 'The investor portal is temporarily unavailable' and the contact link. Every other route of automatos.app behaves exactly as on the base. Startup never throws because of the portal; migrations run in the background after app.listen and the portal answers 503 'starting' until they finish."
+    },
+    {
+      "id": "KP5",
+      "text": "PUBLIC REPO. This repository is public. Never commit: env files (the secrets hook blocks *.env and *.env.* paths: document variable NAMES in README.md instead, never an .env.example), keys or tokens (sk_live_, sk_test_ with a real value, pk_live_, AKIA..., private keys), real documents, real investor names or emails, the names of the site's admins, or text from the private PRD's content plan or open questions. Test fixtures are invented (investor 'Ada Example' at 'Example Ventures', ada@example.com) and tiny (a generated one- or two-page PDF under 20 kB). No vendor branding from the reference portal (KP12)."
+    },
+    {
+      "id": "KP6",
+      "text": "LOCAL CHECKS ARE PURE NODE. Allowed on this machine: npm ci/install (KP2 rules), tsc, eslint, vitest (jsdom and PGlite run in-process), vite build, node --check, reading node_modules. NEVER on this machine: node server.js, vite dev, vite preview, any server or listening socket, Playwright, a browser, docker, gh workflow run, git push, opening a PR, git merge. Playwright and the docker build run in CI only (W1-05, W1-19)."
+    },
+    {
+      "id": "KP7",
+      "text": "TEST DATABASE. Server code talks to Postgres only through server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn). Tests use the same interface over PGlite (@electric-sql/pglite, real Postgres in-process) via server/investors/__tests__/helpers/test-db.js, or over pg when INVESTORS_TEST_DATABASE_URL is set (CI's Postgres service). Every SQL statement is parameterized ($1..$n) and schema-qualified (investors.<table>); no string-built SQL with request data."
+    },
+    {
+      "id": "KP8",
+      "text": "MIGRATIONS (deviation from the PRD's node-pg-migrate, so tests run on PGlite): numbered plain SQL files server/investors/migrations/NNN_name.sql, applied in order by server/investors/migrate.js. The runner: creates schema 'investors' only when pg_namespace lacks it (in production the schema already exists, owned by the portal's role), creates investors.schema_migrations(name text primary key, applied_at timestamptz default now()), then applies each missing file in its own transaction after SELECT pg_advisory_xact_lock(724001) and records it. Re-running is a no-op. A failed file rolls back and disables the portal (KP4)."
+    },
+    {
+      "id": "KP9",
+      "text": "CLERK. App: @clerk/clerk-react@5 <ClerkProvider publishableKey={window.AUTOMATOS_CONFIG.clerkPublishableKey}> (runtime config, hydrated by server.js from CLERK_PUBLISHABLE_KEY; never a build-time env). API calls send 'Authorization: Bearer <await getToken()>'. Server: @clerk/backend verifyToken(token, {secretKey, authorizedParties}) with authorizedParties from INVESTORS_AUTHORIZED_PARTIES (comma-separated, default 'https://automatos.app'), behind an injectable verifier (academy server/spine/auth.js pattern) so tests use a fake. Investor email and name come from the Clerk user (createClerkClient({secretKey}).users.getUser, cached per process for 10 minutes) on first sight; later requests read the row. NO cookie auth anywhere (stricter than the PRD): the pagehide flush uses fetch(..., {keepalive: true}) with the last cached token."
+    },
+    {
+      "id": "KP10",
+      "text": "E2E FAKE AUTH SEAM. investors/src/auth/ has ONE module that wraps Clerk (useAuthState, SignedInGate, AccountMenu, getToken). When import.meta.env.VITE_INVESTORS_E2E === '1' (set ONLY by the e2e build script) it swaps to a fake provider whose code contains the marker string 'INVESTORS_E2E_FAKE_AUTH'. The production build (npm run build) must not contain that marker (vite dead-code-eliminates the branch; the gate greps investors/dist). The server has no fake verifier outside tests."
+    },
+    {
+      "id": "KP11",
+      "text": "S3. server/investors/s3.js (pattern: academy server/media/s3.js, lazy S3Client) with an injectable client; env INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY. Keys: documents/<documentId>/v<version>/<safeFileName> (safeFileName: [A-Za-z0-9._-] only, max 120 chars). Presigned PUT 15 minutes with ContentType fixed; presigned GET 5 minutes with ResponseContentDisposition (inline or attachment; filename*=UTF-8 encoded). Allowed content types: application/pdf, video/mp4, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.wordprocessingml.document. Max 262144000 bytes (250 MB). Never log a presigned URL."
+    },
+    {
+      "id": "KP12",
+      "text": "REFERENCE PORTAL (READ ONLY, never edit): the folder named by $RALPH_REFERENCE_PORTAL (set by the launcher; never write that path or the portal's name into this repo). Port its UI: src/components/ui/* (only the components a story uses), components.json, src/pages/Dashboard.tsx + src/components/investor/InvestorSidebar.tsx + InvestorHero.tsx (shell), src/components/investor/sections/DataRoom.tsx (library), src/components/marketplace/CoaPdfViewer.tsx (viewer), src/components/admin/AnalyticsManager.tsx (overview, table, timeline), src/components/admin/DocumentManager.tsx (upload UI), src/lib/activityTracker.ts (heartbeat idea), src/lib/csvExport.ts. Strip ALL of: its brand names, copy, colours, fonts, domains, tiers, wallet/NFT, NDA, CRM, Supabase client and calls, Lovable code. Its data-access and permission code is never ported: every data call goes to this kit's API."
+    },
+    {
+      "id": "KP13",
+      "text": "LOOK. The app looks like automatos.app: fonts Geist (sans), Instrument Serif (headings), Geist Mono (labels) from the same Google Fonts URL the site uses; colours as CSS variables mapped from the site's two moods: bone (--bg #F2EDE4, --bg-2 #ECE6DA, --fg #0F1411, --fg-2 #2C3531, --muted #6E6960, --rule-c rgba(15,20,17,0.14), --accent oklch(0.45 0.06 155), --accent-ink #F2EDE4) and pitch (--bg #0E1311, --bg-2 #161C19, --fg #EFE9DD, --fg-2 #C9C2B4, --muted #8A857C, --rule-c rgba(239,233,221,0.14), --accent oklch(0.78 0.10 95), --accent-ink #0E1311). The mood follows the site: localStorage 'automatos-mood' ('bone'|'pitch'), else prefers-color-scheme; set as data-mood on <body>; Tailwind darkMode ['class'] is NOT used: shadcn tokens read the CSS variables. Square-ish corners (radius 2px), thin rules, no gradients, no glow. Phone first: every investor page works at 390 px."
+    },
+    {
+      "id": "KP14",
+      "text": "COPY. Calm and factual; no 'exclusive', no hype. Tracking notice (teaser and profile form): 'When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy (/privacy). Ask privacy@automatos.app to see or delete your data.' All UI strings in investors/src/strings.ts."
+    },
+    {
+      "id": "KP15",
+      "text": "CODE RULES. Immutability (new objects, never mutate inputs). Files 200-400 lines, never over 800; functions under 50 lines; React components under 150 lines; nesting under 4. zod at every API boundary (server bodies and queries; client parses responses). Errors: the server returns {error:'<code>'} with the right status, logs detail server-side, never leaks stack traces; the client shows a plain message. No console.log in committed code (console.warn/error with context in the server only). Server code is plain ESM JavaScript like server.js, with JSDoc types; the app is TypeScript strict."
+    },
+    {
+      "id": "KP16",
+      "text": "EVENTS. Types: signed_in, profile_completed, document_open, document_download, page_view, section_view, video_progress. document_open and document_download are written by the SERVER when it issues a link; the client may send only page_view, section_view, video_progress and heartbeats. duration_ms capped at 600000; page between 1 and the document's page_count (when known) else 1..2000; at most 50 events per batch; body at most 64 kB; 120 requests/minute/investor on /events, 30/minute on /link, 10/minute on PUT /me (express-rate-limit keyed by investor id)."
+    },
+    {
+      "id": "KP17",
+      "text": "WAVE 1 SCOPE. Build only W1 stories. NOT in this wave (a later kit): team/FAQ/contact sections and their editor, the video player, per-document analytics and page drop-off charts, CSV export, the privacy-policy section, the footer link, the sitemap entry, investor update emails. The admin investor table and detail ARE in this wave. Leave hooks for wave 2 only where a story says so."
+    },
+    {
+      "id": "KP18",
+      "text": "ONE PUSH, ONE PR, ONE CI RUN. Story commits end ' [skip ci]' and are never pushed by you (the runner pushes the branch as a backup). No story waits on CI and no AC says 'CI green'. When every W1 story passes, the last session runs the gate (--no-ci), then makes ONE empty signed commit without [skip ci]; the runner opens the wave's draft PR and that PR's run is the wave's CI. UI stories are verified by typecheck, lint, unit tests and, at the end, the Playwright screenshots of W1-19 in CI (no local browser: KP6)."
+    }
+  ],
+  "localChecks": [
+    "npm test (root: vitest run over server/investors/**/__tests__)",
+    "npm --prefix investors run typecheck",
+    "npm --prefix investors run lint",
+    "npm --prefix investors test",
+    "npm --prefix investors run build",
+    "bash scripts/ralph/acceptance-prd001-portal-w1.sh --no-ci"
+  ],
+  "references": [
+    "The private PRD (path above): sections 4 to 12 are the spec this kit implements; section 6 is the data model, section 7 the API.",
+    "Academy (READ ONLY, via git -C $RALPH_ACADEMY_REPO show origin/main:<path>): server/spine/auth.js (Clerk verifier, authorized parties, injectable middleware), server/media/s3.js (lazy S3 client, presigned PUT), server/media/index.js and server/content/index.js (admin allowlist parse, fail-closed config).",
+    "This repo: server.js (hydrateConfig, the allow-list static middleware, the contact form's nodemailer transport), _config.js.template, Dockerfile, .dockerignore, index.html (the tokens and fonts KP13 lists), _theme.js (the mood switch).",
+    "The reference portal (KP12)."
+  ],
+  "ownerTest": [
+    {
+      "id": "OT-1",
+      "what": "US-000 in the PRD: create role investors_app and schema investors in the academy Postgres; prove the role cannot read academy tables; confirm backups."
+    },
+    {
+      "id": "OT-2",
+      "what": "US-000: private bucket automatos-investor-docs (Block Public Access, SSE-S3), CORS GET/PUT/HEAD from https://automatos.app, IAM user limited to that bucket; one test upload and download."
+    },
+    {
+      "id": "OT-3",
+      "what": "Railway variables on the landingV2 service: INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, INVESTORS_AUTHORIZED_PARTIES, INVESTOR_ADMIN_CLERK_IDS, INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY, INVESTOR_ALERT_EMAILS."
+    },
+    {
+      "id": "OT-4",
+      "what": "After deploy: the deploy log shows the investors migrations applied; automatos.app pages unchanged; /api/investors/health answers ok."
+    },
+    {
+      "id": "OT-5",
+      "what": "Sign up at /investors with a fresh email, complete the profile, and confirm the sign-up alert email arrives."
+    },
+    {
+      "id": "OT-6",
+      "what": "As an admin: upload a test PDF, publish it with alert-on-first-open, open it as the test investor, read three pages, download it; confirm the first-open email, and that the admin investor detail shows the open, the download and the pages with times."
+    },
+    {
+      "id": "OT-7",
+      "what": "Phone check at 390 px: teaser, profile form, library, viewer."
+    },
+    {
+      "id": "OT-8",
+      "what": "Block the test investor and confirm they get the blocked message; delete them and confirm their events are gone."
+    }
+  ],
+  "userStories": [
+    {
+      "id": "W1-01",
+      "prdStory": "US-001/US-002 (server part)",
+      "title": "Portal server skeleton: config, status, health and the 503 contract",
+      "description": "As the site, I need the portal's server module mounted so later stories add routes to it, and so a missing or broken portal can never break automatos.app (KP4).",
+      "acceptanceCriteria": [
+        "server/investors/config.js (pure): readPortalConfig(env) returns a frozen {db:{url}, clerk:{secretKey, publishableKey, authorizedParties[]}, admins:Set<string>, s3:{bucket, region, accessKeyId, secretAccessKey}|null, alerts:{to[]}, missing:string[]} — 'missing' lists every required variable that is unset (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY); S3 is null unless all four S3 variables are set; admins parsed from INVESTOR_ADMIN_CLERK_IDS (trimmed, empty entries dropped); authorizedParties default ['https://automatos.app'] → DONE — server/investors/config.js readPortalConfig: frozen to every level, admins a read-only Set; config.test.js 23 tests",
+        "server/investors/index.js: createInvestorsPortal({env, deps}) returns {apiRouter, appRouter, start(), status()} where status() is {state:'disabled'|'starting'|'ready', reason?}; with config missing it is 'disabled' and the reason names the missing variable NAMES (never values) → DONE — server/investors/index.js; disabled reason \"missing_config: <names>\", test asserts no value leaks",
+        "apiRouter: GET /health answers 200 {state} always (no auth); every other path answers 503 {error:'portal_unavailable'} unless state is 'ready' → DONE — portal-status.test.js: /health 200 {state} without auth; 7 paths 503 when disabled, 503 starting; JSON 404 when ready",
+        "server.js (ADDITIVE, KP1): import createInvestorsPortal; mount app.use('/api/investors', portal.apiRouter) BEFORE the global express.json() line; call portal.start() after app.listen (errors caught and logged, never thrown); no other line of server.js changes in this story → DONE — 3 additive hunks (import, mount before express.json, start() in listen callback with .catch); gate additive + mount-order checks pass",
+        "Root package.json: scripts 'test': 'vitest run'; devDependencies vitest@3 and supertest@7 (KP2); vitest.config.js includes server/investors/**/__tests__/**/*.test.js with environment node → DONE — test: vitest run; vitest 3.2.7, supertest 7.3.1 exact; gate KP2 check passes; vitest.config.js node env",
+        "server/investors/__tests__/config.test.js and portal-status.test.js: missing variables listed by name; S3 null when partial; admins parsing; /health 200 without auth; any other /api/investors path 503 when disabled; frozen config → DONE — both files committed in db8f322 (40 tests)",
+        "npm test passes; node --check server.js passes → DONE — npm test: 2 files, 40 passed; node --check server.js OK"
+      ],
+      "files": [
+        "server/investors/config.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/config.test.js",
+        "server/investors/__tests__/portal-status.test.js",
+        "server.js",
+        "package.json",
+        "package-lock.json",
+        "vitest.config.js"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": " | DONE (db8f322): root devDependencies vitest 3.2.7, supertest 7.3.1 (exact; npm also moved transitive hasown 2.0.3->2.0.4). createInvestorsPortal({env, deps:{logger}}) reads config once in the factory and returns frozen {apiRouter, appRouter, start, status}; apiRouter order = no-store middleware, GET /health, requireReady (503 {error:'portal_unavailable', state}), JSON 404 {error:'not_found'}: later routes go between requireReady and the 404. start() memoizes one boot() promise; W1-02 adds db + migrations inside boot() with try/catch -> disabled. appRouter is an empty Router, not mounted yet (W1-04). config.js exports REQUIRED_VARS, parseList, readPortalConfig; config.admins is a read-only Set. server.js holds const investorsPortal; start() runs in the app.listen callback. The root lock pulls rollup 4.65.1 (dev, via vitest), whose published manifest declares an optional @napi-rs/lzma-linux-x64-gnu that rollup never requires: registry-identical integrity, provenance-attested."
+    },
+    {
+      "id": "W1-02",
+      "prdStory": "US-002",
+      "title": "Database access, the SQL migration runner and the schema",
+      "description": "As the portal, I need the investors schema created and kept up to date on every deploy, testable in-process (KP7, KP8).",
+      "acceptanceCriteria": [
+        "server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn) (BEGIN/COMMIT/ROLLBACK on one client) and end(); pg@8 added (KP2) → DONE — server/investors/db.js (POOL_OPTIONS max 5, idle 30000, connect timeout 10000); pg 8.23.1 exact; db.test.js 9 tests with a fake Pool",
+        "server/investors/__tests__/helpers/test-db.js: createTestDb() returns the same interface over PGlite (@electric-sql/pglite@0.5, devDependency) or over pg when INVESTORS_TEST_DATABASE_URL is set; each test file gets a fresh database (PGlite) or a fresh schema reset (pg) → DONE — helpers/test-db.js: PGlite 0.5.12 per call, or db.js over pg with DROP SCHEMA investors CASCADE; vitest serial in pg mode",
+        "server/investors/migrate.js: runMigrations(db, dir) per KP8 (schema created only if pg_namespace lacks it; investors.schema_migrations; one transaction per file with pg_advisory_xact_lock(724001); returns the list applied) → DONE — server/investors/migrate.js: bootstrap + one tx per file under the lock, applied-check inside it; migrate.test.js asserts no CREATE SCHEMA on an existing schema and two locks",
+        "server/investors/migrations/001_init.sql creates, schema-qualified, exactly the PRD section 6 tables: investors (with the CHECK lists for investor_type, cheque_size, source; clerk_user_id UNIQUE; marketing_opt_in default false; blocked default false; created_at/last_seen_at default now()), documents (kind CHECK; version default 1; published default false; alert_on_first_open default false), sections (slug PK), sessions, events (type CHECK with the seven KP16 types; duration_ms CHECK between 0 and 600000; document_id ON DELETE SET NULL), alerts_sent (UNIQUE (investor_id, kind, document_id) using a unique index that treats NULL document_id as equal, e.g. COALESCE to a zero uuid), every investor FK ON DELETE CASCADE, and the three events indexes → DONE — migrations/001_init.sql: 6 tables + schema_migrations; CHECK and cascade tests in migrate.test.js; alerts_sent_once_idx COALESCE",
+        "createInvestorsPortal.start(): when config is complete, creates the db, runs migrations, sets state 'ready'; on any migration error logs it (console.error with the file name) and sets 'disabled' with reason 'migration_failed: <file>' (KP4) → DONE — index.js openDatabase(); portal-status.test.js: ready after migrating, migration_failed: 001_broken.sql, bootstrap, pool closed, no URL in logs",
+        "server/investors/__tests__/migrate.test.js: fresh DB applies 001; second run applies nothing; deleting an investor cascades to sessions, events and alerts_sent; a CHECK violation (bad investor_type) is rejected; a broken migration file in a temp dir rolls back and leaves schema_migrations without it → DONE — migrate.test.js 21 tests (fresh, rerun, race, cascade, CHECKs, broken file rolled back, misnamed files)",
+        "npm test passes → DONE — npm test: 4 files, 75 passed"
+      ],
+      "files": [
+        "server/investors/db.js",
+        "server/investors/migrate.js",
+        "server/investors/migrations/001_init.sql",
+        "server/investors/index.js",
+        "server/investors/__tests__/helpers/test-db.js",
+        "server/investors/__tests__/migrate.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": " | DONE (17f7668): root dependency pg 8.23.1, devDependency @electric-sql/pglite 0.5.12 (exact). db.js: createDb({connectionString, logger?, Pool?}) → frozen {query(text, params) → {rows, rowCount}, tx(fn), end()}; inside tx(fn) use ONLY the client fn receives ({query, exec}; exec = unparameterized multi-statement script, migrations only; over PGlite an outer db.query inside tx deadlocks). Both drivers: int8 (count(*), bigserial, size_bytes) is a number, numeric a string, timestamptz a Date, errors carry SQLSTATE in .code (23505 unique, 23514 check). migrate.js exports runMigrations, listMigrationFiles, MigrationError (.file = file name or bootstrap), MIGRATIONS_DIR, MIGRATION_LOCK_KEY. 001_init.sql: documents.title and kind NOT NULL, sort_order NOT NULL DEFAULT 0, sections.body_md NOT NULL DEFAULT empty; alerts_sent has no PK, its once-index alerts_sent_once_idx is on (investor_id, kind, COALESCE(document_id, zero uuid)) so W1-18 uses plain ON CONFLICT DO NOTHING; alerts_sent.document_id CASCADES on document delete (SET NULL would collide); extra FK indexes sessions(investor_id, started_at DESC) and events(session_id). index.js: deps {logger, createDb, migrationsDir} injectable; the open db is held in createInvestorsPortal closure variable `database`, set just before ready: W1-03 hands it to the routes. Tests: createTestDb() from __tests__/helpers/test-db.js (fresh PGlite per call, about 1 s; with INVESTORS_TEST_DATABASE_URL the schema is dropped per call, so hold one test db per file at a time); vitest.config.js sets fileParallelism false in that mode (needed for the shared CI database). portal-status.test.js injects createDb over one shared test db; any new test that calls start() with complete config must inject createDb too (the real one would dial the URL)."
+    },
+    {
+      "id": "W1-03",
+      "prdStory": "US-003",
+      "title": "Server-side Clerk auth, investor upsert, admin allowlist and the route-coverage test",
+      "description": "As the team, every portal request is verified on the server so nobody sees investor data or documents without signing in (KP3, KP9).",
+      "acceptanceCriteria": [
+        "server/investors/auth.js: createClerkVerifier({secretKey, authorizedParties}) wrapping @clerk/backend@3 verifyToken (read node_modules/@clerk/backend/dist/*.d.ts for the exact signature); createUserLookup({secretKey}) wrapping users.getUser with a 10-minute in-process cache; requireInvestor({verifier, userLookup, db}) middleware: Bearer token only (no cookie), 401 {error:'unauthenticated'} when absent or invalid, upserts investors by clerk_user_id (email and name from the lookup on insert), 403 {error:'blocked'} when blocked, sets req.investor (frozen) and req.isAdmin; updates last_seen_at at most once a minute per investor; requireAdmin: 403 {error:'forbidden'} unless req.isAdmin → DONE — server/investors/auth.js: createClerkVerifier (+ a key-id gate: only the instance's JWKS kids reach Clerk), createUserLookup (10-min cache, verified email only), requireInvestor (Bearer only; 401 unauthenticated, 403 blocked, 403 email_required; upsert CTE; last_seen_at once a minute), requireAdmin 403 forbidden; auth.test.js 26 + auth-clerk.test.js 29 tests",
+        "createInvestorsPortal wires the real verifier from config and accepts deps.verifier / deps.userLookup overrides for tests only → DONE — index.js authDeps(): real verifier and lookup from config.clerk unless deps.verifier/deps.userLookup; auth-clerk.test.js wiring tests (SDK stub) assert the secret key and both configured parties",
+        "On an investor's first ever sign-in a signed_in event is written; later sign-ins write signed_in at most once per 30 minutes → DONE — INSERT_INVESTOR_SQL writes signed_in with the new row; TOUCH_INVESTOR_SQL only after 30 min away and NOT EXISTS one within 30 min; 4 tests in auth.test.js (mutation-checked)",
+        "server/investors/__tests__/auth.test.js (fake verifier + PGlite): no header 401; malformed and rejected token 401; a cookie named __session with a valid fake token is IGNORED (401); valid token upserts once (two requests, one row); blocked 403; non-admin on a probe /admin route 403; admin 200; identity ignores a body investor_id → DONE — auth.test.js: no header 401, malformed/oversized 401, rejected 401 (reason logged, never the token), __session cookie ignored 401, two and three concurrent requests one row, blocked 403, probe /admin 403 non-admin and 200 admin, body/query/header ids ignored",
+        "server/investors/__tests__/route-coverage.test.js walks apiRouter's stack and fails if any route other than GET /health is reachable without requireInvestor (and every /admin path without requireAdmin); it passes now and will guard every later story → DONE — route-coverage.test.js: walks the stack by auth.js's GUARD tag (self-tested on mis-ordered routers and look-alike names), probes every found route 401 and /admin 403; 10 tests",
+        "npm test passes → DONE — npm test: 7 files, 141 passed (three consecutive runs)"
+      ],
+      "files": [
+        "server/investors/auth.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/auth.test.js",
+        "server/investors/__tests__/route-coverage.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": " | DONE (e025e20): root dependency @clerk/backend 3.26.3 (exact). New routes go in index.js createApiRouter between router.use('/admin', requireAdmin) and the JSON 404; pass them the late-bound `db` from createInvestorsPortal. Routes read req.investor (frozen camelCase row: id, clerkUserId, email, name, firm, title, investorType, linkedinUrl, chequeSize, country, source, marketingOptIn, marketingOptInAt, profileCompletedAt, blocked, createdAt, lastSeenAt) and req.isAdmin. apiRouter has NO body parser yet: W1-07 adds express.json({limit:'64kb'}) AFTER the guard; the error handler answers err.status 4xx as {error:'bad_request'} with that status, else 500 internal_error. Error codes: 401 unauthenticated, 403 blocked, 403 email_required (Clerk user without a verified email; the client should say so), 403 forbidden. Tests: portals take deps {logger, createDb: () => testDb, ...fakeAuthDeps()} from __tests__/helpers/fake-clerk.js; bearer(ADA.id) / bearer(ADMIN.id) with ADMIN.id in INVESTOR_ADMIN_CLERK_IDS. vitest.config.js aliases @clerk/backend to __tests__/helpers/clerk-sdk.js (drive it, resetClerkSdk() per test): never vi.mock it, vitest 3 can hand a concurrent dynamic import the real module. npm audit's prod advisories (express, body-parser, qs, proxy-addr, nodemailer, compression) predate this story; none from Clerk."
+    },
+    {
+      "id": "W1-04",
+      "prdStory": "US-001",
+      "title": "The investors React app scaffold, themed, served at /investors",
+      "description": "As a developer, I need the React app built and served at /investors so every UI story has somewhere to land.",
+      "acceptanceCriteria": [
+        "investors/ is its own npm project (package.json private, type module) with Vite 6 + React 18 + TypeScript 5 strict + Tailwind 3 + PostCSS, base '/investors/', scripts typecheck (tsc --noEmit), lint (eslint flat config: @eslint/js, typescript-eslint, react-hooks, react-refresh), test (vitest run, jsdom), build (vite build), build:e2e (VITE_INVESTORS_E2E=1 vite build --outDir dist-e2e) → DONE — investors/package.json (private, type module, exact versions); typecheck, lint, test, build and build:e2e all run green (644a6c8)",
+        "Ported shadcn primitives from the reference portal (KP12) used by this story only (button, card, input, label, separator, skeleton), with components.json; investors/src/styles/tokens.css maps shadcn variables to the KP13 bone and pitch values; tailwind.config.ts reads them; investors/src/theme/mood.ts (pure) resolves the mood exactly as KP13 says and is unit-tested → DONE — the six primitives under src/components/ui (+ button-variants.ts) and components.json; tokens.css maps --ui-* to bone/pitch; tailwind.config.ts reads them; mood.test.ts 5 and apply-mood.test.ts 6 passing",
+        "investors/index.html: lang en, <meta name='robots' content='noindex'>, the site's Google Fonts link, title 'Investors · Automatos' → DONE — investors/index.html: lang en, robots noindex, the site Google Fonts link, title; gate noindex check PASS",
+        "A placeholder route renders the app shell header (Automatos wordmark as text, 'Investors') so the build has output; react-router-dom@6 with basename '/investors' → DONE — App.tsx catch-all PlaceholderPage inside AppShell/AppHeader (wordmark text + Investors); BrowserRouter basename /investors; App.test.tsx 2 passing",
+        "server/investors/static.js + appRouter: serves investors/dist/assets/* at /investors/assets/* (Cache-Control public, max-age 31536000, immutable) and investors/dist/index.html for /investors and /investors/* (Cache-Control no-store); when investors/dist is missing, /investors answers 503 with a one-line HTML message; server.js mounts app.use('/investors', portal.appRouter) before the allow-list middleware (KP1) → DONE — server/investors/static.js createAppRouter, returned as portal.appRouter; server.js mounts it after the API mount and before the allow-list; gate allow-list, additive and KP1 checks PASS",
+        "server/investors/__tests__/static.test.js: /investors and /investors/admin/x serve index.html; /investors/assets/<file> serves the file; /investors/../server.js does not escape (404 or 400); missing dist answers 503 → DONE — static.test.js 18 passing: index for 4 paths, asset cache header, missing asset 404, 7 traversal paths 400 with the sentinel never served, missing dist 503 logged once, app served while the API is disabled",
+        ".gitignore: investors/node_modules, investors/dist, investors/dist-e2e, investors/test-results, investors/playwright-report → DONE — .gitignore adds the five investors/ paths (git check-ignore confirms)",
+        "npm --prefix investors run typecheck, lint, test and build pass; npm test passes → DONE — typecheck clean, lint clean (--max-warnings 0), app tests 13/13, build OK, root npm test 159/159"
+      ],
+      "files": [
+        "investors/**",
+        "server/investors/static.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/static.test.js",
+        "server.js",
+        ".gitignore"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": " | DONE (644a6c8): investors/ dependencies (exact) react 18.3.1, react-dom 18.3.1, react-router-dom 6.30.6, class-variance-authority 0.7.1, clsx 2.1.1, tailwind-merge 2.6.1, tailwindcss-animate 1.0.7, @radix-ui/react-slot 1.5.0, @radix-ui/react-label 2.1.17, @radix-ui/react-separator 1.2.0; devDependencies vite 6.4.5, @vitejs/plugin-react 4.7.0, typescript 5.9.3, tailwindcss 3.4.19, postcss 8.5.32, autoprefixer 10.6.2, eslint 9.39.5, @eslint/js 9.39.5, typescript-eslint 8.72.1, eslint-plugin-react-hooks 5.2.0, eslint-plugin-react-refresh 0.5.7, globals 16.5.0, vitest 3.2.7, jsdom 26.1.0, @testing-library/react 16.3.3, @testing-library/jest-dom 6.9.1, @types/react 18.3.31, @types/react-dom 18.3.7, @types/node 22.20.5; investors/package-lock.json is committed. Colours: Tailwind reads --ui-* tokens (tokens.css, declared on body) through color-mix, so /90 modifiers work: primary = ink (fg on bg, the site solid button), brand = the site accent (text brand-foreground), secondary/muted/accent = bg-2 surfaces, plus destructive, border, input, ring; no darkMode, never use dark: variants; font-sans/serif/mono; rounded-md/lg = 2px. buttonVariants lives in button-variants.ts (lint is --max-warnings 0 and react-refresh wants component files to export components only). strings.ts exports `strings` (as const, nested by screen). lib/paths.ts: APP_BASENAME, ROUTER_FUTURE (pass future={ROUTER_FUTURE} to every Router, MemoryRouter in tests too). main.tsx calls applyMood() before render; App.tsx = <Routes> with the AppShell layout route and a catch-all PlaceholderPage that W1-06/W1-12 replace. App tests: src/**/__tests__/*.test.{ts,tsx}, jsdom, setup src/test/setup.ts (jest-dom + cleanup); jsdom has no matchMedia (vi.stubGlobal). typecheck = tsc --noEmit (tsconfig.json covers src) then tsconfig.node.json (add any new *.config.ts there). investors/index.html has no _config.js script yet: W1-06 adds <script src=\"/_config.js\"> (already in the allow-list) for window.AUTOMATOS_CONFIG. Server: static.js exports createAppRouter({distDir, logger}) and APP_DIST_DIR; createInvestorsPortal takes deps.appDistDir; server.js mounts appRouter at /investors right after the API mount; unsafe paths 400, missing asset 404, missing build 503 (logged once), non-GET falls through to the site 404. Dockerfile/.dockerignore untouched: W1-05 must keep investors/ source, node_modules and dist-e2e out of the runtime image (the current COPY . . would copy them)."
+    },
+    {
+      "id": "W1-05",
+      "prdStory": "US-001",
+      "title": "Dockerfile build stage and the investors CI workflow",
+      "description": "As the team, I need the app built into the Railway image and every PR checked in CI (KP18).",
+      "acceptanceCriteria": [
+        "Dockerfile: a first stage FROM node:22-alpine AS investors-build that copies investors/package.json and package-lock.json, runs npm ci --ignore-scripts, copies investors/ and runs npm run build; the runtime stage moves to node:22-alpine, installs root production deps with npm ci --omit=dev --ignore-scripts --no-audit --no-fund, copies the site, then COPY --from=investors-build /build/investors/dist ./investors/dist; CMD unchanged (node server.js) → DONE — Dockerfile: investors-build stage (node:22-alpine, npm ci --ignore-scripts, npm run build), a site stage that drops investors/ source, runtime node:22-alpine with npm ci --omit=dev --ignore-scripts --no-audit --no-fund, COPY --from=investors-build /build/investors/dist ./investors/dist, CMD node server.js; gate check PASS (60f3cb7)",
+        ".dockerignore adds investors/node_modules, investors/dist, investors/dist-e2e, investors/test-results, investors/playwright-report, server/investors/__tests__ → DONE — .dockerignore adds the six paths (60f3cb7)",
+        ".github/workflows/investors.yml: on pull_request and push to main; permissions contents: read; concurrency per ref with cancel-in-progress; jobs (Node 22, actions/setup-node with npm cache): 'server' (root npm ci --ignore-scripts; Postgres 16 service; INVESTORS_TEST_DATABASE_URL set; npm test), 'app' (investors: npm ci --ignore-scripts, typecheck, lint, test, build, then fail if grep -r 'INVESTORS_E2E_FAKE_AUTH' investors/dist finds anything), 'docker' (docker build . with no push) → DONE — .github/workflows/investors.yml: pull_request + push main, contents read, concurrency per ref cancel-in-progress, jobs server (Postgres 16 service, INVESTORS_TEST_DATABASE_URL, npm test), app (npm ci, typecheck, lint, test, build, grep -rl marker fails), docker (docker build, no push); Node 22 with npm cache",
+        "README.md gains an 'Investor portal' section: what it is, the variable NAMES from KP4/KP9/KP11/W1-18 (no values), and that it is optional (KP4) → DONE — README.md Investor portal section: what it is, optional (KP4), the ten variable names in a table (no values), the checks",
+        "No local docker or CI run (KP6): the workflow is validated by a YAML parse (node -e with a tiny parser is not available: use python3 -c 'import yaml' if present, else review by reading) and by the wave's one CI run → DONE — python3 yaml (PyYAML 6.0.3) parses it: triggers, permissions, concurrency and the 3 jobs with their steps listed; no docker or CI run locally",
+        "npm test and the investors checks still pass → DONE — root npm test 159/159; investors typecheck, lint, test 13/13, build green; npm ci (root and investors/) succeed against both lockfiles"
+      ],
+      "files": [
+        "Dockerfile",
+        ".dockerignore",
+        ".github/workflows/investors.yml",
+        "README.md"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": " | DONE (60f3cb7): no packages added. Dockerfile has THREE stages: investors-build (/build/investors, npm ci --ignore-scripts then npm run build), site (COPY . . then rm -rf investors, so the runtime never carries app source) and the runtime (node:22-alpine, root npm ci --omit=dev --ignore-scripts, COPY --from=site /site/ ./, COPY --from=investors-build /build/investors/dist ./investors/dist). The image runs as root because server.js writes _config.js into /app at start: keep it that way. investors.yml jobs are ids only (no name:), since the gate matches job names exactly; W1-19 adds job e2e (needs: app) in the same style (setup-node 22, cache-dependency-path investors/package-lock.json, defaults.run.working-directory investors). The server job sets INVESTORS_TEST_DATABASE_URL, so CI runs every server test over real Postgres 16 one file at a time: new tests must hold at most one test database at a time and must not depend on PGlite-only behaviour. README.md has an Investor portal section with a variable table: a story that adds a variable adds its row."
+    },
+    {
+      "id": "W1-06",
+      "prdStory": "US-004",
+      "title": "Runtime Clerk key, the auth seam, the signed-out teaser and sign-in",
+      "description": "As an investor arriving from a link, I want to see what's inside and create an account in a few clicks.",
+      "acceptanceCriteria": [
+        "_config.js.template gains clerkPublishableKey: \"${CLERK_PUBLISHABLE_KEY}\"; server.js hydrateConfig substitutes it (ADDITIVE, KP1); the app reads window.AUTOMATOS_CONFIG via investors/src/config.ts (zod-parsed; missing key = signed-out-only mode with the 'unavailable' message), and investors/index.html loads /_config.js before the app bundle → DONE — _config.js.template line + one hydrateConfig substitution (only a well-formed pk_ key); index.html loads /_config.js in <head> before the bundle; src/config.ts parseAppConfig/readAppConfig with Clerk's key-format check; config.test.ts 14 passing; gate additive + allow-list PASS (b696885)",
+        "investors/src/auth/ is the only code touching Clerk (KP10): ClerkProvider with the runtime key, useAuthState(), getToken(), <SignedInGate>, <AccountMenu> (profile, sign out); the E2E branch with the marker exists and is unit-tested; npm run build output does not contain the marker → DONE — clerk-auth.tsx is the only @clerk import (grep); AuthProvider, useAuthState/useAuthActions, getToken/lastToken, SignedInGate, AuthButtons, AccountMenu exported from src/auth; mode.test.tsx 10 passing (flag variants, fake sign-in/out, stored session, marker); gate: dist has no marker, dist-e2e has it",
+        "investors/src/api/client.ts: fetchJson(path, {method, body, schema}) adds the Bearer token, parses with zod, maps 401 to a sign-in prompt, 403 'blocked' to the blocked screen ('Your access has been paused. Contact privacy@automatos.app.'), 503 to the unavailable screen → DONE — api/client.ts fetchJson + api/errors.ts ApiError/errorKindFor/screenForError, pages/ApiErrorPage.tsx; client.test.ts 13 and errors.test.ts 27 passing",
+        "Signed-out /investors: one-line pitch 'Automatos is an open-source operating system for AI agents.', the list of what's inside (pitch deck, one-pager, product demo, business model, team, FAQ), Create account and Sign in buttons (Clerk SignUp/SignIn components in a modal), the KP14 tracking notice; if Clerk fails to load the buttons are replaced by 'Sign-in is unavailable right now. Email hello@automatos.app.' → DONE — pages/Teaser.tsx + teaser-model.ts, components/TrackingNotice.tsx; teaser.test.tsx 8 passing (pitch, list, notice text and links, modals, disabled while loading, Clerk failed, no key)",
+        "Signed in: GET /api/investors/me (stub accepted in this story: a 404 or 503 shows the unavailable screen) decides between the profile form route and home (built in W1-07 and W1-12) → DONE — components/shell/PortalGate.tsx + api/me.ts (useMe keyed by Clerk user, landingRedirect, meErrorScreen); App.test.tsx 11 passing (profile redirect, stays when complete, 404/503 unavailable, blocked, 401 sign-in)",
+        "Unit tests: config parsing, the auth seam's E2E switch, the client's status mapping → DONE — config.test.ts, auth/__tests__ (mode, fake-session, clerk-state, token), api/__tests__ (client, errors, me, query-client), pages/__tests__/teaser.test.tsx",
+        "npm --prefix investors run typecheck, lint, test, build pass; npm test passes → DONE — typecheck clean, lint clean (--max-warnings 0), app tests 133/133, build OK, root npm test 159/159"
+      ],
+      "files": [
+        "_config.js.template",
+        "server.js",
+        "investors/index.html",
+        "investors/src/config.ts",
+        "investors/src/auth/**",
+        "investors/src/api/**",
+        "investors/src/pages/Teaser.tsx",
+        "investors/src/strings.ts",
+        "investors/src/**/__tests__/**",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": " | DONE (b696885): investors/ dependencies (exact) @clerk/clerk-react 5.61.11, @tanstack/react-query 5.105.0, zod 3.25.76, @radix-ui/react-dropdown-menu 2.2.1 (npm audit flags zod 3 GHSA-mrhx-c7xc-m3w5, fixed only in zod 4; KP2 pins 3 and the app parses only its own API). Import auth only from \"@/auth\": useAuthState() status loading|signed_out|signed_in{userId,email}|unavailable (Clerk failed)|disabled (no key), useAuthActions() {openSignIn, openSignUp, signOut}, getToken(), lastToken() (W1-14 keepalive flush), SignedInGate, AuthButtons, AccountMenu (Profile links PROFILE_PATH). API: fetchJson(path under /api/investors, {method, body, schema, signal}) throws ApiError {kind, status, code, fields}; screenForError(err) gives the ErrorScreen and <ApiErrorPage screen onRetry/> renders it; createQueryClient retries network/server only. api/me.ts: meSchema (strips unknown keys: W1-07 extends it), useMe(userId), meQueryKey(userId) = [\"me\", userId] (invalidate after PUT /me). App.tsx: AppShell > PortalGate (teaser when signed out or while Clerk loads; MeGate redirects to /profile until profileComplete) > routes \"profile\" and \"*\" render PlaceholderPage: W1-07 swaps the profile element, W1-12 the rest. TrackingNotice (components/) is ready for the profile form. Tests: src/test/providers.tsx renderWithProviders(ui, {path, auth, actions}) provides AuthContext directly (no Clerk) with retry off; stub fetch with vi.stubGlobal and setTokenSource from @/auth/token. E2E (W1-19): the fake reads localStorage INVESTORS_E2E_FAKE_AUTH = JSON {userId, email} (absent = signed out; Sign in stores user_e2e_ada / ada@example.com); its token is e2e.<userId>; the injected key must pass Clerk's format check (pk_test_ + base64 of example.clerk.accounts.dev$); /_config.js is a classic script in <head> that vite preview does not serve: route it or set window.AUTOMATOS_CONFIG with addInitScript."
+    },
+    {
+      "id": "W1-07",
+      "prdStory": "US-005",
+      "title": "GET/PUT /me and the first-visit profile form",
+      "description": "As the team we want to know who each investor is; as an investor I want this to take 30 seconds.",
+      "acceptanceCriteria": [
+        "server/investors/routes/me.js: GET /me returns {investor (without clerk_user_id), isAdmin, profileComplete}; PUT /me validates with zod: name 1-120, firm 1-160 (required), title 0-120, investorType in the CHECK list (required), chequeSize optional in the CHECK list, linkedinUrl optional and must be https:// with host linkedin.com or *.linkedin.com, country 0-80, source in the CHECK list (required), marketingOptIn boolean; field errors as 400 {error:'invalid', fields:{...}}; sets marketing_opt_in_at when it turns true; the first successful save sets profile_completed_at, writes profile_completed and calls the alerts hook (a no-op function until W1-18); rate limit 10/min per investor (KP16) → DONE — server/investors/routes/me.js mounted in index.js after the admin gate; me.test.js (54 tests) covers GET and PUT, field codes, opt-in stamp, the once-only completion and hook, and 429 on the 11th PUT (5870532)",
+        "investors/src/pages/Profile.tsx: the form exactly as above (name prefilled; 'Firm or Independent' hint; selects with readable labels; the marketing checkbox UNTICKED with label 'Send me Automatos investor updates (optional)'; the KP14 notice under the form); server field errors shown under their fields; after first save go to home; editable later from the account menu → DONE — investors/src/pages/Profile.tsx + src/profile/** (native selects with label maps, unticked opt-in, TrackingNotice under the form); pages/__tests__/profile.test.tsx checks the prefill, the 'Firm or Independent' placeholder, the unticked checkbox, a server linkedin_url error under its field, PUT body and going home after the first save, and 'Profile saved.' when editing; the account menu already links /profile",
+        "Signed-in users with profileComplete false are routed to /investors/profile from any page → DONE — PortalGate's MeGate (landingRedirect) now renders the form at /profile; App.test.tsx sends a new investor from /, /documents, /documents/abc and /admin to /profile and shows a complete profile the edit form",
+        "Tests: server (PGlite): valid save, each invalid field, linkedin host check, opt-in timestamp, profile_completed written once, rate limit 429 on the 11th request; app: the form's pure validation model and the label maps → DONE — me.test.js (PGlite): valid save, 22 invalid-field cases, 4 accepted and 10 refused LinkedIn addresses, opt-in stamped only when it turns true, profile_completed written once and the signup hook called once over two saves, 429 rate_limited on the 11th PUT; app: profile/__tests__/profile-model.test.ts (validation, body, error words, server errors) and options.test.ts (label maps)",
+        "npm test and the investors checks pass → DONE — npm test 213 passed; npm --prefix investors run typecheck, lint (0 warnings), test (191 passed) and build pass; acceptance --no-ci green but the expected 'every story passes' and W1-19's e2e job (c0c7f64)"
+      ],
+      "files": [
+        "server/investors/routes/me.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/me.test.js",
+        "investors/src/pages/Profile.tsx",
+        "investors/src/profile/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/src/components/ui/**"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": " | DONE (5870532, c0c7f64): root dependencies zod 3.25.76, express-rate-limit 7.5.1 (exact). index.js createApiRouter takes `routes` (routers built in createInvestorsPortal, mounted after express.json({limit:'64kb'}) and the admin gate, before the 404): later stories append theirs there; pass alerts as deps.alerts ?? NO_ALERTS. New shared modules: rate-limit.js perInvestorLimit({limit, windowMs?}) → 429 {error:'rate_limited'} keyed by req.investor.id (build it with the router, one per route); validation.js requiredText/optionalText/requiredChoice/optionalChoice/requiredBoolean + sendInvalid(res, zodError) → 400 {error:'invalid', fields:{field: code}} with codes required, too_long, invalid_option, invalid (routes may add their own, e.g. linkedin_url); alerts.js typedef Alerts {signup(investor), firstOpen(investor, document)}, NO_ALERTS, callAlert(logger, name, run) (deferred, never rejects, logs the error name only): W1-11 calls callAlert(logger, 'firstOpen', ...), W1-18 implements createAlerts with these two names. auth.js now exports INVESTOR_COLUMNS and toInvestor. routes/me.js exports INVESTOR_TYPES, CHEQUE_SIZES, SOURCES (the CHECK lists, tested against pg_constraint) and PROFILE_LIMITS. marketing_opt_in_at is stamped when the opt-in turns true and kept on opt-out. Root vitest.config.js has hookTimeout 60 s / testTimeout 20 s: parallel PGlite boots timed out at the 10 s default on a loaded machine. App: meSchema carries the profile fields; useSaveMe(userId) writes the answer into the me cache; profile/options.ts holds the lists with labels (INVESTOR_TYPE_OPTIONS, CHEQUE_SIZE_OPTIONS, SOURCE_OPTIONS): the admin screens should label from these; components/ui gained NativeSelect and a native Checkbox (no Radix select or checkbox installed); shared test fixtures NEW_ADA and ADA_ME in src/test/fixtures.ts."
+    },
+    {
+      "id": "W1-08",
+      "prdStory": "US-007 (PRD US-014 storage)",
+      "title": "S3 module: presigned PUT and GET, head and delete",
+      "description": "As the portal, I need private storage for documents reached only through short-lived links (KP11).",
+      "acceptanceCriteria": [
+        "server/investors/s3.js: createDocStore({config, client?}) with presignPut({key, contentType, contentLength}), presignGet({key, fileName, disposition:'inline'|'attachment'}), head(key) → {size, contentType}|null, remove(key); safeFileName(name) and documentKey(id, version, fileName) exported as pure helpers; content type and size checked against KP11 before presigning (throws a typed error the routes map to 400) → DONE — s3.js exports createDocStore (frozen {presignPut, presignGet, head, remove}), safeFileName, documentKey, checkUpload, contentDisposition, UploadRejectedError (.code, .status 400); KP11 checked before signing (ed65151)",
+        "@aws-sdk/client-s3@3 and @aws-sdk/s3-request-presigner@3 added (KP2); the client is created lazily (academy server/media/s3.js pattern) → DONE — both 3.1157.0 exact; SDK imported lazily, one S3Client per store on first use, retried after a failed load (ed65151)",
+        "Tests: real presigning with fake credentials (offline): PUT URL carries the content type and 900 s expiry, GET URL carries 300 s and the disposition with an RFC 5987 filename; head/remove through an injected fake client; safeFileName strips paths and odd characters and caps 120; disallowed type and oversize rejected → DONE — s3.test.js 41 tests: PUT X-Amz-Expires 900, SignedHeaders content-length;content-type;host, signature changes with type/size; GET 300 s with RFC 5987 filename*; head/remove via fake client; safeFileName; rejections (ed65151)",
+        "npm test passes → DONE — npm test: 10 files, 254 passed (ed65151)"
+      ],
+      "files": [
+        "server/investors/s3.js",
+        "server/investors/__tests__/s3.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": " | DONE (ed65151): root dependencies @aws-sdk/client-s3 3.1157.0, @aws-sdk/s3-request-presigner 3.1157.0 (exact). createDocStore({config: config.s3, client?}) throws TypeError when config.s3 is null: build it only when config.s3 is set, else the document routes answer 503 (KP4). presignPut({key, contentType, contentLength}) → {url, headers: {Content-Type}, expiresAt ISO}: the browser must PUT with exactly that Content-Type (content-type and content-length are SIGNED; S3 rejects a mismatch with 403). presignGet({key, fileName, disposition: inline|attachment}) → {url, expiresAt}; fileName is the display name (file_name column), contentDisposition makes it safe. head(key) → {size, contentType} | null (404 only; a 403 throws). remove(key) is idempotent. Every method refuses (TypeError) any key not shaped documents/<id>/v<n>/<safeFileName>: always build keys with documentKey(id, version, fileName). Map UploadRejectedError to 400 {error: err.code}; finalize re-checks with checkUpload({contentType: head.contentType, contentLength: head.size}). The client uses requestChecksumCalculation/responseChecksumValidation WHEN_REQUIRED: the default puts an empty-body CRC32 into presigned PUTs. Tests: pass a fake {send: vi.fn()} as client for head/remove; presigning needs the real lazy client (fake credentials, offline). Never log a presign result."
+    },
+    {
+      "id": "W1-09",
+      "prdStory": "US-014 (API)",
+      "title": "Admin documents API: create, list, edit, upload, finalize, preview, delete",
+      "description": "As an admin, I want to publish or replace a document without a deploy.",
+      "acceptanceCriteria": [
+        "server/investors/routes/admin-documents.js under requireAdmin: GET /admin/documents (all, sort_order then created_at); POST /admin/documents {title 1-160, description 0-600, category 1-60, kind, alertOnFirstOpen} → 201; PATCH /admin/documents/:id (title, description, category, kind, sortOrder, published, alertOnFirstOpen); DELETE /admin/documents/:id (removes the S3 object of the current version, then the row; events keep document_id NULL per the FK); POST /admin/documents/:id/upload-url {fileName, contentType, contentLength, pageCount?} → {url, key, expiresIn}; POST /admin/documents/:id/finalize {key, pageCount?} → HEADs the object, rejects a type or size mismatch, sets s3_key, file_name, content_type, size_bytes, page_count, bumps version when replacing; POST /admin/documents/:id/preview-link → presigned GET (inline), writes NO event → DONE — server/investors/routes/admin-documents.js: all seven routes behind the /admin gate; list by sort_order, created_at; create 201 (new documents last, created_by = the admin Clerk id); PATCH under the row lock; DELETE deletes the row, removes the current file, then commits; upload-url {url, key, headers, expiresIn: 900} keyed documents/<id>/v<next>/<safe name>; finalize HEADs, re-checks KP11, records it, bumps version on replace and removes the replaced file; preview-link {url, expiresIn: 300}, no event (073976c)",
+        "Publishing a document without an uploaded file returns 409 {error:'no_file'} → DONE — applyEdit under FOR UPDATE: published without s3_key answers 409 {error:no_file} and saves nothing; admin-documents.test.js (073976c)",
+        "All routes 503 'storage_unavailable' when the S3 config is null (other portal routes keep working) → DONE — without config.s3 (or deps.docStore null) a /admin/documents gate answers 503 {error:storage_unavailable} on all seven routes while GET /me answers 200; tested (073976c)",
+        "Responses never include s3_key except upload-url's key echo → DONE — documents.js toDocument is an allow-list (hasFile, never s3Key or created_by); a test checks finalize, PATCH, list and preview bodies for any s3 key name and for the key itself (073976c)",
+        "Tests (PGlite + fake doc store): admin happy path create → upload-url → finalize → publish; replace bumps version; non-admin 403 on each route; bad id 404; zod 400s; storage null 503; delete removes the object → DONE — admin-documents.test.js (51) + admin-documents-upload.test.js (36) over PGlite and helpers/fake-doc-store.js: happy path, replace v2 with events kept on v1, 403 forbidden on each route, 404 for unknown and malformed ids, zod 400s, 503 without storage, delete removes the object, KP11 refusals before signing and at finalize, stale/raced finalizes, real store wiring signing offline (073976c)",
+        "npm test passes (route-coverage test included) → DONE — npm test: 12 files, 341 passed; route-coverage walks the seven new routes and flags them all when mounted above the admin gate (mutation-checked) (073976c)"
+      ],
+      "files": [
+        "server/investors/routes/admin-documents.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-documents.test.js"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": " | DONE (073976c): no packages added. server/investors/documents.js exports DOCUMENT_KINDS, DOCUMENT_COLUMNS (includes s3_key: select it, never send it) and toDocument (frozen allow-list: id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, sortOrder, published, alertOnFirstOpen, hasFile, createdAt, updatedAt): W1-11 selects DOCUMENT_COLUMNS and picks its fields from toDocument. routes/admin-documents.js exports DOCUMENT_LIMITS (title 160, description 600, category 60, fileName 255, sortOrder 0..1000000, pageCount 1..2000) and createAdminDocumentsRouter({db, store, logger}). index.js: createRoutes(config, deps, {db, logger}) builds the route sets in mount order (append W1-11 and later there); docStoreFor() gives deps.docStore when defined (null allowed), else createDocStore(config.s3) or null. Answers: list {documents}, create 201 {document}, PATCH/finalize {document}, DELETE 204, upload-url {url, key, headers: {Content-Type}, expiresIn: 900} (PUT with exactly those headers), preview-link {url, expiresIn: 300}. Error codes: 404 not_found (also any non-uuid :id), 409 no_file, 409 not_uploaded, 409 stale_upload (another upload or a repeated finalize got there first: re-request upload-url), 400 content_type_not_allowed / invalid_size / file_too_large, 400 invalid {fields}, 503 storage_unavailable. description is ONE line (optionalText: no line breaks). file_name is the safe name from the key (no separate display name). pageCount is kept only for application/pdf. The first upload is v1 (version moves only on a replace); a replaced, rejected or stale upload is removed unless it is the current file; uploads never finalized stay in the bucket (OT-2 may add a lifecycle rule). An empty PATCH is 400 invalid with fields {}. Tests: helpers/fake-doc-store.js fakeDocStore() → {store (vi.fn methods; presignPut runs the real checkUpload), putObject(key, {size, contentType}), has(key)}; pass deps.docStore: files.store."
+    },
+    {
+      "id": "W1-10",
+      "prdStory": "US-014 (UI)",
+      "title": "Admin document manager UI",
+      "description": "As an admin, I want to upload, publish, reorder and delete documents from the portal.",
+      "acceptanceCriteria": [
+        "investors/src/pages/admin/Documents.tsx (ported layout from the reference DocumentManager, KP12): table of documents (title, category, kind, version, size, published switch, alert switch, updated), New document dialog, Upload / Replace with a file picker limited to KP11 types, a progress bar (XMLHttpRequest PUT to the presigned URL for progress events), Preview (opens the preview link in a new tab), up/down reorder (PATCH sortOrder), Delete with confirmation → DONE — investors/src/pages/admin/Documents.tsx (lazy chunk) + src/admin/: DocumentsTable/DocumentRow show title (file name, pages), category, kind, version, size, published and alert switches (Radix Switch), updated; DocumentDialog for New and Edit (title, description, category with suggestions, kind, alert); UploadButton picker accept = KP11 extensions + types; UploadStatus Progress bar fed by xhr-put.ts (XMLHttpRequest PUT, upload.onprogress, signed headers only, no credentials); Preview opens a blank tab during the click, drops its opener, then loads the preview link; up/down via reorderPlan → PATCH sortOrder; Delete behind an AlertDialog; tested in pages/__tests__/admin-documents.test.tsx (5702be2)",
+        "For PDFs, pageCount is measured in the browser before upload with pdfjs (react-pdf's pdfjs export) and sent to upload-url and finalize → DONE — page-count.ts countPdfPages reads the file with lib/pdfjs.ts (react-pdf's pdfjs, worker from pdfjs-dist/build/pdf.worker.min.mjs?url, loaded lazily), isEvalSupported false; upload-file.ts sends pageCount to upload-url and finalize for application/pdf and null otherwise; unreadable or >2000-page PDFs stop before the server is asked; upload-file.test.ts (5702be2)",
+        "Admin routes /investors/admin/* render only when /me says isAdmin; others see a 'Not available' page (the server still enforces: KP3) → DONE — App.tsx: admin route under PortalGate → AdminGate (useMe isAdmin) → AdminLayout nav + Suspense; non-admins get ApiErrorPage not_available ('Not available') at /admin and /admin/documents with no admin API call; /admin redirects to /admin/documents until W1-16; tested (5702be2)",
+        "Unit tests: the pure upload state machine (idle → requesting → uploading(pct) → finalizing → done | error) and the file-type check → DONE — upload-machine.test.ts (idle → requesting → uploading(pct) → finalizing → done | error, ignored events, monotonic percent, no input mutation) and file-types.test.ts (the six types, extension fallback for a Windows .csv, refusals, 250 MB boundary); plus upload-file, xhr-put, page-count, preview, document-form, documents-model, messages and lib/format tests (5702be2)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — npm --prefix investors run typecheck, lint (--max-warnings 0): clean; test: 27 files, 324 passed, stderr empty; build: built, admin page 44.7 kB and pdf.js 349.8 kB in their own chunks; gate --no-ci: every applicable check passes, root npm test 341 passed (5702be2)"
+      ],
+      "files": [
+        "investors/src/pages/admin/**",
+        "investors/src/admin/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": " | DONE (5702be2): investors/ dependencies (exact) react-pdf 9.2.1, pdfjs-dist 4.8.69, lucide-react 0.577.0, @radix-ui/react-dialog 1.3.1, @radix-ui/react-alert-dialog 1.2.1, @radix-ui/react-switch 1.4.1, @radix-ui/react-progress 1.2.1 (pdfjs-dist pulls the optional native canvas package, unbuilt under --ignore-scripts; jsdom tolerates it). lib/pdfjs.ts sets GlobalWorkerOptions.workerSrc from pdfjs-dist/build/pdf.worker.min.mjs?url and re-exports react-pdf's pdfjs: W1-13 imports it (lazily or from the viewer chunk) and passes isEvalSupported false itself; the worker is a .mjs served by express.static as application/javascript. New shared modules: lib/format.ts formatBytes/formatDate (W1-12 reuses them), lib/text-checks.ts textError (profile-model now imports it), lib/paths.ts ADMIN_PATH and ADMIN_DOCUMENTS_PATH. components/ui gained dialog, alert-dialog, switch, progress, table (no shadows, 2px corners, foreground/40 overlay; dialog's close label is strings.ui.close). Admin: App.tsx has route admin → AdminGate (isAdmin from cached /me, else ApiErrorPage not_available) → AdminLayout (nav ADMIN_LINKS in AdminGate.tsx: W1-16 and W1-17 append their links and swap the index Navigate for the Overview) with a Suspense around the Outlet, so admin pages are React.lazy. src/admin/documents-api.ts holds the admin document zod schemas (linkUrl accepts only http(s)) and fetchers; use-documents.ts the query hooks, keyed ['admin','documents',userId]. Test fixtures ADMIN_ME and adminDocument() are in src/test/fixtures.ts; the page test serves /api/investors by 'METHOD /path' and stubs XMLHttpRequest for storage. Test QueryClients have staleTime 0, so a second useMe on mount refetches /me in tests (not in the app, 30 s)."
+    },
+    {
+      "id": "W1-11",
+      "prdStory": "US-006 (API)",
+      "title": "Investor documents API: list and open/download links with server-written events",
+      "description": "As an investor, I want to open or download any published document; as the team, we want each open and download recorded by the server (KP16).",
+      "acceptanceCriteria": [
+        "server/investors/routes/documents.js under requireInvestor: GET /documents → published documents with a file, ordered, fields id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, updatedAt (no s3_key); POST /documents/:id/link {mode:'inline'|'download'} → {url, expiresIn:300} and writes document_open or document_download (with document_version) in the same request; unpublished, missing or file-less → 404; rate limit 30/min per investor → DONE — routes/documents.js createDocumentsRouter mounted in index.js createRoutes after the admin documents router; LIST_SQL/SHARE_SQL filter published AND s3_key IS NOT NULL; toInvestorDocument picks the 11 fields; event inserted in the same db.tx as the presign; perInvestorLimit 30/min on the link route",
+        "After writing a document_open for a document with alert_on_first_open, calls the alerts hook with (investor, document) when this is the investor's first open of that document (the hook stays a no-op until W1-18) → DONE — issueLink: document_open + alert_on_first_open + no earlier document_open (under a lock on the investor row) → callAlert(logger, \"firstOpen\", () => alerts.firstOpen(investor, document)) after commit; NO_ALERTS until W1-18",
+        "Tests (PGlite + fake store): list hides unpublished and file-less; link writes the right event type and version; 404 cases; first-open hook called once across two opens; 429 on the 31st call → DONE — __tests__/documents.test.js, 21 tests: list hides unpublished and file-less, inline/download write document_open/document_download with the row version, 404 for unpublished/file-less/unknown/malformed ids, first-open hook once across two opens (and per investor, not on download), 429 on the 31st call, 500 and no event when signing fails, 503 without storage",
+        "npm test passes → DONE — npm test: 13 files, 362 tests passed"
+      ],
+      "files": [
+        "server/investors/routes/documents.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/documents.test.js"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": " | DONE (f4001c8): no packages added. routes/documents.js exports LINK_LIMIT_PER_MINUTE (30), LINK_MODES {inline: document_open/inline, download: document_download/attachment}, toInvestorDocument (the library fields) and createDocumentsRouter({db, store, alerts, logger}). Answers: GET /documents {documents: [{id, title, description, category, kind, fileName, contentType, sizeBytes, pageCount, version, updatedAt}]} ordered sort_order, created_at, id; POST /documents/:id/link {mode} -> {url, expiresIn: 300}; 404 not_found (unpublished, file-less, unknown or non-uuid id), 400 invalid {fields:{mode: required|invalid_option}}, 429 rate_limited, 503 storage_unavailable without S3 (both routes). The event row has session_id NULL (the link takes no session: W1-14 may not assume one) and page NULL; every link writes one event (no dedupe), so W1-15 counts opens as rows. firstOpen(investor, document) gets req.investor (name, firm, email...) and the toInvestorDocument fields (id, title...); it is called only when no earlier document_open by that investor exists, checked under a FOR NO KEY UPDATE lock on the investor row, after commit via callAlert: W1-18 still dedupes through alerts_sent. documents.js now exports documentIdParam (router.param id) and storageUnavailable; createRoutes in index.js builds ONE store and ONE alerts object and passes them to every router that needs them (append later routers there). Security review: nothing exploitable; LOWs left as designed: per-process in-memory limiter, no dedupe of repeated opens."
+    },
+    {
+      "id": "W1-12",
+      "prdStory": "US-006 (UI)",
+      "title": "Portal shell, home and the document library",
+      "description": "As an investor, I want everything available in one place and to open or download any of it.",
+      "acceptanceCriteria": [
+        "investors/src/layout/ (ported shell from the reference Dashboard + InvestorSidebar, KP12): sidebar on desktop, a sheet menu on phones; links Home, Documents, Profile, and Admin for admins; the account menu; the site's mood (KP13) → DONE — layout/PortalLayout (header + AccountMenu, Sidebar md+, NavSheet on phones via components/ui/sheet.tsx), layout/nav.ts portalNav (Home, Documents, Profile, Admin for admins; none before the profile), MoodToggle (saveMood under automatos-mood); portal-layout.test.tsx 7 tests",
+        "Home (/investors): a short intro line from strings.ts and the published documents grouped by category; each card shows title, description, a kind icon (lucide), size and updated date, with Open and Download buttons; Download calls link {mode:'download'} and navigates to the URL (attachment); Open: pdf → /investors/documents/:id (W1-13), any other kind → download → DONE — pages/Home.tsx via documents/LibraryPage: strings.home.intro, groupByCategory in server order, DocumentCard (KindIcon lucide, kind · size · Updated date, Open/Download); Download POSTs {mode:'download'} then navigateTo(url); Open: pdf → Link /documents/:id, others download; library.test.tsx",
+        "Documents (/investors/documents): the same list with a search box (title, description, category; client-side) ported from the reference DataRoom → DONE — pages/Documents.tsx: SearchableLibrary (client-side filterDocuments over title, description, category; results count, no-match + clear); library.test.tsx search cases",
+        "Empty state: 'Documents are on their way.' with the contact email; loading skeletons; errors through the client mapping (W1-06) → DONE — EmptyLibrary ('Documents are on their way.' + hello@ mailto), LibrarySkeleton (aria-busy), list errors → ApiErrorPage(screenForError), link errors → linkFailureMessage under the card (404 reloads the list)",
+        "Unit tests: grouping and ordering, search filter, size and date formatting → DONE — library-model.test.ts (grouping/order, search, facts: size + date), messages.test.ts, download.test.ts, nav.test.ts, saveMood tests; App/profile tests moved off the placeholder",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck, lint (0 warnings), test (33 files, 393 tests) and build pass (6e0e469); no INVESTORS_E2E_FAKE_AUTH in dist"
+      ],
+      "files": [
+        "investors/src/layout/**",
+        "investors/src/pages/Home.tsx",
+        "investors/src/pages/Documents.tsx",
+        "investors/src/documents/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": " | DONE (6e0e469): no packages added. Routes: PortalGate > PortalLayout (layout/) > index Home, documents, documents/:id (PlaceholderPage: W1-13 swaps in the viewer), profile, admin/*, * → Navigate HOME. AppShell now takes children and wraps only the teaser, loading and status pages; AppHeader takes a menu slot. documents/: documents-api.ts (investorDocumentSchema, fetchDocuments, requestDocumentLink(id, 'inline'|'download') → {url (http(s) only), expiresIn}), use-documents.ts (documentsKey(userId) = ['documents', userId]), download.ts + navigate.ts (navigateTo(url) = location.assign; page tests vi.mock '@/documents/navigate'), messages.ts linkFailureMessage/isGone (W1-13 reuses them for the viewer's link), library-model.ts, kinds.ts (DOCUMENT_KINDS moved here; admin/documents-api re-exports). api/link-url.ts holds the http(s) link schema (admin uses it). lib/paths.ts: DOCUMENTS_PATH, documentPath(id). strings.ts: nav, mood, home, library (KIND_LABELS shared with admin). Fixture investorDocument() in src/test/fixtures.ts. W1-16/W1-17 admin links stay in AdminGate's ADMIN_LINKS; the sidebar shows one Admin link. The main chunk is 520 kB (was 492 kB: the sheet brings Radix Dialog in), so vite build prints its 500 kB advisory; the build passes and no limit was changed."
+    },
+    {
+      "id": "W1-13",
+      "prdStory": "US-007",
+      "title": "PDF viewer",
+      "description": "As an investor, I want to read the deck in the browser page by page on any device, and download it from the viewer.",
+      "acceptanceCriteria": [
+        "investors/src/viewer/PdfViewer.tsx (ported from the reference CoaPdfViewer, KP12) with react-pdf@9; the pdf.js worker bundled locally via 'pdfjs-dist/build/pdf.worker.min.mjs?url' (no CDN); isEvalSupported false → DONE — investors/src/viewer/PdfViewer.tsx (00be03a) on react-pdf 9.2.1, ported from the reference viewer's toolbar/document/page layout; imports @/lib/pdfjs (workerSrc = pdfjs-dist/build/pdf.worker.min.mjs?url, emitted as a local asset, no CDN URL in dist); viewer/pdf-options.ts PDF_OPTIONS {isEvalSupported: false, disableRange: true}, asserted in pdf-viewer.test",
+        "Page navigation (previous/next, keyboard arrows), 'Page N of M', fit-to-width (ResizeObserver) so a page fits 390 px, a Download button in the toolbar (link mode download), a Back link → DONE — ViewerToolbar: previous/next buttons, left/right arrow keys (use-arrow-keys.ts; not in fields, menus, dialogs or with modifiers), 'Page N of M' (aria-live), Download (DownloadButton → link mode download); Back link to /documents above the title; use-fit-width.ts ResizeObserver, fitWidth caps at 900 px, 340 px stage at a 390 px phone (pdf-viewer.test, page-model.test)",
+        "The link is requested on open (mode inline); if loading fails with an expired URL (HTTP 403 from storage) it requests a new link once, then shows an error with a Download fallback → DONE — use-viewer-link.ts: one inline link on open (react-query, key ['document-link', userId, id, generation], gcTime 0, no refetch on focus/reconnect); link-model.ts afterLoadError renews once on pdf.js UnexpectedResponseException status 403, then ViewerFailed with the Download fallback and Try again (viewer.test: renew once, second 403 → error + download link, corrupt PDF → no renewal)",
+        "The viewer exposes onPageVisible(page, ms) for W1-14 (a visibility model: a page counts when at least 50% visible for at least 1000 ms; the model is pure and unit-tested) → DONE — PdfViewer prop onPageVisible(page, ms); visibility-model.ts (pure: >= 0.5 intersection ratio, visible tab, >= 1000 ms; a visit ends on page turn, scroll-out, hidden tab or close) with 11 unit tests; use-page-visibility.ts wires IntersectionObserver, visibilitychange and unmount (pdf-viewer.test)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck and lint pass; npm --prefix investors test 38 files / 441 tests pass; build passes (PdfViewer chunk 25.6 kB, main bundle has no pdf.js, no INVESTORS_E2E_FAKE_AUTH in dist); gate --no-ci green except the not-yet-built stories and W1-19's e2e job"
+      ],
+      "files": [
+        "investors/src/viewer/**",
+        "investors/src/pages/Viewer.tsx",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": " | DONE (00be03a): no packages added. Route documents/:id → pages/Viewer.tsx (PlaceholderPage and strings.placeholder deleted: unused). PdfViewer (viewer/PdfViewer.tsx, React.lazy from the page) takes {url, title, onLoadError, onPageVisible?, actions?}; the page passes no onPageVisible yet: W1-14 passes the tracker's page_view feed there (pages/Viewer.tsx ViewerBody, documentId and document.version are in scope), events fire on page turn, scroll-out under 50%, hidden tab and unmount. The inline link query key is ['document-link', userId, documentId, generation] (NOT under documentsKey: refreshing the library must never issue a link, each link is an open). pdf.js gets disableRange: the whole file in one GET, so S3 CORS needs only GET from the site (no Range header or exposed headers). Storage 403 arrives as {name:'UnexpectedResponseException', status:403} (link-model.ts isExpiredLink). DocumentCard exports DownloadButton. Viewer test mocks '@/viewer/PdfViewer'; pdf-viewer.test mocks 'react-pdf' and '@/lib/pdfjs' (pdf.js cannot run in jsdom) and stubs ResizeObserver/IntersectionObserver. W1-19's viewer spec: the toolbar is role toolbar 'Document pages', Next is the button 'Next page', the counter reads 'Page 2 of 2'."
+    },
+    {
+      "id": "W1-14",
+      "prdStory": "US-010",
+      "title": "Events API, sessions and the client tracker",
+      "description": "As the team, we want to know which pages of which documents each investor read and for how long (KP16).",
+      "acceptanceCriteria": [
+        "server/investors/routes/events.js under requireInvestor: POST /sessions → {sessionId} (row with user_agent truncated to 300, no IP); POST /events {sessionId?, heartbeat?:true, events:[...]} with zod: only page_view {documentId, documentVersion?, page, durationMs}, section_view {section, durationMs}, video_progress {documentId, percent in 25|50|75|100}; at most 50; durationMs capped at 600000 (clamped, not rejected); page checked against the document's page_count when known else 1..2000; unknown documentId dropped; a sessionId not owned by the investor is ignored; heartbeat updates the session's last_heartbeat_at; express.json limit 64 kB on this router; rate limit 120/min per investor; responds 204 → DONE — routes/events.js (ce7f437): POST /sessions 201 {sessionId}, user_agent sliced to 300, sessions has no IP column; POST /events zod discriminated union of the three types, max 50 (400 too_many), durationMs clamped, page checked against the current version page_count else 1..2000, unknown/unpublished/file-less documentId dropped, foreign sessionId ignored, heartbeat moves last_heartbeat_at, 120/min perInvestorLimit, 204; the 64 kB limit is the apiRouter express.json({limit:64kb}) every portal router sits behind (413 tested on /events)",
+        "investors/src/tracking/tracker.ts (adapted from the reference activityTracker, KP12): starts a session after sign-in, heartbeats every 30 s while document.visibilityState is 'visible', queues events, flushes every 10 s and on pagehide with fetch(url, {method:'POST', keepalive:true, headers: Authorization with the last cached token}) (KP9: no sendBeacon, no cookie); the viewer's onPageVisible feeds page_view → DONE — tracking/tracker.ts (ce7f437): session on start after sign-in (TrackingProvider in App.tsx), heartbeat every 30 s only while visibilityState is visible, queue (queue.ts), flush every 10 s, pagehide and hidden-tab flush via fetch keepalive:true with lastToken() as Bearer, credentials omit, no sendBeacon; pages/Viewer.tsx passes usePageViewFeed(document.id, document.version) as onPageVisible",
+        "Tests: server (PGlite): accepted types only, caps and clamps, foreign session ignored, 413 over 64 kB, 429 on the 121st request, identity from the token only; app: the queue/flush model with fake timers (flush interval, pagehide flush uses keepalive, token cache refresh) → DONE — events.test.js 26 tests (accepted types only, too_many, clamps, page/version drops, foreign and unknown session ignored, heartbeat, identity from the token with investorId/investor_id in body and events, 401, 413, 429 on the 121st); tracker.test.ts 17 (fake timers: flush interval, 50 per request, retry vs drop, heartbeat visible only, pagehide keepalive with the cached token, token cache refresh, stop), queue.test.ts 7, tracking-provider.test.tsx 3, viewer.test.tsx page_view feed",
+        "npm test and the investors checks pass → DONE — npm test 14 files / 388 passed; investors typecheck 0, lint 0, vitest 41 files / 469 passed, build ok without the E2E marker, build:e2e carries it; gate --no-ci red only on unbuilt stories and the W1-19 e2e job"
+      ],
+      "files": [
+        "server/investors/routes/events.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/events.test.js",
+        "investors/src/tracking/**",
+        "investors/src/viewer/**",
+        "investors/src/App.tsx"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": " | DONE (ce7f437): no packages added. routes/events.js exports EVENT_LIMITS {batch 50, durationMs 600000, page 2000, section 60}, CLIENT_EVENT_TYPES, VIDEO_PERCENTS, EVENTS_LIMIT_PER_MINUTE (120), SESSIONS_LIMIT_PER_MINUTE (20, not in KP16: POST /sessions inserts a row, so it is limited too), USER_AGENT_MAX_LENGTH, batchSchema, toEventRows, createEventsRouter({db}) (mounted last in createRoutes). Stored shapes W1-15/W1-16 read: page_view has document_id, document_version (sent, else current), page, duration_ms; section_view has duration_ms and data {section} (a slug, [a-z0-9_-], max 60); video_progress has document_id, document_version (current) and data {percent}; session_id is NULL when the client had no session or sent one it does not own; sessions.last_heartbeat_at moves only on heartbeat:true (every 30 s while the tab is visible), so a visit length is last_heartbeat_at - started_at. documents.js exports VISIBLE_TO_INVESTORS (routes/documents.js uses it). App: tracking/ holds events.ts (TrackedEvent, pageView, batchOf, sessionSchema), queue.ts (MAX_BATCH 50, MAX_QUEUE 200), transport.ts (postEvents raw fetch, openSession via fetchJson), tracker.ts (createTracker(overrides) with injectable deps; listeners on window: visibilitychange bubbles from document, so the viewer reports first), TrackingProvider (wraps <Routes> in App.tsx; one tracker per signed-in userId, stop drops the queue), useTracker, usePageViewFeed. Any App-rendering test with a signed-in user now also sees POST /api/investors/sessions (admin-documents.test asserts the exact URL set including it); W1-19 e2e: a signed-in page also calls POST /sessions and, every 10 s or on pagehide, POST /events; the tracker fails quietly, so specs that stub the API without them still pass (stub them to assert on events). Main chunk 530 kB (was 520 kB)."
+    },
+    {
+      "id": "W1-15",
+      "prdStory": "US-012/US-013 (API)",
+      "title": "Admin investors API: list with aggregates, detail and timeline, block, export, delete",
+      "description": "As an admin, I want to find the most engaged investors and see everything about one before I call them.",
+      "acceptanceCriteria": [
+        "server/investors/routes/admin-investors.js under requireAdmin: GET /admin/investors?q&type&source&sort&dir&page (50 per page; q matches name, email, firm case-insensitively via ILIKE with escaped wildcards; sort in name|firm|created_at|last_seen_at|sessions|total_ms|docs_opened|downloads) → rows with name, email, firm, investorType, chequeSize, source, createdAt, lastSeenAt, sessions, totalMs (sum of page_view and section_view duration), docsOpened (distinct documents with document_open), downloads, deckProgress {documentId, maxPage, pageCount} for the alert-on-first-open document with the most opens (null if none), blocked, plus total → DONE — routes/admin-investors.js GET /admin/investors (q ILIKE over name/email/firm with \\ % _ escaped; type, source, 8 sort keys both ways, 50/page, total); aggregates and deckProgress in queries/investor-list.js; tests: sorting by each key, search escaping, filters, paging, deck progress",
+        "GET /admin/investors/:id → profile, marketing opt-in and timestamp, per-document summary (opens, furthest page, time, downloaded), and GET /admin/investors/:id/events?page (50 newest first, with document titles) → DONE — GET /admin/investors/:id {investor (marketingOptIn, marketingOptInAt), documents [{documentId, title, kind, pageCount, opens, furthestPage, timeMs, downloaded}]}; GET /:id/events?page {events (with documentTitle), total, page, pageSize} newest first; admin-investors-detail.test.js",
+        "PATCH /admin/investors/:id {blocked}; DELETE /admin/investors/:id (cascade; returns 204; the Clerk account is untouched); GET /admin/investors/:id/export → JSON attachment of the profile and all events → DONE — PATCH {blocked} → {investor} (409 cannot_block_self); DELETE 204 (cascade; Ada's next sign-in makes a new row); GET /:id/export attachment investor-<id>.json {exportedAt, investor, sessions, events}",
+        "Aggregates are computed in SQL (no loading whole tables into Node) → DONE — COUNT_SQL + one page statement with LATERAL subqueries; SUMMARY_SQL GROUP BY; nothing reads a whole table into Node",
+        "Tests (PGlite with fixture events): sorting by each key, search escaping of % and _, filters, deck progress, detail summary, block then the investor's own call is 403, delete cascades, export shape, non-admin 403 → DONE — 43 new tests on PGlite (29 list + 14 detail) cover every listed case; 8 mutation checks each turn the suite red",
+        "npm test passes → DONE — npm test: 16 files, 431 tests passed (3f7846b)"
+      ],
+      "files": [
+        "server/investors/routes/admin-investors.js",
+        "server/investors/queries/**",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-investors.test.js",
+        "server/investors/__tests__/helpers/**"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": " | DONE (3f7846b): no packages added. routes/admin-investors.js exports LIST_LIMITS {q 200, page 999999}, listQuerySchema and createAdminInvestorsRouter({db, logger}) (mounted last in createRoutes); SQL and answer shapes in queries/investor-list.js (PAGE_SIZE 50, SORT_KEYS name|firm|created_at|last_seen_at|sessions|total_ms|docs_opened|downloads, SORT_DIRECTIONS asc|desc, defaults last_seen_at desc, searchPattern, pageSql: prebuilt ORDER BY statements) and queries/investor-detail.js (W1-16 may reuse toEvent for its latest-events list). Answers: list {investors: [{id, name, email, firm, investorType, chequeSize, source, createdAt, lastSeenAt, sessions, totalMs, docsOpened, downloads, deckProgress {documentId, maxPage, pageCount} | null, blocked}], total, page, pageSize}; detail {investor (toInvestor, clerkUserId included), documents: [{documentId, title, kind, pageCount, opens, furthestPage, timeMs, downloaded}]} ordered like the library; timeline {events: [{id, type, sessionId, documentId, documentTitle, documentVersion, page, durationMs, data, createdAt}], total, page, pageSize}; PATCH {investor}; export {exportedAt, investor, sessions [{id, startedAt, lastHeartbeatAt, userAgent}], events oldest first}. Rules W1-17 must label: deckProgress is per investor (the alert-on-first-open document THEY opened most; ties: latest open), maxPage and furthestPage are over every version, capped at the current pageCount, and 0 when no page was recorded (pageCount may be null); text sorts ignore case, nulls last both ways. Error codes: 400 invalid {fields} (q too_long, type/source/sort/dir invalid_option, page invalid, blocked required|invalid), 404 not_found (unknown or non-uuid id), 409 cannot_block_self (the guard would lock the admin out). The admin's own investor row is in the list (every signed-in admin has one); not filtered. Block and delete log one warn line with the admin's and the investor's ids. Test fixtures: __tests__/helpers/investor-fixtures.js (insertInvestor, insertDocument, insertSessions, insertEvents with minutesAgo, repeat, pageView); list tests compare only fixture ids (fixtureIds) because the admin's requests add a row."
+    },
+    {
+      "id": "W1-16",
+      "prdStory": "US-011",
+      "title": "Admin overview: API and screen",
+      "description": "As an admin, I want a one-screen view of investor interest.",
+      "acceptanceCriteria": [
+        "GET /admin/overview (requireAdmin): investorsTotal, investorsNew7d, activeInvestors7d (any event), deckOpens7d (document_open on alert-on-first-open documents), downloads7d, a 30-day daily series {date, signups, activeInvestors} with zero-filled days (generate_series), and the latest 20 events with investor name, firm and document title → DONE — adb23bb: routes/admin-overview.js + queries/overview.js (COUNTS_SQL rolling 7 days, SERIES_SQL generate_series over 30 UTC days with to_char dates, LATEST_EVENTS_SQL newest 20 with investor name, firm, email and document title), mounted last in createRoutes",
+        "investors/src/pages/admin/Overview.tsx (ported from the reference AnalyticsManager, KP12): KPI cards, a recharts line chart of the series (colours from the KP13 tokens), the latest-events list linking to the investor detail → DONE — adb23bb: pages/admin/Overview.tsx (index of /admin, lazy) with admin/KpiCards.tsx, ActivityChart.tsx (recharts LineChart, strokes var(--accent) and var(--fg-2) dashed, rules var(--rule-c)) and LatestEvents.tsx linking each investor to adminInvestorPath(id)",
+        "Tests: server (PGlite): zero-filled series, 7-day windows at the boundaries, latest events order; app: the series-to-chart mapping → DONE — admin-overview.test.js (10 tests, PGlite): zero-filled 30-row series ending today UTC, UTC day edges, 7d - 1 min in / 7d + 1 min out for new, active, deck opens and downloads, newest-first with id tie-break and limit 20; overview-model.test.ts (20 tests): toChartRows order, labels, zero days, no mutation; admin-overview.test.tsx (6 page tests)",
+        "npm test and the investors checks pass → DONE — npm test 441 passed; investors typecheck clean, lint exit 0, test 499 passed, build passes"
+      ],
+      "files": [
+        "server/investors/routes/admin-overview.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-overview.test.js",
+        "investors/src/pages/admin/Overview.tsx",
+        "investors/src/admin/**",
+        "investors/src/App.tsx",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 16,
+      "passes": true,
+      "notes": " | DONE (adb23bb): investors/ dependency (exact) recharts 2.15.4 (only in the lazy Overview chunk, 402 kB; main chunk 532 kB, the pre-existing 500 kB advisory). Answer: {investorsTotal, investorsNew7d, activeInvestors7d, deckOpens7d, downloads7d, series [{date 'YYYY-MM-DD' (UTC day), signups, activeInvestors}] oldest first, latestEvents [toEvent fields + investorId, investorName, investorFirm, investorEmail] newest first}; constants WINDOW_DAYS 7, SERIES_DAYS 30, LATEST_EVENTS 20 in queries/overview.js; investor-detail.js now exports EVENT_COLUMNS. The admin's own row counts in investorsTotal (as in the W1-15 list); server tests prime the admin first (primeAdmin). No index added on events(created_at): the overview's 30-day and latest-20 reads scan events; add a 002_*.sql index if volume grows. App: lib/paths.ts ADMIN_INVESTORS_PATH and adminInvestorPath(id) (the overview links there; W1-17 adds the route: until then the link falls to the '*' redirect home). ADMIN_LINKS is [Overview (end), Documents]: W1-17 appends Investors. lib/format.ts gained formatDateTime ('27 Oct, 14:05', reader's zone) and formatDay (UTC day → '27 Oct'): W1-17's timeline can reuse them. admin/LoadFailed.tsx is the shared load-error block (Documents uses it). admin/overview-api.ts exports EVENT_TYPES and latestEventSchema; overview-model.ts eventText(event) words every event type (strings.admin.overview.latest.events): W1-17's timeline can reuse it. Fixtures latestEvent() and overviewAnswer() in src/test/fixtures.ts. Page tests that render recharts stub ResizeObserver (jsdom has none). W1-19 e2e: /investors/admin now calls GET /admin/overview (stub it with overviewAnswer-shaped data)."
+    },
+    {
+      "id": "W1-17",
+      "prdStory": "US-012/US-013 (UI)",
+      "title": "Admin investors table and investor detail screens",
+      "description": "As an admin, I want to sort and search investors and open one investor's full picture.",
+      "acceptanceCriteria": [
+        "investors/src/pages/admin/Investors.tsx: the W1-15 columns, sortable headers, search box (debounced 300 ms), type and source filters, pagination, state in the URL query string, block/unblock with a confirmation dialog; horizontally scrollable on phones → DONE — 92b5d92: pages/admin/Investors.tsx (lazy, admin/investors) with admin/InvestorsTable (13 W1-15 columns; 8 sortable heads with aria-sort, same column flips), InvestorFilters (search debounced 300 ms by use-debounced-search.ts, type and source NativeSelects, clear), Pager (Previous/Next, 'Page N of M · 51–100 of 230'), view in the URL via investors-query.ts (typing replaces history, sort/filter/page push); BlockDialog AlertDialog (409 cannot_block_self worded); Table wrapper overflow-x-auto with min-w-[80rem]; admin-investors.test.tsx 11 tests",
+        "investors/src/pages/admin/InvestorDetail.tsx: profile card, per-document summary table, the paged timeline (ported expandable timeline from the reference AnalyticsManager), 'Export data (JSON)' and 'Delete investor' (the admin types the investor's email to confirm; the dialog says the Clerk account is not deleted) → DONE — 92b5d92: pages/admin/InvestorDetail.tsx (lazy, admin/investors/:id): ProfileCard (profileFacts: marketing opt-in with date, signed up, last seen, Clerk user id, LinkedIn linked only for https linkedin.com), DocumentSummaryTable, InvestorTimeline (50 a page, ?page in the URL, rows expand to eventDetails: ported from the reference AnalyticsManager's expandable rows), ExportButton (Bearer fetch → save-json.ts blob download investor-<id>.json), DeleteInvestorDialog (typed email, case-insensitive; says the Clerk account is not deleted; back to the list on success); admin-investor-detail.test.tsx 11 tests",
+        "Unit tests: URL-state parsing and serialising, duration formatting (ms → '3 min 20 s'), the deck-progress label ('14/20') → DONE — 92b5d92: investors-query.test.ts 22 (parse, serialise, round trip, defaults, toggleSort, filters/page), investors-model.test.ts 30 (formatDuration 200000 → '3 min 20 s' and edges, deck label '14/20', '0/20', page count unknown, paging, delete confirm, messages, profile facts), timeline-model.test.ts 8, save-json.test.ts 2, format.test.ts formatFullDateTime",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck exit 0, lint (--max-warnings 0) exit 0, test 49 files / 585 passed with no stderr, build passes with no INVESTORS_E2E_FAKE_AUTH in dist; gate --no-ci red only on W1-18, W1-19 and W1-19's e2e job"
+      ],
+      "files": [
+        "investors/src/pages/admin/Investors.tsx",
+        "investors/src/pages/admin/InvestorDetail.tsx",
+        "investors/src/admin/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 17,
+      "passes": true,
+      "notes": " | DONE (92b5d92): no packages added. Routes admin/investors (AdminInvestors) and admin/investors/:id (AdminInvestorDetail), both React.lazy; ADMIN_LINKS is now [Overview, Documents, Investors]. admin/investors-api.ts holds the zod schemas (investorRowSchema, investorListSchema, adminInvestorSchema, documentSummarySchema, timelineEventSchema, investorExportSchema passthrough) and fetchers; use-investors.ts keys everything under ['admin','investors',userId] (list by apiSearch string, detail, timeline by page; keepPreviousData), block invalidates that prefix, delete drops the investor's detail/timeline and invalidates lists and the overview. investors-query.ts: URL keys q, type, source, sort, dir, page (defaults omitted, fixed order; the same string is the API query). investors-model.ts formatDuration (ms → '3 min 20 s'; '1 h 5 min'; '< 1 s'), pagesLabel/deckProgressLabel. lib/format.ts gained formatFullDateTime ('27 Oct 2026, 14:05:09'). overview-model eventText now takes EventFacts (type, documentTitle, page, data), shared by the timeline. Fixtures investorRow, investorList, adminInvestor, documentSummary, timelineEvent, timelineAnswer in src/test/fixtures.ts. Main chunk 538 kB (was 532 kB: the new strings). W1-19 e2e: /investors/admin/investors calls GET /admin/investors (stub with investorList-shaped data); the table is role table 'Investors' and scrolls sideways at 390 px; a detail page calls GET /admin/investors/:id and /:id/events?page=1."
+    },
+    {
+      "id": "W1-18",
+      "prdStory": "US-017",
+      "title": "Alert emails on sign-up and first open",
+      "description": "As an admin, I want an email when a new investor signs up or first opens the deck.",
+      "acceptanceCriteria": [
+        "server/investors/alerts.js: createAlerts({db, transport, to, from, baseUrl}) implementing the hooks W1-07 and W1-11 call; sign-up email (subject 'New investor: <name> (<firm>)', body: name, email, firm, type, cheque size, source, link https://automatos.app/investors/admin/investors/<id>); first-open email (subject '<name> (<firm>) opened <title>', link to the investor); both plain text plus HTML with EVERY investor-supplied value HTML-escaped → DONE — alerts.js createAlerts({db, transport, to, from, baseUrl}) returns the signup/firstOpen hooks; alert-messages.js builds both emails (subjects as specified, admin link https://automatos.app/investors/admin/investors/<id>), text + HTML with every value escaped and one-lined (alerts.test.js: subjects, rows, link, escaping)",
+        "Exactly-once: an INSERT ... ON CONFLICT DO NOTHING into alerts_sent decides whether to send; sending happens after the response path (setImmediate) and a failure is logged (console.error without the body) and never fails the request → DONE — CLAIM_SQL INSERT ... ON CONFLICT DO NOTHING RETURNING decides the send; callAlert defers with setImmediate and logs name + safe code only (tests: repeated and concurrent hooks send once, callAlert runs after setImmediate, failure logged without address/body)",
+        "The transport reuses the site's SMTP variables (SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, the same defaults as server.js's contact form) through an injectable factory; recipients from INVESTOR_ALERT_EMAILS; with no recipients or no SMTP_USER the hooks are no-ops with one warning at start → DONE — config.js alerts.smtp reads SMTP_HOST/PORT/USER/PASS exactly as server.js (SMTP_DEFAULTS mail.privateemail.com:465, secure true); deps.createTransport injectable; recipients INVESTOR_ALERT_EMAILS; none or no SMTP_USER/SMTP_PASS → NO_ALERTS + one 'alert emails off' warning at start (tests in alerts.test.js and config.test.js)",
+        "Tests (PGlite + fake transport): one email per sign-up across two profile saves, one per investor per document across repeated opens, escaping of <script> in name and firm, transport failure does not change the API response → DONE — alerts.test.js over PGlite + fake transport: one email across two PUT /me, one per investor per document across repeated opens (none for downloads), <script> in name and firm escaped end to end, rejected sendMail leaves PUT /me and POST /link answers unchanged; plus a real nodemailer stream-transport build",
+        "npm test passes → DONE — npm test: 18 files, 463 tests pass"
+      ],
+      "files": [
+        "server/investors/alerts.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/alerts.test.js"
+      ],
+      "priority": 18,
+      "passes": true,
+      "notes": " | DONE (b5be369): no packages added (nodemailer is the site's existing dependency). New module alert-messages.js (pure: escapeHtml, investorUrl, signupMessage, firstOpenMessage; labels mirror investors/src/strings.ts profile lists, keep them in sync). alerts.js exports ALERT_BASE_URL, ALERT_FROM_NAME, NO_ALERTS, callAlert (now setImmediate; logs 'Error (EAUTH)'-style name + code), createAlerts (hooks resolve true when sent, false when already sent, reject on claim/send failure) and alertsFromConfig(config.alerts, {db, createTransport}) → {alerts, off}. config.js alerts = {to, smtp: {host, port, user, pass} | null} and exports SMTP_DEFAULTS. index.js: deps.alerts still overrides (route tests), deps.createTransport is the nodemailer factory seam; start() logs '[investors] alert emails off: <reason>' once when off (only when the portal is not disabled), so a test counting logger.warn on a ready portal without INVESTOR_ALERT_EMAILS sees that line. nodemailer mutates address objects: never pass it a frozen from/to. A failed send keeps its alerts_sent row (no retry, never a duplicate). W1-19 e2e: no SMTP in CI, so the portal logs the off warning and sends nothing."
+    },
+    {
+      "id": "W1-19",
+      "prdStory": "US-004..US-014 (browser checks)",
+      "title": "Playwright smoke and screenshots in CI",
+      "description": "As the reviewer, I want screenshots of every wave-1 screen at desktop and phone width from CI, since nothing runs in a browser locally (KP6, KP18).",
+      "acceptanceCriteria": [
+        "investors/e2e/ (Playwright @playwright/test 1.64.1, Chromium only): playwright.config.ts builds nothing itself; webServer runs 'npx vite preview --outDir dist-e2e --port 4173 --strictPort' (CI only); baseURL http://localhost:4173/investors/ → DONE — investors/playwright.config.ts: testDir e2e, Chromium projects only, webServer exactly that command, baseURL http://localhost:4173/investors/, no build step (77c22b1)",
+        "investors/e2e/fixtures/api.ts mocks every /api/investors call with page.route (invented data per KP5) and serves a generated two-page PDF fixture under 20 kB for the viewer's link URL; window.AUTOMATOS_CONFIG is injected with a placeholder key; the build is the E2E build (KP10) → DONE — e2e/fixtures/api.ts mockPortal(page, visitor): page.route over every /api/investors call (401 without the fake Bearer, unmocked calls recorded and expected empty), /_config.js with pk_test_ placeholder, generated PDF (fixtures/pdf.ts, 1167 bytes, pdfjs-dist parses 2 pages); data from src/test/fixtures (invented, example.com)",
+        "Specs at 1280x800 and 390x844, each saving a full-page screenshot under investors/e2e/screenshots/: teaser (signed out), profile form with a field error, home with documents, viewer on page 2, admin overview, admin investors table, admin investor detail, admin documents; plus assertions: the teaser shows the tracking notice, the profile checkbox is unticked, the viewer shows 'Page 2 of 2', a non-admin sees 'Not available' on /investors/admin → DONE — investor.spec.ts + admin.spec.ts, projects desktop 1280x800 and phone 390x844, capture() saves e2e/screenshots/<project>/<name>.png (teaser, profile-error, home, viewer-page-2, admin-overview, admin-investors, admin-investor-detail, admin-documents); the four assertions are in investor.spec.ts",
+        ".github/workflows/investors.yml gains job 'e2e' (needs app): npm ci --ignore-scripts, npx playwright install --with-deps chromium, npm run build:e2e, npx playwright test, upload investors/e2e/screenshots and the report as artifacts (always) → DONE — investors.yml job e2e (needs: app) with those steps; uploads investors-e2e-screenshots and investors-e2e-report with if: always()",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — typecheck runs tsc -p e2e/tsconfig.json (tsc --listFiles shows the 7 e2e files and playwright.config.ts); eslint . reports 0 errors/0 warnings on each; Playwright not run locally",
+        "npm --prefix investors run typecheck and lint pass → DONE — both pass (also: 585 unit tests, build, build:e2e)"
+      ],
+      "files": [
+        "investors/e2e/**",
+        "investors/playwright.config.ts",
+        "investors/package.json",
+        "investors/package-lock.json",
+        ".github/workflows/investors.yml"
+      ],
+      "priority": 19,
+      "passes": true,
+      "notes": " | DONE (77c22b1): investors/ devDependency (exact) @playwright/test 1.64.1 (pulls playwright and playwright-core 1.64.1; no new audit findings). Playwright runs ONLY in CI (KP6): npx playwright test locally needs a server and a browser. Specs import strings and fixture builders from src (type imports from @/ are erased at run time; src/auth/fake-session.ts brings zod), so a schema change breaks typecheck before CI. e2e/fixtures/api.ts portalRoutes: add a route there when a screen gains an API call, or that spec fails on unmocked(). Screenshots are CI artifacts only (investors/e2e/screenshots is not committed). README lists the e2e job."
+    }
+  ]
+}
