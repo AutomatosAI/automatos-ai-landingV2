@@ -246,9 +246,9 @@
       "title": "Document analytics screen",
       "description": "As an admin, I want a chart of time per page and how many readers reach each page.",
       "acceptanceCriteria": [
-        "investors/src/pages/admin/DocumentStats.tsx (from the documents table, a 'Stats' action): KPI cards, a version picker, a recharts bar chart of average dwell per page and a line of % of readers reaching each page (colours from the KP13 tokens), the readers table linking to each investor's detail",
-        "Unit tests: the stats-to-chart mapping and the empty state for non-PDF documents",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/pages/admin/DocumentStats.tsx (from the documents table, a 'Stats' action): KPI cards, a version picker, a recharts bar chart of average dwell per page and a line of % of readers reaching each page (colours from the KP13 tokens), the readers table linking to each investor's detail → DONE — a7dc6bc: route admin/documents/:id/stats (React.lazy AdminDocumentStats in App.tsx); RowActions gains a 'Stats' link (actionLabel 'Stats: <title>'); KPI cards (DocumentStatsCards over StatCard), VersionPicker (native select, ?version=N in the address), PageCharts: recharts BarChart of avg dwell (var(--accent)) and LineChart of % reached (var(--fg-2)), grid/ticks from chart-style.ts; ReadersTable links each reader to /admin/investors/:id",
+        "Unit tests: the stats-to-chart mapping and the empty state for non-PDF documents → DONE — a7dc6bc: src/admin/__tests__/document-stats-model.test.ts (27: toPageRows one row per page in order, seconds to one decimal, no mutation; chartState/chartEmptyText not_pdf for every non-PDF kind, no_page_count, no_readers; KPI cards, versions, readers, drop-off) + document-stats-paths.test.ts (3) + src/pages/__tests__/admin-document-stats.test.tsx (9: Stats action, numbers, charts in words, readers order and links, version switch, video empty state, 404, retry)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck clean; lint clean; npm --prefix investors test 68 files / 773 tests passed; build passes (no E2E marker in dist); root npm test 20 files / 502 passed"
       ],
       "files": [
         "investors/src/pages/admin/DocumentStats.tsx",
@@ -258,8 +258,8 @@
         "investors/src/strings.ts"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (a7dc6bc): no packages added. Page /investors/admin/documents/:id/stats (pages/admin/DocumentStats.tsx, keyed by id; ?version=N in the address, none for the current version; keepPreviousData while switching). Client: admin/document-stats-api.ts documentStatsSchema/fetchDocumentStats(id, version|null); use-document-stats.ts key ['admin','document-stats',userId,id,version|'current']; document-stats-paths.ts adminDocumentStatsPath(id), parseVersion, versionSearch, MAX_VERSION; document-stats-model.ts toPageRows, chartState ('charted'|'not_pdf'|'no_page_count'|'no_readers'), statsCards, versionOptions (adds current + shown + picked), largestDrop, dwellSummary/reachSummary (the charts' aria-labels), readerFacts (older versions show furthestPage without the page count; non-PDF kinds show a dash for pages and time). Shared: admin/chart-style.ts (CHART_HEIGHT, TICK, RULE, TOOLTIP_STYLE; ActivityChart imports it) and admin/StatCard.tsx (KpiCards and DocumentStatsCards use it); Rollup names the lazy recharts chunk after StatCard (395 kB), main chunk 552 kB (was 549 kB: strings). Documents.tsx needed no change: the Stats action is a link in admin/RowActions.tsx. Test fixtures documentStats(), videoStats(), reader(), FIVE_PAGES in src/admin/__tests__/document-stats-fixtures.ts. W2-09 e2e: the documents table row has link 'Stats: <title>'; the stats page calls GET /admin/documents/:id/stats (and ?version=N after a pick) — add it to e2e/fixtures/api.ts; the charts are role img regions named by dwellSummary/reachSummary under headings 'Time per page' and 'Readers reaching each page' (bars: .recharts-bar-rectangle, one per page); the readers table is role table 'Readers of this version'; page tests that render recharts stub ResizeObserver."
     },
     {
       "id": "W2-07",
