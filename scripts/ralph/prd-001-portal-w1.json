@@ -438,11 +438,11 @@
       "title": "PDF viewer",
       "description": "As an investor, I want to read the deck in the browser page by page on any device, and download it from the viewer.",
       "acceptanceCriteria": [
-        "investors/src/viewer/PdfViewer.tsx (ported from the reference CoaPdfViewer, KP12) with react-pdf@9; the pdf.js worker bundled locally via 'pdfjs-dist/build/pdf.worker.min.mjs?url' (no CDN); isEvalSupported false",
-        "Page navigation (previous/next, keyboard arrows), 'Page N of M', fit-to-width (ResizeObserver) so a page fits 390 px, a Download button in the toolbar (link mode download), a Back link",
-        "The link is requested on open (mode inline); if loading fails with an expired URL (HTTP 403 from storage) it requests a new link once, then shows an error with a Download fallback",
-        "The viewer exposes onPageVisible(page, ms) for W1-14 (a visibility model: a page counts when at least 50% visible for at least 1000 ms; the model is pure and unit-tested)",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/viewer/PdfViewer.tsx (ported from the reference CoaPdfViewer, KP12) with react-pdf@9; the pdf.js worker bundled locally via 'pdfjs-dist/build/pdf.worker.min.mjs?url' (no CDN); isEvalSupported false → DONE — investors/src/viewer/PdfViewer.tsx (00be03a) on react-pdf 9.2.1, ported from the reference viewer's toolbar/document/page layout; imports @/lib/pdfjs (workerSrc = pdfjs-dist/build/pdf.worker.min.mjs?url, emitted as a local asset, no CDN URL in dist); viewer/pdf-options.ts PDF_OPTIONS {isEvalSupported: false, disableRange: true}, asserted in pdf-viewer.test",
+        "Page navigation (previous/next, keyboard arrows), 'Page N of M', fit-to-width (ResizeObserver) so a page fits 390 px, a Download button in the toolbar (link mode download), a Back link → DONE — ViewerToolbar: previous/next buttons, left/right arrow keys (use-arrow-keys.ts; not in fields, menus, dialogs or with modifiers), 'Page N of M' (aria-live), Download (DownloadButton → link mode download); Back link to /documents above the title; use-fit-width.ts ResizeObserver, fitWidth caps at 900 px, 340 px stage at a 390 px phone (pdf-viewer.test, page-model.test)",
+        "The link is requested on open (mode inline); if loading fails with an expired URL (HTTP 403 from storage) it requests a new link once, then shows an error with a Download fallback → DONE — use-viewer-link.ts: one inline link on open (react-query, key ['document-link', userId, id, generation], gcTime 0, no refetch on focus/reconnect); link-model.ts afterLoadError renews once on pdf.js UnexpectedResponseException status 403, then ViewerFailed with the Download fallback and Try again (viewer.test: renew once, second 403 → error + download link, corrupt PDF → no renewal)",
+        "The viewer exposes onPageVisible(page, ms) for W1-14 (a visibility model: a page counts when at least 50% visible for at least 1000 ms; the model is pure and unit-tested) → DONE — PdfViewer prop onPageVisible(page, ms); visibility-model.ts (pure: >= 0.5 intersection ratio, visible tab, >= 1000 ms; a visit ends on page turn, scroll-out, hidden tab or close) with 11 unit tests; use-page-visibility.ts wires IntersectionObserver, visibilitychange and unmount (pdf-viewer.test)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck and lint pass; npm --prefix investors test 38 files / 441 tests pass; build passes (PdfViewer chunk 25.6 kB, main bundle has no pdf.js, no INVESTORS_E2E_FAKE_AUTH in dist); gate --no-ci green except the not-yet-built stories and W1-19's e2e job"
       ],
       "files": [
         "investors/src/viewer/**",
@@ -453,8 +453,8 @@
         "investors/package-lock.json"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (00be03a): no packages added. Route documents/:id → pages/Viewer.tsx (PlaceholderPage and strings.placeholder deleted: unused). PdfViewer (viewer/PdfViewer.tsx, React.lazy from the page) takes {url, title, onLoadError, onPageVisible?, actions?}; the page passes no onPageVisible yet: W1-14 passes the tracker's page_view feed there (pages/Viewer.tsx ViewerBody, documentId and document.version are in scope), events fire on page turn, scroll-out under 50%, hidden tab and unmount. The inline link query key is ['document-link', userId, documentId, generation] (NOT under documentsKey: refreshing the library must never issue a link, each link is an open). pdf.js gets disableRange: the whole file in one GET, so S3 CORS needs only GET from the site (no Range header or exposed headers). Storage 403 arrives as {name:'UnexpectedResponseException', status:403} (link-model.ts isExpiredLink). DocumentCard exports DownloadButton. Viewer test mocks '@/viewer/PdfViewer'; pdf-viewer.test mocks 'react-pdf' and '@/lib/pdfjs' (pdf.js cannot run in jsdom) and stubs ResizeObserver/IntersectionObserver. W1-19's viewer spec: the toolbar is role toolbar 'Document pages', Next is the button 'Next page', the counter reads 'Page 2 of 2'."
     },
     {
       "id": "W1-14",
