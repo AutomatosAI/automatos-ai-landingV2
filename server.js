@@ -14,6 +14,7 @@ import compression from "compression";
 import { resolve, dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync, writeFileSync, existsSync } from "fs";
+import { createInvestorsPortal } from "./server/investors/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 80;
@@ -38,6 +39,14 @@ hydrateConfig();
 
 const app = express();
 app.use(compression());
+
+// ── Investor portal API: /api/investors ──────────────────────────────
+// Mounted before the global express.json() so portal routes own their body
+// parsing. Optional: without its config the portal answers 503 on its own
+// paths and every other route behaves as before (server/investors/index.js).
+const investorsPortal = createInvestorsPortal({ env: process.env });
+app.use("/api/investors", investorsPortal.apiRouter);
+
 app.use(express.json());
 
 // ── SMTP transporter (lazy) ───────────────────────────────────────────
@@ -356,4 +365,5 @@ app.use((_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Automatos v2 landing on port ${PORT}`);
+  investorsPortal.start().catch((err) => console.error("[investors] portal start failed:", err.message));
 });
