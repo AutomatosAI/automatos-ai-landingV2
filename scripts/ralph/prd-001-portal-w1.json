@@ -509,10 +509,10 @@
       "title": "Admin overview: API and screen",
       "description": "As an admin, I want a one-screen view of investor interest.",
       "acceptanceCriteria": [
-        "GET /admin/overview (requireAdmin): investorsTotal, investorsNew7d, activeInvestors7d (any event), deckOpens7d (document_open on alert-on-first-open documents), downloads7d, a 30-day daily series {date, signups, activeInvestors} with zero-filled days (generate_series), and the latest 20 events with investor name, firm and document title",
-        "investors/src/pages/admin/Overview.tsx (ported from the reference AnalyticsManager, KP12): KPI cards, a recharts line chart of the series (colours from the KP13 tokens), the latest-events list linking to the investor detail",
-        "Tests: server (PGlite): zero-filled series, 7-day windows at the boundaries, latest events order; app: the series-to-chart mapping",
-        "npm test and the investors checks pass"
+        "GET /admin/overview (requireAdmin): investorsTotal, investorsNew7d, activeInvestors7d (any event), deckOpens7d (document_open on alert-on-first-open documents), downloads7d, a 30-day daily series {date, signups, activeInvestors} with zero-filled days (generate_series), and the latest 20 events with investor name, firm and document title → DONE — adb23bb: routes/admin-overview.js + queries/overview.js (COUNTS_SQL rolling 7 days, SERIES_SQL generate_series over 30 UTC days with to_char dates, LATEST_EVENTS_SQL newest 20 with investor name, firm, email and document title), mounted last in createRoutes",
+        "investors/src/pages/admin/Overview.tsx (ported from the reference AnalyticsManager, KP12): KPI cards, a recharts line chart of the series (colours from the KP13 tokens), the latest-events list linking to the investor detail → DONE — adb23bb: pages/admin/Overview.tsx (index of /admin, lazy) with admin/KpiCards.tsx, ActivityChart.tsx (recharts LineChart, strokes var(--accent) and var(--fg-2) dashed, rules var(--rule-c)) and LatestEvents.tsx linking each investor to adminInvestorPath(id)",
+        "Tests: server (PGlite): zero-filled series, 7-day windows at the boundaries, latest events order; app: the series-to-chart mapping → DONE — admin-overview.test.js (10 tests, PGlite): zero-filled 30-row series ending today UTC, UTC day edges, 7d - 1 min in / 7d + 1 min out for new, active, deck opens and downloads, newest-first with id tie-break and limit 20; overview-model.test.ts (20 tests): toChartRows order, labels, zero days, no mutation; admin-overview.test.tsx (6 page tests)",
+        "npm test and the investors checks pass → DONE — npm test 441 passed; investors typecheck clean, lint exit 0, test 499 passed, build passes"
       ],
       "files": [
         "server/investors/routes/admin-overview.js",
@@ -525,8 +525,8 @@
         "investors/package-lock.json"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (adb23bb): investors/ dependency (exact) recharts 2.15.4 (only in the lazy Overview chunk, 402 kB; main chunk 532 kB, the pre-existing 500 kB advisory). Answer: {investorsTotal, investorsNew7d, activeInvestors7d, deckOpens7d, downloads7d, series [{date 'YYYY-MM-DD' (UTC day), signups, activeInvestors}] oldest first, latestEvents [toEvent fields + investorId, investorName, investorFirm, investorEmail] newest first}; constants WINDOW_DAYS 7, SERIES_DAYS 30, LATEST_EVENTS 20 in queries/overview.js; investor-detail.js now exports EVENT_COLUMNS. The admin's own row counts in investorsTotal (as in the W1-15 list); server tests prime the admin first (primeAdmin). No index added on events(created_at): the overview's 30-day and latest-20 reads scan events; add a 002_*.sql index if volume grows. App: lib/paths.ts ADMIN_INVESTORS_PATH and adminInvestorPath(id) (the overview links there; W1-17 adds the route: until then the link falls to the '*' redirect home). ADMIN_LINKS is [Overview (end), Documents]: W1-17 appends Investors. lib/format.ts gained formatDateTime ('27 Oct, 14:05', reader's zone) and formatDay (UTC day → '27 Oct'): W1-17's timeline can reuse them. admin/LoadFailed.tsx is the shared load-error block (Documents uses it). admin/overview-api.ts exports EVENT_TYPES and latestEventSchema; overview-model.ts eventText(event) words every event type (strings.admin.overview.latest.events): W1-17's timeline can reuse it. Fixtures latestEvent() and overviewAnswer() in src/test/fixtures.ts. Page tests that render recharts stub ResizeObserver (jsdom has none). W1-19 e2e: /investors/admin now calls GET /admin/overview (stub it with overviewAnswer-shaped data)."
     },
     {
       "id": "W1-17",
