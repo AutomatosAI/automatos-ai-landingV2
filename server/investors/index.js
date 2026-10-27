@@ -5,15 +5,25 @@
  * parser, and calls start() after app.listen. The portal is optional: with
  * config missing, and until start() has finished, every API path except
  * GET /health answers 503 {error:'portal_unavailable'} and the rest of the
- * site is untouched. The factory only wires things together and never
- * throws; start() never rejects.
+ * site is untouched. start() opens the database and applies the migrations
+ * (KP8); a failure there disables the portal, never the site (KP4). The
+ * factory only wires things together and never throws; start() never
+ * rejects.
  */
 import express from "express";
 import { readPortalConfig } from "./config.js";
+import { createDb } from "./db.js";
+import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
 
 /** @typedef {"disabled" | "starting" | "ready"} PortalState */
 /** @typedef {{state: PortalState, reason?: string}} PortalStatus */
 /** @typedef {{warn: (...args: unknown[]) => void, error: (...args: unknown[]) => void}} Logger */
+/**
+ * @typedef {object} PortalDeps
+ * @property {Logger} [logger]
+ * @property {(options: {connectionString: string, logger: Logger}) => import("./db.js").Db} [createDb]
+ * @property {string} [migrationsDir]
+ */
 
 /**
  * @param {PortalState} state
@@ -58,15 +68,52 @@ function createApiRouter(getStatus) {
   return router;
 }
 
+/** @param {unknown} err */
+function migrationStep(err) {
+  return err instanceof MigrationError ? err.file : "unknown";
+}
+
 /**
- * @param {{env?: Record<string, string | undefined>, deps?: {logger?: Logger}}} [options]
+ * Opens the database and migrates it. On failure it logs the step (a file
+ * name, never the connection string), closes the pool and names the step.
+ * @param {import("./config.js").PortalConfig} config
+ * @param {Required<PortalDeps>} deps
+ * @returns {Promise<{db: import("./db.js").Db} | {failedStep: string}>}
+ */
+async function openDatabase(config, deps) {
+  /** @type {import("./db.js").Db | null} */
+  let db = null;
+  try {
+    db = deps.createDb({ connectionString: config.db.url, logger: deps.logger });
+    const applied = await runMigrations(db, deps.migrationsDir);
+    if (applied.length > 0) deps.logger.warn(`[investors] migrations applied: ${applied.join(", ")}`);
+    return { db };
+  } catch (err) {
+    // Only the message: a MigrationError's names the file; the error object may hold the URL.
+    deps.logger.error(`[investors] portal disabled: ${err instanceof Error ? err.message : String(err)}`);
+    const step = migrationStep(err);
+    await db?.end().catch((endErr) => deps.logger.error(`[investors] closing the pool failed: ${endErr.message}`));
+    return { failedStep: step };
+  }
+}
+
+/**
+ * @param {{env?: Record<string, string | undefined>, deps?: PortalDeps}} [options]
  */
 export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
-  const log = deps.logger ?? console;
+  /** @type {Required<PortalDeps>} */
+  const resolved = Object.freeze({
+    logger: deps.logger ?? console,
+    createDb: deps.createDb ?? createDb,
+    migrationsDir: deps.migrationsDir ?? MIGRATIONS_DIR,
+  });
+  const log = resolved.logger;
   const config = readPortalConfig(env);
   let current = initialStatus(config);
   /** @type {Promise<Readonly<PortalStatus>> | null} */
   let starting = null;
+  /** @type {import("./db.js").Db | null} set once ready; the routes of later stories read it */
+  let database = null;
 
   const status = () => current;
 
@@ -75,6 +122,12 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
       log.warn(`[investors] portal disabled: ${current.reason}`);
       return current;
     }
+    const opened = await openDatabase(config, resolved);
+    if ("failedStep" in opened) {
+      current = makeStatus("disabled", `migration_failed: ${opened.failedStep}`);
+      return current;
+    }
+    database = opened.db;
     current = makeStatus("ready");
     return current;
   }

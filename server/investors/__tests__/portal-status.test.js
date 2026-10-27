@@ -1,7 +1,11 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import express from "express";
 import request from "supertest";
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createInvestorsPortal } from "../index.js";
+import { createTestDb } from "./helpers/test-db.js";
 
 const COMPLETE = Object.freeze({
   INVESTORS_DATABASE_URL: "postgres://portal:not-a-real-password@localhost:5432/test",
@@ -24,9 +28,24 @@ function hostApp(portal) {
   return app;
 }
 
-function portalWith(env) {
+/** One database for the file: start() migrates it (idempotent) instead of dialling the URL in env. */
+/** @type {import("../db.js").Db} */
+let sharedDb;
+beforeAll(async () => {
+  sharedDb = await createTestDb();
+});
+afterAll(() => sharedDb.end());
+
+/** The shared database with end() stubbed, so a disabled portal closing "its" pool keeps it open. */
+function borrowedDb() {
+  return { ...sharedDb, end: vi.fn(async () => {}) };
+}
+
+function portalWith(env, deps = {}) {
   const logger = quietLogger();
-  return { portal: createInvestorsPortal({ env, deps: { logger } }), logger };
+  const createDb = vi.fn(() => borrowedDb());
+  const portal = createInvestorsPortal({ env, deps: { logger, createDb, ...deps } });
+  return { portal, logger, createDb };
 }
 
 describe("createInvestorsPortal: status", () => {
@@ -59,9 +78,12 @@ describe("createInvestorsPortal: status", () => {
     expect(logger.warn.mock.calls[0][0]).toContain("missing_config: INVESTORS_DATABASE_URL");
   });
 
-  it("start() runs once: concurrent calls share one promise", () => {
-    const { portal } = portalWith(COMPLETE);
-    expect(portal.start()).toBe(portal.start());
+  it("start() runs once: concurrent calls share one promise and open one database", async () => {
+    const { portal, createDb } = portalWith(COMPLETE);
+    const first = portal.start();
+    expect(portal.start()).toBe(first);
+    await first;
+    expect(createDb).toHaveBeenCalledTimes(1);
   });
 
   it("exposes exactly apiRouter, appRouter, start and status, frozen", () => {
@@ -127,5 +149,65 @@ describe("apiRouter while starting and when ready", () => {
     const res = await request(app).get("/api/investors/no-such-path");
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: "not_found" });
+  });
+});
+
+describe("start(): database and migrations (KP8, KP4)", () => {
+  const dirs = [];
+  afterAll(() => Promise.all(dirs.map((dir) => rm(dir, { recursive: true, force: true }))));
+
+  async function dirWith(files) {
+    const dir = await mkdtemp(join(tmpdir(), "investors-portal-"));
+    dirs.push(dir);
+    await Promise.all(Object.entries(files).map(([name, sql]) => writeFile(join(dir, name), sql)));
+    return dir;
+  }
+
+  it("opens the database from INVESTORS_DATABASE_URL and migrates it before 'ready'", async () => {
+    const { portal, createDb } = portalWith(COMPLETE);
+    await expect(portal.start()).resolves.toEqual({ state: "ready" });
+    expect(createDb).toHaveBeenCalledWith(expect.objectContaining({ connectionString: COMPLETE.INVESTORS_DATABASE_URL }));
+    const { rows } = await sharedDb.query("SELECT name FROM investors.schema_migrations WHERE name = $1", ["001_init.sql"]);
+    expect(rows).toHaveLength(1);
+  });
+
+  it("does not open a database when config is missing", async () => {
+    const { portal, createDb } = portalWith({});
+    await portal.start();
+    expect(createDb).not.toHaveBeenCalled();
+  });
+
+  it("a failed migration file disables the portal, logs the file, closes the pool; the site keeps serving", async () => {
+    const migrationsDir = await dirWith({ "001_broken.sql": "SELECT no_such_column FROM investors.nowhere;" });
+    const db = borrowedDb();
+    const { portal, logger } = portalWith(COMPLETE, { migrationsDir, createDb: () => db });
+    await expect(portal.start()).resolves.toEqual({ state: "disabled", reason: "migration_failed: 001_broken.sql" });
+    expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("001_broken.sql"));
+    expect(db.end).toHaveBeenCalledTimes(1);
+    const app = hostApp(portal);
+    expect((await request(app).get("/api/investors/health")).body).toEqual({ state: "disabled" });
+    const res = await request(app).get("/api/investors/me");
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({ error: "portal_unavailable", state: "disabled" });
+    expect((await request(app).get("/contact")).text).toBe("contact page");
+  });
+
+  it("an unreachable database disables the portal as 'bootstrap' and never logs the connection string", async () => {
+    const unreachable = { ...borrowedDb(), tx: async () => Promise.reject(new Error("connect ECONNREFUSED 127.0.0.1:5432")) };
+    const { portal, logger } = portalWith(COMPLETE, { createDb: () => unreachable });
+    await expect(portal.start()).resolves.toEqual({ state: "disabled", reason: "migration_failed: bootstrap" });
+    const logged = JSON.stringify([...logger.error.mock.calls, ...logger.warn.mock.calls]);
+    expect(logged).toContain("ECONNREFUSED");
+    expect(logged).not.toContain(COMPLETE.INVESTORS_DATABASE_URL);
+    expect(logged).not.toContain("not-a-real-password");
+  });
+
+  it("a createDb that throws disables the portal instead of rejecting start()", async () => {
+    const { portal } = portalWith(COMPLETE, {
+      createDb: () => {
+        throw new TypeError("Invalid URL");
+      },
+    });
+    await expect(portal.start()).resolves.toMatchObject({ state: "disabled" });
   });
 });

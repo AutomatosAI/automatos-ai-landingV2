@@ -13,12 +13,14 @@
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.21.2",
-    "nodemailer": "^6.9.16"
+    "nodemailer": "^6.9.16",
+    "pg": "8.23.1"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.12",
     "supertest": "7.3.1",
     "vitest": "3.2.7"
   }
