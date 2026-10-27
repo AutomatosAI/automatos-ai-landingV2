@@ -267,10 +267,10 @@
       "title": "CSV export of the investors table",
       "description": "As an admin, I want to export the current investor list.",
       "acceptanceCriteria": [
-        "GET /admin/investors.csv (requireAdmin) with the same q/type/source/sort as the list, all pages, columns as the table plus email and marketing opt-in; Content-Disposition attachment 'investors-YYYY-MM-DD.csv'; every cell escaped (quotes doubled) and cells starting with = + - @ tab or CR prefixed with a single quote (formula injection)",
-        "'Export CSV' button on the investors table (fetch with the Bearer token, then save as a Blob; the reference portal's csvExport helper may be ported for the client side only if used)",
-        "Tests: server (PGlite): filters honoured, escaping, formula-injection prefix; app: the download helper",
-        "npm test and the investors checks pass"
+        "GET /admin/investors.csv (requireAdmin) with the same q/type/source/sort as the list, all pages, columns as the table plus email and marketing opt-in; Content-Disposition attachment 'investors-YYYY-MM-DD.csv'; every cell escaped (quotes doubled) and cells starting with = + - @ tab or CR prefixed with a single quote (formula injection) → DONE — 81e41c9: routes/admin-investors.js exportList runs the list's own pageSql with LIMIT NULL (every page, the table's order) + opt-in by id; columns = table + Email + Marketing opt-in; Content-Disposition attachment; filename=\"investors-YYYY-MM-DD.csv\" (UTC); csv.js csvCell quotes every cell (quotes doubled) and prefixes = + - @ TAB CR with '",
+        "'Export CSV' button on the investors table (fetch with the Bearer token, then save as a Blob; the reference portal's csvExport helper may be ported for the client side only if used) → DONE — 81e41c9: admin/CsvExportButton.tsx on the investors table (beside the results count); admin/investors-csv.ts fetches with the Bearer token (credentials omit), checks text/csv, saves via admin/save-file.ts saveBlob; the reference helper was not ported (the server builds the file)",
+        "Tests: server (PGlite): filters honoured, escaping, formula-injection prefix; app: the download helper → DONE — 81e41c9: server/investors/__tests__/admin-investors-csv.test.js (20 tests over PGlite: q/type/source/sort, all pages past PAGE_SIZE, list parity, escaping, formula-injection prefix, 400s, audit log, 401/403); app: admin/__tests__/investors-csv.test.ts, save-file.test.ts, pages/__tests__/admin-investors-csv.test.tsx",
+        "npm test and the investors checks pass → DONE — npm test 21 files / 522 passed; investors typecheck + lint clean, vitest 71 files / 787 passed, build ok (no INVESTORS_E2E_FAKE_AUTH in dist); security-reviewer: nothing exploitable"
       ],
       "files": [
         "server/investors/routes/admin-investors.js",
@@ -280,8 +280,8 @@
         "investors/src/admin/**"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (81e41c9): no packages added. Server: csv.js exports CSV_BOM, csvCell, toCsv(columns, rows) (CsvColumn {header, value(row)}), CHOICE_LABELS (a THIRD copy of the profile labels: strings.ts profile, alert-messages.js, csv.js; a test fails if a routes/me.js choice has no label), CHOICE_LISTS, csvDateTime ('YYYY-MM-DD HH:MM' UTC), INVESTOR_CSV_COLUMNS (Name, Email, Firm, Investor type, Cheque size, Source, Signed up (UTC), Last seen (UTC), Sessions, Total time (min) one decimal, Documents opened, Downloads, Deck furthest page, Deck page count, Blocked yes/no, Marketing opt-in yes/no), investorsCsvFileName(now). GET /admin/investors.csv takes listQuerySchema minus page (a ?page is ignored), answers text/csv; charset=utf-8 with a UTF-8 BOM and CRLF rows, logs one warn line '[investors] admin <id> exported <n> investors as CSV'; no row cap (security LOW kept: the AC asks for every page). App: admin/save-file.ts saveBlob(fileName, blob) (save-json.ts now uses it), admin/investors-csv.ts csvSearch(query) (apiSearch without page), csvFileName(contentDisposition, now), fetchInvestorsCsv(search) (ApiError kinds as fetchJson; non-CSV is bad_response), downloadInvestorsCsv(query); strings.admin.investors.exportCsv. The button shows only when the current page has rows. Tests: fetch's Blob and Uint8Array are Node's, not jsdom's (compare contents, not classes; Blob.text() drops the BOM). W2-09 e2e: the button is role button 'Export CSV' beside the results count; a click calls GET /admin/investors.csv with the view's query (no page) — add it to e2e/fixtures/api.ts if a spec clicks it; the download is a blob: link click."
     },
     {
       "id": "W2-08",
