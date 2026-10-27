@@ -15,6 +15,7 @@ import {
   LIBRARY,
   MEMO_ID,
   OVERVIEW,
+  PITCH_VIDEO_ID,
   SESSION_ID,
 } from "./data";
 import { twoPagePdf } from "./pdf";
@@ -32,7 +33,7 @@ export const API_PREFIX = "/api/investors";
 /** Where the mocked storage link points: same origin as the app, answered by page.route. */
 export const PDF_PATH = "/e2e-storage/example-deck.pdf";
 
-/** The video's storage link: answered only by routeVideo, as the spec needs it. */
+/** The videos' storage link (the demo and the pitch video): answered only by routeVideo, as the spec needs it. */
 export const VIDEO_PATH = "/e2e-storage/example-demo.mp4";
 
 /** Clerk's format check passes (config.ts); nothing ever calls Clerk in the e2e build. */
@@ -66,6 +67,9 @@ function storageLink(path: string): (request: Request) => Reply {
 /** The key the viewer's link request for a document is answered at. */
 export const linkKey = (documentId: string) => `POST /documents/${documentId}/link`;
 
+/** A link request for any document: the server records an open for each (KP16, KP20). */
+export const isLinkKey = (key: string) => /^POST \/documents\/[^/]+\/link$/.test(key);
+
 const INVESTOR_ROUTES: ApiRoutes = {
   "POST /sessions": { status: 201, body: { sessionId: SESSION_ID } },
   "POST /events": { status: 204 },
@@ -74,6 +78,7 @@ const INVESTOR_ROUTES: ApiRoutes = {
   "GET /sections": ok({ sections: SECTIONS }),
   [linkKey(DECK_ID)]: storageLink(PDF_PATH),
   [linkKey(DEMO_ID)]: storageLink(VIDEO_PATH),
+  [linkKey(PITCH_VIDEO_ID)]: storageLink(VIDEO_PATH),
 };
 
 const ADMIN_ROUTES: ApiRoutes = {
@@ -107,6 +112,8 @@ async function fulfill(route: Route, reply: Reply): Promise<void> {
 }
 
 export interface MockedApi {
+  /** Every API call ('METHOD /path'), answered or not, oldest first. */
+  readonly calls: () => readonly string[];
   /** API calls no route answered ('METHOD /path'): each got a 404, and a spec should expect none. */
   readonly unmocked: () => readonly string[];
   /** The JSON bodies of the calls answered at `key` ('METHOD /path'), oldest first; null for a call without one. */
@@ -121,9 +128,11 @@ interface AnsweredCall {
 /**
  * Serves /_config.js, the deck's PDF and every /api/investors call. A call
  * without the fake session's Bearer token gets 401, as the server would.
+ * `overrides` replace or add answers for one spec (an outage, say).
  */
-export async function mockPortal(page: Page, visitor: Visitor): Promise<MockedApi> {
-  const routes = portalRoutes(visitor);
+export async function mockPortal(page: Page, visitor: Visitor, overrides: ApiRoutes = {}): Promise<MockedApi> {
+  const routes = { ...portalRoutes(visitor), ...overrides };
+  let seen: readonly string[] = [];
   let missed: readonly string[] = [];
   let answered: readonly AnsweredCall[] = [];
   await page.route("**/_config.js", (route) =>
@@ -136,8 +145,9 @@ export async function mockPortal(page: Page, visitor: Visitor): Promise<MockedAp
     (url) => url.pathname.startsWith(`${API_PREFIX}/`),
     (route) => {
       const request = route.request();
-      if (request.headers()["authorization"] !== BEARER) return fulfill(route, { status: 401, body: { error: "unauthenticated" } });
       const key = routeKey(request);
+      seen = [...seen, key];
+      if (request.headers()["authorization"] !== BEARER) return fulfill(route, { status: 401, body: { error: "unauthenticated" } });
       const answer = routes[key];
       if (answer === undefined) {
         missed = [...missed, key];
@@ -148,6 +158,7 @@ export async function mockPortal(page: Page, visitor: Visitor): Promise<MockedAp
     },
   );
   return {
+    calls: () => seen,
     unmocked: () => missed,
     bodies: (key) => answered.filter((call) => call.key === key).map((call) => (call.body === null ? null : JSON.parse(call.body))),
   };

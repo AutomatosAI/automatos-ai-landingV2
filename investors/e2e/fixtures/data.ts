@@ -40,10 +40,16 @@ const DRAFT_ID = "00000000-0000-4000-8000-0000000000d5";
 /** A longer PDF, for the page charts of the document stats (stats.ts); never opened in the viewer. */
 export const MEMO_ID = "00000000-0000-4000-8000-0000000000d6";
 export const MEMO_PAGE_COUNT = 8;
+/** The pitch video: with the deck, the home page's pitch block (W3-03); its storage link is answered by routeVideo too. */
+export const PITCH_VIDEO_ID = "00000000-0000-4000-8000-0000000000d7";
 
 export const SESSION_ID = "00000000-0000-4000-8000-00000000005e";
 
-/** GET /documents: the published library. */
+/**
+ * GET /documents: the published library. Three 'Pitch' documents (the
+ * fixture's default category): the deck and the pitch video top the home
+ * page, the one-pager stays in the Pitch group below them.
+ */
 export const LIBRARY: readonly InvestorDocument[] = [
   investorDocument({ id: DECK_ID, pageCount: PDF_PAGE_COUNT, sizeBytes: 1_167 }),
   investorDocument({
@@ -53,6 +59,16 @@ export const LIBRARY: readonly InvestorDocument[] = [
     fileName: "example-one-pager.pdf",
     sizeBytes: 245_760,
     pageCount: 1,
+  }),
+  investorDocument({
+    id: PITCH_VIDEO_ID,
+    title: "Example pitch video",
+    description: "The deck, told in three invented minutes.",
+    kind: "video",
+    fileName: "example-pitch.mp4",
+    contentType: "video/mp4",
+    sizeBytes: 31_457_280,
+    pageCount: null,
   }),
   investorDocument({
     id: MODEL_ID,
