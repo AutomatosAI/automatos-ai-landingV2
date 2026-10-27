@@ -101,7 +101,7 @@
   "ownerTest": [
     {
       "id": "OT-W2-1",
-      "what": "Before merging: confirm the privacy text's retention period (24 months after the last visit, PRD Q6) or change it."
+      "what": "Retention decided by Gerard 27 Oct: 6 months after the last visit, enforced by server/investors/retention.js (daily purge) and stated in privacy.html."
     },
     {
       "id": "OT-W2-2",

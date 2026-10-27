@@ -25,6 +25,7 @@ import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } 
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
+import { scheduleRetention } from "./retention.js";
 import { createAdminDocumentsRouter } from "./routes/admin-documents.js";
 import { createAdminInvestorsRouter } from "./routes/admin-investors.js";
 import { createAdminOverviewRouter } from "./routes/admin-overview.js";
@@ -291,6 +292,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
       return current;
     }
     database = opened.db;
+    scheduleRetention({ db: opened.db, logger: log });
     current = makeStatus("ready");
     return current;
   }

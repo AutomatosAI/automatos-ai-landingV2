@@ -7,6 +7,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
+import { RETENTION_MONTHS } from "../retention.js";
 
 const REPO_ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const SECTION_HEADING = '<h2 id="investors"><span class="num">Section 07</span>Investor <em>portal</em></h2>';
@@ -72,7 +73,8 @@ describe("privacy.html", () => {
       "follow up with interested investors",
       "legitimate interest",
       "Automatos team members who run the portal",
-      "24 months after your last visit",
+      `${RETENTION_MONTHS} months after your last visit`,
+      "deleted automatically",
       '<a href="mailto:privacy@automatos.app">privacy@automatos.app</a>',
     ]) {
       expect(section).toContain(words);
