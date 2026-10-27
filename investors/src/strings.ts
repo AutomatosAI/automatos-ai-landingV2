@@ -72,13 +72,31 @@ export const strings = {
       failed: "The document could not be opened. Please try again.",
     },
   },
+  /** The PDF viewer (US-007) at /investors/documents/:id. */
+  viewer: {
+    back: "Back to documents",
+    toolbarLabel: "Document pages",
+    previous: "Previous page",
+    next: "Next page",
+    pageOf: (page: number, count: number) => `Page ${page} of ${count}`,
+    pageLabel: (title: string, page: number, count: number) => `${title}, page ${page} of ${count}`,
+    loading: "Loading the document…",
+    loadingPage: "Loading the page…",
+    keyboardHint: "Use the left and right arrow keys to turn the page.",
+    failed: {
+      title: "This document could not be shown here",
+      body: "Download it to read it on your device, or try again.",
+    },
+    retry: "Try again",
+    missing: {
+      title: "Document not available",
+      body: "This document is no longer available. It may have been withdrawn or replaced.",
+    },
+    notViewable: "This document opens as a download.",
+  },
   contact: {
     helloEmail: HELLO_EMAIL,
     privacyEmail: PRIVACY_EMAIL,
-  },
-  placeholder: {
-    title: "Investor portal",
-    body: "The portal is being set up. Please check back soon.",
   },
   teaser: {
     title: "Investor portal",

@@ -8,8 +8,8 @@ import { PortalLayout } from "@/layout/PortalLayout";
 import { ADMIN_DOCUMENTS_PATH, HOME_PATH } from "@/lib/paths";
 import { Documents } from "@/pages/Documents";
 import { Home } from "@/pages/Home";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { Profile } from "@/pages/Profile";
+import { Viewer } from "@/pages/Viewer";
 
 // Admin screens load on demand: investors never download them.
 const AdminDocuments = lazy(() => import("@/pages/admin/Documents").then((module) => ({ default: module.AdminDocuments })));
@@ -22,8 +22,7 @@ export function App() {
         <Route element={<PortalLayout />}>
           <Route index element={<Home />} />
           <Route path="documents" element={<Documents />} />
-          {/* The PDF viewer (W1-13) replaces this. */}
-          <Route path="documents/:id" element={<PlaceholderPage />} />
+          <Route path="documents/:id" element={<Viewer />} />
           <Route path="profile" element={<Profile />} />
           <Route path="admin" element={<AdminGate />}>
             {/* The admin overview (W1-16) replaces this redirect. */}

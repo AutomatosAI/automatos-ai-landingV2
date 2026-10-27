@@ -37,7 +37,8 @@ function OpenButton({ document, action }: { readonly document: InvestorDocument;
   );
 }
 
-function DownloadButton({ document, action }: { readonly document: InvestorDocument; readonly action: DownloadAction }) {
+/** Also the viewer's toolbar button and its fallback when a document cannot be shown. */
+export function DownloadButton({ document, action }: { readonly document: InvestorDocument; readonly action: DownloadAction }) {
   return (
     <Button
       type="button"

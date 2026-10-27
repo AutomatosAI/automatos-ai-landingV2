@@ -162,14 +162,16 @@ describe("opening and downloading", () => {
     expect(calls("POST", linkPath(DECK))).toEqual([{ mode: "download" }]);
   });
 
-  it("opens a PDF in the viewer's page without asking for a link", async () => {
+  it("opens a PDF in the viewer's page, where only the viewer asks for a link (inline, once)", async () => {
     serve({ "GET /documents": listOf([DECK]) });
     renderPage();
     const open = await screen.findByRole("link", { name: copy.actionLabel(copy.open, DECK.title) });
     expect(open).toHaveAttribute("href", `/documents/${DECK.id}`);
+    expect(calls("POST", linkPath(DECK))).toEqual([]);
     fireEvent.click(open);
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(`/documents/${DECK.id}`));
-    expect(calls("POST", linkPath(DECK))).toEqual([]);
+    await waitFor(() => expect(calls("POST", linkPath(DECK))).toEqual([{ mode: "inline" }]));
+    expect(navigateTo).not.toHaveBeenCalled();
   });
 
   it("downloads any other kind on Open", async () => {
