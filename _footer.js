@@ -51,6 +51,7 @@
         { label: 'Research', href: '/research' },
         { label: 'Enterprise', href: '/#editions' },
         { label: 'Contact', href: '/contact' },
+        { label: 'Investors', href: '/investors' },
       ],
       partners: ['BudStacks', 'Shopify partners'],
     },

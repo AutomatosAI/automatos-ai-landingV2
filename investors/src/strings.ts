@@ -190,7 +190,8 @@ export const strings = {
     before:
       "When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our ",
     policyLink: "Privacy Policy",
-    policyHref: "/privacy",
+    /** privacy.html's investor-portal section (W2-08). */
+    policyHref: "/privacy#investors",
     middle: ". Ask ",
     after: " to see or delete your data.",
   },
