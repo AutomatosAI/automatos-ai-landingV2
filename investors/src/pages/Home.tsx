@@ -1,9 +1,8 @@
-import { screenForError } from "@/api/errors";
+import { isStorageUnavailable, screenForError } from "@/api/errors";
 import { useAuthState } from "@/auth";
-import type { InvestorDocument } from "@/documents/documents-api";
 import { DocumentGroups } from "@/documents/DocumentGroups";
 import { groupByCategory } from "@/documents/library-model";
-import { EmptyLibrary, LibrarySkeleton } from "@/documents/LibraryStates";
+import { DocumentsUnavailable, EmptyLibrary, LibrarySkeleton } from "@/documents/LibraryStates";
 import { useDocuments } from "@/documents/use-documents";
 import { OverviewBlock } from "@/sections/OverviewBlock";
 import { PageFrame } from "@/sections/PageFrame";
@@ -12,22 +11,29 @@ import { strings } from "@/strings";
 import { ApiErrorPage } from "./ApiErrorPage";
 
 interface HomeDocumentsProps {
-  readonly documents: readonly InvestorDocument[];
-  readonly onGone: () => void;
+  readonly documents: ReturnType<typeof useDocuments>;
+  /** Reads the list again: Retry, or a document that went. */
+  readonly onRefresh: () => void;
 }
 
-function HomeDocuments({ documents, onGone }: HomeDocumentsProps) {
-  if (documents.length === 0) return <EmptyLibrary />;
-  return <DocumentGroups groups={groupByCategory(documents)} onGone={onGone} />;
+/** Under the overview: loading, the storage note (the only error that gets here), empty, or the groups. */
+function HomeDocuments({ documents, onRefresh }: HomeDocumentsProps) {
+  if (documents.isError) return <DocumentsUnavailable onRetry={onRefresh} />;
+  if (documents.isPending) return <LibrarySkeleton />;
+  if (documents.data.length === 0) return <EmptyLibrary />;
+  return <DocumentGroups groups={groupByCategory(documents.data)} onGone={onRefresh} />;
 }
 
 function HomeBody({ userId }: { readonly userId: string }) {
   const documents = useDocuments(userId);
   const refresh = () => void documents.refetch();
-  if (documents.isError) return <ApiErrorPage screen={screenForError(documents.error)} onRetry={refresh} />;
+  // Storage down leaves the page up, with a note where the documents would be.
+  if (documents.isError && !isStorageUnavailable(documents.error)) {
+    return <ApiErrorPage screen={screenForError(documents.error)} onRetry={refresh} />;
+  }
   return (
     <PageFrame title={strings.home.title} intro={strings.home.intro} lead={<OverviewBlock userId={userId} />}>
-      {documents.isPending ? <LibrarySkeleton /> : <HomeDocuments documents={documents.data} onGone={refresh} />}
+      <HomeDocuments documents={documents} onRefresh={refresh} />
     </PageFrame>
   );
 }

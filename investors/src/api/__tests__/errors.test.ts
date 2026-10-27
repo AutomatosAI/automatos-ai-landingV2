@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ApiError, errorKindFor, screenForError } from "../errors";
+import { ApiError, errorKindFor, isStorageUnavailable, screenForError } from "../errors";
 
 describe("errorKindFor", () => {
   it.each([
@@ -16,6 +16,10 @@ describe("errorKindFor", () => {
     [413, null, "invalid"],
     [429, null, "rate_limited"],
     [503, "portal_unavailable", "unavailable"],
+    [503, null, "unavailable"],
+    [503, "starting", "unavailable"],
+    [503, "storage_unavailable", "storage_unavailable"],
+    [500, "storage_unavailable", "server"],
     [500, "internal_error", "server"],
     [502, null, "server"],
   ] as const)("%i %s → %s", (status, code, kind) => {
@@ -31,6 +35,7 @@ describe("screenForError", () => {
     ["forbidden", "not_available"],
     ["not_found", "not_found"],
     ["unavailable", "unavailable"],
+    ["storage_unavailable", "storage_unavailable"],
     ["invalid", "error"],
     ["rate_limited", "error"],
     ["server", "error"],
@@ -43,6 +48,16 @@ describe("screenForError", () => {
   it("shows the generic error for anything that is not an ApiError", () => {
     expect(screenForError(new Error("boom"))).toBe("error");
     expect(screenForError("boom")).toBe("error");
+  });
+});
+
+describe("isStorageUnavailable", () => {
+  it("is true only for document storage being down", () => {
+    expect(isStorageUnavailable(new ApiError({ kind: "storage_unavailable", status: 503, code: "storage_unavailable" }))).toBe(true);
+    expect(isStorageUnavailable(new ApiError({ kind: "unavailable", status: 503, code: "portal_unavailable" }))).toBe(false);
+    expect(isStorageUnavailable(new ApiError({ kind: "server", status: 500, code: "storage_unavailable" }))).toBe(false);
+    expect(isStorageUnavailable(new Error("storage_unavailable"))).toBe(false);
+    expect(isStorageUnavailable(undefined)).toBe(false);
   });
 });
 

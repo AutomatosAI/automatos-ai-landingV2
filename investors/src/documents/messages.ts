@@ -13,6 +13,8 @@ export function linkFailureMessage(error: unknown): string {
       return errors.rateLimited;
     case "unavailable":
       return errors.unavailable;
+    case "storage_unavailable":
+      return strings.documents.unavailable;
     case "unauthenticated":
       return strings.status.signIn.body;
     case "blocked":

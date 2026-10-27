@@ -4,6 +4,7 @@
 
 const HELLO_EMAIL = "hello@automatos.app";
 const PRIVACY_EMAIL = "privacy@automatos.app";
+const DOCUMENTS_UNAVAILABLE = "Documents are unavailable right now. Please try again later.";
 
 /** A document's kind (001_init.sql), as the library and the admin table name it. */
 const KIND_LABELS = {
@@ -70,10 +71,14 @@ export const strings = {
     errors: {
       gone: "This document is no longer available. The list has been refreshed.",
       rateLimited: "Too many requests in a row. Wait a minute and try again.",
-      unavailable: "Documents are unavailable right now. Please try again later.",
+      unavailable: DOCUMENTS_UNAVAILABLE,
       blocked: "Your access has been paused.",
       failed: "The document could not be opened. Please try again.",
     },
+  },
+  /** Document storage is down (503 storage_unavailable): the pages still show, with this where the documents would be. */
+  documents: {
+    unavailable: DOCUMENTS_UNAVAILABLE,
   },
   /** The PDF viewer (US-007) and the video player (US-008) at /investors/documents/:id. */
   viewer: {

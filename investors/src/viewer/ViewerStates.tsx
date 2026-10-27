@@ -1,6 +1,7 @@
 import { FileWarning, Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { isStorageUnavailable } from "@/api/errors";
 import { Button } from "@/components/ui/button";
 import { linkFailureMessage } from "@/documents/messages";
 import { strings } from "@/strings";
@@ -51,6 +52,15 @@ export function ViewerFailed({ message = copy.failed.body, onRetry, download }: 
   );
 }
 
+/** Document storage is down: the viewer's own error, with Try again; a download could not work either. */
+export function ViewerStorageUnavailable({ onRetry }: { readonly onRetry: () => void }) {
+  return (
+    <ViewerFrame>
+      <ViewerFailed message={strings.documents.unavailable} onRetry={onRetry} download={null} />
+    </ViewerFrame>
+  );
+}
+
 /** Every phase but "ready": the link on its way, or a failure. */
 export type PendingPhase = Exclude<ViewerPhase, { readonly kind: "ready" }>;
 
@@ -73,6 +83,7 @@ export function ViewerPending({ phase, onRetry, download, loadFailedBody }: View
         </ViewerFrame>
       );
     case "link_failed":
+      if (isStorageUnavailable(phase.error)) return <ViewerStorageUnavailable onRetry={onRetry} />;
       return (
         <ViewerFrame>
           <ViewerFailed message={linkFailureMessage(phase.error)} onRetry={onRetry} download={download} />

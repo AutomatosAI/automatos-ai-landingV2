@@ -69,6 +69,9 @@ export function ApiErrorPage({ screen, onRetry }: { screen: ErrorScreen; onRetry
       return <BlockedPage />;
     case "unavailable":
       return <UnavailablePage />;
+    case "storage_unavailable":
+      // Pages that list documents show this inline instead; any other page names it on its own.
+      return <MessagePage title={status.unavailable.title} body={strings.documents.unavailable} onRetry={onRetry} />;
     case "email_required":
       return <MessagePage title={status.emailRequired.title} body={status.emailRequired.body} />;
     case "not_available":

@@ -1,4 +1,5 @@
 import { MailLink } from "@/components/MailLink";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { strings } from "@/strings";
 
@@ -35,6 +36,18 @@ export function EmptyLibrary() {
         <MailLink email={strings.contact.helloEmail} />
         {empty.after}
       </p>
+    </div>
+  );
+}
+
+/** Document storage is down: a note where the documents would be; the rest of the page still shows. */
+export function DocumentsUnavailable({ onRetry }: { readonly onRetry: () => void }) {
+  return (
+    <div role="status" className="space-y-4 rounded-lg border px-5 py-10 text-center sm:px-6">
+      <p className="text-muted-foreground">{strings.documents.unavailable}</p>
+      <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+        {strings.status.error.retry}
+      </Button>
     </div>
   );
 }

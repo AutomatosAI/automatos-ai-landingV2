@@ -1,12 +1,11 @@
-import { screenForError } from "@/api/errors";
+import { isStorageUnavailable, screenForError } from "@/api/errors";
 import { useAuthState } from "@/auth";
 import { Separator } from "@/components/ui/separator";
 import { ApiErrorPage } from "@/pages/ApiErrorPage";
 
-import type { InvestorDocument } from "./documents-api";
 import { DocumentGroups } from "./DocumentGroups";
 import { groupByCategory } from "./library-model";
-import { EmptyLibrary, LibrarySkeleton } from "./LibraryStates";
+import { DocumentsUnavailable, EmptyLibrary, LibrarySkeleton } from "./LibraryStates";
 import { SearchableLibrary } from "./SearchableLibrary";
 import { useDocuments } from "./use-documents";
 
@@ -18,31 +17,34 @@ interface LibraryPageProps {
 }
 
 interface LibraryBodyProps {
-  readonly documents: readonly InvestorDocument[];
+  readonly documents: ReturnType<typeof useDocuments>;
   readonly searchable: boolean;
-  readonly onGone: () => void;
+  /** Reads the list again: Retry, or a document that went. */
+  readonly onRefresh: () => void;
 }
 
-function LibraryBody({ documents, searchable, onGone }: LibraryBodyProps) {
-  if (documents.length === 0) return <EmptyLibrary />;
-  if (searchable) return <SearchableLibrary documents={documents} onGone={onGone} />;
-  return <DocumentGroups groups={groupByCategory(documents)} onGone={onGone} />;
+/** Under the heading: loading, the storage note (the only error that gets here), empty, or the list. */
+function LibraryBody({ documents, searchable, onRefresh }: LibraryBodyProps) {
+  if (documents.isError) return <DocumentsUnavailable onRetry={onRefresh} />;
+  if (documents.isPending) return <LibrarySkeleton />;
+  if (documents.data.length === 0) return <EmptyLibrary />;
+  if (searchable) return <SearchableLibrary documents={documents.data} onGone={onRefresh} />;
+  return <DocumentGroups groups={groupByCategory(documents.data)} onGone={onRefresh} />;
 }
 
 function Library({ userId, title, intro, searchable = false }: LibraryPageProps & { readonly userId: string }) {
   const documents = useDocuments(userId);
   const refresh = () => void documents.refetch();
-  if (documents.isError) return <ApiErrorPage screen={screenForError(documents.error)} onRetry={refresh} />;
+  // Storage down leaves the page up, with a note where the documents would be.
+  if (documents.isError && !isStorageUnavailable(documents.error)) {
+    return <ApiErrorPage screen={screenForError(documents.error)} onRetry={refresh} />;
+  }
   return (
     <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <h1 className="font-serif text-4xl font-normal leading-tight tracking-[-0.01em] sm:text-5xl">{title}</h1>
       <p className="mt-4 max-w-prose text-foreground/80">{intro}</p>
       <Separator className="my-8" />
-      {documents.isPending ? (
-        <LibrarySkeleton />
-      ) : (
-        <LibraryBody documents={documents.data} searchable={searchable} onGone={refresh} />
-      )}
+      <LibraryBody documents={documents} searchable={searchable} onRefresh={refresh} />
     </section>
   );
 }

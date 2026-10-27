@@ -140,7 +140,8 @@ describe("the home page", () => {
   });
 
   it.each([
-    [503, { error: "storage_unavailable" }, strings.status.unavailable.title],
+    // Storage down keeps the page up (storage-outage.test.tsx); the portal itself down still takes it over.
+    [503, { error: "portal_unavailable" }, strings.status.unavailable.title],
     [403, { error: "blocked" }, strings.status.blocked.title],
     [500, { error: "internal_error" }, strings.status.error.title],
   ])("maps a %i from the list to its screen", async (status, body, title) => {

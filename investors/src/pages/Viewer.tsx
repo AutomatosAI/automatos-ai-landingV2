@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { screenForError } from "@/api/errors";
+import { isStorageUnavailable, screenForError } from "@/api/errors";
 import { useAuthState } from "@/auth";
 import { PageLoading } from "@/components/shell/PageLoading";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { useVideoProgressFeed } from "@/tracking/use-video-progress-feed";
 import { useViewerLink, type ViewerLink } from "@/viewer/use-viewer-link";
 import { START, type VideoFailure } from "@/viewer/video-model";
 import { VideoPlayer } from "@/viewer/VideoPlayer";
-import { ViewerFrame, ViewerLoading, ViewerPending } from "@/viewer/ViewerStates";
+import { ViewerFrame, ViewerLoading, ViewerPending, ViewerStorageUnavailable } from "@/viewer/ViewerStates";
 
 import { ApiErrorPage } from "./ApiErrorPage";
 import { StatusPage } from "./StatusPage";
@@ -51,6 +51,18 @@ function MissingDocument() {
     <StatusPage title={copy.missing.title} actions={back}>
       <p>{copy.missing.body}</p>
     </StatusPage>
+  );
+}
+
+/** The list could not be read because document storage is down: the viewer's error under the Back link. */
+function StorageUnavailable({ onRetry }: { readonly onRetry: () => void }) {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+      <BackLink />
+      <div className="mt-6">
+        <ViewerStorageUnavailable onRetry={onRetry} />
+      </div>
+    </section>
   );
 }
 
@@ -164,6 +176,7 @@ function ViewerScreen({ userId, documentId }: { readonly userId: string; readonl
   const documents = useDocuments(userId);
   const { refetch } = documents;
   const onGone = useCallback(() => void refetch(), [refetch]);
+  if (documents.isError && isStorageUnavailable(documents.error)) return <StorageUnavailable onRetry={onGone} />;
   if (documents.isError) return <ApiErrorPage screen={screenForError(documents.error)} onRetry={onGone} />;
   if (documents.isPending) return <PageLoading />;
   const document = documents.data.find((candidate) => candidate.id === documentId);
