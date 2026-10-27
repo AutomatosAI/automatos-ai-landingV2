@@ -4,8 +4,22 @@ import type { Me } from "../../src/api/me";
 import { DEFAULT_FAKE_SESSION, FAKE_AUTH_STORAGE_KEY, fakeToken } from "../../src/auth/fake-session";
 import { ADMIN_ME, ADA_ME, NEW_ADA } from "../../src/test/fixtures";
 
-import { ADA_DETAIL, ADA_ID, ADA_TIMELINE, ADMIN_DOCUMENTS, DECK_ID, INVESTORS, LIBRARY, OVERVIEW, SESSION_ID } from "./data";
+import {
+  ADA_DETAIL,
+  ADA_ID,
+  ADA_TIMELINE,
+  ADMIN_DOCUMENTS,
+  DECK_ID,
+  DEMO_ID,
+  INVESTORS,
+  LIBRARY,
+  MEMO_ID,
+  OVERVIEW,
+  SESSION_ID,
+} from "./data";
 import { twoPagePdf } from "./pdf";
+import { ADMIN_SECTIONS, SECTIONS } from "./sections";
+import { MEMO_STATS } from "./stats";
 
 /*
  * The whole outside world of the e2e build (KP10): the runtime config the
@@ -17,6 +31,9 @@ export const API_PREFIX = "/api/investors";
 
 /** Where the mocked storage link points: same origin as the app, answered by page.route. */
 export const PDF_PATH = "/e2e-storage/example-deck.pdf";
+
+/** The video's storage link: answered only by routeVideo, as the spec needs it. */
+export const VIDEO_PATH = "/e2e-storage/example-demo.mp4";
 
 /** Clerk's format check passes (config.ts); nothing ever calls Clerk in the e2e build. */
 const PLACEHOLDER_KEY = `pk_test_${btoa("example.clerk.accounts.dev$")}`;
@@ -41,16 +58,22 @@ const ME: Record<Visitor, Me> = { new_investor: NEW_ADA, investor: ADA_ME, admin
 
 const ok = (body: unknown): Reply => ({ status: 200, body });
 
-/** The storage link for the deck, on the page's own origin. */
-function deckLink(request: Request): Reply {
-  return ok({ url: new URL(PDF_PATH, request.url()).href, expiresIn: 300 });
+/** A storage link to `path`, on the page's own origin. */
+function storageLink(path: string): (request: Request) => Reply {
+  return (request) => ok({ url: new URL(path, request.url()).href, expiresIn: 300 });
 }
+
+/** The key the viewer's link request for a document is answered at. */
+export const linkKey = (documentId: string) => `POST /documents/${documentId}/link`;
 
 const INVESTOR_ROUTES: ApiRoutes = {
   "POST /sessions": { status: 201, body: { sessionId: SESSION_ID } },
   "POST /events": { status: 204 },
   "GET /documents": ok({ documents: LIBRARY }),
-  [`POST /documents/${DECK_ID}/link`]: deckLink,
+  // Every page past the profile asks for them (the sidebar's Team, FAQ and Contact links).
+  "GET /sections": ok({ sections: SECTIONS }),
+  [linkKey(DECK_ID)]: storageLink(PDF_PATH),
+  [linkKey(DEMO_ID)]: storageLink(VIDEO_PATH),
 };
 
 const ADMIN_ROUTES: ApiRoutes = {
@@ -59,6 +82,8 @@ const ADMIN_ROUTES: ApiRoutes = {
   "GET /admin/investors": ok(INVESTORS),
   [`GET /admin/investors/${ADA_ID}`]: ok(ADA_DETAIL),
   [`GET /admin/investors/${ADA_ID}/events`]: ok(ADA_TIMELINE),
+  "GET /admin/sections": ok({ sections: ADMIN_SECTIONS }),
+  [`GET /admin/documents/${MEMO_ID}/stats`]: ok(MEMO_STATS),
 };
 
 /**
@@ -84,6 +109,13 @@ async function fulfill(route: Route, reply: Reply): Promise<void> {
 export interface MockedApi {
   /** API calls no route answered ('METHOD /path'): each got a 404, and a spec should expect none. */
   readonly unmocked: () => readonly string[];
+  /** The JSON bodies of the calls answered at `key` ('METHOD /path'), oldest first; null for a call without one. */
+  readonly bodies: (key: string) => readonly unknown[];
+}
+
+interface AnsweredCall {
+  readonly key: string;
+  readonly body: string | null;
 }
 
 /**
@@ -93,6 +125,7 @@ export interface MockedApi {
 export async function mockPortal(page: Page, visitor: Visitor): Promise<MockedApi> {
   const routes = portalRoutes(visitor);
   let missed: readonly string[] = [];
+  let answered: readonly AnsweredCall[] = [];
   await page.route("**/_config.js", (route) =>
     route.fulfill({ status: 200, contentType: "application/javascript", body: CONFIG_SCRIPT }),
   );
@@ -110,10 +143,27 @@ export async function mockPortal(page: Page, visitor: Visitor): Promise<MockedAp
         missed = [...missed, key];
         return fulfill(route, { status: 404, body: { error: "not_found" } });
       }
+      answered = [...answered, { key, body: request.postData() }];
       return fulfill(route, typeof answer === "function" ? answer(request) : answer);
     },
   );
-  return { unmocked: () => missed };
+  return {
+    unmocked: () => missed,
+    bodies: (key) => answered.filter((call) => call.key === key).map((call) => (call.body === null ? null : JSON.parse(call.body))),
+  };
+}
+
+/**
+ * How storage answers the video's link: "hold" never answers, so the player
+ * waits with its controls (Playwright's Chromium lacks the proprietary
+ * codecs an MP4 needs, and no video file sits in the repo, KP5); "refuse"
+ * answers 403, as storage does an expired link.
+ */
+export async function routeVideo(page: Page, answer: "hold" | "refuse"): Promise<void> {
+  await page.route(
+    (url) => url.pathname === VIDEO_PATH,
+    (route) => (answer === "refuse" ? route.fulfill({ status: 403, body: "" }) : undefined),
+  );
 }
 
 /** Starts the page signed in as the fake session (the e2e build's stand-in for Clerk, KP10). */

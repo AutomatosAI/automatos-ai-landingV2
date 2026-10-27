@@ -26,16 +26,20 @@ import { PDF_PAGE_COUNT } from "./pdf";
  */
 
 export const ADA_ID = ADA_ME.investor.id;
-const BEN_ID = "00000000-0000-4000-8000-000000000002";
-const CARA_ID = "00000000-0000-4000-8000-000000000003";
-const DAN_ID = "00000000-0000-4000-8000-000000000004";
+export const BEN_ID = "00000000-0000-4000-8000-000000000002";
+export const CARA_ID = "00000000-0000-4000-8000-000000000003";
+export const DAN_ID = "00000000-0000-4000-8000-000000000004";
 
 /** The deck: a PDF of PDF_PAGE_COUNT pages, served by the PDF fixture. */
 export const DECK_ID = "00000000-0000-4000-8000-0000000000d1";
 const ONE_PAGER_ID = "00000000-0000-4000-8000-0000000000d2";
 const MODEL_ID = "00000000-0000-4000-8000-0000000000d3";
-const DEMO_ID = "00000000-0000-4000-8000-0000000000d4";
+/** The video: its storage link is answered by routeVideo (api.ts). */
+export const DEMO_ID = "00000000-0000-4000-8000-0000000000d4";
 const DRAFT_ID = "00000000-0000-4000-8000-0000000000d5";
+/** A longer PDF, for the page charts of the document stats (stats.ts); never opened in the viewer. */
+export const MEMO_ID = "00000000-0000-4000-8000-0000000000d6";
+export const MEMO_PAGE_COUNT = 8;
 
 export const SESSION_ID = "00000000-0000-4000-8000-00000000005e";
 
@@ -71,6 +75,16 @@ export const LIBRARY: readonly InvestorDocument[] = [
     contentType: "video/mp4",
     sizeBytes: 48_234_496,
     pageCount: null,
+  }),
+  investorDocument({
+    id: MEMO_ID,
+    title: "Example market memo",
+    description: "The market, in eight invented pages.",
+    category: "Market",
+    fileName: "example-market-memo.pdf",
+    sizeBytes: 412_672,
+    pageCount: MEMO_PAGE_COUNT,
+    version: 2,
   }),
 ];
 
