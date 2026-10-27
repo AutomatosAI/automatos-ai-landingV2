@@ -6,9 +6,12 @@ import { useClearCacheOnSignOut } from "@/api/query-client";
 import { PortalGate } from "@/components/shell/PortalGate";
 import { PortalLayout } from "@/layout/PortalLayout";
 import { HOME_PATH } from "@/lib/paths";
+import { Contact } from "@/pages/Contact";
 import { Documents } from "@/pages/Documents";
+import { Faq } from "@/pages/Faq";
 import { Home } from "@/pages/Home";
 import { Profile } from "@/pages/Profile";
+import { Team } from "@/pages/Team";
 import { Viewer } from "@/pages/Viewer";
 import { TrackingProvider } from "@/tracking/TrackingProvider";
 
@@ -30,6 +33,9 @@ export function App() {
             <Route index element={<Home />} />
             <Route path="documents" element={<Documents />} />
             <Route path="documents/:id" element={<Viewer />} />
+            <Route path="team" element={<Team />} />
+            <Route path="faq" element={<Faq />} />
+            <Route path="contact" element={<Contact />} />
             <Route path="profile" element={<Profile />} />
             <Route path="admin" element={<AdminGate />}>
               <Route index element={<AdminOverview />} />

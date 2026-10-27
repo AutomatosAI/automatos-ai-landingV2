@@ -1,13 +1,16 @@
+import { readdirSync } from "node:fs";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { MIGRATION_LOCK_KEY, MigrationError, listMigrationFiles, runMigrations } from "../migrate.js";
+import { MIGRATIONS_DIR, MIGRATION_LOCK_KEY, MigrationError, listMigrationFiles, runMigrations } from "../migrate.js";
 import { createTestDb } from "./helpers/test-db.js";
 
 const TABLES = ["alerts_sent", "documents", "events", "investors", "schema_migrations", "sections", "sessions"];
 const CHECK_VIOLATION = "23514";
 const UNIQUE_VIOLATION = "23505";
+/** Every shipped migration, in order (read here, not through listMigrationFiles, which is under test). */
+const SHIPPED = readdirSync(MIGRATIONS_DIR).filter((name) => name.endsWith(".sql")).sort();
 
 /** @param {import("../db.js").Db} db */
 async function addInvestor(db, clerkUserId = "user_ada", extra = {}) {
@@ -51,27 +54,28 @@ describe("runMigrations: the shipped migrations", () => {
   });
   afterAll(() => db.end());
 
-  it("applies 001 to a fresh database and creates every table in schema investors", async () => {
-    await expect(runMigrations(db)).resolves.toEqual(["001_init.sql"]);
+  it("applies every shipped file, 001 first, to a fresh database and creates every table in schema investors", async () => {
+    expect(SHIPPED[0]).toBe("001_init.sql");
+    await expect(runMigrations(db)).resolves.toEqual(SHIPPED);
     const { rows } = await db.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = $1 ORDER BY table_name",
       ["investors"],
     );
     expect(rows.map((row) => row.table_name)).toEqual(TABLES);
-    expect(await appliedNames(db)).toEqual(["001_init.sql"]);
+    expect(await appliedNames(db)).toEqual(SHIPPED);
   });
 
   it("applies nothing on a second run", async () => {
     const applied = await runMigrations(db);
     expect(applied).toEqual([]);
     expect(Object.isFrozen(applied)).toBe(true);
-    expect(await appliedNames(db)).toEqual(["001_init.sql"]);
+    expect(await appliedNames(db)).toEqual(SHIPPED);
   });
 
   it("applies each file once when two runs race (advisory lock, re-checked inside it)", async () => {
     const both = await Promise.all([runMigrations(db), runMigrations(db)]);
     expect(both).toEqual([[], []]);
-    expect(await appliedNames(db)).toEqual(["001_init.sql"]);
+    expect(await appliedNames(db)).toEqual(SHIPPED);
   });
 
   it("creates the three events indexes and the alerts_sent once-index", async () => {
@@ -241,10 +245,11 @@ describe("runMigrations: failures and an existing schema", () => {
       },
     });
     const recorded = { ...db, tx: (fn) => db.tx((client) => fn(record(client))) };
-    await expect(runMigrations(recorded)).resolves.toEqual(["001_init.sql"]);
+    await expect(runMigrations(recorded)).resolves.toEqual(SHIPPED);
     expect(statements.some(({ text }) => /CREATE SCHEMA/i.test(text))).toBe(false);
     const locks = statements.filter(({ text }) => text.includes("pg_advisory_xact_lock"));
-    expect(locks).toHaveLength(2);
+    // One for the bootstrap, one per file.
+    expect(locks).toHaveLength(1 + SHIPPED.length);
     expect(locks.every(({ params }) => params?.[0] === MIGRATION_LOCK_KEY)).toBe(true);
   });
 

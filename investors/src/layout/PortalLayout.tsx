@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom";
 import { useMe } from "@/api/me";
 import { useAuthState } from "@/auth";
 import { AppHeader } from "@/components/shell/AppHeader";
+import { publishedPages } from "@/sections/sections-model";
+import { useSections } from "@/sections/use-sections";
 
 import { portalNav } from "./nav";
 import { NavSheet } from "./NavSheet";
@@ -11,7 +13,9 @@ import { Sidebar } from "./Sidebar";
 function PortalFrame({ userId }: { readonly userId: string }) {
   // PortalGate has /me cached before this renders.
   const me = useMe(userId);
-  const items = me.data ? portalNav(me.data) : [];
+  // The section links wait for the profile; without an answer there are none.
+  const sections = useSections(userId, me.data?.profileComplete === true);
+  const items = me.data ? portalNav(me.data, publishedPages(sections.data ?? [])) : [];
   const hasNav = items.length > 0;
   return (
     <div className="flex min-h-dvh flex-col">

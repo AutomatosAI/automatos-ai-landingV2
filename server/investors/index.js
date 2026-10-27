@@ -31,6 +31,7 @@ import { createAdminOverviewRouter } from "./routes/admin-overview.js";
 import { createDocumentsRouter } from "./routes/documents.js";
 import { createEventsRouter } from "./routes/events.js";
 import { createMeRouter } from "./routes/me.js";
+import { createSectionsRouter } from "./routes/sections.js";
 import { createDocStore } from "./s3.js";
 import { APP_DIST_DIR, createAppRouter } from "./static.js";
 
@@ -201,6 +202,7 @@ function createRoutes(config, deps, { db, alerts, logger }) {
     createEventsRouter({ db }),
     createAdminInvestorsRouter({ db, logger }),
     createAdminOverviewRouter({ db }),
+    createSectionsRouter({ db }),
   ]);
 }
 

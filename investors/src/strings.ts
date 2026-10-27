@@ -26,6 +26,9 @@ export const strings = {
     label: "Portal",
     home: "Home",
     documents: "Documents",
+    team: "Team",
+    faq: "FAQ",
+    contact: "Contact",
     profile: "Profile",
     admin: "Admin",
     menu: "Menu",
@@ -93,6 +96,16 @@ export const strings = {
       body: "This document is no longer available. It may have been withdrawn or replaced.",
     },
     notViewable: "This document opens as a download.",
+  },
+  /**
+   * The admins' markdown pages (US-009): the overview on the home page, and
+   * Team, FAQ and Contact. A page shows the section's own title once it is
+   * published; these titles stand in until then.
+   */
+  sections: {
+    titles: { team: "Team", faq: "FAQ", contact: "Contact" },
+    comingSoon: "Coming soon.",
+    contactLine: { before: "You can also email ", after: "." },
   },
   contact: {
     helloEmail: HELLO_EMAIL,
