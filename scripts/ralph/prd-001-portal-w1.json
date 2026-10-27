@@ -6,24 +6,78 @@
   "worktree": "<workspace>/.worktrees/automatos-ai-landingV2/feat+investor-portal-w1",
   "description": "Wave 1 (the core) of the investor portal at automatos.app/investors: a React app served by the site's Express server, Clerk sign-in, a short investor profile, a document library with a PDF viewer and downloads, per-page reading events, an admin area (document upload, overview, investors table and detail) and admin alert emails. Data lives in Postgres schema 'investors' (its own role); files in a private S3 bucket. Wave 2 (sections, video, document analytics, CSV, privacy text, footer link) is a later kit.",
   "decisions": [
-    {"id": "KP1", "text": "FILES. A story may create or change ONLY: investors/** (the React app), server/investors/** (the API, its SQL migrations and its tests), vitest.config.js (root), server.js (ADDITIVE ONLY: the portal import, its mount lines and the Clerk key in hydrateConfig; the public allow-list arrays CLEAN_URL_PAGES, HTML_ONLY_PAGES and PUBLIC_ASSETS stay byte-identical), _config.js.template (one added line), Dockerfile, .dockerignore, package.json, package-lock.json (root), .github/workflows/investors.yml (new), README.md (a 'Investor portal' section), and this kit's files under scripts/ralph/. Never: any existing .html page, any _*.js or *.css of the public site, images/, uploads/, content/, design/, .github/workflows/malware-scan.yml, .gitignore entries that un-ignore anything."},
-    {"id": "KP2", "text": "DEPENDENCIES: only these, each installed with 'npm install --save-exact --ignore-scripts <name>@<major>' (or the exact version given) and recorded in the DONE note. ROOT dependencies: the existing compression, express, nodemailer, plus @clerk/backend@3, pg@8, @aws-sdk/client-s3@3, @aws-sdk/s3-request-presigner@3, zod@3, express-rate-limit@7. ROOT devDependencies: vitest@3, supertest@7, @electric-sql/pglite@0.5. investors/ dependencies: react@18, react-dom@18, react-router-dom@6, @tanstack/react-query@5, @clerk/clerk-react@5, react-pdf@9, pdfjs-dist (exactly the version react-pdf@9 depends on, 4.8.69), recharts@2, lucide-react@0, class-variance-authority@0.7, clsx@2, tailwind-merge@2 (NOT 3: v3 is Tailwind 4 only), tailwindcss-animate@1, sonner@2, zod@3, any @radix-ui/react-* package. investors/ devDependencies: vite@6, @vitejs/plugin-react@4, typescript@5, tailwindcss@3, postcss@8, autoprefixer@10, eslint@9, @eslint/js@9, typescript-eslint@8, eslint-plugin-react-hooks@5, eslint-plugin-react-refresh@0, globals, vitest@3, jsdom@26, @testing-library/react@16, @testing-library/jest-dom@6, @types/react@18, @types/react-dom@18, @types/node@22, @playwright/test@1.64.1 (exact). Anything else: RALPH_BLOCKED with the reason. The gate enforces the list and the majors."},
-    {"id": "KP3", "text": "SERVER-SIDE ENFORCEMENT. Every /api/investors route except GET /api/investors/health goes through the auth middleware; identity (clerk user id, email, investor id) comes ONLY from the verified Clerk token, never from a body, query, header other than Authorization, or cookie; admin = the token's Clerk user id is in INVESTOR_ADMIN_CLERK_IDS (comma-separated), checked on the server for every /admin route. A blocked investor gets 403 on every investor route. Unpublished documents are 404 to investors. A test enumerates the router stack and fails if any route other than /health lacks the middleware."},
-    {"id": "KP4", "text": "NEVER BREAK THE SITE. The portal is optional. Missing config (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, or the S3 variables for document routes) or a failed migration puts the portal in 'disabled' with a logged reason: /api/investors/* answers 503 {error:'portal_unavailable'} and /investors serves the app, which shows 'The investor portal is temporarily unavailable' and the contact link. Every other route of automatos.app behaves exactly as on the base. Startup never throws because of the portal; migrations run in the background after app.listen and the portal answers 503 'starting' until they finish."},
-    {"id": "KP5", "text": "PUBLIC REPO. This repository is public. Never commit: env files (the secrets hook blocks *.env and *.env.* paths: document variable NAMES in README.md instead, never an .env.example), keys or tokens (sk_live_, sk_test_ with a real value, pk_live_, AKIA..., private keys), real documents, real investor names or emails, the names of the site's admins, or text from the private PRD's content plan or open questions. Test fixtures are invented (investor 'Ada Example' at 'Example Ventures', ada@example.com) and tiny (a generated one- or two-page PDF under 20 kB). No vendor branding from the reference portal (KP12)."},
-    {"id": "KP6", "text": "LOCAL CHECKS ARE PURE NODE. Allowed on this machine: npm ci/install (KP2 rules), tsc, eslint, vitest (jsdom and PGlite run in-process), vite build, node --check, reading node_modules. NEVER on this machine: node server.js, vite dev, vite preview, any server or listening socket, Playwright, a browser, docker, gh workflow run, git push, opening a PR, git merge. Playwright and the docker build run in CI only (W1-05, W1-19)."},
-    {"id": "KP7", "text": "TEST DATABASE. Server code talks to Postgres only through server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn). Tests use the same interface over PGlite (@electric-sql/pglite, real Postgres in-process) via server/investors/__tests__/helpers/test-db.js, or over pg when INVESTORS_TEST_DATABASE_URL is set (CI's Postgres service). Every SQL statement is parameterized ($1..$n) and schema-qualified (investors.<table>); no string-built SQL with request data."},
-    {"id": "KP8", "text": "MIGRATIONS (deviation from the PRD's node-pg-migrate, so tests run on PGlite): numbered plain SQL files server/investors/migrations/NNN_name.sql, applied in order by server/investors/migrate.js. The runner: creates schema 'investors' only when pg_namespace lacks it (in production the schema already exists, owned by the portal's role), creates investors.schema_migrations(name text primary key, applied_at timestamptz default now()), then applies each missing file in its own transaction after SELECT pg_advisory_xact_lock(724001) and records it. Re-running is a no-op. A failed file rolls back and disables the portal (KP4)."},
-    {"id": "KP9", "text": "CLERK. App: @clerk/clerk-react@5 <ClerkProvider publishableKey={window.AUTOMATOS_CONFIG.clerkPublishableKey}> (runtime config, hydrated by server.js from CLERK_PUBLISHABLE_KEY; never a build-time env). API calls send 'Authorization: Bearer <await getToken()>'. Server: @clerk/backend verifyToken(token, {secretKey, authorizedParties}) with authorizedParties from INVESTORS_AUTHORIZED_PARTIES (comma-separated, default 'https://automatos.app'), behind an injectable verifier (academy server/spine/auth.js pattern) so tests use a fake. Investor email and name come from the Clerk user (createClerkClient({secretKey}).users.getUser, cached per process for 10 minutes) on first sight; later requests read the row. NO cookie auth anywhere (stricter than the PRD): the pagehide flush uses fetch(..., {keepalive: true}) with the last cached token."},
-    {"id": "KP10", "text": "E2E FAKE AUTH SEAM. investors/src/auth/ has ONE module that wraps Clerk (useAuthState, SignedInGate, AccountMenu, getToken). When import.meta.env.VITE_INVESTORS_E2E === '1' (set ONLY by the e2e build script) it swaps to a fake provider whose code contains the marker string 'INVESTORS_E2E_FAKE_AUTH'. The production build (npm run build) must not contain that marker (vite dead-code-eliminates the branch; the gate greps investors/dist). The server has no fake verifier outside tests."},
-    {"id": "KP11", "text": "S3. server/investors/s3.js (pattern: academy server/media/s3.js, lazy S3Client) with an injectable client; env INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY. Keys: documents/<documentId>/v<version>/<safeFileName> (safeFileName: [A-Za-z0-9._-] only, max 120 chars). Presigned PUT 15 minutes with ContentType fixed; presigned GET 5 minutes with ResponseContentDisposition (inline or attachment; filename*=UTF-8 encoded). Allowed content types: application/pdf, video/mp4, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.wordprocessingml.document. Max 262144000 bytes (250 MB). Never log a presigned URL."},
-    {"id": "KP12", "text": "REFERENCE PORTAL (READ ONLY, never edit): /Users/gkavanagh/Development/Dr-Green-Cannexis/Dr-Green-Gateway. Port its UI: src/components/ui/* (only the components a story uses), components.json, src/pages/Dashboard.tsx + src/components/investor/InvestorSidebar.tsx + InvestorHero.tsx (shell), src/components/investor/sections/DataRoom.tsx (library), src/components/marketplace/CoaPdfViewer.tsx (viewer), src/components/admin/AnalyticsManager.tsx (overview, table, timeline), src/components/admin/DocumentManager.tsx (upload UI), src/lib/activityTracker.ts (heartbeat idea), src/lib/csvExport.ts. Strip ALL of: its brand names, copy, colours, fonts, domains, tiers, wallet/NFT, NDA, CRM, Supabase client and calls, Lovable code. Its data-access and permission code is never ported: every data call goes to this kit's API."},
-    {"id": "KP13", "text": "LOOK. The app looks like automatos.app: fonts Geist (sans), Instrument Serif (headings), Geist Mono (labels) from the same Google Fonts URL the site uses; colours as CSS variables mapped from the site's two moods: bone (--bg #F2EDE4, --bg-2 #ECE6DA, --fg #0F1411, --fg-2 #2C3531, --muted #6E6960, --rule-c rgba(15,20,17,0.14), --accent oklch(0.45 0.06 155), --accent-ink #F2EDE4) and pitch (--bg #0E1311, --bg-2 #161C19, --fg #EFE9DD, --fg-2 #C9C2B4, --muted #8A857C, --rule-c rgba(239,233,221,0.14), --accent oklch(0.78 0.10 95), --accent-ink #0E1311). The mood follows the site: localStorage 'automatos-mood' ('bone'|'pitch'), else prefers-color-scheme; set as data-mood on <body>; Tailwind darkMode ['class'] is NOT used: shadcn tokens read the CSS variables. Square-ish corners (radius 2px), thin rules, no gradients, no glow. Phone first: every investor page works at 390 px."},
-    {"id": "KP14", "text": "COPY. Calm and factual; no 'exclusive', no hype. Tracking notice (teaser and profile form): 'When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy (/privacy). Ask privacy@automatos.app to see or delete your data.' All UI strings in investors/src/strings.ts."},
-    {"id": "KP15", "text": "CODE RULES. Immutability (new objects, never mutate inputs). Files 200-400 lines, never over 800; functions under 50 lines; React components under 150 lines; nesting under 4. zod at every API boundary (server bodies and queries; client parses responses). Errors: the server returns {error:'<code>'} with the right status, logs detail server-side, never leaks stack traces; the client shows a plain message. No console.log in committed code (console.warn/error with context in the server only). Server code is plain ESM JavaScript like server.js, with JSDoc types; the app is TypeScript strict."},
-    {"id": "KP16", "text": "EVENTS. Types: signed_in, profile_completed, document_open, document_download, page_view, section_view, video_progress. document_open and document_download are written by the SERVER when it issues a link; the client may send only page_view, section_view, video_progress and heartbeats. duration_ms capped at 600000; page between 1 and the document's page_count (when known) else 1..2000; at most 50 events per batch; body at most 64 kB; 120 requests/minute/investor on /events, 30/minute on /link, 10/minute on PUT /me (express-rate-limit keyed by investor id)."},
-    {"id": "KP17", "text": "WAVE 1 SCOPE. Build only W1 stories. NOT in this wave (a later kit): team/FAQ/contact sections and their editor, the video player, per-document analytics and page drop-off charts, CSV export, the privacy-policy section, the footer link, the sitemap entry, investor update emails. The admin investor table and detail ARE in this wave. Leave hooks for wave 2 only where a story says so."},
-    {"id": "KP18", "text": "ONE PUSH, ONE PR, ONE CI RUN. Story commits end ' [skip ci]' and are never pushed by you (the runner pushes the branch as a backup). No story waits on CI and no AC says 'CI green'. When every W1 story passes, the last session runs the gate (--no-ci), then makes ONE empty signed commit without [skip ci]; the runner opens the wave's draft PR and that PR's run is the wave's CI. UI stories are verified by typecheck, lint, unit tests and, at the end, the Playwright screenshots of W1-19 in CI (no local browser: KP6)."}
+    {
+      "id": "KP1",
+      "text": "FILES. A story may create or change ONLY: investors/** (the React app), server/investors/** (the API, its SQL migrations and its tests), vitest.config.js (root), server.js (ADDITIVE ONLY: the portal import, its mount lines and the Clerk key in hydrateConfig; the public allow-list arrays CLEAN_URL_PAGES, HTML_ONLY_PAGES and PUBLIC_ASSETS stay byte-identical), _config.js.template (one added line), Dockerfile, .dockerignore, package.json, package-lock.json (root), .github/workflows/investors.yml (new), README.md (a 'Investor portal' section), and this kit's files under scripts/ralph/. Never: any existing .html page, any _*.js or *.css of the public site, images/, uploads/, content/, design/, .github/workflows/malware-scan.yml, .gitignore entries that un-ignore anything."
+    },
+    {
+      "id": "KP2",
+      "text": "DEPENDENCIES: only these, each installed with 'npm install --save-exact --ignore-scripts <name>@<major>' (or the exact version given) and recorded in the DONE note. ROOT dependencies: the existing compression, express, nodemailer, plus @clerk/backend@3, pg@8, @aws-sdk/client-s3@3, @aws-sdk/s3-request-presigner@3, zod@3, express-rate-limit@7. ROOT devDependencies: vitest@3, supertest@7, @electric-sql/pglite@0.5. investors/ dependencies: react@18, react-dom@18, react-router-dom@6, @tanstack/react-query@5, @clerk/clerk-react@5, react-pdf@9, pdfjs-dist (exactly the version react-pdf@9 depends on, 4.8.69), recharts@2, lucide-react@0, class-variance-authority@0.7, clsx@2, tailwind-merge@2 (NOT 3: v3 is Tailwind 4 only), tailwindcss-animate@1, sonner@2, zod@3, any @radix-ui/react-* package. investors/ devDependencies: vite@6, @vitejs/plugin-react@4, typescript@5, tailwindcss@3, postcss@8, autoprefixer@10, eslint@9, @eslint/js@9, typescript-eslint@8, eslint-plugin-react-hooks@5, eslint-plugin-react-refresh@0, globals, vitest@3, jsdom@26, @testing-library/react@16, @testing-library/jest-dom@6, @types/react@18, @types/react-dom@18, @types/node@22, @playwright/test@1.64.1 (exact). Anything else: RALPH_BLOCKED with the reason. The gate enforces the list and the majors."
+    },
+    {
+      "id": "KP3",
+      "text": "SERVER-SIDE ENFORCEMENT. Every /api/investors route except GET /api/investors/health goes through the auth middleware; identity (clerk user id, email, investor id) comes ONLY from the verified Clerk token, never from a body, query, header other than Authorization, or cookie; admin = the token's Clerk user id is in INVESTOR_ADMIN_CLERK_IDS (comma-separated), checked on the server for every /admin route. A blocked investor gets 403 on every investor route. Unpublished documents are 404 to investors. A test enumerates the router stack and fails if any route other than /health lacks the middleware."
+    },
+    {
+      "id": "KP4",
+      "text": "NEVER BREAK THE SITE. The portal is optional. Missing config (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, or the S3 variables for document routes) or a failed migration puts the portal in 'disabled' with a logged reason: /api/investors/* answers 503 {error:'portal_unavailable'} and /investors serves the app, which shows 'The investor portal is temporarily unavailable' and the contact link. Every other route of automatos.app behaves exactly as on the base. Startup never throws because of the portal; migrations run in the background after app.listen and the portal answers 503 'starting' until they finish."
+    },
+    {
+      "id": "KP5",
+      "text": "PUBLIC REPO. This repository is public. Never commit: env files (the secrets hook blocks *.env and *.env.* paths: document variable NAMES in README.md instead, never an .env.example), keys or tokens (sk_live_, sk_test_ with a real value, pk_live_, AKIA..., private keys), real documents, real investor names or emails, the names of the site's admins, or text from the private PRD's content plan or open questions. Test fixtures are invented (investor 'Ada Example' at 'Example Ventures', ada@example.com) and tiny (a generated one- or two-page PDF under 20 kB). No vendor branding from the reference portal (KP12)."
+    },
+    {
+      "id": "KP6",
+      "text": "LOCAL CHECKS ARE PURE NODE. Allowed on this machine: npm ci/install (KP2 rules), tsc, eslint, vitest (jsdom and PGlite run in-process), vite build, node --check, reading node_modules. NEVER on this machine: node server.js, vite dev, vite preview, any server or listening socket, Playwright, a browser, docker, gh workflow run, git push, opening a PR, git merge. Playwright and the docker build run in CI only (W1-05, W1-19)."
+    },
+    {
+      "id": "KP7",
+      "text": "TEST DATABASE. Server code talks to Postgres only through server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn). Tests use the same interface over PGlite (@electric-sql/pglite, real Postgres in-process) via server/investors/__tests__/helpers/test-db.js, or over pg when INVESTORS_TEST_DATABASE_URL is set (CI's Postgres service). Every SQL statement is parameterized ($1..$n) and schema-qualified (investors.<table>); no string-built SQL with request data."
+    },
+    {
+      "id": "KP8",
+      "text": "MIGRATIONS (deviation from the PRD's node-pg-migrate, so tests run on PGlite): numbered plain SQL files server/investors/migrations/NNN_name.sql, applied in order by server/investors/migrate.js. The runner: creates schema 'investors' only when pg_namespace lacks it (in production the schema already exists, owned by the portal's role), creates investors.schema_migrations(name text primary key, applied_at timestamptz default now()), then applies each missing file in its own transaction after SELECT pg_advisory_xact_lock(724001) and records it. Re-running is a no-op. A failed file rolls back and disables the portal (KP4)."
+    },
+    {
+      "id": "KP9",
+      "text": "CLERK. App: @clerk/clerk-react@5 <ClerkProvider publishableKey={window.AUTOMATOS_CONFIG.clerkPublishableKey}> (runtime config, hydrated by server.js from CLERK_PUBLISHABLE_KEY; never a build-time env). API calls send 'Authorization: Bearer <await getToken()>'. Server: @clerk/backend verifyToken(token, {secretKey, authorizedParties}) with authorizedParties from INVESTORS_AUTHORIZED_PARTIES (comma-separated, default 'https://automatos.app'), behind an injectable verifier (academy server/spine/auth.js pattern) so tests use a fake. Investor email and name come from the Clerk user (createClerkClient({secretKey}).users.getUser, cached per process for 10 minutes) on first sight; later requests read the row. NO cookie auth anywhere (stricter than the PRD): the pagehide flush uses fetch(..., {keepalive: true}) with the last cached token."
+    },
+    {
+      "id": "KP10",
+      "text": "E2E FAKE AUTH SEAM. investors/src/auth/ has ONE module that wraps Clerk (useAuthState, SignedInGate, AccountMenu, getToken). When import.meta.env.VITE_INVESTORS_E2E === '1' (set ONLY by the e2e build script) it swaps to a fake provider whose code contains the marker string 'INVESTORS_E2E_FAKE_AUTH'. The production build (npm run build) must not contain that marker (vite dead-code-eliminates the branch; the gate greps investors/dist). The server has no fake verifier outside tests."
+    },
+    {
+      "id": "KP11",
+      "text": "S3. server/investors/s3.js (pattern: academy server/media/s3.js, lazy S3Client) with an injectable client; env INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY. Keys: documents/<documentId>/v<version>/<safeFileName> (safeFileName: [A-Za-z0-9._-] only, max 120 chars). Presigned PUT 15 minutes with ContentType fixed; presigned GET 5 minutes with ResponseContentDisposition (inline or attachment; filename*=UTF-8 encoded). Allowed content types: application/pdf, video/mp4, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.wordprocessingml.document. Max 262144000 bytes (250 MB). Never log a presigned URL."
+    },
+    {
+      "id": "KP12",
+      "text": "REFERENCE PORTAL (READ ONLY, never edit): /Users/gkavanagh/Development/Dr-Green-Cannexis/Dr-Green-Gateway. Port its UI: src/components/ui/* (only the components a story uses), components.json, src/pages/Dashboard.tsx + src/components/investor/InvestorSidebar.tsx + InvestorHero.tsx (shell), src/components/investor/sections/DataRoom.tsx (library), src/components/marketplace/CoaPdfViewer.tsx (viewer), src/components/admin/AnalyticsManager.tsx (overview, table, timeline), src/components/admin/DocumentManager.tsx (upload UI), src/lib/activityTracker.ts (heartbeat idea), src/lib/csvExport.ts. Strip ALL of: its brand names, copy, colours, fonts, domains, tiers, wallet/NFT, NDA, CRM, Supabase client and calls, Lovable code. Its data-access and permission code is never ported: every data call goes to this kit's API."
+    },
+    {
+      "id": "KP13",
+      "text": "LOOK. The app looks like automatos.app: fonts Geist (sans), Instrument Serif (headings), Geist Mono (labels) from the same Google Fonts URL the site uses; colours as CSS variables mapped from the site's two moods: bone (--bg #F2EDE4, --bg-2 #ECE6DA, --fg #0F1411, --fg-2 #2C3531, --muted #6E6960, --rule-c rgba(15,20,17,0.14), --accent oklch(0.45 0.06 155), --accent-ink #F2EDE4) and pitch (--bg #0E1311, --bg-2 #161C19, --fg #EFE9DD, --fg-2 #C9C2B4, --muted #8A857C, --rule-c rgba(239,233,221,0.14), --accent oklch(0.78 0.10 95), --accent-ink #0E1311). The mood follows the site: localStorage 'automatos-mood' ('bone'|'pitch'), else prefers-color-scheme; set as data-mood on <body>; Tailwind darkMode ['class'] is NOT used: shadcn tokens read the CSS variables. Square-ish corners (radius 2px), thin rules, no gradients, no glow. Phone first: every investor page works at 390 px."
+    },
+    {
+      "id": "KP14",
+      "text": "COPY. Calm and factual; no 'exclusive', no hype. Tracking notice (teaser and profile form): 'When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy (/privacy). Ask privacy@automatos.app to see or delete your data.' All UI strings in investors/src/strings.ts."
+    },
+    {
+      "id": "KP15",
+      "text": "CODE RULES. Immutability (new objects, never mutate inputs). Files 200-400 lines, never over 800; functions under 50 lines; React components under 150 lines; nesting under 4. zod at every API boundary (server bodies and queries; client parses responses). Errors: the server returns {error:'<code>'} with the right status, logs detail server-side, never leaks stack traces; the client shows a plain message. No console.log in committed code (console.warn/error with context in the server only). Server code is plain ESM JavaScript like server.js, with JSDoc types; the app is TypeScript strict."
+    },
+    {
+      "id": "KP16",
+      "text": "EVENTS. Types: signed_in, profile_completed, document_open, document_download, page_view, section_view, video_progress. document_open and document_download are written by the SERVER when it issues a link; the client may send only page_view, section_view, video_progress and heartbeats. duration_ms capped at 600000; page between 1 and the document's page_count (when known) else 1..2000; at most 50 events per batch; body at most 64 kB; 120 requests/minute/investor on /events, 30/minute on /link, 10/minute on PUT /me (express-rate-limit keyed by investor id)."
+    },
+    {
+      "id": "KP17",
+      "text": "WAVE 1 SCOPE. Build only W1 stories. NOT in this wave (a later kit): team/FAQ/contact sections and their editor, the video player, per-document analytics and page drop-off charts, CSV export, the privacy-policy section, the footer link, the sitemap entry, investor update emails. The admin investor table and detail ARE in this wave. Leave hooks for wave 2 only where a story says so."
+    },
+    {
+      "id": "KP18",
+      "text": "ONE PUSH, ONE PR, ONE CI RUN. Story commits end ' [skip ci]' and are never pushed by you (the runner pushes the branch as a backup). No story waits on CI and no AC says 'CI green'. When every W1 story passes, the last session runs the gate (--no-ci), then makes ONE empty signed commit without [skip ci]; the runner opens the wave's draft PR and that PR's run is the wave's CI. UI stories are verified by typecheck, lint, unit tests and, at the end, the Playwright screenshots of W1-19 in CI (no local browser: KP6)."
+    }
   ],
   "localChecks": [
     "npm test (root: vitest run over server/investors/**/__tests__)",
@@ -40,14 +94,38 @@
     "The reference portal (KP12)."
   ],
   "ownerTest": [
-    {"id": "OT-1", "what": "US-000 in the PRD: create role investors_app and schema investors in the academy Postgres; prove the role cannot read academy tables; confirm backups."},
-    {"id": "OT-2", "what": "US-000: private bucket automatos-investor-docs (Block Public Access, SSE-S3), CORS GET/PUT/HEAD from https://automatos.app, IAM user limited to that bucket; one test upload and download."},
-    {"id": "OT-3", "what": "Railway variables on the landingV2 service: INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, INVESTORS_AUTHORIZED_PARTIES, INVESTOR_ADMIN_CLERK_IDS, INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY, INVESTOR_ALERT_EMAILS."},
-    {"id": "OT-4", "what": "After deploy: the deploy log shows the investors migrations applied; automatos.app pages unchanged; /api/investors/health answers ok."},
-    {"id": "OT-5", "what": "Sign up at /investors with a fresh email, complete the profile, and confirm the sign-up alert email arrives."},
-    {"id": "OT-6", "what": "As an admin: upload a test PDF, publish it with alert-on-first-open, open it as the test investor, read three pages, download it; confirm the first-open email, and that the admin investor detail shows the open, the download and the pages with times."},
-    {"id": "OT-7", "what": "Phone check at 390 px: teaser, profile form, library, viewer."},
-    {"id": "OT-8", "what": "Block the test investor and confirm they get the blocked message; delete them and confirm their events are gone."}
+    {
+      "id": "OT-1",
+      "what": "US-000 in the PRD: create role investors_app and schema investors in the academy Postgres; prove the role cannot read academy tables; confirm backups."
+    },
+    {
+      "id": "OT-2",
+      "what": "US-000: private bucket automatos-investor-docs (Block Public Access, SSE-S3), CORS GET/PUT/HEAD from https://automatos.app, IAM user limited to that bucket; one test upload and download."
+    },
+    {
+      "id": "OT-3",
+      "what": "Railway variables on the landingV2 service: INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, INVESTORS_AUTHORIZED_PARTIES, INVESTOR_ADMIN_CLERK_IDS, INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY, INVESTOR_ALERT_EMAILS."
+    },
+    {
+      "id": "OT-4",
+      "what": "After deploy: the deploy log shows the investors migrations applied; automatos.app pages unchanged; /api/investors/health answers ok."
+    },
+    {
+      "id": "OT-5",
+      "what": "Sign up at /investors with a fresh email, complete the profile, and confirm the sign-up alert email arrives."
+    },
+    {
+      "id": "OT-6",
+      "what": "As an admin: upload a test PDF, publish it with alert-on-first-open, open it as the test investor, read three pages, download it; confirm the first-open email, and that the admin investor detail shows the open, the download and the pages with times."
+    },
+    {
+      "id": "OT-7",
+      "what": "Phone check at 390 px: teaser, profile form, library, viewer."
+    },
+    {
+      "id": "OT-8",
+      "what": "Block the test investor and confirm they get the blocked message; delete them and confirm their events are gone."
+    }
   ],
   "userStories": [
     {
@@ -64,7 +142,16 @@
         "server/investors/__tests__/config.test.js and portal-status.test.js: missing variables listed by name; S3 null when partial; admins parsing; /health 200 without auth; any other /api/investors path 503 when disabled; frozen config → DONE — both files committed in db8f322 (40 tests)",
         "npm test passes; node --check server.js passes → DONE — npm test: 2 files, 40 passed; node --check server.js OK"
       ],
-      "files": ["server/investors/config.js", "server/investors/index.js", "server/investors/__tests__/config.test.js", "server/investors/__tests__/portal-status.test.js", "server.js", "package.json", "package-lock.json", "vitest.config.js"],
+      "files": [
+        "server/investors/config.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/config.test.js",
+        "server/investors/__tests__/portal-status.test.js",
+        "server.js",
+        "package.json",
+        "package-lock.json",
+        "vitest.config.js"
+      ],
       "priority": 1,
       "passes": true,
       "notes": " | DONE (db8f322): root devDependencies vitest 3.2.7, supertest 7.3.1 (exact; npm also moved transitive hasown 2.0.3->2.0.4). createInvestorsPortal({env, deps:{logger}}) reads config once in the factory and returns frozen {apiRouter, appRouter, start, status}; apiRouter order = no-store middleware, GET /health, requireReady (503 {error:'portal_unavailable', state}), JSON 404 {error:'not_found'}: later routes go between requireReady and the 404. start() memoizes one boot() promise; W1-02 adds db + migrations inside boot() with try/catch -> disabled. appRouter is an empty Router, not mounted yet (W1-04). config.js exports REQUIRED_VARS, parseList, readPortalConfig; config.admins is a read-only Set. server.js holds const investorsPortal; start() runs in the app.listen callback. The root lock pulls rollup 4.65.1 (dev, via vitest), whose published manifest declares an optional @napi-rs/lzma-linux-x64-gnu that rollup never requires: registry-identical integrity, provenance-attested."
@@ -75,18 +162,27 @@
       "title": "Database access, the SQL migration runner and the schema",
       "description": "As the portal, I need the investors schema created and kept up to date on every deploy, testable in-process (KP7, KP8).",
       "acceptanceCriteria": [
-        "server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn) (BEGIN/COMMIT/ROLLBACK on one client) and end(); pg@8 added (KP2)",
-        "server/investors/__tests__/helpers/test-db.js: createTestDb() returns the same interface over PGlite (@electric-sql/pglite@0.5, devDependency) or over pg when INVESTORS_TEST_DATABASE_URL is set; each test file gets a fresh database (PGlite) or a fresh schema reset (pg)",
-        "server/investors/migrate.js: runMigrations(db, dir) per KP8 (schema created only if pg_namespace lacks it; investors.schema_migrations; one transaction per file with pg_advisory_xact_lock(724001); returns the list applied)",
-        "server/investors/migrations/001_init.sql creates, schema-qualified, exactly the PRD section 6 tables: investors (with the CHECK lists for investor_type, cheque_size, source; clerk_user_id UNIQUE; marketing_opt_in default false; blocked default false; created_at/last_seen_at default now()), documents (kind CHECK; version default 1; published default false; alert_on_first_open default false), sections (slug PK), sessions, events (type CHECK with the seven KP16 types; duration_ms CHECK between 0 and 600000; document_id ON DELETE SET NULL), alerts_sent (UNIQUE (investor_id, kind, document_id) using a unique index that treats NULL document_id as equal, e.g. COALESCE to a zero uuid), every investor FK ON DELETE CASCADE, and the three events indexes",
-        "createInvestorsPortal.start(): when config is complete, creates the db, runs migrations, sets state 'ready'; on any migration error logs it (console.error with the file name) and sets 'disabled' with reason 'migration_failed: <file>' (KP4)",
-        "server/investors/__tests__/migrate.test.js: fresh DB applies 001; second run applies nothing; deleting an investor cascades to sessions, events and alerts_sent; a CHECK violation (bad investor_type) is rejected; a broken migration file in a temp dir rolls back and leaves schema_migrations without it",
-        "npm test passes"
+        "server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn) (BEGIN/COMMIT/ROLLBACK on one client) and end(); pg@8 added (KP2) → DONE — server/investors/db.js (POOL_OPTIONS max 5, idle 30000, connect timeout 10000); pg 8.23.1 exact; db.test.js 9 tests with a fake Pool",
+        "server/investors/__tests__/helpers/test-db.js: createTestDb() returns the same interface over PGlite (@electric-sql/pglite@0.5, devDependency) or over pg when INVESTORS_TEST_DATABASE_URL is set; each test file gets a fresh database (PGlite) or a fresh schema reset (pg) → DONE — helpers/test-db.js: PGlite 0.5.12 per call, or db.js over pg with DROP SCHEMA investors CASCADE; vitest serial in pg mode",
+        "server/investors/migrate.js: runMigrations(db, dir) per KP8 (schema created only if pg_namespace lacks it; investors.schema_migrations; one transaction per file with pg_advisory_xact_lock(724001); returns the list applied) → DONE — server/investors/migrate.js: bootstrap + one tx per file under the lock, applied-check inside it; migrate.test.js asserts no CREATE SCHEMA on an existing schema and two locks",
+        "server/investors/migrations/001_init.sql creates, schema-qualified, exactly the PRD section 6 tables: investors (with the CHECK lists for investor_type, cheque_size, source; clerk_user_id UNIQUE; marketing_opt_in default false; blocked default false; created_at/last_seen_at default now()), documents (kind CHECK; version default 1; published default false; alert_on_first_open default false), sections (slug PK), sessions, events (type CHECK with the seven KP16 types; duration_ms CHECK between 0 and 600000; document_id ON DELETE SET NULL), alerts_sent (UNIQUE (investor_id, kind, document_id) using a unique index that treats NULL document_id as equal, e.g. COALESCE to a zero uuid), every investor FK ON DELETE CASCADE, and the three events indexes → DONE — migrations/001_init.sql: 6 tables + schema_migrations; CHECK and cascade tests in migrate.test.js; alerts_sent_once_idx COALESCE",
+        "createInvestorsPortal.start(): when config is complete, creates the db, runs migrations, sets state 'ready'; on any migration error logs it (console.error with the file name) and sets 'disabled' with reason 'migration_failed: <file>' (KP4) → DONE — index.js openDatabase(); portal-status.test.js: ready after migrating, migration_failed: 001_broken.sql, bootstrap, pool closed, no URL in logs",
+        "server/investors/__tests__/migrate.test.js: fresh DB applies 001; second run applies nothing; deleting an investor cascades to sessions, events and alerts_sent; a CHECK violation (bad investor_type) is rejected; a broken migration file in a temp dir rolls back and leaves schema_migrations without it → DONE — migrate.test.js 21 tests (fresh, rerun, race, cascade, CHECKs, broken file rolled back, misnamed files)",
+        "npm test passes → DONE — npm test: 4 files, 75 passed"
       ],
-      "files": ["server/investors/db.js", "server/investors/migrate.js", "server/investors/migrations/001_init.sql", "server/investors/index.js", "server/investors/__tests__/helpers/test-db.js", "server/investors/__tests__/migrate.test.js", "package.json", "package-lock.json"],
+      "files": [
+        "server/investors/db.js",
+        "server/investors/migrate.js",
+        "server/investors/migrations/001_init.sql",
+        "server/investors/index.js",
+        "server/investors/__tests__/helpers/test-db.js",
+        "server/investors/__tests__/migrate.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (17f7668): root dependency pg 8.23.1, devDependency @electric-sql/pglite 0.5.12 (exact). db.js: createDb({connectionString, logger?, Pool?}) → frozen {query(text, params) → {rows, rowCount}, tx(fn), end()}; inside tx(fn) use ONLY the client fn receives ({query, exec}; exec = unparameterized multi-statement script, migrations only; over PGlite an outer db.query inside tx deadlocks). Both drivers: int8 (count(*), bigserial, size_bytes) is a number, numeric a string, timestamptz a Date, errors carry SQLSTATE in .code (23505 unique, 23514 check). migrate.js exports runMigrations, listMigrationFiles, MigrationError (.file = file name or bootstrap), MIGRATIONS_DIR, MIGRATION_LOCK_KEY. 001_init.sql: documents.title and kind NOT NULL, sort_order NOT NULL DEFAULT 0, sections.body_md NOT NULL DEFAULT empty; alerts_sent has no PK, its once-index alerts_sent_once_idx is on (investor_id, kind, COALESCE(document_id, zero uuid)) so W1-18 uses plain ON CONFLICT DO NOTHING; alerts_sent.document_id CASCADES on document delete (SET NULL would collide); extra FK indexes sessions(investor_id, started_at DESC) and events(session_id). index.js: deps {logger, createDb, migrationsDir} injectable; the open db is held in createInvestorsPortal closure variable `database`, set just before ready: W1-03 hands it to the routes. Tests: createTestDb() from __tests__/helpers/test-db.js (fresh PGlite per call, about 1 s; with INVESTORS_TEST_DATABASE_URL the schema is dropped per call, so hold one test db per file at a time); vitest.config.js sets fileParallelism false in that mode (needed for the shared CI database). portal-status.test.js injects createDb over one shared test db; any new test that calls start() with complete config must inject createDb too (the real one would dial the URL)."
     },
     {
       "id": "W1-03",
@@ -101,7 +197,14 @@
         "server/investors/__tests__/route-coverage.test.js walks apiRouter's stack and fails if any route other than GET /health is reachable without requireInvestor (and every /admin path without requireAdmin); it passes now and will guard every later story",
         "npm test passes"
       ],
-      "files": ["server/investors/auth.js", "server/investors/index.js", "server/investors/__tests__/auth.test.js", "server/investors/__tests__/route-coverage.test.js", "package.json", "package-lock.json"],
+      "files": [
+        "server/investors/auth.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/auth.test.js",
+        "server/investors/__tests__/route-coverage.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
       "priority": 3,
       "passes": false,
       "notes": ""
@@ -121,7 +224,14 @@
         ".gitignore: investors/node_modules, investors/dist, investors/dist-e2e, investors/test-results, investors/playwright-report",
         "npm --prefix investors run typecheck, lint, test and build pass; npm test passes"
       ],
-      "files": ["investors/**", "server/investors/static.js", "server/investors/index.js", "server/investors/__tests__/static.test.js", "server.js", ".gitignore"],
+      "files": [
+        "investors/**",
+        "server/investors/static.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/static.test.js",
+        "server.js",
+        ".gitignore"
+      ],
       "priority": 4,
       "passes": false,
       "notes": ""
@@ -139,7 +249,12 @@
         "No local docker or CI run (KP6): the workflow is validated by a YAML parse (node -e with a tiny parser is not available: use python3 -c 'import yaml' if present, else review by reading) and by the wave's one CI run",
         "npm test and the investors checks still pass"
       ],
-      "files": ["Dockerfile", ".dockerignore", ".github/workflows/investors.yml", "README.md"],
+      "files": [
+        "Dockerfile",
+        ".dockerignore",
+        ".github/workflows/investors.yml",
+        "README.md"
+      ],
       "priority": 5,
       "passes": false,
       "notes": ""
@@ -158,7 +273,19 @@
         "Unit tests: config parsing, the auth seam's E2E switch, the client's status mapping",
         "npm --prefix investors run typecheck, lint, test, build pass; npm test passes"
       ],
-      "files": ["_config.js.template", "server.js", "investors/index.html", "investors/src/config.ts", "investors/src/auth/**", "investors/src/api/**", "investors/src/pages/Teaser.tsx", "investors/src/strings.ts", "investors/src/**/__tests__/**", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "_config.js.template",
+        "server.js",
+        "investors/index.html",
+        "investors/src/config.ts",
+        "investors/src/auth/**",
+        "investors/src/api/**",
+        "investors/src/pages/Teaser.tsx",
+        "investors/src/strings.ts",
+        "investors/src/**/__tests__/**",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 6,
       "passes": false,
       "notes": ""
@@ -175,7 +302,16 @@
         "Tests: server (PGlite): valid save, each invalid field, linkedin host check, opt-in timestamp, profile_completed written once, rate limit 429 on the 11th request; app: the form's pure validation model and the label maps",
         "npm test and the investors checks pass"
       ],
-      "files": ["server/investors/routes/me.js", "server/investors/index.js", "server/investors/__tests__/me.test.js", "investors/src/pages/Profile.tsx", "investors/src/profile/**", "investors/src/App.tsx", "investors/src/strings.ts", "investors/src/components/ui/**"],
+      "files": [
+        "server/investors/routes/me.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/me.test.js",
+        "investors/src/pages/Profile.tsx",
+        "investors/src/profile/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/src/components/ui/**"
+      ],
       "priority": 7,
       "passes": false,
       "notes": ""
@@ -191,7 +327,12 @@
         "Tests: real presigning with fake credentials (offline): PUT URL carries the content type and 900 s expiry, GET URL carries 300 s and the disposition with an RFC 5987 filename; head/remove through an injected fake client; safeFileName strips paths and odd characters and caps 120; disallowed type and oversize rejected",
         "npm test passes"
       ],
-      "files": ["server/investors/s3.js", "server/investors/__tests__/s3.test.js", "package.json", "package-lock.json"],
+      "files": [
+        "server/investors/s3.js",
+        "server/investors/__tests__/s3.test.js",
+        "package.json",
+        "package-lock.json"
+      ],
       "priority": 8,
       "passes": false,
       "notes": ""
@@ -209,7 +350,11 @@
         "Tests (PGlite + fake doc store): admin happy path create → upload-url → finalize → publish; replace bumps version; non-admin 403 on each route; bad id 404; zod 400s; storage null 503; delete removes the object",
         "npm test passes (route-coverage test included)"
       ],
-      "files": ["server/investors/routes/admin-documents.js", "server/investors/index.js", "server/investors/__tests__/admin-documents.test.js"],
+      "files": [
+        "server/investors/routes/admin-documents.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-documents.test.js"
+      ],
       "priority": 9,
       "passes": false,
       "notes": ""
@@ -226,7 +371,15 @@
         "Unit tests: the pure upload state machine (idle → requesting → uploading(pct) → finalizing → done | error) and the file-type check",
         "npm --prefix investors run typecheck, lint, test, build pass"
       ],
-      "files": ["investors/src/pages/admin/**", "investors/src/admin/**", "investors/src/components/ui/**", "investors/src/App.tsx", "investors/src/strings.ts", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "investors/src/pages/admin/**",
+        "investors/src/admin/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 10,
       "passes": false,
       "notes": ""
@@ -242,7 +395,11 @@
         "Tests (PGlite + fake store): list hides unpublished and file-less; link writes the right event type and version; 404 cases; first-open hook called once across two opens; 429 on the 31st call",
         "npm test passes"
       ],
-      "files": ["server/investors/routes/documents.js", "server/investors/index.js", "server/investors/__tests__/documents.test.js"],
+      "files": [
+        "server/investors/routes/documents.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/documents.test.js"
+      ],
       "priority": 11,
       "passes": false,
       "notes": ""
@@ -260,7 +417,17 @@
         "Unit tests: grouping and ordering, search filter, size and date formatting",
         "npm --prefix investors run typecheck, lint, test, build pass"
       ],
-      "files": ["investors/src/layout/**", "investors/src/pages/Home.tsx", "investors/src/pages/Documents.tsx", "investors/src/documents/**", "investors/src/components/ui/**", "investors/src/App.tsx", "investors/src/strings.ts", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "investors/src/layout/**",
+        "investors/src/pages/Home.tsx",
+        "investors/src/pages/Documents.tsx",
+        "investors/src/documents/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 12,
       "passes": false,
       "notes": ""
@@ -277,7 +444,14 @@
         "The viewer exposes onPageVisible(page, ms) for W1-14 (a visibility model: a page counts when at least 50% visible for at least 1000 ms; the model is pure and unit-tested)",
         "npm --prefix investors run typecheck, lint, test, build pass"
       ],
-      "files": ["investors/src/viewer/**", "investors/src/pages/Viewer.tsx", "investors/src/App.tsx", "investors/src/strings.ts", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "investors/src/viewer/**",
+        "investors/src/pages/Viewer.tsx",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 13,
       "passes": false,
       "notes": ""
@@ -293,7 +467,14 @@
         "Tests: server (PGlite): accepted types only, caps and clamps, foreign session ignored, 413 over 64 kB, 429 on the 121st request, identity from the token only; app: the queue/flush model with fake timers (flush interval, pagehide flush uses keepalive, token cache refresh)",
         "npm test and the investors checks pass"
       ],
-      "files": ["server/investors/routes/events.js", "server/investors/index.js", "server/investors/__tests__/events.test.js", "investors/src/tracking/**", "investors/src/viewer/**", "investors/src/App.tsx"],
+      "files": [
+        "server/investors/routes/events.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/events.test.js",
+        "investors/src/tracking/**",
+        "investors/src/viewer/**",
+        "investors/src/App.tsx"
+      ],
       "priority": 14,
       "passes": false,
       "notes": ""
@@ -311,7 +492,13 @@
         "Tests (PGlite with fixture events): sorting by each key, search escaping of % and _, filters, deck progress, detail summary, block then the investor's own call is 403, delete cascades, export shape, non-admin 403",
         "npm test passes"
       ],
-      "files": ["server/investors/routes/admin-investors.js", "server/investors/queries/**", "server/investors/index.js", "server/investors/__tests__/admin-investors.test.js", "server/investors/__tests__/helpers/**"],
+      "files": [
+        "server/investors/routes/admin-investors.js",
+        "server/investors/queries/**",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-investors.test.js",
+        "server/investors/__tests__/helpers/**"
+      ],
       "priority": 15,
       "passes": false,
       "notes": ""
@@ -327,7 +514,16 @@
         "Tests: server (PGlite): zero-filled series, 7-day windows at the boundaries, latest events order; app: the series-to-chart mapping",
         "npm test and the investors checks pass"
       ],
-      "files": ["server/investors/routes/admin-overview.js", "server/investors/index.js", "server/investors/__tests__/admin-overview.test.js", "investors/src/pages/admin/Overview.tsx", "investors/src/admin/**", "investors/src/App.tsx", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "server/investors/routes/admin-overview.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/admin-overview.test.js",
+        "investors/src/pages/admin/Overview.tsx",
+        "investors/src/admin/**",
+        "investors/src/App.tsx",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 16,
       "passes": false,
       "notes": ""
@@ -343,7 +539,16 @@
         "Unit tests: URL-state parsing and serialising, duration formatting (ms → '3 min 20 s'), the deck-progress label ('14/20')",
         "npm --prefix investors run typecheck, lint, test, build pass"
       ],
-      "files": ["investors/src/pages/admin/Investors.tsx", "investors/src/pages/admin/InvestorDetail.tsx", "investors/src/admin/**", "investors/src/components/ui/**", "investors/src/App.tsx", "investors/src/strings.ts", "investors/package.json", "investors/package-lock.json"],
+      "files": [
+        "investors/src/pages/admin/Investors.tsx",
+        "investors/src/pages/admin/InvestorDetail.tsx",
+        "investors/src/admin/**",
+        "investors/src/components/ui/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
       "priority": 17,
       "passes": false,
       "notes": ""
@@ -360,7 +565,11 @@
         "Tests (PGlite + fake transport): one email per sign-up across two profile saves, one per investor per document across repeated opens, escaping of <script> in name and firm, transport failure does not change the API response",
         "npm test passes"
       ],
-      "files": ["server/investors/alerts.js", "server/investors/index.js", "server/investors/__tests__/alerts.test.js"],
+      "files": [
+        "server/investors/alerts.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/alerts.test.js"
+      ],
       "priority": 18,
       "passes": false,
       "notes": ""
@@ -378,7 +587,13 @@
         "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6)",
         "npm --prefix investors run typecheck and lint pass"
       ],
-      "files": ["investors/e2e/**", "investors/playwright.config.ts", "investors/package.json", "investors/package-lock.json", ".github/workflows/investors.yml"],
+      "files": [
+        "investors/e2e/**",
+        "investors/playwright.config.ts",
+        "investors/package.json",
+        "investors/package-lock.json",
+        ".github/workflows/investors.yml"
+      ],
       "priority": 19,
       "passes": false,
       "notes": ""
