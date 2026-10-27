@@ -580,12 +580,12 @@
       "title": "Playwright smoke and screenshots in CI",
       "description": "As the reviewer, I want screenshots of every wave-1 screen at desktop and phone width from CI, since nothing runs in a browser locally (KP6, KP18).",
       "acceptanceCriteria": [
-        "investors/e2e/ (Playwright @playwright/test 1.64.1, Chromium only): playwright.config.ts builds nothing itself; webServer runs 'npx vite preview --outDir dist-e2e --port 4173 --strictPort' (CI only); baseURL http://localhost:4173/investors/",
-        "investors/e2e/fixtures/api.ts mocks every /api/investors call with page.route (invented data per KP5) and serves a generated two-page PDF fixture under 20 kB for the viewer's link URL; window.AUTOMATOS_CONFIG is injected with a placeholder key; the build is the E2E build (KP10)",
-        "Specs at 1280x800 and 390x844, each saving a full-page screenshot under investors/e2e/screenshots/: teaser (signed out), profile form with a field error, home with documents, viewer on page 2, admin overview, admin investors table, admin investor detail, admin documents; plus assertions: the teaser shows the tracking notice, the profile checkbox is unticked, the viewer shows 'Page 2 of 2', a non-admin sees 'Not available' on /investors/admin",
-        ".github/workflows/investors.yml gains job 'e2e' (needs app): npm ci --ignore-scripts, npx playwright install --with-deps chromium, npm run build:e2e, npx playwright test, upload investors/e2e/screenshots and the report as artifacts (always)",
-        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6)",
-        "npm --prefix investors run typecheck and lint pass"
+        "investors/e2e/ (Playwright @playwright/test 1.64.1, Chromium only): playwright.config.ts builds nothing itself; webServer runs 'npx vite preview --outDir dist-e2e --port 4173 --strictPort' (CI only); baseURL http://localhost:4173/investors/ → DONE — investors/playwright.config.ts: testDir e2e, Chromium projects only, webServer exactly that command, baseURL http://localhost:4173/investors/, no build step (77c22b1)",
+        "investors/e2e/fixtures/api.ts mocks every /api/investors call with page.route (invented data per KP5) and serves a generated two-page PDF fixture under 20 kB for the viewer's link URL; window.AUTOMATOS_CONFIG is injected with a placeholder key; the build is the E2E build (KP10) → DONE — e2e/fixtures/api.ts mockPortal(page, visitor): page.route over every /api/investors call (401 without the fake Bearer, unmocked calls recorded and expected empty), /_config.js with pk_test_ placeholder, generated PDF (fixtures/pdf.ts, 1167 bytes, pdfjs-dist parses 2 pages); data from src/test/fixtures (invented, example.com)",
+        "Specs at 1280x800 and 390x844, each saving a full-page screenshot under investors/e2e/screenshots/: teaser (signed out), profile form with a field error, home with documents, viewer on page 2, admin overview, admin investors table, admin investor detail, admin documents; plus assertions: the teaser shows the tracking notice, the profile checkbox is unticked, the viewer shows 'Page 2 of 2', a non-admin sees 'Not available' on /investors/admin → DONE — investor.spec.ts + admin.spec.ts, projects desktop 1280x800 and phone 390x844, capture() saves e2e/screenshots/<project>/<name>.png (teaser, profile-error, home, viewer-page-2, admin-overview, admin-investors, admin-investor-detail, admin-documents); the four assertions are in investor.spec.ts",
+        ".github/workflows/investors.yml gains job 'e2e' (needs app): npm ci --ignore-scripts, npx playwright install --with-deps chromium, npm run build:e2e, npx playwright test, upload investors/e2e/screenshots and the report as artifacts (always) → DONE — investors.yml job e2e (needs: app) with those steps; uploads investors-e2e-screenshots and investors-e2e-report with if: always()",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — typecheck runs tsc -p e2e/tsconfig.json (tsc --listFiles shows the 7 e2e files and playwright.config.ts); eslint . reports 0 errors/0 warnings on each; Playwright not run locally",
+        "npm --prefix investors run typecheck and lint pass → DONE — both pass (also: 585 unit tests, build, build:e2e)"
       ],
       "files": [
         "investors/e2e/**",
@@ -595,8 +595,8 @@
         ".github/workflows/investors.yml"
       ],
       "priority": 19,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (77c22b1): investors/ devDependency (exact) @playwright/test 1.64.1 (pulls playwright and playwright-core 1.64.1; no new audit findings). Playwright runs ONLY in CI (KP6): npx playwright test locally needs a server and a browser. Specs import strings and fixture builders from src (type imports from @/ are erased at run time; src/auth/fake-session.ts brings zod), so a schema change breaks typecheck before CI. e2e/fixtures/api.ts portalRoutes: add a route there when a screen gains an API call, or that spec fails on unmocked(). Screenshots are CI artifacts only (investors/e2e/screenshots is not committed). README lists the e2e job."
     }
   ]
 }
