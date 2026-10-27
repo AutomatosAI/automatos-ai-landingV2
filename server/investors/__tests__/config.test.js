@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { REQUIRED_VARS, parseList, readPortalConfig } from "../config.js";
+import { REQUIRED_VARS, SMTP_DEFAULTS, parseList, readPortalConfig } from "../config.js";
 
 const COMPLETE = Object.freeze({
   INVESTORS_DATABASE_URL: "postgres://portal@localhost:5432/test",
@@ -118,6 +118,25 @@ describe("readPortalConfig: lists", () => {
     expect(readPortalConfig({}).alerts.to).toEqual([]);
   });
 
+  it("reads the contact form's SMTP settings with its defaults, and null without a user and a password", () => {
+    const smtp = { SMTP_USER: "alerts@example.com", SMTP_PASS: " not-a-real-password " };
+    expect(readPortalConfig(smtp).alerts.smtp).toEqual({
+      host: SMTP_DEFAULTS.host,
+      port: SMTP_DEFAULTS.port,
+      user: "alerts@example.com",
+      pass: " not-a-real-password ",
+    });
+    expect(SMTP_DEFAULTS).toEqual({ host: "mail.privateemail.com", port: 465 });
+    expect(readPortalConfig({ ...smtp, SMTP_HOST: "smtp.example.com", SMTP_PORT: "587" }).alerts.smtp).toMatchObject({
+      host: "smtp.example.com",
+      port: 587,
+    });
+    expect(readPortalConfig({ ...smtp, SMTP_PORT: "not-a-port" }).alerts.smtp?.port).toBe(SMTP_DEFAULTS.port);
+    expect(readPortalConfig({ SMTP_USER: "alerts@example.com" }).alerts.smtp).toBeNull();
+    expect(readPortalConfig({ SMTP_PASS: "not-a-real-password" }).alerts.smtp).toBeNull();
+    expect(readPortalConfig({}).alerts.smtp).toBeNull();
+  });
+
   it("parseList handles undefined and returns a frozen array", () => {
     expect(parseList(undefined)).toEqual([]);
     expect(Object.isFrozen(parseList("a,b"))).toBe(true);
@@ -130,11 +149,14 @@ describe("readPortalConfig: frozen", () => {
     ...S3_COMPLETE,
     INVESTOR_ADMIN_CLERK_IDS: "user_a",
     INVESTOR_ALERT_EMAILS: "a@example.com",
+    SMTP_USER: "alerts@example.com",
+    SMTP_PASS: "not-a-real-password",
   });
 
   it("freezes the config and every nested object and array", () => {
     expect(Object.isFrozen(config)).toBe(true);
-    for (const part of [config.db, config.clerk, config.clerk.authorizedParties, config.s3, config.alerts]) {
+    const parts = [config.db, config.clerk, config.clerk.authorizedParties, config.s3, config.alerts, config.alerts.smtp];
+    for (const part of parts) {
       expect(Object.isFrozen(part)).toBe(true);
     }
     expect(Object.isFrozen(config.alerts.to)).toBe(true);

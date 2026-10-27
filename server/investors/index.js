@@ -12,13 +12,15 @@
  * (auth.js) and every /admin path the admin gate (KP3); only then is a JSON
  * body (64 kB at most) read. Document storage (s3.js) is optional on top:
  * without the S3 config the document routes answer 503 and the rest of the
- * portal works.
+ * portal works. So are the admin alert emails (alerts.js): without
+ * recipients or SMTP credentials the hooks do nothing and start() says so
+ * once.
  *
  * appRouter, mounted at /investors, serves the React app's build whatever
  * the API's state (static.js).
  */
 import express from "express";
-import { NO_ALERTS } from "./alerts.js";
+import { alertsFromConfig } from "./alerts.js";
 import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } from "./auth.js";
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
@@ -43,7 +45,8 @@ import { APP_DIST_DIR, createAppRouter } from "./static.js";
  * @property {string} [appDistDir] the app's build (investors/dist)
  * @property {import("./auth.js").Verifier} [verifier] tests only: production verifies with Clerk
  * @property {import("./auth.js").UserLookup} [userLookup] tests only: production asks Clerk
- * @property {import("./alerts.js").Alerts} [alerts] the admin alert hooks (no-ops until W1-18)
+ * @property {import("./alerts.js").Alerts} [alerts] tests only: production builds the email hooks from config.alerts
+ * @property {import("./alerts.js").TransportFactory} [createTransport] tests only: production uses nodemailer
  * @property {import("./s3.js").DocStore | null} [docStore] tests only: production builds it from config.s3
  */
 
@@ -169,15 +172,27 @@ function docStoreFor(config, deps) {
 }
 
 /**
- * The route sets createApiRouter mounts behind the guards, in order. Later
- * stories append theirs here. The admin and investor document routes share
- * one store (one lazy S3 client).
+ * The alert hooks: deps.alerts when given, else the emails config.alerts
+ * allows; `off` says why there are none (logged once by start()).
  * @param {import("./config.js").PortalConfig} config
  * @param {PortalDeps} deps
- * @param {{db: import("./db.js").Db, logger: Logger}} shared
+ * @param {import("./db.js").Db} db
  */
-function createRoutes(config, deps, { db, logger }) {
-  const alerts = deps.alerts ?? NO_ALERTS;
+function alertsFor(config, deps, db) {
+  if (deps.alerts) return Object.freeze({ alerts: deps.alerts, off: null });
+  return alertsFromConfig(config.alerts, { db, createTransport: deps.createTransport });
+}
+
+/**
+ * The route sets createApiRouter mounts behind the guards, in order. Later
+ * stories append theirs here. The admin and investor document routes share
+ * one store (one lazy S3 client); the sign-up and document routes share one
+ * set of alert hooks.
+ * @param {import("./config.js").PortalConfig} config
+ * @param {PortalDeps} deps
+ * @param {{db: import("./db.js").Db, alerts: import("./alerts.js").Alerts, logger: Logger}} shared
+ */
+function createRoutes(config, deps, { db, alerts, logger }) {
   const store = docStoreFor(config, deps);
   return Object.freeze([
     createMeRouter({ db, alerts, logger }),
@@ -257,7 +272,8 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   let database = null;
   const db = lateBoundDb(() => database);
   const investorGuard = requireInvestor({ ...authDeps(config, deps), db, admins: config.admins, logger: log });
-  const routes = createRoutes(config, deps, { db, logger: log });
+  const mail = alertsFor(config, deps, db);
+  const routes = createRoutes(config, deps, { db, alerts: mail.alerts, logger: log });
 
   const status = () => current;
 
@@ -266,6 +282,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
       log.warn(`[investors] portal disabled: ${current.reason}`);
       return current;
     }
+    if (mail.off) log.warn(`[investors] alert emails off: ${mail.off}`);
     const opened = await openDatabase(config, resolved);
     if ("failedStep" in opened) {
       current = makeStatus("disabled", `migration_failed: ${opened.failedStep}`);

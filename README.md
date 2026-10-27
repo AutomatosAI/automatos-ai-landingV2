@@ -102,7 +102,7 @@ listening, and the API answers 503 until they finish.
 | `INVESTOR_DOCS_REGION` | That bucket's region. | for documents |
 | `INVESTOR_DOCS_ACCESS_KEY_ID` | Access key of an IAM user limited to that bucket. | for documents |
 | `INVESTOR_DOCS_SECRET_ACCESS_KEY` | That access key's secret. | for documents |
-| `INVESTOR_ALERT_EMAILS` | Comma-separated recipients of the sign-up and first-open emails, sent with the contact form's `SMTP_*` settings. Empty (or no `SMTP_USER`) → no alerts. | optional |
+| `INVESTOR_ALERT_EMAILS` | Comma-separated recipients of the sign-up and first-open emails (each sent once per investor, or per investor and document). They go out through the contact form's `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER` and `SMTP_PASS`, with its defaults, from `SMTP_USER`. Empty, or no `SMTP_USER`/`SMTP_PASS` → no alerts, and one warning at start. A failed send is logged and not retried. | optional |
 
 ### Checks
 

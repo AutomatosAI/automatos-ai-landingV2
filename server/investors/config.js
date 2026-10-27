@@ -23,13 +23,18 @@ const S3_VARS = Object.freeze({
 
 const DEFAULT_AUTHORIZED_PARTIES = Object.freeze(["https://automatos.app"]);
 
+/** The contact form's SMTP defaults (server.js): alerts use the same variables and defaults. */
+export const SMTP_DEFAULTS = Object.freeze({ host: "mail.privateemail.com", port: 465 });
+
+/** @typedef {{host: string, port: number, user: string, pass: string}} SmtpConfig */
+
 /**
  * @typedef {object} PortalConfig
  * @property {{url: string | null}} db
  * @property {{secretKey: string | null, publishableKey: string | null, authorizedParties: readonly string[]}} clerk
  * @property {ReadonlySet<string>} admins Clerk user ids allowed into /admin
  * @property {{bucket: string, region: string, accessKeyId: string, secretAccessKey: string} | null} s3
- * @property {{to: readonly string[]}} alerts
+ * @property {{to: readonly string[], smtp: SmtpConfig | null}} alerts smtp is null without SMTP_USER or SMTP_PASS
  * @property {readonly string[]} missing names of unset REQUIRED_VARS
  */
 
@@ -83,6 +88,24 @@ function readS3(env) {
 }
 
 /**
+ * The contact form's SMTP settings, read exactly as server.js reads them
+ * (values untrimmed: a password is used as given); null without a user and
+ * a password, when the contact form refuses to send too.
+ * @param {Record<string, string | undefined>} env
+ * @returns {SmtpConfig | null}
+ */
+function readSmtp(env) {
+  const { SMTP_USER: user, SMTP_PASS: pass } = env;
+  if (typeof user !== "string" || typeof pass !== "string" || !user || !pass) return null;
+  return Object.freeze({
+    host: env.SMTP_HOST || SMTP_DEFAULTS.host,
+    port: Number(env.SMTP_PORT) || SMTP_DEFAULTS.port,
+    user,
+    pass,
+  });
+}
+
+/**
  * @param {Record<string, string | undefined> | null} [env]
  * @returns {PortalConfig}
  */
@@ -98,7 +121,7 @@ export function readPortalConfig(env = {}) {
     }),
     admins: readonlySet(parseList(source.INVESTOR_ADMIN_CLERK_IDS)),
     s3: readS3(source),
-    alerts: Object.freeze({ to: parseList(source.INVESTOR_ALERT_EMAILS) }),
+    alerts: Object.freeze({ to: parseList(source.INVESTOR_ALERT_EMAILS), smtp: readSmtp(source) }),
     missing: Object.freeze(REQUIRED_VARS.filter((name) => readVar(source, name) === null)),
   });
 }
