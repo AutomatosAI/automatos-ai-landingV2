@@ -749,6 +749,8 @@ body[data-mood="pitch"] .hero-backers-line .sep { color: var(--rule-strong); }
 }
 .chapter-list-item:nth-child(odd) { padding-right: 24px; }
 .chapter-list-item:nth-child(even) { padding-left: 24px; border-left: 1px solid var(--rule-c); }
+/* An odd last item spans both columns instead of sitting alone in the left one. */
+.chapter-list-item-wide { grid-column: 1 / -1; }
 .chapter-list-item .num {
   font-family: var(--mono); font-size: 11px; color: var(--muted); padding-top: 2px;
 }
@@ -1608,6 +1610,10 @@ a.fgrid-cell:hover { background: var(--bg-2); }
         <div class="chapter-list-item">
           <span class="num">/04</span>
           <span class="label"><b>Apache 2.0.</b><span>Fork it, audit it, self-host it. Bring your own model keys.</span></span>
+        </div>
+        <div class="chapter-list-item chapter-list-item-wide">
+          <span class="num">/05</span>
+          <span class="label"><b>Languages.</b><span>Auto answers in the language you write or speak. Auto's natural voice is self-hosted and open source (Kokoro). It speaks 9 languages: English (US and UK), Spanish, French, Italian, Portuguese (Brazil), Hindi, Japanese and Mandarin. Self-hosted installs include it. Coming: automatic language detection. Speak in any of about 100 languages without choosing first.</span></span>
         </div>
       </div>
     </div>
