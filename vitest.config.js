@@ -18,5 +18,9 @@ export default defineConfig({
     // Over a shared Postgres (CI), test files reset the same investors schema,
     // so they run one at a time; each PGlite database is private to its file.
     fileParallelism: !process.env.INVESTORS_TEST_DATABASE_URL,
+    // Each file boots its own PGlite (WASM Postgres) and migrates it, all at
+    // once: on a busy machine that alone outlasts the 10 s/5 s defaults.
+    hookTimeout: 60_000,
+    testTimeout: 20_000,
   },
 });
