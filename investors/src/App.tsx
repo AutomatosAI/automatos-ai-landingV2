@@ -4,6 +4,7 @@ import { useClearCacheOnSignOut } from "@/api/query-client";
 import { AppShell } from "@/components/shell/AppShell";
 import { PortalGate } from "@/components/shell/PortalGate";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
+import { Profile } from "@/pages/Profile";
 
 export function App() {
   useClearCacheOnSignOut();
@@ -11,8 +12,8 @@ export function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route element={<PortalGate />}>
-          {/* The profile form (W1-07) and the portal's pages (W1-12) replace these. */}
-          <Route path="profile" element={<PlaceholderPage />} />
+          <Route path="profile" element={<Profile />} />
+          {/* The portal's pages (W1-12) replace this. */}
           <Route path="*" element={<PlaceholderPage />} />
         </Route>
       </Route>

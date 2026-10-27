@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setTokenSource } from "@/auth/token";
 import { strings } from "@/strings";
+import { ADA_ME, NEW_ADA } from "@/test/fixtures";
 import { ADA, renderWithProviders } from "@/test/providers";
 
 import { App } from "../App";
@@ -14,13 +15,7 @@ function answerMe(status: number, body: unknown) {
   fetchMock.mockResolvedValue(new Response(JSON.stringify(body), { status }));
 }
 
-function me(profileComplete: boolean) {
-  return {
-    investor: { id: "00000000-0000-4000-8000-000000000001", email: "ada@example.com", name: "Ada Example" },
-    isAdmin: false,
-    profileComplete,
-  };
-}
+const me = (profileComplete: boolean) => (profileComplete ? ADA_ME : NEW_ADA);
 
 function Where() {
   return <p data-testid="where">{useLocation().pathname}</p>;
@@ -83,7 +78,21 @@ describe("App, signed in", () => {
     renderApp("/");
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/profile"));
     expect(fetchMock).toHaveBeenCalledWith("/api/investors/me", expect.objectContaining({ method: "GET" }));
-    expect(screen.getByRole("heading", { level: 1, name: strings.placeholder.title })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: strings.profile.firstTitle })).toBeInTheDocument();
+  });
+
+  it.each(["/documents", "/documents/abc", "/admin"])("sends a new investor from %s to the profile form", async (path) => {
+    answerMe(200, me(false));
+    renderApp(path);
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/profile"));
+    expect(screen.getByRole("heading", { level: 1, name: strings.profile.firstTitle })).toBeInTheDocument();
+  });
+
+  it("shows an investor with a profile the edit form at /profile", async () => {
+    answerMe(200, me(true));
+    renderApp("/profile");
+    expect(await screen.findByRole("heading", { level: 1, name: strings.profile.editTitle })).toBeInTheDocument();
+    expect(screen.getByTestId("where")).toHaveTextContent("/profile");
   });
 
   it("lets an investor with a profile stay on the page they asked for", async () => {

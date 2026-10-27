@@ -9,16 +9,19 @@
  * (KP8); a failure there disables the portal, never the site (KP4). The
  * factory only wires things together and never throws; start() never
  * rejects. Once ready, every path but /health passes the investor guard
- * (auth.js) and every /admin path the admin gate (KP3).
+ * (auth.js) and every /admin path the admin gate (KP3); only then is a JSON
+ * body (64 kB at most) read.
  *
  * appRouter, mounted at /investors, serves the React app's build whatever
  * the API's state (static.js).
  */
 import express from "express";
+import { NO_ALERTS } from "./alerts.js";
 import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } from "./auth.js";
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
+import { createMeRouter } from "./routes/me.js";
 import { APP_DIST_DIR, createAppRouter } from "./static.js";
 
 /** @typedef {"disabled" | "starting" | "ready"} PortalState */
@@ -32,6 +35,7 @@ import { APP_DIST_DIR, createAppRouter } from "./static.js";
  * @property {string} [appDistDir] the app's build (investors/dist)
  * @property {import("./auth.js").Verifier} [verifier] tests only: production verifies with Clerk
  * @property {import("./auth.js").UserLookup} [userLookup] tests only: production asks Clerk
+ * @property {import("./alerts.js").Alerts} [alerts] the admin alert hooks (no-ops until W1-18)
  */
 
 /**
@@ -99,21 +103,28 @@ function portalErrors(logger) {
   };
 }
 
+/** Portal bodies are small (KP16); a bigger one is a 413 before any route sees it. */
+const BODY_LIMIT = "64kb";
+
 /**
  * Route order is the security model (KP3): GET /health is the only route
  * before the investor guard, and the admin gate sits on /admin before any
- * admin route. Later stories add their routes between the admin gate and the
- * 404; __tests__/route-coverage.test.js walks this stack to prove it.
+ * admin route. Bodies are parsed only after the guard. Later stories add
+ * their routers to `routes`, which sit between the admin gate and the 404;
+ * __tests__/route-coverage.test.js walks this stack to prove it.
  * @param {() => Readonly<PortalStatus>} getStatus
- * @param {{investorGuard: import("express").RequestHandler, logger: Logger}} guards
+ * @param {{investorGuard: import("express").RequestHandler, routes: readonly import("express").Router[],
+ *   logger: Logger}} parts
  */
-function createApiRouter(getStatus, { investorGuard, logger }) {
+function createApiRouter(getStatus, { investorGuard, routes, logger }) {
   const router = express.Router();
   router.use(noStore);
   router.get("/health", (_req, res) => res.json({ state: getStatus().state }));
   router.use(requireReady(getStatus));
   router.use(investorGuard);
+  router.use(express.json({ limit: BODY_LIMIT }));
   router.use("/admin", requireAdmin);
+  for (const routeSet of routes) router.use(routeSet);
   router.use((_req, res) => res.status(404).json({ error: "not_found" }));
   router.use(portalErrors(logger));
   return router;
@@ -204,6 +215,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   let database = null;
   const db = lateBoundDb(() => database);
   const investorGuard = requireInvestor({ ...authDeps(config, deps), db, admins: config.admins, logger: log });
+  const routes = Object.freeze([createMeRouter({ db, alerts: deps.alerts ?? NO_ALERTS, logger: log })]);
 
   const status = () => current;
 
@@ -223,7 +235,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   }
 
   return Object.freeze({
-    apiRouter: createApiRouter(status, { investorGuard, logger: log }),
+    apiRouter: createApiRouter(status, { investorGuard, routes, logger: log }),
     appRouter: createAppRouter({ distDir: resolved.appDistDir, logger: log }),
     /** Runs once; later calls return the same promise. */
     start: () => {

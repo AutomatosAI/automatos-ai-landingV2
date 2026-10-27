@@ -1,13 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { ApiError } from "../errors";
-import { landingRedirect, meErrorScreen, meQueryKey, meSchema, type Me } from "../me";
+import { ADA_ME, NEW_ADA } from "@/test/fixtures";
 
-const ME: Me = {
-  investor: { id: "00000000-0000-4000-8000-000000000001", email: "ada@example.com", name: "Ada Example" },
-  isAdmin: false,
-  profileComplete: true,
-};
+import { ApiError } from "../errors";
+import { landingRedirect, meErrorScreen, meQueryKey, meSchema } from "../me";
+
+const ME = ADA_ME;
 
 describe("landingRedirect", () => {
   it("sends an investor without a profile to the profile form from any page", () => {
@@ -39,8 +37,19 @@ describe("meErrorScreen", () => {
 
 describe("meSchema", () => {
   it("parses the server's answer and drops what the app does not use", () => {
-    const parsed = meSchema.parse({ ...ME, investor: { ...ME.investor, firm: "Example Ventures" } });
+    const parsed = meSchema.parse({
+      ...ME,
+      investor: { ...ME.investor, blocked: false, createdAt: "2026-10-27T10:00:00.000Z", lastSeenAt: "2026-10-27T10:00:00.000Z" },
+    });
     expect(parsed).toEqual(ME);
+  });
+
+  it("parses a new investor's answer: profile fields null", () => {
+    expect(meSchema.parse(NEW_ADA)).toEqual(NEW_ADA);
+  });
+
+  it("rejects a choice outside the server's lists", () => {
+    expect(meSchema.safeParse({ ...ME, investor: { ...ME.investor, investorType: "hedge_fund" } }).success).toBe(false);
   });
 
   it("rejects an answer without the profile flag", () => {

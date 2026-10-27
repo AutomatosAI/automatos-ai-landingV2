@@ -32,7 +32,7 @@ export const KIDS_TTL_MS = 10 * 60_000;
 const MAX_KID_LENGTH = 128;
 
 /** Every column of investors.investors, as req.investor carries it. */
-const INVESTOR_COLUMNS = `id, clerk_user_id, email, name, firm, title, investor_type, linkedin_url, cheque_size,
+export const INVESTOR_COLUMNS = `id, clerk_user_id, email, name, firm, title, investor_type, linkedin_url, cheque_size,
   country, source, marketing_opt_in, marketing_opt_in_at, profile_completed_at, blocked, created_at, last_seen_at`;
 
 const SELECT_INVESTOR_SQL = `SELECT ${INVESTOR_COLUMNS} FROM investors.investors WHERE clerk_user_id = $1`;
@@ -266,8 +266,12 @@ export function subjectOf(claims) {
 /** @param {string} key */
 const camel = (key) => key.replace(/_([a-z])/g, (_match, letter) => letter.toUpperCase());
 
-/** @param {Record<string, unknown>} row @returns {Investor} */
-function toInvestor(row) {
+/**
+ * A row of INVESTOR_COLUMNS as req.investor carries it: camelCase keys, frozen.
+ * @param {Record<string, unknown>} row
+ * @returns {Investor}
+ */
+export function toInvestor(row) {
   return /** @type {Investor} */ (Object.freeze(Object.fromEntries(Object.entries(row).map(([key, value]) => [camel(key), value]))));
 }
 
