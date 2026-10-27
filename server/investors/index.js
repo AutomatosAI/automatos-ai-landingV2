@@ -10,7 +10,9 @@
  * factory only wires things together and never throws; start() never
  * rejects. Once ready, every path but /health passes the investor guard
  * (auth.js) and every /admin path the admin gate (KP3); only then is a JSON
- * body (64 kB at most) read.
+ * body (64 kB at most) read. Document storage (s3.js) is optional on top:
+ * without the S3 config the document routes answer 503 and the rest of the
+ * portal works.
  *
  * appRouter, mounted at /investors, serves the React app's build whatever
  * the API's state (static.js).
@@ -21,7 +23,9 @@ import { createClerkVerifier, createUserLookup, requireAdmin, requireInvestor } 
 import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
+import { createAdminDocumentsRouter } from "./routes/admin-documents.js";
 import { createMeRouter } from "./routes/me.js";
+import { createDocStore } from "./s3.js";
 import { APP_DIST_DIR, createAppRouter } from "./static.js";
 
 /** @typedef {"disabled" | "starting" | "ready"} PortalState */
@@ -36,6 +40,7 @@ import { APP_DIST_DIR, createAppRouter } from "./static.js";
  * @property {import("./auth.js").Verifier} [verifier] tests only: production verifies with Clerk
  * @property {import("./auth.js").UserLookup} [userLookup] tests only: production asks Clerk
  * @property {import("./alerts.js").Alerts} [alerts] the admin alert hooks (no-ops until W1-18)
+ * @property {import("./s3.js").DocStore | null} [docStore] tests only: production builds it from config.s3
  */
 
 /**
@@ -148,6 +153,32 @@ function authDeps(config, deps) {
 }
 
 /**
+ * The document store, or null without the S3 config (the document routes
+ * then answer 503). Building it opens nothing: the S3 client is lazy.
+ * @param {import("./config.js").PortalConfig} config
+ * @param {PortalDeps} deps
+ * @returns {import("./s3.js").DocStore | null}
+ */
+function docStoreFor(config, deps) {
+  if (deps.docStore !== undefined) return deps.docStore;
+  return config.s3 ? createDocStore({ config: config.s3 }) : null;
+}
+
+/**
+ * The route sets createApiRouter mounts behind the guards, in order. Later
+ * stories append theirs here.
+ * @param {import("./config.js").PortalConfig} config
+ * @param {PortalDeps} deps
+ * @param {{db: import("./db.js").Db, logger: Logger}} shared
+ */
+function createRoutes(config, deps, { db, logger }) {
+  return Object.freeze([
+    createMeRouter({ db, alerts: deps.alerts ?? NO_ALERTS, logger }),
+    createAdminDocumentsRouter({ db, store: docStoreFor(config, deps), logger }),
+  ]);
+}
+
+/**
  * The routers exist before the database does; the ready gate guarantees
  * start() has set it before any guarded route asks.
  * @param {() => import("./db.js").Db | null} current
@@ -215,7 +246,7 @@ export function createInvestorsPortal({ env = process.env, deps = {} } = {}) {
   let database = null;
   const db = lateBoundDb(() => database);
   const investorGuard = requireInvestor({ ...authDeps(config, deps), db, admins: config.admins, logger: log });
-  const routes = Object.freeze([createMeRouter({ db, alerts: deps.alerts ?? NO_ALERTS, logger: log })]);
+  const routes = createRoutes(config, deps, { db, logger: log });
 
   const status = () => current;
 
