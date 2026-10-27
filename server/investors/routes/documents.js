@@ -17,7 +17,7 @@
 import express from "express";
 import { z } from "zod";
 import { callAlert, NO_ALERTS } from "../alerts.js";
-import { DOCUMENT_COLUMNS, documentIdParam, storageUnavailable, toDocument } from "../documents.js";
+import { DOCUMENT_COLUMNS, documentIdParam, storageUnavailable, toDocument, VISIBLE_TO_INVESTORS } from "../documents.js";
 import { perInvestorLimit } from "../rate-limit.js";
 import { GET_EXPIRES_SEC } from "../s3.js";
 import { requiredChoice, sendInvalid } from "../validation.js";
@@ -34,14 +34,12 @@ export const LINK_MODES = Object.freeze({
 const DOCUMENTS_PATH = "/documents";
 const LINK_PATH = `${DOCUMENTS_PATH}/:id/link`;
 
-/** What an investor may see: published, with a file. */
-const VISIBLE = "published AND s3_key IS NOT NULL";
-
-const LIST_SQL = `SELECT ${DOCUMENT_COLUMNS} FROM investors.documents WHERE ${VISIBLE} ORDER BY sort_order, created_at, id`;
+const LIST_SQL = `SELECT ${DOCUMENT_COLUMNS} FROM investors.documents
+  WHERE ${VISIBLE_TO_INVESTORS} ORDER BY sort_order, created_at, id`;
 
 // FOR SHARE: an admin's unpublish, replace or delete (FOR UPDATE) waits for
 // this link's transaction, or this one waits and re-checks the row after it.
-const SHARE_SQL = `SELECT ${DOCUMENT_COLUMNS} FROM investors.documents WHERE id = $1 AND ${VISIBLE} FOR SHARE`;
+const SHARE_SQL = `SELECT ${DOCUMENT_COLUMNS} FROM investors.documents WHERE id = $1 AND ${VISIBLE_TO_INVESTORS} FOR SHARE`;
 
 // Serializes one investor's opens, so two at once cannot both be the first.
 const LOCK_INVESTOR_SQL = "SELECT id FROM investors.investors WHERE id = $1 FOR NO KEY UPDATE";

@@ -125,7 +125,8 @@ describe("the admin area, for an investor who is not an admin", () => {
     renderAdmin(path);
     expect(await screen.findByRole("heading", { name: strings.status.notAvailable.title })).toBeInTheDocument();
     const asked = new Set(fetchMock.mock.calls.map(([input]) => String(input)));
-    expect([...asked]).toEqual(["/api/investors/me"]);
+    // /me, and the reading tracker's session (US-010); nothing under /admin.
+    expect([...asked].sort()).toEqual(["/api/investors/me", "/api/investors/sessions"]);
   });
 });
 

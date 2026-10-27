@@ -10,6 +10,7 @@ import { Documents } from "@/pages/Documents";
 import { Home } from "@/pages/Home";
 import { Profile } from "@/pages/Profile";
 import { Viewer } from "@/pages/Viewer";
+import { TrackingProvider } from "@/tracking/TrackingProvider";
 
 // Admin screens load on demand: investors never download them.
 const AdminDocuments = lazy(() => import("@/pages/admin/Documents").then((module) => ({ default: module.AdminDocuments })));
@@ -17,21 +18,23 @@ const AdminDocuments = lazy(() => import("@/pages/admin/Documents").then((module
 export function App() {
   useClearCacheOnSignOut();
   return (
-    <Routes>
-      <Route element={<PortalGate />}>
-        <Route element={<PortalLayout />}>
-          <Route index element={<Home />} />
-          <Route path="documents" element={<Documents />} />
-          <Route path="documents/:id" element={<Viewer />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="admin" element={<AdminGate />}>
-            {/* The admin overview (W1-16) replaces this redirect. */}
-            <Route index element={<Navigate to={ADMIN_DOCUMENTS_PATH} replace />} />
-            <Route path="documents" element={<AdminDocuments />} />
+    <TrackingProvider>
+      <Routes>
+        <Route element={<PortalGate />}>
+          <Route element={<PortalLayout />}>
+            <Route index element={<Home />} />
+            <Route path="documents" element={<Documents />} />
+            <Route path="documents/:id" element={<Viewer />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="admin" element={<AdminGate />}>
+              {/* The admin overview (W1-16) replaces this redirect. */}
+              <Route index element={<Navigate to={ADMIN_DOCUMENTS_PATH} replace />} />
+              <Route path="documents" element={<AdminDocuments />} />
+            </Route>
+            <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
           </Route>
-          <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </TrackingProvider>
   );
 }

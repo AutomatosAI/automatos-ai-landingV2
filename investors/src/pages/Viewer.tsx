@@ -14,6 +14,7 @@ import { useDocuments } from "@/documents/use-documents";
 import { useDownload } from "@/documents/use-download";
 import { DOCUMENTS_PATH } from "@/lib/paths";
 import { strings } from "@/strings";
+import { usePageViewFeed } from "@/tracking/use-page-view-feed";
 import type { ViewerPhase } from "@/viewer/link-model";
 import { useViewerLink } from "@/viewer/use-viewer-link";
 import { ViewerFailed, ViewerLoading } from "@/viewer/ViewerStates";
@@ -60,6 +61,8 @@ interface ViewerBodyProps {
 }
 
 function ViewerBody({ document, phase, onLoadError, onRetry, download }: ViewerBodyProps) {
+  // Each page read becomes a page_view of this version (the tracker, US-010).
+  const onPageVisible = usePageViewFeed(document.id, document.version);
   const frame = (child: ReactNode) => <div className="rounded-lg border">{child}</div>;
   switch (phase.kind) {
     case "linking":
@@ -71,7 +74,14 @@ function ViewerBody({ document, phase, onLoadError, onRetry, download }: ViewerB
     case "ready":
       return (
         <Suspense fallback={frame(<ViewerLoading />)}>
-          <PdfViewer key={phase.url} url={phase.url} title={document.title} onLoadError={onLoadError} actions={download} />
+          <PdfViewer
+            key={phase.url}
+            url={phase.url}
+            title={document.title}
+            onLoadError={onLoadError}
+            onPageVisible={onPageVisible}
+            actions={download}
+          />
         </Suspense>
       );
   }

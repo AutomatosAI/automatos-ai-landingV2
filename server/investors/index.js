@@ -25,6 +25,7 @@ import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
 import { createAdminDocumentsRouter } from "./routes/admin-documents.js";
 import { createDocumentsRouter } from "./routes/documents.js";
+import { createEventsRouter } from "./routes/events.js";
 import { createMeRouter } from "./routes/me.js";
 import { createDocStore } from "./s3.js";
 import { APP_DIST_DIR, createAppRouter } from "./static.js";
@@ -180,6 +181,7 @@ function createRoutes(config, deps, { db, logger }) {
     createMeRouter({ db, alerts, logger }),
     createAdminDocumentsRouter({ db, store, logger }),
     createDocumentsRouter({ db, store, alerts, logger }),
+    createEventsRouter({ db }),
   ]);
 }
 

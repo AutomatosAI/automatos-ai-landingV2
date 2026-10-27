@@ -11,6 +11,9 @@ export const DOCUMENT_KINDS = Object.freeze(["pdf", "video", "spreadsheet", "sli
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** What an investor may see (a WHERE clause on investors.documents): published, with a file. */
+export const VISIBLE_TO_INVESTORS = "published AND s3_key IS NOT NULL";
+
 /** Every column the routes read; toDocument decides what leaves the server. */
 export const DOCUMENT_COLUMNS = `id, title, description, category, kind, s3_key, file_name, content_type, size_bytes,
   page_count, version, sort_order, published, alert_on_first_open, created_at, updated_at`;

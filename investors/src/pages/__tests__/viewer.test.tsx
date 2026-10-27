@@ -15,13 +15,24 @@ import { ADA, renderWithProviders } from "@/test/providers";
 // jsdom does not navigate: the storage link lands here instead.
 vi.mock("@/documents/navigate", () => ({ navigateTo: vi.fn() }));
 
+interface StandInProps {
+  readonly url: string;
+  readonly onLoadError: (error: unknown) => void;
+  readonly onPageVisible?: (page: number, ms: number) => void;
+  readonly actions?: ReactNode;
+}
+
 // pdf.js cannot run in jsdom: the viewer stands in, showing the link it was
-// given, its toolbar actions, and buttons that fail the load the way pdf.js does.
+// given, its toolbar actions, buttons that fail the load the way pdf.js does,
+// and one that reports page 2 read for 1.5 s, as the visibility model would.
 vi.mock("@/viewer/PdfViewer", () => ({
-  PdfViewer: ({ url, onLoadError, actions }: { url: string; onLoadError: (error: unknown) => void; actions?: ReactNode }) => (
+  PdfViewer: ({ url, onLoadError, onPageVisible, actions }: StandInProps) => (
     <div>
       <p data-testid="viewer-url">{url}</p>
       {actions}
+      <button type="button" onClick={() => onPageVisible?.(2, 1500)}>
+        read-page-2
+      </button>
       <button
         type="button"
         onClick={() => onLoadError(Object.assign(new Error("refused"), { name: "UnexpectedResponseException", status: 403 }))}
@@ -185,6 +196,21 @@ describe("the viewer page", () => {
     expect(await screen.findByRole("heading", { level: 1, name: copy.missing.title })).toBeInTheDocument();
     expect(screen.getByText(copy.missing.body)).toBeInTheDocument();
     expect(calls("POST", LINK)).toEqual([]);
+  });
+
+  it("feeds each page read to the tracker as a page_view of this version, sent when the page goes", async () => {
+    const sessionId = "00000000-0000-4000-8000-00000000005e";
+    serve({ [`POST ${LINK}`]: () => signed(1), "POST /sessions": () => json(201, { sessionId }) });
+    renderViewer();
+    await viewerUrl();
+    await waitFor(() => expect(calls("POST", "/sessions")).toHaveLength(1));
+    fireEvent.click(screen.getByRole("button", { name: "read-page-2" }));
+    window.dispatchEvent(new Event("pagehide"));
+    await waitFor(() => expect(calls("POST", "/events")).toHaveLength(1));
+    expect(calls("POST", "/events")[0]).toEqual({
+      sessionId,
+      events: [{ type: "page_view", documentId: DECK.id, documentVersion: DECK.version, page: 2, durationMs: 1500 }],
+    });
   });
 
   it("offers a download, and no inline link, for a document that is not a PDF", async () => {
