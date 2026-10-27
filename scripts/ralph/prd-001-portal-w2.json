@@ -182,10 +182,10 @@
       "title": "Admin section editor",
       "description": "As an admin, I want to edit the overview, team, FAQ and contact text with a live preview.",
       "acceptanceCriteria": [
-        "investors/src/pages/admin/Sections.tsx: list of the four sections with published state; editing one shows a textarea and a live preview using the SAME Markdown component as W2-02, a title field, a published switch, Save (PUT) with a saved/failed toast; unsaved-changes warning on navigation",
-        "Admin nav gains 'Sections'",
-        "Unit tests: the editor's dirty-state model",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/pages/admin/Sections.tsx: list of the four sections with published state; editing one shows a textarea and a live preview using the SAME Markdown component as W2-02, a title field, a published switch, Save (PUT) with a saved/failed toast; unsaved-changes warning on navigation → DONE — e825596: pages/admin/Sections.tsx — /admin/sections lists the four sections (where each shows, Published/Not published, last saved); /admin/sections/:slug edits one: title field, published switch, markdown textarea with a live preview through sections/LazyMarkdown (the W2-02 renderer), Save = PUT /admin/sections/:slug with a sonner toast (saved / '<title> was not saved' + reason); unsaved changes hold any link that would leave the page behind a 'Leave without saving?' dialog and ask the browser on reload/close",
+        "Admin nav gains 'Sections' → DONE — e825596: AdminGate ADMIN_LINKS is [Overview, Documents, Investors, Sections] (Sections stays current in an editor)",
+        "Unit tests: the editor's dirty-state model → DONE — e825596: admin/__tests__/section-editor-model.test.ts (dirty state: clean start, each field, undo, trimmed title, no mutation, savedAs incl. typing during a save; validation; server field codes), leave-guard.test.ts (which link clicks leave the page), pages/__tests__/admin-sections.test.tsx (11: list, live preview without raw HTML, PUT body + toast + investor list refetch, failed toast keeps text, server field error, unknown slug, leave dialog stay/leave, beforeunload only while dirty)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck, lint (0 warnings), test (59 files, 688 tests), build all passed; no INVESTORS_E2E_FAKE_AUTH in dist; gate --no-ci green except the kit-complete and W2-08 checks"
       ],
       "files": [
         "investors/src/pages/admin/Sections.tsx",
@@ -195,8 +195,8 @@
         "investors/src/strings.ts"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (e825596): investors/ dependency (exact) sonner 2.0.8 (no dependencies of its own; npm audit findings unchanged), installed under KP2 though investors/package.json is not in this story's files: the AC's toast needs it. New components/ui textarea.tsx and sonner.tsx (Toaster in the site tokens, both moods, no shadow; import toast from 'sonner'); AdminLayout mounts the Toaster lazily, so every admin page can toast and investors never load it. Client: admin/sections-api.ts adminSectionSchema (sectionSchema + sortOrder, published, updatedBy), fetchAdminSections, saveSection(slug, body); use-sections.ts adminSectionsKey(userId) = ['admin','sections',userId], useSaveSection writes the answer into that list and invalidates sectionsKey(userId); section-paths.ts ADMIN_SECTIONS_PATH, adminSectionPath(slug), sectionSlugOf. The editor reads GET /admin/sections (not /:slug). Unsaved-changes guard (use-leave-guard.ts + leave-guard.ts): the app uses <BrowserRouter> and react-router's useBlocker needs a data router, so a window capture click listener holds leaving link clicks (re-clicks the link on Leave) and beforeunload asks on reload/close; the browser Back button is NOT caught (would need main.tsx on createBrowserRouter, a wave-1 file). W2-09 e2e: /admin/sections calls GET /admin/sections, the editor PUT /admin/sections/:slug; the list is role list 'Sections', the preview role region 'Preview', the leave dialog role alertdialog 'Leave without saving?'; Radix's switch inside a form needs a ResizeObserver stub in jsdom page tests."
     },
     {
       "id": "W2-04",
