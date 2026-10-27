@@ -202,18 +202,18 @@
       "title": "Playwright screenshots: pitch block, slideshow, storage note",
       "description": "As the reviewer, I want screenshots of the new screens from CI.",
       "acceptanceCriteria": [
-        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5, the existing PDF fixture): home with the pitch block (deck + video poster); the viewer in present mode on slide 2 (overlay mode is fine in headless); home with a 503 storage_unavailable showing the inline note and the overview",
-        "Assertions: present mode shows 'Slide 2 of 2' after ArrowRight; Esc leaves present mode; no /link request is made by loading home; the storage note is visible and 'Temporarily unavailable' is not",
-        "Screenshots saved under investors/e2e/screenshots/ (uploaded by the existing e2e job)",
-        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6)",
-        "npm --prefix investors run typecheck and lint pass"
+        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5, the existing PDF fixture): home with the pitch block (deck + video poster); the viewer in present mode on slide 2 (overlay mode is fine in headless); home with a 503 storage_unavailable showing the inline note and the overview → DONE — e2e/pitch.spec.ts (home-pitch: deck card + video poster; present-slide-2: View the deck → ?present=1 overlay, slide 2 of the existing 2-page PDF fixture) and e2e/storage-outage.spec.ts (home-storage-unavailable: GET /documents 503 storage_unavailable, Overview region + note), both projects (desktop 1280x800, phone 390x844); every API call mocked, invented data (LIBRARY gains 'Example pitch video', category Pitch, d7)",
+        "Assertions: present mode shows 'Slide 2 of 2' after ArrowRight; Esc leaves present mode; no /link request is made by loading home; the storage note is visible and 'Temporarily unavailable' is not → DONE — pitch.spec: 'Slide 2 of 2' after ArrowRight (Next disabled, page 2 painted), Escape → dialog gone, ?present dropped, 'Page 2 of 2' in the page toolbar; after networkidle no POST /documents/*/link from loading home (mockPortal calls() + isLinkKey), Play then makes exactly one for the video; storage-outage.spec: the role=status note visible, getByText('Temporarily unavailable') count 0, Retry asks for the list once more",
+        "Screenshots saved under investors/e2e/screenshots/ (uploaded by the existing e2e job) → DONE — capture() → e2e/screenshots/<project>/{home-pitch,present-slide-2,home-storage-unavailable}.png, uploaded by the existing e2e job (investors.yml unchanged)",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — e2e/tsconfig.json and eslint . already cover e2e/**: typecheck 0, lint 0; Playwright not run locally; a throwaway jsdom check (not committed) parsed the fixtures and matched each selector once",
+        "npm --prefix investors run typecheck and lint pass → DONE — c406579: typecheck 0, lint 0 (app tests 82 files / 906 passed, build 0, root 23 files / 533 passed)"
       ],
       "files": [
         "investors/e2e/**"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (c406579): no packages added. e2e/fixtures: LIBRARY gains PITCH_VIDEO_ID (d7, 'Example pitch video', Pitch, video) after the one-pager, so every home screenshot now shows the pitch block (deck + video poster) and the admin documents table one more row; its link answers VIDEO_PATH (routeVideo serves both videos). mockPortal(page, visitor, overrides) merges per-spec answers over the defaults; MockedApi.calls() lists every API call key (answered, missed or 401); isLinkKey(key) matches POST /documents/:id/link. First CI run of these specs is the wave PR run."
     }
   ]
 }
