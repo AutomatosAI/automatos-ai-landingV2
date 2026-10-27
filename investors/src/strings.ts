@@ -523,6 +523,12 @@ export const strings = {
       noMatch: "No investors match this search and these filters.",
       pageEmpty: "There are no investors on this page.",
       firstPage: "Go to the first page",
+      exportCsv: {
+        button: "Export CSV",
+        preparing: "Preparing…",
+        description: "Every investor in this view, all pages, with their email and marketing choice.",
+        failed: "The CSV could not be prepared. Please try again.",
+      },
       notes: {
         label: "How the columns are counted",
         items: [

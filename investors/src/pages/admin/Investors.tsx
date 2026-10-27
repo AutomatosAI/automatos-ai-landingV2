@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { BlockDialog, type BlockTarget } from "@/admin/BlockDialog";
+import { CsvExportButton } from "@/admin/CsvExportButton";
 import { InvestorFilters } from "@/admin/InvestorFilters";
 import type { InvestorList } from "@/admin/investors-api";
 import {
@@ -73,7 +74,10 @@ function ListBody({ list, query, busy, go, onBlock }: ListBodyProps) {
   }
   return (
     <div className={busy ? "grid gap-4 opacity-60 transition-opacity" : "grid gap-4"} aria-busy={busy}>
-      <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{copy.results(list.total)}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{copy.results(list.total)}</p>
+        <CsvExportButton query={query} />
+      </div>
       <InvestorsTable rows={list.investors} query={query} onSort={(key) => go(toggleSort(query, key))} onBlock={onBlock} />
       <Pager
         page={query.page}
