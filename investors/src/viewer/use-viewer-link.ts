@@ -3,7 +3,15 @@ import { useCallback, useState } from "react";
 
 import { requestDocumentLink } from "@/documents/documents-api";
 
-import { afterLoadError, FIRST_CYCLE, retryCycle, viewerPhase, type LinkRequest, type ViewerPhase } from "./link-model";
+import {
+  afterLinkPlayed,
+  afterLoadError,
+  FIRST_CYCLE,
+  retryCycle,
+  viewerPhase,
+  type LinkRequest,
+  type ViewerPhase,
+} from "./link-model";
 
 /**
  * Its own root, not under documentsKey: refreshing the library must never
@@ -20,6 +28,8 @@ export interface ViewerLink {
   readonly onLoadError: (error: unknown) => void;
   /** A new link and a fresh renewal. */
   readonly retry: () => void;
+  /** The video played from the link: its later refusal is renewed too (link-model.ts afterLinkPlayed). */
+  readonly onPlayed: () => void;
 }
 
 function asRequest(query: { status: "pending" | "error" | "success"; error: unknown; data?: { url: string } }): LinkRequest {
@@ -46,5 +56,6 @@ export function useViewerLink(userId: string, documentId: string, enabled: boole
   });
   const onLoadError = useCallback((error: unknown) => setCycle((current) => afterLoadError(current, error)), []);
   const retry = useCallback(() => setCycle(retryCycle), []);
-  return { phase: viewerPhase(cycle, asRequest(query)), onLoadError, retry };
+  const onPlayed = useCallback(() => setCycle(afterLinkPlayed), []);
+  return { phase: viewerPhase(cycle, asRequest(query)), onLoadError, retry, onPlayed };
 }

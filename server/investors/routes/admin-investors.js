@@ -1,9 +1,10 @@
 /**
  * Admin investors (US-012, US-013): the paged, searchable list with each
  * investor's engagement, one investor's profile and per-document summary,
- * their timeline, block and unblock, delete, and the GDPR export. Mounted
- * behind requireInvestor and the /admin gate (KP3). The SQL and the answer
- * shapes are in queries/; everything is aggregated there, in Postgres.
+ * their timeline, block and unblock, delete, the GDPR export, and the
+ * list as CSV (every page, csv.js). Mounted behind requireInvestor and the
+ * /admin gate (KP3). The SQL and the answer shapes are in queries/;
+ * everything is aggregated there, in Postgres.
  *
  * A blocked investor is refused by the guard on their next request (403
  * blocked). Delete removes the row and, through the cascading foreign keys,
@@ -14,6 +15,7 @@
 import express from "express";
 import { z } from "zod";
 import { toInvestor } from "../auth.js";
+import { INVESTOR_CSV_COLUMNS, investorsCsvFileName, toCsv } from "../csv.js";
 import { documentIdParam } from "../documents.js";
 import {
   BLOCK_SQL,
@@ -45,6 +47,7 @@ import { INVESTOR_TYPES, SOURCES } from "./me.js";
 export const LIST_LIMITS = Object.freeze({ q: 200, page: 999_999 });
 
 const INVESTORS_PATH = "/admin/investors";
+const INVESTORS_CSV_PATH = "/admin/investors.csv";
 const INVESTOR_PATH = `${INVESTORS_PATH}/:id`;
 
 /** @param {readonly string[]} values */
@@ -69,7 +72,13 @@ export const listQuerySchema = z.object({
   page: pageNumber,
 });
 
+/** The CSV takes the list's filter and sort; it is every page, so ?page is ignored. */
+const csvQuerySchema = listQuerySchema.omit({ page: true });
+
 const timelineQuerySchema = z.object({ page: pageNumber });
+
+// The list rows carry no opt-in (the table does not show it); the CSV adds it by id.
+const OPT_IN_SQL = "SELECT id, marketing_opt_in FROM investors.investors WHERE id = ANY($1::uuid[])";
 
 const blockSchema = z.object({ blocked: requiredBoolean() });
 
@@ -90,6 +99,39 @@ function listInvestors({ db }) {
       const found = await db.query(pageSql(sort, dir), params.page);
       const investors = found.rows.map(toListRow);
       return res.json({ investors, total: counted.rows[0].total, page, pageSize: PAGE_SIZE });
+    } catch (err) {
+      return next(err);
+    }
+  };
+}
+
+/**
+ * Every row of the list for this filter and sort: the list's own statement,
+ * with LIMIT NULL (Postgres reads it as LIMIT ALL) and OFFSET 0, so the
+ * columns, aggregates and order are the table's.
+ * @param {import("../db.js").Db} db
+ * @param {z.infer<typeof csvQuerySchema>} filter
+ */
+async function csvRows(db, filter) {
+  const params = listParams({ ...filter, page: 1 });
+  const found = await db.query(pageSql(filter.sort, filter.dir), [...params.count, null, 0]);
+  const rows = found.rows.map(toListRow);
+  const optIns = await db.query(OPT_IN_SQL, [rows.map((row) => row.id)]);
+  const optInOf = new Map(optIns.rows.map((row) => [row.id, row.marketing_opt_in]));
+  return rows.map((row) => ({ ...row, marketingOptIn: optInOf.get(row.id) ?? null }));
+}
+
+/** @param {Deps} deps @returns {import("express").RequestHandler} */
+function exportList({ db, logger }) {
+  return async function getInvestorsCsv(req, res, next) {
+    const parsed = csvQuerySchema.safeParse(req.query);
+    if (!parsed.success) return sendInvalid(res, parsed.error);
+    try {
+      const rows = await csvRows(db, parsed.data);
+      // A file of names and emails left the portal: say who took it, never what is in it.
+      logger.warn(`[investors] admin ${req.investor.id} exported ${rows.length} investors as CSV`);
+      res.attachment(investorsCsvFileName(new Date()));
+      return res.send(toCsv(INVESTOR_CSV_COLUMNS, rows));
     } catch (err) {
       return next(err);
     }
@@ -200,6 +242,7 @@ export function createAdminInvestorsRouter({ db, logger = console }) {
   // Any id that is not a uuid is no such investor (the check is the documents' one).
   router.param("id", documentIdParam);
   router.get(INVESTORS_PATH, listInvestors(deps));
+  router.get(INVESTORS_CSV_PATH, exportList(deps));
   router.get(INVESTOR_PATH, showInvestor(deps));
   router.get(`${INVESTOR_PATH}/events`, showTimeline(deps));
   router.get(`${INVESTOR_PATH}/export`, exportInvestor(deps));

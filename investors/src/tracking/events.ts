@@ -3,9 +3,9 @@ import { z } from "zod";
 /*
  * What the tracker sends to POST /api/investors/events (KP16). The client
  * sends only these three types; document_open and document_download are
- * written by the server when it issues a link. Wave 1 feeds page_view from
- * the PDF viewer; section_view and video_progress wait for wave 2's
- * sections and video player.
+ * written by the server when it issues a link. The PDF viewer feeds
+ * page_view, the section pages section_view and the video player
+ * video_progress.
  */
 
 /** The server clamps longer durations to this; the client never sends more. */
@@ -39,6 +39,16 @@ const clampDuration = (ms: number) => Math.min(MAX_DURATION_MS, Math.max(0, Math
 /** A PDF page read for `ms` milliseconds (the viewer's onPageVisible). */
 export function pageView(documentId: string, documentVersion: number, page: number, ms: number): TrackedEvent {
   return { type: "page_view", documentId, documentVersion, page, durationMs: clampDuration(ms) };
+}
+
+/** Visible time on a section page (US-009); `section` is its slug. */
+export function sectionView(section: string, ms: number): TrackedEvent {
+  return { type: "section_view", section, durationMs: clampDuration(ms) };
+}
+
+/** A video watched past a milestone (US-008; video-progress.ts). */
+export function videoProgress(documentId: string, percent: VideoPercent): TrackedEvent {
+  return { type: "video_progress", documentId, percent };
 }
 
 export function batchOf(events: readonly TrackedEvent[], sessionId: string | null, heartbeat: boolean): EventBatch {

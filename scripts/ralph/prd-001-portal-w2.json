@@ -1,0 +1,327 @@
+{
+  "project": "Automatos company site (automatos-ai-landingV2): investor portal",
+  "prd": "$RALPH_PRIVATE_PRD (private repo, READ ONLY: never copy its private sections into this public repo)",
+  "branchName": "feat/investor-portal-2",
+  "base": "origin/feat/investor-portal-1 (origin/main once wave 1 merged)",
+  "worktree": "<workspace>/.worktrees/automatos-ai-landingV2/feat+investor-portal-2",
+  "description": "Wave 2 of the investor portal, stacked on wave 1: editable overview/team/FAQ/contact sections, the video player, per-document analytics with page drop-off, CSV export, the privacy-policy section and the footer link.",
+  "decisions": [
+    {
+      "id": "KP1",
+      "text": "FILES. A story may create or change ONLY: investors/** (the React app), server/investors/** (the API, NEW numbered SQL migrations (never edit an applied one) and tests), privacy.html (ONE new section, W2-08), _footer.js (ONE new link, W2-08), README.md (the 'Investor portal' section), package.json and package-lock.json of investors/ (KP2), .github/workflows/investors.yml (only to add specs to the e2e job if needed), and this kit's files under scripts/ralph/. server.js, Dockerfile, the root package.json and every other public page or asset of the site stay byte-identical to the wave-1 base (the gate diffs them)."
+    },
+    {
+      "id": "KP2",
+      "text": "DEPENDENCIES: only these, each installed with 'npm install --save-exact --ignore-scripts <name>@<major>' (or the exact version given) and recorded in the DONE note. ROOT packages: no change in this wave (wave 1 set them). investors/ dependencies: react@18, react-dom@18, react-router-dom@6, @tanstack/react-query@5, @clerk/clerk-react@5, react-pdf@9, pdfjs-dist (exactly the version react-pdf@9 depends on, 4.8.69), recharts@2, lucide-react@0, class-variance-authority@0.7, clsx@2, tailwind-merge@2 (NOT 3: v3 is Tailwind 4 only), tailwindcss-animate@1, sonner@2, zod@3, react-markdown@9, any @radix-ui/react-* package. investors/ devDependencies: vite@6, @vitejs/plugin-react@4, typescript@5, tailwindcss@3, postcss@8, autoprefixer@10, eslint@9, @eslint/js@9, typescript-eslint@8, eslint-plugin-react-hooks@5, eslint-plugin-react-refresh@0, globals, vitest@3, jsdom@26, @testing-library/react@16, @testing-library/jest-dom@6, @types/react@18, @types/react-dom@18, @types/node@22, @playwright/test@1.64.1 (exact). Anything else: RALPH_BLOCKED with the reason. The gate enforces the list and the majors."
+    },
+    {
+      "id": "KP3",
+      "text": "SERVER-SIDE ENFORCEMENT. Every /api/investors route except GET /api/investors/health goes through the auth middleware; identity (clerk user id, email, investor id) comes ONLY from the verified Clerk token, never from a body, query, header other than Authorization, or cookie; admin = the token's Clerk user id is in INVESTOR_ADMIN_CLERK_IDS (comma-separated), checked on the server for every /admin route. A blocked investor gets 403 on every investor route. Unpublished documents are 404 to investors. A test enumerates the router stack and fails if any route other than /health lacks the middleware."
+    },
+    {
+      "id": "KP4",
+      "text": "NEVER BREAK THE SITE. The portal is optional. Missing config (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, or the S3 variables for document routes) or a failed migration puts the portal in 'disabled' with a logged reason: /api/investors/* answers 503 {error:'portal_unavailable'} and /investors serves the app, which shows 'The investor portal is temporarily unavailable' and the contact link. Every other route of automatos.app behaves exactly as on the base. Startup never throws because of the portal; migrations run in the background after app.listen and the portal answers 503 'starting' until they finish."
+    },
+    {
+      "id": "KP5",
+      "text": "PUBLIC REPO. This repository is public. Never commit: env files (the secrets hook blocks *.env and *.env.* paths: document variable NAMES in README.md instead, never an .env.example), keys or tokens (sk_live_, sk_test_ with a real value, pk_live_, AKIA..., private keys), real documents, real investor names or emails, the names of the site's admins, or text from the private PRD's content plan or open questions. Test fixtures are invented (investor 'Ada Example' at 'Example Ventures', ada@example.com) and tiny (a generated one- or two-page PDF under 20 kB). No vendor branding from the reference portal (KP12)."
+    },
+    {
+      "id": "KP6",
+      "text": "LOCAL CHECKS ARE PURE NODE. Allowed on this machine: npm ci/install (KP2 rules), tsc, eslint, vitest (jsdom and PGlite run in-process), vite build, node --check, reading node_modules. NEVER on this machine: node server.js, vite dev, vite preview, any server or listening socket, Playwright, a browser, docker, gh workflow run, git push, opening a PR, git merge. Playwright and the docker build run in CI only (W1-05, W1-19)."
+    },
+    {
+      "id": "KP7",
+      "text": "TEST DATABASE. Server code talks to Postgres only through server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn). Tests use the same interface over PGlite (@electric-sql/pglite, real Postgres in-process) via server/investors/__tests__/helpers/test-db.js, or over pg when INVESTORS_TEST_DATABASE_URL is set (CI's Postgres service). Every SQL statement is parameterized ($1..$n) and schema-qualified (investors.<table>); no string-built SQL with request data."
+    },
+    {
+      "id": "KP8",
+      "text": "MIGRATIONS (deviation from the PRD's node-pg-migrate, so tests run on PGlite): numbered plain SQL files server/investors/migrations/NNN_name.sql, applied in order by server/investors/migrate.js. The runner: creates schema 'investors' only when pg_namespace lacks it (in production the schema already exists, owned by the portal's role), creates investors.schema_migrations(name text primary key, applied_at timestamptz default now()), then applies each missing file in its own transaction after SELECT pg_advisory_xact_lock(724001) and records it. Re-running is a no-op. A failed file rolls back and disables the portal (KP4)."
+    },
+    {
+      "id": "KP9",
+      "text": "CLERK. App: @clerk/clerk-react@5 <ClerkProvider publishableKey={window.AUTOMATOS_CONFIG.clerkPublishableKey}> (runtime config, hydrated by server.js from CLERK_PUBLISHABLE_KEY; never a build-time env). API calls send 'Authorization: Bearer <await getToken()>'. Server: @clerk/backend verifyToken(token, {secretKey, authorizedParties}) with authorizedParties from INVESTORS_AUTHORIZED_PARTIES (comma-separated, default 'https://automatos.app'), behind an injectable verifier (academy server/spine/auth.js pattern) so tests use a fake. Investor email and name come from the Clerk user (createClerkClient({secretKey}).users.getUser, cached per process for 10 minutes) on first sight; later requests read the row. NO cookie auth anywhere (stricter than the PRD): the pagehide flush uses fetch(..., {keepalive: true}) with the last cached token."
+    },
+    {
+      "id": "KP10",
+      "text": "E2E FAKE AUTH SEAM. investors/src/auth/ has ONE module that wraps Clerk (useAuthState, SignedInGate, AccountMenu, getToken). When import.meta.env.VITE_INVESTORS_E2E === '1' (set ONLY by the e2e build script) it swaps to a fake provider whose code contains the marker string 'INVESTORS_E2E_FAKE_AUTH'. The production build (npm run build) must not contain that marker (vite dead-code-eliminates the branch; the gate greps investors/dist). The server has no fake verifier outside tests."
+    },
+    {
+      "id": "KP11",
+      "text": "S3. server/investors/s3.js (pattern: academy server/media/s3.js, lazy S3Client) with an injectable client; env INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY. Keys: documents/<documentId>/v<version>/<safeFileName> (safeFileName: [A-Za-z0-9._-] only, max 120 chars). Presigned PUT 15 minutes with ContentType fixed; presigned GET 5 minutes with ResponseContentDisposition (inline or attachment; filename*=UTF-8 encoded). Allowed content types: application/pdf, video/mp4, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.wordprocessingml.document. Max 262144000 bytes (250 MB). Never log a presigned URL."
+    },
+    {
+      "id": "KP12",
+      "text": "REFERENCE PORTAL (READ ONLY, never edit): the folder named by $RALPH_REFERENCE_PORTAL (set by the launcher; never write that path or the portal's name into this repo). Port its UI: src/components/ui/* (only the components a story uses), components.json, src/pages/Dashboard.tsx + src/components/investor/InvestorSidebar.tsx + InvestorHero.tsx (shell), src/components/investor/sections/DataRoom.tsx (library), src/components/marketplace/CoaPdfViewer.tsx (viewer), src/components/admin/AnalyticsManager.tsx (overview, table, timeline), src/components/admin/DocumentManager.tsx (upload UI), src/lib/activityTracker.ts (heartbeat idea), src/lib/csvExport.ts. Strip ALL of: its brand names, copy, colours, fonts, domains, tiers, wallet/NFT, NDA, CRM, Supabase client and calls, Lovable code. Its data-access and permission code is never ported: every data call goes to this kit's API."
+    },
+    {
+      "id": "KP13",
+      "text": "LOOK. The app looks like automatos.app: fonts Geist (sans), Instrument Serif (headings), Geist Mono (labels) from the same Google Fonts URL the site uses; colours as CSS variables mapped from the site's two moods: bone (--bg #F2EDE4, --bg-2 #ECE6DA, --fg #0F1411, --fg-2 #2C3531, --muted #6E6960, --rule-c rgba(15,20,17,0.14), --accent oklch(0.45 0.06 155), --accent-ink #F2EDE4) and pitch (--bg #0E1311, --bg-2 #161C19, --fg #EFE9DD, --fg-2 #C9C2B4, --muted #8A857C, --rule-c rgba(239,233,221,0.14), --accent oklch(0.78 0.10 95), --accent-ink #0E1311). The mood follows the site: localStorage 'automatos-mood' ('bone'|'pitch'), else prefers-color-scheme; set as data-mood on <body>; Tailwind darkMode ['class'] is NOT used: shadcn tokens read the CSS variables. Square-ish corners (radius 2px), thin rules, no gradients, no glow. Phone first: every investor page works at 390 px."
+    },
+    {
+      "id": "KP14",
+      "text": "COPY. Calm and factual; no 'exclusive', no hype. Tracking notice (teaser and profile form): 'When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy (/privacy). Ask privacy@automatos.app to see or delete your data.' All UI strings in investors/src/strings.ts."
+    },
+    {
+      "id": "KP15",
+      "text": "CODE RULES. Immutability (new objects, never mutate inputs). Files 200-400 lines, never over 800; functions under 50 lines; React components under 150 lines; nesting under 4. zod at every API boundary (server bodies and queries; client parses responses). Errors: the server returns {error:'<code>'} with the right status, logs detail server-side, never leaks stack traces; the client shows a plain message. No console.log in committed code (console.warn/error with context in the server only). Server code is plain ESM JavaScript like server.js, with JSDoc types; the app is TypeScript strict."
+    },
+    {
+      "id": "KP16",
+      "text": "EVENTS. Types: signed_in, profile_completed, document_open, document_download, page_view, section_view, video_progress. document_open and document_download are written by the SERVER when it issues a link; the client may send only page_view, section_view, video_progress and heartbeats. duration_ms capped at 600000; page between 1 and the document's page_count (when known) else 1..2000; at most 50 events per batch; body at most 64 kB; 120 requests/minute/investor on /events, 30/minute on /link, 10/minute on PUT /me (express-rate-limit keyed by investor id)."
+    },
+    {
+      "id": "KP17",
+      "text": "WAVE 2 SCOPE. Build only W2 stories, on top of wave 1 (read wave 1's kit json DONE notes: scripts/ralph/prd-001-portal-w1.json on this branch). In: sections (overview, team, FAQ, contact) with their admin editor, the video player, per-document analytics with page drop-off, CSV export of the investors table, the privacy-policy section, the footer link. Not in: a sitemap entry (the app is noindex until Gerard decides PRD Q7), investor update emails, anything for sensitive documents (PRD Q1)."
+    },
+    {
+      "id": "KP18",
+      "text": "ONE PUSH, ONE PR, ONE CI RUN. Story commits end ' [skip ci]' and are never pushed by you (the runner pushes the branch as a backup). No story waits on CI and no AC says 'CI green'. When every W2 story passes, the last session runs the gate (--no-ci), then makes ONE empty signed commit without [skip ci]; the runner opens the wave's draft PR and that PR's run is the wave's CI. UI stories are verified by typecheck, lint, unit tests and, at the end, the Playwright screenshots of W2-09 in CI (no local browser: KP6)."
+    },
+    {
+      "id": "KP19",
+      "text": "STACKED ON WAVE 1. The branch is cut from origin/feat/investor-portal-1 (or origin/main once wave 1 merged). Never edit a wave-1 file except where a story names it; a wave-1 defect you hit is fixed only if the story cannot be built without it, recorded as 'W1 FIX: <path> — <why>' in the DONE note, with a test. Wave 1's tests must keep passing unchanged."
+    }
+  ],
+  "localChecks": [
+    "npm test (root: vitest run over server/investors/**/__tests__)",
+    "npm --prefix investors run typecheck",
+    "npm --prefix investors run lint",
+    "npm --prefix investors test",
+    "npm --prefix investors run build",
+    "bash scripts/ralph/acceptance-prd001-portal-w2.sh --no-ci"
+  ],
+  "references": [
+    "The private PRD (path above): sections 4 to 12 are the spec this kit implements; section 6 is the data model, section 7 the API.",
+    "Academy (READ ONLY, via git -C $RALPH_ACADEMY_REPO show origin/main:<path>): server/spine/auth.js (Clerk verifier, authorized parties, injectable middleware), server/media/s3.js (lazy S3 client, presigned PUT), server/media/index.js and server/content/index.js (admin allowlist parse, fail-closed config).",
+    "This repo: server.js (hydrateConfig, the allow-list static middleware, the contact form's nodemailer transport), _config.js.template, Dockerfile, .dockerignore, index.html (the tokens and fonts KP13 lists), _theme.js (the mood switch).",
+    "The reference portal (KP12).",
+    "Wave 1 on this branch: scripts/ralph/prd-001-portal-w1.json (its DONE notes say what exists and where) and its code under server/investors/ and investors/."
+  ],
+  "ownerTest": [
+    {
+      "id": "OT-W2-1",
+      "what": "Retention decided by Gerard 27 Oct: 6 months after the last visit, enforced by server/investors/retention.js (daily purge) and stated in privacy.html."
+    },
+    {
+      "id": "OT-W2-2",
+      "what": "After deploy: write the team, FAQ and contact sections (with the booking link) in the admin editor and publish them."
+    },
+    {
+      "id": "OT-W2-3",
+      "what": "Upload the demo video; play it as the test investor; check the investor detail shows 25/50/75/100%."
+    },
+    {
+      "id": "OT-W2-4",
+      "what": "Read the test deck as two test investors to different depths; check the document stats chart and drop-off line."
+    },
+    {
+      "id": "OT-W2-5",
+      "what": "Export the investors CSV and open it in a spreadsheet."
+    },
+    {
+      "id": "OT-W2-6",
+      "what": "The footer link appears on every site page and opens /investors."
+    }
+  ],
+  "userStories": [
+    {
+      "id": "W2-01",
+      "prdStory": "US-009/US-016 (API)",
+      "title": "Sections: migration, investor and admin API",
+      "description": "As the team, we want the overview, team, FAQ and contact text editable without a deploy.",
+      "acceptanceCriteria": [
+        "server/investors/migrations/002_sections_seed.sql inserts the four rows (overview, team, faq, contact) with titles 'Overview', 'Team', 'FAQ', 'Contact', empty body_md, sort_order 1..4, published false, ON CONFLICT DO NOTHING → DONE — 1c10ca7: 002_sections_seed.sql inserts the four rows exactly as specified, ON CONFLICT DO NOTHING (test: seed rows after migrate; an edited row survives a re-run)",
+        "server/investors/routes/sections.js: GET /sections (requireInvestor) → published sections ordered (slug, title, bodyMd, updatedAt); GET /admin/sections and GET /admin/sections/:slug (requireAdmin) → all, including unpublished; PUT /admin/sections/:slug {title 1-80, bodyMd 0-20000, published} (zod) sets updated_at and updated_by (the admin's Clerk id); unknown slug 404 → DONE — 1c10ca7: routes/sections.js createSectionsRouter({db}) serves the four routes; slug param [a-z0-9_-]{1,60} else 404; save stamps updated_at and updated_by = req.investor.clerkUserId",
+        "Tests (PGlite): seed rows exist after migrate; investors see only published; admin edit round-trip; 404; non-admin 403; the route-coverage test still passes → DONE — 1c10ca7: sections.test.js (26 tests, PGlite): seed, published-only for investors, admin list/read/save round-trip, validation, 404s, 403 for non-admins, 401/blocked; route-coverage.test.js passes with the new routes",
+        "npm test passes → DONE — npm test: 19 files, 489 tests passed"
+      ],
+      "files": [
+        "server/investors/migrations/002_sections_seed.sql",
+        "server/investors/routes/sections.js",
+        "server/investors/index.js",
+        "server/investors/__tests__/sections.test.js"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": " | DONE (1c10ca7): no packages added. routes/sections.js exports SECTION_LIMITS {title 80, bodyMd 20000, slug 60}, saveSchema, toSection, toAdminSection, createSectionsRouter({db}) (mounted last in createRoutes). Answers: GET /sections {sections: [{slug, title, bodyMd, updatedAt}]} published only (published-but-empty ones included: the app shows 'Coming soon.'), ordered sort_order, slug; GET /admin/sections {sections: [{slug, title, bodyMd, updatedAt, sortOrder, published, updatedBy}]}; GET /admin/sections/:slug and PUT {section} (same admin shape). PUT body {title (trimmed, one line, 1-80), bodyMd (0-20000, kept as sent; tab/LF/CR allowed, other control chars 'invalid'), published} all required → 400 invalid {fields} with required|too_long|invalid; unknown or malformed slug 404 not_found (no create/delete). W1 FIX: server/investors/__tests__/migrate.test.js — it hard-coded the shipped migrations as ['001_init.sql'] and 2 advisory locks, so the required 002 file failed 4 of its tests (verified on the unmodified file); it now compares with the .sql files read from MIGRATIONS_DIR (001 first, 1 + files locks). Any later migration (e.g. an events index) needs no further test edit."
+    },
+    {
+      "id": "W2-02",
+      "prdStory": "US-009 (UI)",
+      "title": "Overview on home, Team, FAQ and Contact pages, section time tracking",
+      "description": "As an investor, I want to read about the team, the common questions and how to reach the founders.",
+      "acceptanceCriteria": [
+        "investors/src/sections/Markdown.tsx renders markdown with react-markdown@9 (KP2), NO raw HTML (no rehype-raw, skipHtml true), links get rel='noopener noreferrer' and external ones target _blank; headings, lists, links and paragraphs styled with the KP13 tokens → DONE — 8f07154: sections/Markdown.tsx renders with react-markdown 9.1.0, skipHtml, no rehype-raw (default urlTransform empties unsafe schemes); every link rel='noopener noreferrer', other-origin http(s) links target _blank; headings (one level under the page title), lists, links and paragraphs styled with the site tokens",
+        "Home shows the published overview section above the documents; /investors/team, /investors/faq and /investors/contact render their sections; sidebar links appear only for published sections; an unpublished or empty section shows 'Coming soon.' → DONE — 8f07154: Home = title, intro, the published overview (role region named by its title), then the documents; /team, /faq, /contact render their sections; sidebar and phone menu link Team/FAQ/Contact only when published; unpublished or blank shows 'Coming soon.' (the home page leaves a missing overview out)",
+        "Contact renders its markdown (where the admins put the booking link) plus a fixed line with hello@automatos.app → DONE — 8f07154: pages/Contact.tsx renders the contact markdown, then a fixed line 'You can also email hello@automatos.app.' (shown even while coming soon)",
+        "Each section page reports section_view {section, durationMs} through wave 1's tracker when the investor leaves the page or the tab hides (visible time only) → DONE — 8f07154: tracking/use-section-time.ts + section-time.ts queue section_view {section, durationMs} through the wave-1 tracker on tab hide and on leaving the page, visible time only (stretches under 1 s dropped); section-pages.test asserts the keepalive POST /events carries it",
+        "Unit tests: the markdown component strips raw HTML (a <script> and an <img onerror> in the input render as text or nothing), external-link attributes, the visible-time model → DONE — 8f07154: markdown.test.tsx (a <script> block and an inline <img onerror> render nothing, raw anchors/iframes/handlers dropped, javascript:/data: links are text, external-link attributes), markdown-links.test.ts, section-time.test.ts and use-section-time.test.tsx (the visible-time model), sections-model, section-nav and section-pages tests",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — npm --prefix investors run typecheck, lint, test (56 files, 654 tests), build all passed; no INVESTORS_E2E_FAKE_AUTH in dist"
+      ],
+      "files": [
+        "investors/src/sections/**",
+        "investors/src/pages/Team.tsx",
+        "investors/src/pages/Faq.tsx",
+        "investors/src/pages/Contact.tsx",
+        "investors/src/pages/Home.tsx",
+        "investors/src/layout/**",
+        "investors/src/tracking/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts",
+        "investors/package.json",
+        "investors/package-lock.json"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": " | DONE (8f07154): investors/ dependency (exact) react-markdown 9.1.0 (no new audit findings; it moves debug, ms and @types/estree from dev to prod in the lock). W2-03 must use sections/Markdown.tsx (or LazyMarkdown, the same renderer loaded on demand: main chunk 543 kB, Markdown chunk 123 kB) for the preview; it styles every element itself (no typography plugin), demotes markdown headings one level, drops raw HTML, and shows images only from the site's own origin (security review LOW: a third-party image would tell its host who read the page). Client data: sections/sections-api.ts sectionSchema {slug, title, bodyMd, updatedAt} and fetchSections; use-sections.ts sectionsKey(userId) = ['sections', userId] (W2-03: invalidate it after a save so the sidebar, home and pages update), useSections(userId, enabled); sections-model.ts SectionSlug, PAGE_SECTIONS [team, faq, contact], findSection, readableSection (published and not blank), publishedPages; sections/paths.ts TEAM_PATH /team, FAQ_PATH /faq, CONTACT_PATH /contact; sections/PageFrame.tsx is the investor page frame (title, intro, lead, rule); test builder section(slug, overrides) in src/sections/__tests__/fixtures.ts. portalNav(me, publishedSections = []) puts Team, FAQ, Contact between Documents and Profile; PortalLayout asks GET /sections once the profile is done (failure = no section links, quietly). The overview is NOT tracked on Home (the AC names the section pages); section_view goes only from /team, /faq, /contact. W1 FIX: investors/src/pages/__tests__/admin-documents.test.tsx — its exact set of URLs a non-admin's /admin visit asks for now includes /api/investors/sections (the sidebar asks on every signed-in page); still nothing under /admin. W2-09 MUST add 'GET /sections' to e2e/fixtures/api.ts INVESTOR_ROUTES (every signed-in page calls it now, so every existing spec's unmocked() check fails without it); the overview is role region named 'Overview', the contact booking link opens in a new tab, 'Coming soon.' is plain text."
+    },
+    {
+      "id": "W2-03",
+      "prdStory": "US-016",
+      "title": "Admin section editor",
+      "description": "As an admin, I want to edit the overview, team, FAQ and contact text with a live preview.",
+      "acceptanceCriteria": [
+        "investors/src/pages/admin/Sections.tsx: list of the four sections with published state; editing one shows a textarea and a live preview using the SAME Markdown component as W2-02, a title field, a published switch, Save (PUT) with a saved/failed toast; unsaved-changes warning on navigation → DONE — e825596: pages/admin/Sections.tsx — /admin/sections lists the four sections (where each shows, Published/Not published, last saved); /admin/sections/:slug edits one: title field, published switch, markdown textarea with a live preview through sections/LazyMarkdown (the W2-02 renderer), Save = PUT /admin/sections/:slug with a sonner toast (saved / '<title> was not saved' + reason); unsaved changes hold any link that would leave the page behind a 'Leave without saving?' dialog and ask the browser on reload/close",
+        "Admin nav gains 'Sections' → DONE — e825596: AdminGate ADMIN_LINKS is [Overview, Documents, Investors, Sections] (Sections stays current in an editor)",
+        "Unit tests: the editor's dirty-state model → DONE — e825596: admin/__tests__/section-editor-model.test.ts (dirty state: clean start, each field, undo, trimmed title, no mutation, savedAs incl. typing during a save; validation; server field codes), leave-guard.test.ts (which link clicks leave the page), pages/__tests__/admin-sections.test.tsx (11: list, live preview without raw HTML, PUT body + toast + investor list refetch, failed toast keeps text, server field error, unknown slug, leave dialog stay/leave, beforeunload only while dirty)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck, lint (0 warnings), test (59 files, 688 tests), build all passed; no INVESTORS_E2E_FAKE_AUTH in dist; gate --no-ci green except the kit-complete and W2-08 checks"
+      ],
+      "files": [
+        "investors/src/pages/admin/Sections.tsx",
+        "investors/src/admin/**",
+        "investors/src/layout/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": " | DONE (e825596): investors/ dependency (exact) sonner 2.0.8 (no dependencies of its own; npm audit findings unchanged), installed under KP2 though investors/package.json is not in this story's files: the AC's toast needs it. New components/ui textarea.tsx and sonner.tsx (Toaster in the site tokens, both moods, no shadow; import toast from 'sonner'); AdminLayout mounts the Toaster lazily, so every admin page can toast and investors never load it. Client: admin/sections-api.ts adminSectionSchema (sectionSchema + sortOrder, published, updatedBy), fetchAdminSections, saveSection(slug, body); use-sections.ts adminSectionsKey(userId) = ['admin','sections',userId], useSaveSection writes the answer into that list and invalidates sectionsKey(userId); section-paths.ts ADMIN_SECTIONS_PATH, adminSectionPath(slug), sectionSlugOf. The editor reads GET /admin/sections (not /:slug). Unsaved-changes guard (use-leave-guard.ts + leave-guard.ts): the app uses <BrowserRouter> and react-router's useBlocker needs a data router, so a window capture click listener holds leaving link clicks (re-clicks the link on Leave) and beforeunload asks on reload/close; the browser Back button is NOT caught (would need main.tsx on createBrowserRouter, a wave-1 file). W2-09 e2e: /admin/sections calls GET /admin/sections, the editor PUT /admin/sections/:slug; the list is role list 'Sections', the preview role region 'Preview', the leave dialog role alertdialog 'Leave without saving?'; Radix's switch inside a form needs a ResizeObserver stub in jsdom page tests."
+    },
+    {
+      "id": "W2-04",
+      "prdStory": "US-008",
+      "title": "Video player with progress events",
+      "description": "As an investor, I want to watch the demo without downloading it.",
+      "acceptanceCriteria": [
+        "investors/src/viewer/VideoPlayer.tsx: HTML5 <video controls playsInline preload='metadata'> with the inline link from wave 1's link route; on a storage 403 it requests one new link and resumes at the same time → DONE — viewer/VideoPlayer.tsx: <video src controls playsInline preload=metadata> on useViewerLink's inline link; a network or refused-source MediaError (video-model isRefusedMedia; browsers expose no media HTTP status) renews once via link-model, the new player seeks to the same time and plays on if it was playing (video-viewer.test: second link, currentTime 130, play called; video-player.test 9 tests)",
+        "Sends video_progress {documentId, percent} at 25, 50, 75 and 100 (each once per open) through wave 1's tracker; the milestone model is pure and unit-tested (seeking forward past a milestone counts it once; seeking back does not repeat it) → DONE — tracking/video-progress.ts passMilestones/percentAt (pure; video-progress.test: plays through, seek forward 5→60 gives 25,50 once, seek back repeats nothing); use-video-progress-feed.ts sends videoProgress(documentId, percent) through the tracker, once per open across a renewed link (video-viewer.test: pagehide POST /events = 25,50,75,100 once each)",
+        "Home and Documents: Open on a video document goes to /investors/documents/:id, which picks the PDF viewer or the video player by kind → DONE — library-model viewerFor(kind) pdf|video|null; DocumentCard's Open links /documents/:id for both; pages/Viewer.tsx DocumentBody picks PdfBody or VideoBody (video-viewer.test: from home and from documents, href and route, one inline link)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck clean, lint clean, test 65 files / 734 passed, build passed (no E2E marker in dist); root npm test 19 files / 489 passed"
+      ],
+      "files": [
+        "investors/src/viewer/**",
+        "investors/src/pages/Viewer.tsx",
+        "investors/src/documents/**",
+        "investors/src/tracking/**",
+        "investors/src/strings.ts"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": " | DONE (b9d6695): no packages added. documents/library-model.ts viewerFor(kind) → 'pdf' | 'video' | null (DocumentViewer); opensInViewer is unchanged (PDF only: a wave-1 test pins it) and viewerFor calls it. Open on a video now goes to /documents/:id, no longer a download. viewer/: VideoPlayer {url, title, resume, onFailure, onPlaying, onProgress, actions} (the Download button sits under the video; no toolbar); video-model.ts MEDIA_ERR_* codes, mediaFailure/isRefusedMedia ({name:'MediaFailure', code 2|4} counts as a refused link; 3 decode never renews), ResumePoint/START, failurePoint, resumeTime, OnVideoProgress; link-model isExpiredLink matches pdf.js's 403 OR a refused MediaFailure, afterLinkPlayed resets the renewal once a link has played (useViewerLink returns onPlayed), so each expiry while watching renews again; ViewerStates gained ViewerFrame and ViewerPending (linking / link_failed / load_failed, shared by PdfBody and VideoBody in pages/Viewer.tsx). DocumentView is keyed by document.id. tracking/: video-progress.ts (VIDEO_MILESTONES, passMilestones, percentAt), events.ts videoProgress, use-video-progress-feed.ts (milestones held above the player: a renewed link sends none twice). Every renewal is another POST /link, so another server-written document_open row (as for PDFs). Main chunk 549 kB (the pre-existing 500 kB advisory). W2-05: video_progress rows carry data {percent} and the current document_version. W2-09 e2e: the video is labelled '<title>, video' (strings.viewer.video.label); the video page calls POST /documents/:id/link {mode:'inline'} once; a load failure reads strings.viewer.video.failed with the Download button and Try again; jsdom page tests stub HTMLMediaElement.prototype.play and set duration/currentTime/error on the element."
+    },
+    {
+      "id": "W2-05",
+      "prdStory": "US-015 (API)",
+      "title": "Document analytics API",
+      "description": "As an admin, I want to see where readers drop off in the deck.",
+      "acceptanceCriteria": [
+        "GET /admin/documents/:id/stats?version (requireAdmin; default the current version): uniqueReaders, opens, downloads, avgTimeMs (per reader, page_view sum), pages [{page, avgDwellMs, readersReached, pctReached}] for 1..page_count (zero-filled), readers [{investorId, name, firm, furthestPage, timeMs, downloaded, lastOpenAt}] ordered by lastOpenAt desc; versions [numbers that have events] → DONE — f4f15c6: route in routes/admin-documents.js (showStats), shape in queries/document-stats.js documentStats(); admin-document-stats.test.js asserts every field for v2 and v1 of a five-page deck",
+        "Computed in SQL (generate_series for pages); a document without page_count returns pages [] → DONE — f4f15c6: SUMMARY_SQL, PAGES_SQL (generate_series(1, d.page_count), LATERAL dwell and reach), READERS_SQL, VERSIONS_SQL; test: a document with pageCount null answers pages []",
+        "Tests (PGlite with fixture events across two versions): version filter, zero-filled pages, pctReached monotonic non-increasing, reader ordering, non-admin 403 → DONE — f4f15c6: 13 tests in server/investors/__tests__/admin-document-stats.test.js (version filter, zero-filled pages, pctReached non-increasing and rounded 33.3, reader ordering, 403 non-admin, plus 400/404/401/503)",
+        "npm test passes → DONE — npm test: 20 files, 502 tests passed"
+      ],
+      "files": [
+        "server/investors/routes/admin-documents.js",
+        "server/investors/queries/**",
+        "server/investors/__tests__/admin-document-stats.test.js"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": " | DONE (f4f15c6): no packages added. GET /admin/documents/:id/stats?version answers {document (toDocument), version (the one answered; default the current), versions (numbers with events, NEWEST FIRST: the current version may be missing when unread, so the picker should add document.version), uniqueReaders, opens, downloads, avgTimeMs, pages [{page, avgDwellMs, readersReached, pctReached}], readers [{investorId, name, firm, furthestPage, timeMs, downloaded, lastOpenAt}]}. Rules W2-06 must label: a reader is any investor with an event of that version (open, download, page_view, video_progress), so download-only readers and opens with no page recorded count with furthestPage 0 (page 1 is rarely 100%); avgTimeMs averages page_view time over every reader; avgDwellMs averages each reader total on that page over the readers who viewed it; pctReached is 0..100 with one decimal (0 when no readers); readers order: lastOpenAt desc, lastOpenAt null (download only) last; pages is [] when pageCount is null (video and other kinds: the empty state); older versions are charted over the CURRENT page_count, their furthestPage uncapped. ?version is a whole number 1..2147483647 (MAX_VERSION in queries/document-stats.js) else 400 invalid {fields:{version:invalid}}; an unknown version answers zeros; 404 not_found for unknown/non-uuid ids; 503 storage_unavailable without S3 (the documents gate). routes/admin-documents.js exports statsQuerySchema and is now 436 lines (was 406). W2-09 e2e: the stats screen calls GET /admin/documents/:id/stats (add it to e2e/fixtures/api.ts)."
+    },
+    {
+      "id": "W2-06",
+      "prdStory": "US-015 (UI)",
+      "title": "Document analytics screen",
+      "description": "As an admin, I want a chart of time per page and how many readers reach each page.",
+      "acceptanceCriteria": [
+        "investors/src/pages/admin/DocumentStats.tsx (from the documents table, a 'Stats' action): KPI cards, a version picker, a recharts bar chart of average dwell per page and a line of % of readers reaching each page (colours from the KP13 tokens), the readers table linking to each investor's detail → DONE — a7dc6bc: route admin/documents/:id/stats (React.lazy AdminDocumentStats in App.tsx); RowActions gains a 'Stats' link (actionLabel 'Stats: <title>'); KPI cards (DocumentStatsCards over StatCard), VersionPicker (native select, ?version=N in the address), PageCharts: recharts BarChart of avg dwell (var(--accent)) and LineChart of % reached (var(--fg-2)), grid/ticks from chart-style.ts; ReadersTable links each reader to /admin/investors/:id",
+        "Unit tests: the stats-to-chart mapping and the empty state for non-PDF documents → DONE — a7dc6bc: src/admin/__tests__/document-stats-model.test.ts (27: toPageRows one row per page in order, seconds to one decimal, no mutation; chartState/chartEmptyText not_pdf for every non-PDF kind, no_page_count, no_readers; KPI cards, versions, readers, drop-off) + document-stats-paths.test.ts (3) + src/pages/__tests__/admin-document-stats.test.tsx (9: Stats action, numbers, charts in words, readers order and links, version switch, video empty state, 404, retry)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck clean; lint clean; npm --prefix investors test 68 files / 773 tests passed; build passes (no E2E marker in dist); root npm test 20 files / 502 passed"
+      ],
+      "files": [
+        "investors/src/pages/admin/DocumentStats.tsx",
+        "investors/src/pages/admin/Documents.tsx",
+        "investors/src/admin/**",
+        "investors/src/App.tsx",
+        "investors/src/strings.ts"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": " | DONE (a7dc6bc): no packages added. Page /investors/admin/documents/:id/stats (pages/admin/DocumentStats.tsx, keyed by id; ?version=N in the address, none for the current version; keepPreviousData while switching). Client: admin/document-stats-api.ts documentStatsSchema/fetchDocumentStats(id, version|null); use-document-stats.ts key ['admin','document-stats',userId,id,version|'current']; document-stats-paths.ts adminDocumentStatsPath(id), parseVersion, versionSearch, MAX_VERSION; document-stats-model.ts toPageRows, chartState ('charted'|'not_pdf'|'no_page_count'|'no_readers'), statsCards, versionOptions (adds current + shown + picked), largestDrop, dwellSummary/reachSummary (the charts' aria-labels), readerFacts (older versions show furthestPage without the page count; non-PDF kinds show a dash for pages and time). Shared: admin/chart-style.ts (CHART_HEIGHT, TICK, RULE, TOOLTIP_STYLE; ActivityChart imports it) and admin/StatCard.tsx (KpiCards and DocumentStatsCards use it); Rollup names the lazy recharts chunk after StatCard (395 kB), main chunk 552 kB (was 549 kB: strings). Documents.tsx needed no change: the Stats action is a link in admin/RowActions.tsx. Test fixtures documentStats(), videoStats(), reader(), FIVE_PAGES in src/admin/__tests__/document-stats-fixtures.ts. W2-09 e2e: the documents table row has link 'Stats: <title>'; the stats page calls GET /admin/documents/:id/stats (and ?version=N after a pick) — add it to e2e/fixtures/api.ts; the charts are role img regions named by dwellSummary/reachSummary under headings 'Time per page' and 'Readers reaching each page' (bars: .recharts-bar-rectangle, one per page); the readers table is role table 'Readers of this version'; page tests that render recharts stub ResizeObserver."
+    },
+    {
+      "id": "W2-07",
+      "prdStory": "US-012 (CSV)",
+      "title": "CSV export of the investors table",
+      "description": "As an admin, I want to export the current investor list.",
+      "acceptanceCriteria": [
+        "GET /admin/investors.csv (requireAdmin) with the same q/type/source/sort as the list, all pages, columns as the table plus email and marketing opt-in; Content-Disposition attachment 'investors-YYYY-MM-DD.csv'; every cell escaped (quotes doubled) and cells starting with = + - @ tab or CR prefixed with a single quote (formula injection) → DONE — 81e41c9: routes/admin-investors.js exportList runs the list's own pageSql with LIMIT NULL (every page, the table's order) + opt-in by id; columns = table + Email + Marketing opt-in; Content-Disposition attachment; filename=\"investors-YYYY-MM-DD.csv\" (UTC); csv.js csvCell quotes every cell (quotes doubled) and prefixes = + - @ TAB CR with '",
+        "'Export CSV' button on the investors table (fetch with the Bearer token, then save as a Blob; the reference portal's csvExport helper may be ported for the client side only if used) → DONE — 81e41c9: admin/CsvExportButton.tsx on the investors table (beside the results count); admin/investors-csv.ts fetches with the Bearer token (credentials omit), checks text/csv, saves via admin/save-file.ts saveBlob; the reference helper was not ported (the server builds the file)",
+        "Tests: server (PGlite): filters honoured, escaping, formula-injection prefix; app: the download helper → DONE — 81e41c9: server/investors/__tests__/admin-investors-csv.test.js (20 tests over PGlite: q/type/source/sort, all pages past PAGE_SIZE, list parity, escaping, formula-injection prefix, 400s, audit log, 401/403); app: admin/__tests__/investors-csv.test.ts, save-file.test.ts, pages/__tests__/admin-investors-csv.test.tsx",
+        "npm test and the investors checks pass → DONE — npm test 21 files / 522 passed; investors typecheck + lint clean, vitest 71 files / 787 passed, build ok (no INVESTORS_E2E_FAKE_AUTH in dist); security-reviewer: nothing exploitable"
+      ],
+      "files": [
+        "server/investors/routes/admin-investors.js",
+        "server/investors/csv.js",
+        "server/investors/__tests__/admin-investors-csv.test.js",
+        "investors/src/pages/admin/Investors.tsx",
+        "investors/src/admin/**"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": " | DONE (81e41c9): no packages added. Server: csv.js exports CSV_BOM, csvCell, toCsv(columns, rows) (CsvColumn {header, value(row)}), CHOICE_LABELS (a THIRD copy of the profile labels: strings.ts profile, alert-messages.js, csv.js; a test fails if a routes/me.js choice has no label), CHOICE_LISTS, csvDateTime ('YYYY-MM-DD HH:MM' UTC), INVESTOR_CSV_COLUMNS (Name, Email, Firm, Investor type, Cheque size, Source, Signed up (UTC), Last seen (UTC), Sessions, Total time (min) one decimal, Documents opened, Downloads, Deck furthest page, Deck page count, Blocked yes/no, Marketing opt-in yes/no), investorsCsvFileName(now). GET /admin/investors.csv takes listQuerySchema minus page (a ?page is ignored), answers text/csv; charset=utf-8 with a UTF-8 BOM and CRLF rows, logs one warn line '[investors] admin <id> exported <n> investors as CSV'; no row cap (security LOW kept: the AC asks for every page). App: admin/save-file.ts saveBlob(fileName, blob) (save-json.ts now uses it), admin/investors-csv.ts csvSearch(query) (apiSearch without page), csvFileName(contentDisposition, now), fetchInvestorsCsv(search) (ApiError kinds as fetchJson; non-CSV is bad_response), downloadInvestorsCsv(query); strings.admin.investors.exportCsv. The button shows only when the current page has rows. Tests: fetch's Blob and Uint8Array are Node's, not jsdom's (compare contents, not classes; Blob.text() drops the BOM). W2-09 e2e: the button is role button 'Export CSV' beside the results count; a click calls GET /admin/investors.csv with the view's query (no page) — add it to e2e/fixtures/api.ts if a spec clicks it; the download is a blob: link click."
+    },
+    {
+      "id": "W2-08",
+      "prdStory": "US-018",
+      "title": "Privacy policy section and footer link",
+      "description": "As an investor, I want to know what is tracked; as the team, we want the portal easy to find.",
+      "acceptanceCriteria": [
+        "privacy.html gains ONE section after Section 06 in the same markup: <h2 id=\"investors\"><span class=\"num\">Section 07</span>Investor <em>portal</em></h2> with paragraphs covering: what we record (your profile; documents you open or download; time spent on each page; visits), why (to follow up with interested investors; legitimate interest), who sees it (the Automatos team members who run the portal), how long (24 months after your last visit), and how to get a copy or have it deleted (privacy@automatos.app); if the page's aside lists sections, add the entry there too; nothing else on the page changes → DONE — de83127: Section 07 #investors after Section 06 in the same h2/num/em markup, five plain paragraphs (recorded, why, who, 24 months, copy/delete via privacy@automatos.app); aside gains <a href=\"#investors\">07 · Investor portal</a>; site-links.test.js pins markup, place and topics",
+        "_footer.js: the Company column gains { label: 'Investors', href: '/investors' } after 'Contact'; nothing else changes → DONE — de83127: { label: 'Investors', href: '/investors' } after Contact; site-links.test.js pins the Company column in order",
+        "The app's tracking notice (wave 1) links to /privacy#investors → DONE — de83127: strings.trackingNotice.policyHref = '/privacy#investors' (teaser and profile form); teaser.test.tsx and site-links.test.js check it resolves to an id in privacy.html",
+        "No sitemap or robots change (KP17) → DONE — no sitemap or robots path in the wave diff",
+        "Gate: the diffs of privacy.html and _footer.js contain only additions → DONE — git diff base..HEAD of privacy.html and _footer.js has no removed lines (8 and 1 added)"
+      ],
+      "files": [
+        "privacy.html",
+        "_footer.js",
+        "investors/src/strings.ts"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": " | DONE (de83127): no packages added. Root test server/investors/__tests__/site-links.test.js reads privacy.html, _footer.js and investors/src/strings.ts as text (section heading, aside entry, Company links in order, notice href → an id in privacy.html). The section also says how far each video is watched and that visits carry start/end and the browser (sessions.user_agent): the code records both. The page's Updated date (8 Oct 2026) is unchanged: the AC allows additions only. W1 FIX: investors/src/pages/__tests__/teaser.test.tsx — it pinned the notice href to /privacy; the AC moves it to /privacy#investors. W2-09 e2e: investor.spec.ts already reads strings.trackingNotice.policyHref, so it follows the new href with no edit."
+    },
+    {
+      "id": "W2-09",
+      "prdStory": "browser checks",
+      "title": "Playwright screenshots for the wave-2 screens",
+      "description": "As the reviewer, I want screenshots of the new screens from CI.",
+      "acceptanceCriteria": [
+        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5): home with the overview, team, FAQ, contact, the video player page, admin sections editor with preview, admin document stats with both charts; assertions: a raw <script> in mocked markdown is not executed or rendered as HTML; the stats chart renders one bar per page → DONE — investors/e2e/sections.spec.ts (home-overview, team, faq, contact), video.spec.ts (video-player, video-failed), admin-content.spec.ts (admin-sections, admin-section-editor with preview, admin-document-stats), both projects; fixtures/markdown.ts expectNoRawHtml checks the overview raw <script> and <img onerror> neither run nor reach the DOM on home and in the editor preview; .recharts-bar-rectangle count = pages (8), .recharts-line-dot count = pages",
+        "Screenshots saved under investors/e2e/screenshots/ (uploaded by wave 1's e2e job; extend the job only if needed) → DONE — capture() writes investors/e2e/screenshots/<project>/<name>.png; wave 1 e2e job runs every spec and uploads that folder, so investors.yml is unchanged",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — e2e/tsconfig.json is in typecheck, eslint . covers e2e/; Playwright not run locally",
+        "npm --prefix investors run typecheck and lint pass → DONE — typecheck and lint pass; npm test 71 files / 787 tests pass; build has no E2E marker, build:e2e has it"
+      ],
+      "files": [
+        "investors/e2e/**",
+        ".github/workflows/investors.yml"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": " | DONE (a642e7b): no packages added; investors.yml unchanged. Fixtures: GET /sections in INVESTOR_ROUTES, GET /admin/sections and GET /admin/documents/<MEMO_ID>/stats in ADMIN_ROUTES, an invented 8-page Example market memo (MEMO_ID, version 2) appended to LIBRARY (wave-1 home and admin-documents screenshots show it), DEMO_ID/BEN_ID/CARA_ID/DAN_ID exported; storageLink(path) replaces deckLink; mockPortal returns bodies(key) (JSON bodies answered at METHOD /path); routeVideo(page, hold|refuse) answers VIDEO_PATH (hold: the player waits, goto uses waitUntil domcontentloaded because a fetching media element holds the load event; refuse: 403, so the link is renewed once and the failure shows after 2 link calls). A throwaway local vitest check (not committed) parsed the new fixtures with the app zod schemas and rendered the fixture markdown in jsdom. First CI run of these specs is the wave PR run."
+    }
+  ]
+}

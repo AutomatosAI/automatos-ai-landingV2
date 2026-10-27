@@ -26,6 +26,9 @@ export const strings = {
     label: "Portal",
     home: "Home",
     documents: "Documents",
+    team: "Team",
+    faq: "FAQ",
+    contact: "Contact",
     profile: "Profile",
     admin: "Admin",
     menu: "Menu",
@@ -72,7 +75,7 @@ export const strings = {
       failed: "The document could not be opened. Please try again.",
     },
   },
-  /** The PDF viewer (US-007) at /investors/documents/:id. */
+  /** The PDF viewer (US-007) and the video player (US-008) at /investors/documents/:id. */
   viewer: {
     back: "Back to documents",
     toolbarLabel: "Document pages",
@@ -93,6 +96,20 @@ export const strings = {
       body: "This document is no longer available. It may have been withdrawn or replaced.",
     },
     notViewable: "This document opens as a download.",
+    video: {
+      label: (title: string) => `${title}, video`,
+      failed: "Download it to watch it on your device, or try again.",
+    },
+  },
+  /**
+   * The admins' markdown pages (US-009): the overview on the home page, and
+   * Team, FAQ and Contact. A page shows the section's own title once it is
+   * published; these titles stand in until then.
+   */
+  sections: {
+    titles: { team: "Team", faq: "FAQ", contact: "Contact" },
+    comingSoon: "Coming soon.",
+    contactLine: { before: "You can also email ", after: "." },
   },
   contact: {
     helloEmail: HELLO_EMAIL,
@@ -173,19 +190,21 @@ export const strings = {
     before:
       "When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our ",
     policyLink: "Privacy Policy",
-    policyHref: "/privacy",
+    /** privacy.html's investor-portal section (W2-08). */
+    policyHref: "/privacy#investors",
     middle: ". Ask ",
     after: " to see or delete your data.",
   },
   /** Words inside the UI kit's own parts (components/ui). */
   ui: {
     close: "Close",
+    notifications: "Notifications",
   },
   /** The admin area (/investors/admin): only admins see it, and the server checks every call (KP3). */
   admin: {
     label: "Admin",
     navLabel: "Admin sections",
-    nav: { overview: "Overview", documents: "Documents", investors: "Investors" },
+    nav: { overview: "Overview", documents: "Documents", investors: "Investors", sections: "Sections" },
     /** The admin overview (US-011): counts over a rolling 7 days, a chart of 30 UTC days. */
     overview: {
       title: "Overview",
@@ -261,6 +280,7 @@ export const strings = {
         preview: "Preview",
         moveUp: "Move up",
         moveDown: "Move down",
+        stats: "Stats",
         edit: "Edit",
         delete: "Delete",
       },
@@ -269,6 +289,85 @@ export const strings = {
       preview: {
         blocked: "The browser blocked the new tab. Allow pop-ups for this page, then try again.",
         failed: "The preview could not be opened. Please try again.",
+      },
+    },
+    /** One document's analytics (US-015): who read a version, how far, and where they stopped. */
+    stats: {
+      back: "All documents",
+      intro: "Who read this version, how far they got and how long they spent on each page.",
+      missing: {
+        title: "Document not found",
+        body: "This document no longer exists. It may have been deleted.",
+      },
+      version: {
+        label: "Version",
+        option: (version: number, current: boolean) => (current ? `Version ${version} (current)` : `Version ${version}`),
+        older: "This is an older version. Its pages are charted over the current file's page count.",
+      },
+      kpis: {
+        label: "Key numbers for this version",
+        readers: "Readers",
+        readersDetail: "Opened, read or downloaded it",
+        opens: "Opens",
+        opensDetail: "Every open counts",
+        downloads: "Downloads",
+        downloadsDetail: "Every download counts",
+        avgTime: "Average time",
+        avgTimeDetail: "On its pages, per reader",
+        notPagedDetail: "Time is recorded on PDF pages only",
+        none: "—",
+      },
+      pages: {
+        title: "Pages",
+        notPdf: "Pages are charted for PDF documents only. The readers are listed below.",
+        noPageCount: "The page count of this PDF is not known, so its pages cannot be charted.",
+        noReaders: "No one has read this version yet.",
+      },
+      pageLabel: (page: number) => `Page ${page}`,
+      dwell: {
+        title: "Time per page",
+        caption: "Average time on each page, over the readers who viewed it",
+        series: "Average time",
+        tick: (seconds: number) => `${seconds} s`,
+        summary: (pages: number, longest: { page: number; time: string } | null) =>
+          longest === null
+            ? `Average time on each of ${pages} pages: none recorded.`
+            : `Average time on each of ${pages} pages; the longest is page ${longest.page}, ${longest.time}.`,
+      },
+      reach: {
+        title: "Readers reaching each page",
+        caption: "Share of this version's readers who got to each page or further",
+        series: "Readers reaching it",
+        tick: (percent: number) => `${percent}%`,
+        value: (percent: number, readers: number) => `${percent}% (${readers} ${readers === 1 ? "reader" : "readers"})`,
+        summary: (first: number, last: number, lastPage: number, drop: { after: number; from: number; to: number } | null) =>
+          `${first}% of readers reached page 1 and ${last}% reached page ${lastPage}.` +
+          (drop === null ? "" : ` The largest drop is after page ${drop.after}, from ${drop.from}% to ${drop.to}%.`),
+      },
+      readers: {
+        title: "Readers",
+        tableLabel: "Readers of this version",
+        columns: {
+          investor: "Investor",
+          furthestPage: "Furthest page",
+          time: "Time",
+          downloaded: "Downloaded",
+          lastOpened: "Last opened",
+        },
+        unnamed: "No name given",
+        yes: "Yes",
+        no: "No",
+        none: "—",
+        empty: "No readers for this version yet.",
+      },
+      notes: {
+        label: "How it is counted",
+        items: [
+          "Readers: everyone who opened, read or downloaded this version, including those who only downloaded it or left before a page was counted (furthest page 0), so page 1 is often below 100%.",
+          "Average time: time on its pages, averaged over every reader.",
+          "Time per page: each reader's total time on that page, averaged over the readers who viewed it.",
+          "Readers are listed newest open first; a reader with no open (Last opened —) only downloaded it.",
+        ],
       },
     },
     upload: {
@@ -328,6 +427,65 @@ export const strings = {
       cancel: "Cancel",
       failed: "The document could not be deleted. Please try again.",
     },
+    /** The section editor (US-016): the overview, team, FAQ and contact text, in markdown. */
+    sections: {
+      title: "Sections",
+      intro: "The text investors read on the home page and the Team, FAQ and Contact pages. Investors see a section only once it is published.",
+      listLabel: "Sections",
+      places: {
+        overview: "Home page, above the documents",
+        team: "Team page",
+        faq: "FAQ page",
+        contact: "Contact page, above the team's email",
+      },
+      published: "Published",
+      notPublished: "Not published",
+      lastSaved: (when: string) => `Last saved ${when}`,
+      neverSaved: "Not edited yet",
+      edit: "Edit",
+      editLabel: (title: string) => `Edit ${title}`,
+      back: "All sections",
+      editTitle: (title: string) => `Edit ${title}`,
+      missing: "There is no section at this address.",
+      fields: {
+        title: { label: "Title" },
+        published: {
+          label: "Published",
+          hint: "Investors see this section only while it is published.",
+        },
+        body: {
+          label: "Text",
+          hint: "Markdown: # for a heading, - for a list item, [words](https://…) for a link. HTML is not shown.",
+          count: (used: string, max: string) => `${used} of ${max} characters`,
+        },
+      },
+      errors: {
+        bodyInvalid: "The text holds characters that cannot be saved. Remove them and try again.",
+      },
+      preview: {
+        label: "Preview",
+        hint: "As investors will see it once saved and published.",
+      },
+      save: "Save",
+      saving: "Saving…",
+      dirty: "Unsaved changes",
+      clean: "No unsaved changes",
+      saved: (title: string, published: boolean) =>
+        published ? `${title} saved. Investors see this version.` : `${title} saved. It is not published, so investors do not see it.`,
+      saveFailed: (title: string) => `${title} was not saved`,
+      failures: {
+        fields: "Some fields need a look before saving.",
+        gone: "This section no longer exists. Reload the page.",
+        signIn: "Your session has ended. Copy your text somewhere safe, then sign in again.",
+        other: "Your text is still here. Check the connection, then save again.",
+      },
+      leave: {
+        title: "Leave without saving?",
+        body: "Your changes to this section have not been saved. If you leave, they are lost.",
+        stay: "Keep editing",
+        leave: "Leave",
+      },
+    },
     /** The investors table (US-012). Its view (search, filters, sort, page) is kept in the address. */
     investors: {
       title: "Investors",
@@ -366,6 +524,12 @@ export const strings = {
       noMatch: "No investors match this search and these filters.",
       pageEmpty: "There are no investors on this page.",
       firstPage: "Go to the first page",
+      exportCsv: {
+        button: "Export CSV",
+        preparing: "Preparing…",
+        description: "Every investor in this view, all pages, with their email and marketing choice.",
+        failed: "The CSV could not be prepared. Please try again.",
+      },
       notes: {
         label: "How the columns are counted",
         items: [

@@ -57,7 +57,16 @@ export function documentFacts(document: InvestorDocument): readonly string[] {
   return [strings.library.kinds[document.kind], size, date && strings.library.updated(date)].filter(Boolean);
 }
 
-/** Open reads a PDF in the portal's viewer (W1-13); every other kind is downloaded. */
+/** A PDF reads in the portal's PDF viewer (W1-13). */
 export function opensInViewer(kind: DocumentKind): boolean {
   return kind === "pdf";
+}
+
+/** What shows a document on its page (/documents/:id): the PDF viewer or the video player (W2-04). */
+export type DocumentViewer = "pdf" | "video";
+
+/** Open goes to the document's page for a PDF or a video; null: every other kind is downloaded. */
+export function viewerFor(kind: DocumentKind): DocumentViewer | null {
+  if (opensInViewer(kind)) return "pdf";
+  return kind === "video" ? "video" : null;
 }

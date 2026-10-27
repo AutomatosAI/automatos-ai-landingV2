@@ -9,11 +9,13 @@
  *
  * Without the S3 config every route here answers 503
  * {error:'storage_unavailable'}; the rest of the portal keeps working (KP4).
- * Previews are an admin's, so they write no investor event (KP16).
+ * Previews are an admin's, so they write no investor event (KP16). Stats
+ * (US-015) read one version's events; the SQL is in queries/document-stats.js.
  */
 import express from "express";
 import { z } from "zod";
 import { DOCUMENT_COLUMNS, DOCUMENT_KINDS, documentIdParam, storageUnavailable, toDocument } from "../documents.js";
+import { MAX_VERSION, documentStats } from "../queries/document-stats.js";
 import { GET_EXPIRES_SEC, PUT_EXPIRES_SEC, UploadRejectedError, checkUpload, documentKey } from "../s3.js";
 import { FIELD_CODES, optionalText, requiredBoolean, requiredChoice, requiredText, sendInvalid } from "../validation.js";
 
@@ -116,6 +118,16 @@ const uploadSchema = z.object({
 });
 
 const finalizeSchema = z.object({ key: requiredText(DOCUMENT_LIMITS.key), pageCount });
+
+/** ?version=N: a whole number from 1; missing is the document's current version. */
+export const statsQuerySchema = z.object({
+  version: z
+    .string({ errorMap: () => ({ message: FIELD_CODES.invalid }) })
+    .regex(/^[1-9]\d{0,9}$/, FIELD_CODES.invalid)
+    .transform(Number)
+    .refine((version) => version <= MAX_VERSION, FIELD_CODES.invalid)
+    .optional(),
+});
 
 /**
  * The version the next upload is stored as: the current one until a file is
@@ -384,6 +396,23 @@ function createPreviewLink({ db, store }) {
   };
 }
 
+/** @param {Pick<Deps, "db">} deps @returns {import("express").RequestHandler} */
+function showStats({ db }) {
+  return async function getStats(req, res, next) {
+    const parsed = statsQuerySchema.safeParse(req.query);
+    if (!parsed.success) return sendInvalid(res, parsed.error);
+    try {
+      const row = await findDocument(db, req.params.id);
+      if (!row) return sendError(res, "not_found");
+      const version = parsed.data.version ?? row.version;
+      const stats = await documentStats(db, row.id, version);
+      return res.json({ document: toDocument(row), version, ...stats });
+    } catch (err) {
+      return next(err);
+    }
+  };
+}
+
 /**
  * The routes exist whatever the config, so the route-coverage test always
  * walks them; without a store the 503 gate answers before any of them runs.
@@ -402,5 +431,6 @@ export function createAdminDocumentsRouter({ db, store, logger = console }) {
   router.post(`${DOCUMENT_PATH}/upload-url`, createUploadUrl(deps));
   router.post(`${DOCUMENT_PATH}/finalize`, finalizeUpload(deps));
   router.post(`${DOCUMENT_PATH}/preview-link`, createPreviewLink(deps));
+  router.get(`${DOCUMENT_PATH}/stats`, showStats(deps));
   return router;
 }

@@ -33,7 +33,7 @@ describe("Teaser", () => {
     expect(notice).toHaveTextContent(
       "When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy. Ask privacy@automatos.app to see or delete your data.",
     );
-    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy#investors");
     expect(screen.getByRole("link", { name: "privacy@automatos.app" })).toHaveAttribute(
       "href",
       "mailto:privacy@automatos.app",
