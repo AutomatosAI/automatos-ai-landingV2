@@ -289,11 +289,11 @@
       "title": "Privacy policy section and footer link",
       "description": "As an investor, I want to know what is tracked; as the team, we want the portal easy to find.",
       "acceptanceCriteria": [
-        "privacy.html gains ONE section after Section 06 in the same markup: <h2 id=\"investors\"><span class=\"num\">Section 07</span>Investor <em>portal</em></h2> with paragraphs covering: what we record (your profile; documents you open or download; time spent on each page; visits), why (to follow up with interested investors; legitimate interest), who sees it (the Automatos team members who run the portal), how long (24 months after your last visit), and how to get a copy or have it deleted (privacy@automatos.app); if the page's aside lists sections, add the entry there too; nothing else on the page changes",
-        "_footer.js: the Company column gains { label: 'Investors', href: '/investors' } after 'Contact'; nothing else changes",
-        "The app's tracking notice (wave 1) links to /privacy#investors",
-        "No sitemap or robots change (KP17)",
-        "Gate: the diffs of privacy.html and _footer.js contain only additions"
+        "privacy.html gains ONE section after Section 06 in the same markup: <h2 id=\"investors\"><span class=\"num\">Section 07</span>Investor <em>portal</em></h2> with paragraphs covering: what we record (your profile; documents you open or download; time spent on each page; visits), why (to follow up with interested investors; legitimate interest), who sees it (the Automatos team members who run the portal), how long (24 months after your last visit), and how to get a copy or have it deleted (privacy@automatos.app); if the page's aside lists sections, add the entry there too; nothing else on the page changes → DONE — de83127: Section 07 #investors after Section 06 in the same h2/num/em markup, five plain paragraphs (recorded, why, who, 24 months, copy/delete via privacy@automatos.app); aside gains <a href=\"#investors\">07 · Investor portal</a>; site-links.test.js pins markup, place and topics",
+        "_footer.js: the Company column gains { label: 'Investors', href: '/investors' } after 'Contact'; nothing else changes → DONE — de83127: { label: 'Investors', href: '/investors' } after Contact; site-links.test.js pins the Company column in order",
+        "The app's tracking notice (wave 1) links to /privacy#investors → DONE — de83127: strings.trackingNotice.policyHref = '/privacy#investors' (teaser and profile form); teaser.test.tsx and site-links.test.js check it resolves to an id in privacy.html",
+        "No sitemap or robots change (KP17) → DONE — no sitemap or robots path in the wave diff",
+        "Gate: the diffs of privacy.html and _footer.js contain only additions → DONE — git diff base..HEAD of privacy.html and _footer.js has no removed lines (8 and 1 added)"
       ],
       "files": [
         "privacy.html",
@@ -301,8 +301,8 @@
         "investors/src/strings.ts"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (de83127): no packages added. Root test server/investors/__tests__/site-links.test.js reads privacy.html, _footer.js and investors/src/strings.ts as text (section heading, aside entry, Company links in order, notice href → an id in privacy.html). The section also says how far each video is watched and that visits carry start/end and the browser (sessions.user_agent): the code records both. The page's Updated date (8 Oct 2026) is unchanged: the AC allows additions only. W1 FIX: investors/src/pages/__tests__/teaser.test.tsx — it pinned the notice href to /privacy; the AC moves it to /privacy#investors. W2-09 e2e: investor.spec.ts already reads strings.trackingNotice.policyHref, so it follows the new href with no edit."
     },
     {
       "id": "W2-09",
