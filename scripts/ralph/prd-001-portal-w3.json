@@ -122,12 +122,12 @@
       "title": "A storage outage shows an inline note, not the full-page 'unavailable' screen",
       "description": "As an investor, if document storage is briefly unavailable I still see the portal (overview, sections) with a short note where the documents would be; today any 503 blanks the page.",
       "acceptanceCriteria": [
-        "investors/src/api/errors.ts: errorKindFor(503, 'storage_unavailable') returns a new kind 'storage_unavailable' (every other 503 stays 'unavailable'); SCREEN_FOR_KIND maps it to a new screen 'storage_unavailable'; the existing unit tests keep passing and new ones cover the mapping",
-        "Home and Documents: when the document list fails with kind 'storage_unavailable', the page renders normally (title, intro, overview block on Home) and, in place of the library, an inline note with strings.documents.unavailable ('Documents are unavailable right now. Please try again later.') and a Retry button that refetches; every other error keeps today's behaviour",
-        "Viewer: a 'storage_unavailable' link error shows the viewer's own error state with the same sentence, a Back link and Retry, not the full-page unavailable screen",
-        "The admin documents screen keeps its existing storage_unavailable alert unchanged",
-        "Tests (vitest, jsdom, mocked fetch): Home with a 503 storage_unavailable shows the overview and the inline note and NOT the 'Temporarily unavailable' title; a plain 503 portal_unavailable still shows the full-page screen; Retry refetches",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/api/errors.ts: errorKindFor(503, 'storage_unavailable') returns a new kind 'storage_unavailable' (every other 503 stays 'unavailable'); SCREEN_FOR_KIND maps it to a new screen 'storage_unavailable'; the existing unit tests keep passing and new ones cover the mapping → DONE — errors.ts: kind and screen storage_unavailable, isStorageUnavailable(); errors.test.ts rows for 503 storage_unavailable/portal_unavailable/null/starting, 500 storage_unavailable, the screen, the predicate",
+        "Home and Documents: when the document list fails with kind 'storage_unavailable', the page renders normally (title, intro, overview block on Home) and, in place of the library, an inline note with strings.documents.unavailable ('Documents are unavailable right now. Please try again later.') and a Retry button that refetches; every other error keeps today's behaviour → DONE — Home.tsx and LibraryPage.tsx (the Documents page) render DocumentsUnavailable (LibraryStates.tsx) in place of the library; storage-outage.test.tsx Home + Documents",
+        "Viewer: a 'storage_unavailable' link error shows the viewer's own error state with the same sentence, a Back link and Retry, not the full-page unavailable screen → DONE — ViewerStorageUnavailable (ViewerStates.tsx) under the Back link for a storage_unavailable list (Viewer.tsx StorageUnavailable) or link (ViewerPending link_failed) error; no Download; 2 viewer tests",
+        "The admin documents screen keeps its existing storage_unavailable alert unchanged → DONE — admin keys on error.code (admin/messages.ts, upload-file.ts): untouched; admin-documents.test storage alert passes",
+        "Tests (vitest, jsdom, mocked fetch): Home with a 503 storage_unavailable shows the overview and the inline note and NOT the 'Temporarily unavailable' title; a plain 503 portal_unavailable still shows the full-page screen; Retry refetches → DONE — storage-outage.test.tsx 7 tests (5 fail with the old 503 mapping); library.test.tsx 503 row now portal_unavailable",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — c3865b2: typecheck 0, lint 0, test 72 files / 801 passed, build 0"
       ],
       "files": [
         "investors/src/api/errors.ts",
@@ -141,8 +141,8 @@
         "investors/src/strings.ts"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (c3865b2): no packages added. errors.ts: ApiErrorKind and ErrorScreen gain storage_unavailable (503 + code storage_unavailable only); isStorageUnavailable(error). Pages that list documents early-return ApiErrorPage only when !isStorageUnavailable, then a body component takes the whole query (ReturnType<typeof useDocuments>): isError → DocumentsUnavailable (LibraryStates.tsx, role status, sentence + Retry = strings.status.error.retry), isPending → skeleton, empty, list. W3-03 builds Home on that HomeDocuments (Home.tsx): put PitchFeature in the success branch. strings.documents.unavailable shares one constant with library.errors.unavailable. Files outside the AC list, edited because the AC needs them: documents/LibraryPage.tsx (IS the Documents page; Documents.tsx only wraps it), pages/ApiErrorPage.tsx (exhaustive switch: new case = title + sentence + Retry), documents/messages.ts (+ its test row: linkFailureMessage maps the new kind to the sentence, so a card download keeps saying it). W1 FIX: pages/__tests__/library.test.tsx row [503 storage_unavailable → Temporarily unavailable] pinned the bug; it is now [503 portal_unavailable → Temporarily unavailable]. W3-04 e2e: GET /documents 503 {error:storage_unavailable} on home shows the sentence in a role=status block below region Overview; the h1 is still \"Investor portal\"."
     },
     {
       "id": "W3-02",
