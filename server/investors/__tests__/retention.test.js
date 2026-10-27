@@ -38,7 +38,7 @@ describe("retention", () => {
       await insertEvents(db, id, [pageView(doc, 1), pageView(doc, 2)]);
     }
 
-    expect(await purgeInactiveInvestors(db)).toBe(1);
+    expect(await purgeInactiveInvestors(db)).toEqual({ deleted: 1, scrubbed: 0 });
 
     const { rows } = await db.query("SELECT id FROM investors.investors ORDER BY id");
     expect(rows.map((row) => row.id)).toEqual([recent]);
@@ -59,10 +59,28 @@ describe("retention", () => {
     expect(ids).not.toContain(outside);
   });
 
+  it("keeps a minimal row for a blocked investor so the block survives, and clears everything else", async () => {
+    const doc = await insertDocument(db);
+    const blocked = await insertInvestor(db, { createdDaysAgo: 400, lastSeenDaysAgo: 7 * DAYS_PER_MONTH_MAX, marketingOptIn: true });
+    await db.query("UPDATE investors.investors SET blocked = true WHERE id = $1", [blocked]);
+    await insertSessions(db, blocked, 2);
+    await insertEvents(db, blocked, [pageView(doc, 1)]);
+
+    expect(await purgeInactiveInvestors(db)).toEqual({ deleted: 0, scrubbed: 1 });
+
+    const { rows } = await db.query("SELECT * FROM investors.investors WHERE id = $1", [blocked]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ blocked: true, email: "", name: null, firm: null, marketing_opt_in: false, profile_completed_at: null });
+    expect(rows[0].clerk_user_id).toMatch(/^user_fixture_/);
+    expect(await countFor(db, "sessions", blocked)).toBe(0);
+    expect(await countFor(db, "events", blocked)).toBe(0);
+    expect(await purgeInactiveInvestors(db)).toEqual({ deleted: 0, scrubbed: 0 });
+  });
+
   it("honours a shorter period and refuses a nonsense one", async () => {
     await insertInvestor(db, { createdDaysAgo: 100, lastSeenDaysAgo: 2 * DAYS_PER_MONTH_MAX + 2 });
 
-    expect(await purgeInactiveInvestors(db, { months: 2 })).toBe(1);
+    expect(await purgeInactiveInvestors(db, { months: 2 })).toEqual({ deleted: 1, scrubbed: 0 });
     await expect(purgeInactiveInvestors(db, { months: 0 })).rejects.toThrow(RangeError);
     await expect(purgeInactiveInvestors(db, { months: 1.5 })).rejects.toThrow(RangeError);
   });
@@ -79,10 +97,10 @@ describe("retention", () => {
     );
     let calls = 0;
     const flakyDb = {
-      query: async () => {
+      tx: async (fn) => {
         calls += 1;
         if (calls === 1) throw new Error("connection reset");
-        return { rows: [], rowCount: 3 };
+        return fn({ query: async (text) => ({ rows: [], rowCount: text.startsWith("DELETE FROM investors.investors") ? 3 : 0 }) });
       },
     };
 
@@ -91,7 +109,7 @@ describe("retention", () => {
 
     tick?.();
     await vi.waitFor(() => expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("deleted 3 investor(s)")));
-    expect(await job.runOnce()).toBe(3);
+    expect(await job.runOnce()).toEqual({ deleted: 3, scrubbed: 0 });
     job.stop();
   });
 });
