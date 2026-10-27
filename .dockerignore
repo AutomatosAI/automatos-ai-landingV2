@@ -12,3 +12,12 @@ CLAUDE_DESIGN_BRIEF.md
 .DS_Store
 README.md
 design/
+
+# Investor portal: the app's dependencies, builds and test output (the image
+# builds investors/dist in its own stage), and the server's tests.
+investors/node_modules
+investors/dist
+investors/dist-e2e
+investors/test-results
+investors/playwright-report
+server/investors/__tests__
