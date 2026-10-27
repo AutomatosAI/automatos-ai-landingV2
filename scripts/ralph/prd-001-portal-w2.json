@@ -310,18 +310,18 @@
       "title": "Playwright screenshots for the wave-2 screens",
       "description": "As the reviewer, I want screenshots of the new screens from CI.",
       "acceptanceCriteria": [
-        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5): home with the overview, team, FAQ, contact, the video player page, admin sections editor with preview, admin document stats with both charts; assertions: a raw <script> in mocked markdown is not executed or rendered as HTML; the stats chart renders one bar per page",
-        "Screenshots saved under investors/e2e/screenshots/ (uploaded by wave 1's e2e job; extend the job only if needed)",
-        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6)",
-        "npm --prefix investors run typecheck and lint pass"
+        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5): home with the overview, team, FAQ, contact, the video player page, admin sections editor with preview, admin document stats with both charts; assertions: a raw <script> in mocked markdown is not executed or rendered as HTML; the stats chart renders one bar per page → DONE — investors/e2e/sections.spec.ts (home-overview, team, faq, contact), video.spec.ts (video-player, video-failed), admin-content.spec.ts (admin-sections, admin-section-editor with preview, admin-document-stats), both projects; fixtures/markdown.ts expectNoRawHtml checks the overview raw <script> and <img onerror> neither run nor reach the DOM on home and in the editor preview; .recharts-bar-rectangle count = pages (8), .recharts-line-dot count = pages",
+        "Screenshots saved under investors/e2e/screenshots/ (uploaded by wave 1's e2e job; extend the job only if needed) → DONE — capture() writes investors/e2e/screenshots/<project>/<name>.png; wave 1 e2e job runs every spec and uploads that folder, so investors.yml is unchanged",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — e2e/tsconfig.json is in typecheck, eslint . covers e2e/; Playwright not run locally",
+        "npm --prefix investors run typecheck and lint pass → DONE — typecheck and lint pass; npm test 71 files / 787 tests pass; build has no E2E marker, build:e2e has it"
       ],
       "files": [
         "investors/e2e/**",
         ".github/workflows/investors.yml"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (a642e7b): no packages added; investors.yml unchanged. Fixtures: GET /sections in INVESTOR_ROUTES, GET /admin/sections and GET /admin/documents/<MEMO_ID>/stats in ADMIN_ROUTES, an invented 8-page Example market memo (MEMO_ID, version 2) appended to LIBRARY (wave-1 home and admin-documents screenshots show it), DEMO_ID/BEN_ID/CARA_ID/DAN_ID exported; storageLink(path) replaces deckLink; mockPortal returns bodies(key) (JSON bodies answered at METHOD /path); routeVideo(page, hold|refuse) answers VIDEO_PATH (hold: the player waits, goto uses waitUntil domcontentloaded because a fetching media element holds the load event; refuse: 403, so the link is renewed once and the failure shows after 2 link calls). A throwaway local vitest check (not committed) parsed the new fixtures with the app zod schemas and rendered the fixture markdown in jsdom. First CI run of these specs is the wave PR run."
     }
   ]
 }
