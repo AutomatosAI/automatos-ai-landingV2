@@ -322,10 +322,10 @@
       "title": "S3 module: presigned PUT and GET, head and delete",
       "description": "As the portal, I need private storage for documents reached only through short-lived links (KP11).",
       "acceptanceCriteria": [
-        "server/investors/s3.js: createDocStore({config, client?}) with presignPut({key, contentType, contentLength}), presignGet({key, fileName, disposition:'inline'|'attachment'}), head(key) → {size, contentType}|null, remove(key); safeFileName(name) and documentKey(id, version, fileName) exported as pure helpers; content type and size checked against KP11 before presigning (throws a typed error the routes map to 400)",
-        "@aws-sdk/client-s3@3 and @aws-sdk/s3-request-presigner@3 added (KP2); the client is created lazily (academy server/media/s3.js pattern)",
-        "Tests: real presigning with fake credentials (offline): PUT URL carries the content type and 900 s expiry, GET URL carries 300 s and the disposition with an RFC 5987 filename; head/remove through an injected fake client; safeFileName strips paths and odd characters and caps 120; disallowed type and oversize rejected",
-        "npm test passes"
+        "server/investors/s3.js: createDocStore({config, client?}) with presignPut({key, contentType, contentLength}), presignGet({key, fileName, disposition:'inline'|'attachment'}), head(key) → {size, contentType}|null, remove(key); safeFileName(name) and documentKey(id, version, fileName) exported as pure helpers; content type and size checked against KP11 before presigning (throws a typed error the routes map to 400) → DONE — s3.js exports createDocStore (frozen {presignPut, presignGet, head, remove}), safeFileName, documentKey, checkUpload, contentDisposition, UploadRejectedError (.code, .status 400); KP11 checked before signing (ed65151)",
+        "@aws-sdk/client-s3@3 and @aws-sdk/s3-request-presigner@3 added (KP2); the client is created lazily (academy server/media/s3.js pattern) → DONE — both 3.1157.0 exact; SDK imported lazily, one S3Client per store on first use, retried after a failed load (ed65151)",
+        "Tests: real presigning with fake credentials (offline): PUT URL carries the content type and 900 s expiry, GET URL carries 300 s and the disposition with an RFC 5987 filename; head/remove through an injected fake client; safeFileName strips paths and odd characters and caps 120; disallowed type and oversize rejected → DONE — s3.test.js 41 tests: PUT X-Amz-Expires 900, SignedHeaders content-length;content-type;host, signature changes with type/size; GET 300 s with RFC 5987 filename*; head/remove via fake client; safeFileName; rejections (ed65151)",
+        "npm test passes → DONE — npm test: 10 files, 254 passed (ed65151)"
       ],
       "files": [
         "server/investors/s3.js",
@@ -334,8 +334,8 @@
         "package-lock.json"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (ed65151): root dependencies @aws-sdk/client-s3 3.1157.0, @aws-sdk/s3-request-presigner 3.1157.0 (exact). createDocStore({config: config.s3, client?}) throws TypeError when config.s3 is null: build it only when config.s3 is set, else the document routes answer 503 (KP4). presignPut({key, contentType, contentLength}) → {url, headers: {Content-Type}, expiresAt ISO}: the browser must PUT with exactly that Content-Type (content-type and content-length are SIGNED; S3 rejects a mismatch with 403). presignGet({key, fileName, disposition: inline|attachment}) → {url, expiresAt}; fileName is the display name (file_name column), contentDisposition makes it safe. head(key) → {size, contentType} | null (404 only; a 403 throws). remove(key) is idempotent. Every method refuses (TypeError) any key not shaped documents/<id>/v<n>/<safeFileName>: always build keys with documentKey(id, version, fileName). Map UploadRejectedError to 400 {error: err.code}; finalize re-checks with checkUpload({contentType: head.contentType, contentLength: head.size}). The client uses requestChecksumCalculation/responseChecksumValidation WHEN_REQUIRED: the default puts an empty-body CRC32 into presigned PUTs. Tests: pass a fake {send: vi.fn()} as client for head/remove; presigning needs the real lazy client (fake credentials, offline). Never log a presign result."
     },
     {
       "id": "W1-09",
