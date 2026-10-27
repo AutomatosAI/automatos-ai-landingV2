@@ -24,6 +24,7 @@ import { readPortalConfig } from "./config.js";
 import { createDb } from "./db.js";
 import { MIGRATIONS_DIR, MigrationError, runMigrations } from "./migrate.js";
 import { createAdminDocumentsRouter } from "./routes/admin-documents.js";
+import { createDocumentsRouter } from "./routes/documents.js";
 import { createMeRouter } from "./routes/me.js";
 import { createDocStore } from "./s3.js";
 import { APP_DIST_DIR, createAppRouter } from "./static.js";
@@ -166,15 +167,19 @@ function docStoreFor(config, deps) {
 
 /**
  * The route sets createApiRouter mounts behind the guards, in order. Later
- * stories append theirs here.
+ * stories append theirs here. The admin and investor document routes share
+ * one store (one lazy S3 client).
  * @param {import("./config.js").PortalConfig} config
  * @param {PortalDeps} deps
  * @param {{db: import("./db.js").Db, logger: Logger}} shared
  */
 function createRoutes(config, deps, { db, logger }) {
+  const alerts = deps.alerts ?? NO_ALERTS;
+  const store = docStoreFor(config, deps);
   return Object.freeze([
-    createMeRouter({ db, alerts: deps.alerts ?? NO_ALERTS, logger }),
-    createAdminDocumentsRouter({ db, store: docStoreFor(config, deps), logger }),
+    createMeRouter({ db, alerts, logger }),
+    createAdminDocumentsRouter({ db, store, logger }),
+    createDocumentsRouter({ db, store, alerts, logger }),
   ]);
 }
 

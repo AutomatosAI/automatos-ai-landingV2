@@ -13,7 +13,7 @@
  */
 import express from "express";
 import { z } from "zod";
-import { DOCUMENT_COLUMNS, DOCUMENT_KINDS, toDocument } from "../documents.js";
+import { DOCUMENT_COLUMNS, DOCUMENT_KINDS, documentIdParam, storageUnavailable, toDocument } from "../documents.js";
 import { GET_EXPIRES_SEC, PUT_EXPIRES_SEC, UploadRejectedError, checkUpload, documentKey } from "../s3.js";
 import { FIELD_CODES, optionalText, requiredBoolean, requiredChoice, requiredText, sendInvalid } from "../validation.js";
 
@@ -32,7 +32,6 @@ export const DOCUMENT_LIMITS = Object.freeze({
 const DOCUMENTS_PATH = "/admin/documents";
 const DOCUMENT_PATH = `${DOCUMENTS_PATH}/:id`;
 const PDF = "application/pdf";
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const KEY_SHAPE = /^documents\/[^/]+\/v(\d{1,10})\/([^/]+)$/;
 
 /** The answer for each refusal a route returns by code. */
@@ -149,11 +148,6 @@ function readKey(documentId, key) {
  * @param {keyof typeof ERROR_STATUS} code
  */
 const sendError = (res, code) => res.status(ERROR_STATUS[code]).json({ error: code });
-
-/** @type {import("express").RequestHandler} */
-function storageUnavailable(_req, res) {
-  res.status(503).json({ error: "storage_unavailable" });
-}
 
 /** @param {import("../db.js").Db} db @param {string} id */
 async function findDocument(db, id) {
@@ -400,8 +394,7 @@ export function createAdminDocumentsRouter({ db, store, logger = console }) {
   const router = express.Router();
   if (!store) router.use(DOCUMENTS_PATH, storageUnavailable);
   const deps = Object.freeze({ db, store: /** @type {import("../s3.js").DocStore} */ (store), logger });
-  // Not a uuid: no such document (and Postgres is never asked to cast it).
-  router.param("id", (_req, res, next, id) => (UUID.test(id) ? next() : sendError(res, "not_found")));
+  router.param("id", documentIdParam);
   router.get(DOCUMENTS_PATH, listDocuments(deps));
   router.post(DOCUMENTS_PATH, createDocument(deps));
   router.patch(DOCUMENT_PATH, editDocument(deps));
