@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { fetchJson } from "@/api/client";
+import { linkUrl } from "@/api/link-url";
+import { DOCUMENT_KINDS, type DocumentKind } from "@/documents/kinds";
 
 /**
  * The admin documents API (server/investors/routes/admin-documents.js,
@@ -8,9 +10,8 @@ import { fetchJson } from "@/api/client";
  * allowlist on every call (KP3); the app hiding the pages is only manners.
  */
 
-/** The kind CHECK list of 001_init.sql, in the order the form offers them. */
-export const DOCUMENT_KINDS = ["pdf", "video", "spreadsheet", "slides", "doc", "other"] as const;
-export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
+// The kinds live with the library (documents/kinds.ts); the admin modules import them from here.
+export { DOCUMENT_KINDS, type DocumentKind };
 
 export const adminDocumentSchema = z.object({
   id: z.string().min(1),
@@ -32,12 +33,6 @@ export const adminDocumentSchema = z.object({
 });
 
 export type AdminDocument = z.infer<typeof adminDocumentSchema>;
-
-/** A storage link: only http(s), so a bad answer can never become a javascript: URL. */
-const linkUrl = z
-  .string()
-  .url()
-  .refine((value) => /^https?:\/\//i.test(value));
 
 const listSchema = z.object({ documents: z.array(adminDocumentSchema) });
 const oneSchema = z.object({ document: adminDocumentSchema });

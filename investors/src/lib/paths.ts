@@ -9,3 +9,9 @@ export const HOME_PATH = "/";
 export const PROFILE_PATH = "/profile";
 export const ADMIN_PATH = "/admin";
 export const ADMIN_DOCUMENTS_PATH = "/admin/documents";
+export const DOCUMENTS_PATH = "/documents";
+
+/** A document's page: the PDF viewer (W1-13). */
+export function documentPath(id: string): string {
+  return `${DOCUMENTS_PATH}/${encodeURIComponent(id)}`;
+}

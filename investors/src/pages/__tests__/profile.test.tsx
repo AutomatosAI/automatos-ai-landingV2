@@ -14,9 +14,12 @@ const fetchMock = vi.fn<typeof fetch>();
 
 const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status });
 
-/** GET /me answers `me`; PUT /me answers `put`. */
+/** GET /me answers `me`; PUT /me answers `put`; the home page's GET /documents answers an empty list. */
 function serve(me: Me, put: () => Response = () => json(200, { ...me, profileComplete: true })) {
-  fetchMock.mockImplementation(async (_url, init) => (init?.method === "PUT" ? put() : json(200, me)));
+  fetchMock.mockImplementation(async (url, init) => {
+    if (init?.method === "PUT") return put();
+    return String(url) === "/api/investors/documents" ? json(200, { documents: [] }) : json(200, me);
+  });
 }
 
 function putCalls() {
@@ -103,7 +106,7 @@ describe("the profile form, first visit", () => {
     fireEvent.click(screen.getByRole("button", { name: strings.profile.saveFirst }));
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(/^\/$/));
     // The saved answer opened the profile gate: home stays home.
-    expect(await screen.findByRole("heading", { level: 1, name: strings.placeholder.title })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
     expect(screen.getByTestId("where")).toHaveTextContent(/^\/$/);
     expect(putCalls()).toHaveLength(1);
     const [url, init] = putCalls()[0] ?? [];

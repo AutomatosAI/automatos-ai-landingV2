@@ -11,8 +11,13 @@ import { App } from "../App";
 
 const fetchMock = vi.fn<typeof fetch>();
 
+/** /me answers `body` with `status`; the library pages' GET /documents answers an empty list. */
 function answerMe(status: number, body: unknown) {
-  fetchMock.mockResolvedValue(new Response(JSON.stringify(body), { status }));
+  fetchMock.mockImplementation(async (url) =>
+    String(url) === "/api/investors/documents"
+      ? new Response(JSON.stringify({ documents: [] }), { status: 200 })
+      : new Response(JSON.stringify(body), { status }),
+  );
 }
 
 const me = (profileComplete: boolean) => (profileComplete ? ADA_ME : NEW_ADA);
@@ -98,8 +103,23 @@ describe("App, signed in", () => {
   it("lets an investor with a profile stay on the page they asked for", async () => {
     answerMe(200, me(true));
     renderApp("/documents");
-    await screen.findByRole("heading", { level: 1, name: strings.placeholder.title });
+    await screen.findByRole("heading", { level: 1, name: strings.library.title });
     expect(screen.getByTestId("where")).toHaveTextContent("/documents");
+  });
+
+  it("shows an investor with a profile the home page at the root", async () => {
+    answerMe(200, me(true));
+    renderApp("/");
+    expect(await screen.findByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
+    expect(screen.getByText(strings.home.intro)).toBeInTheDocument();
+    expect(screen.getByTestId("where")).toHaveTextContent(/^\/$/);
+  });
+
+  it("sends an unknown path home", async () => {
+    answerMe(200, me(true));
+    renderApp("/no-such-page");
+    await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(/^\/$/));
+    expect(await screen.findByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
   });
 
   it("shows the account menu", async () => {

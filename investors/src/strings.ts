@@ -5,11 +5,72 @@
 const HELLO_EMAIL = "hello@automatos.app";
 const PRIVACY_EMAIL = "privacy@automatos.app";
 
+/** A document's kind (001_init.sql), as the library and the admin table name it. */
+const KIND_LABELS = {
+  pdf: "PDF",
+  video: "Video",
+  spreadsheet: "Spreadsheet",
+  slides: "Slides",
+  doc: "Document",
+  other: "Other",
+} as const;
+
 export const strings = {
   shell: {
     wordmark: "Automatos",
     section: "Investors",
     homeLabel: "Automatos home",
+  },
+  /** The portal's sidebar on desktop and its sheet menu on phones. */
+  nav: {
+    label: "Portal",
+    home: "Home",
+    documents: "Documents",
+    profile: "Profile",
+    admin: "Admin",
+    menu: "Menu",
+    openMenu: "Open the menu",
+  },
+  /** The site's bone and pitch moods (KP13), switched the way automatos.app does it. */
+  mood: {
+    bone: "Bone",
+    pitch: "Pitch",
+    toBone: "Switch to light (bone) mode",
+    toPitch: "Switch to dark (pitch) mode",
+  },
+  home: {
+    title: "Investor portal",
+    intro: "Everything we share with investors, in one place. Read a document here or download it.",
+  },
+  /** The published documents (US-006): on the home page and, with search, on the Documents page. */
+  library: {
+    title: "Documents",
+    intro: "Every published document. Search by title, description or category.",
+    kinds: KIND_LABELS,
+    updated: (date: string) => `Updated ${date}`,
+    open: "Open",
+    download: "Download",
+    preparing: "Preparing…",
+    actionLabel: (action: string, title: string) => `${action}: ${title}`,
+    empty: {
+      title: "Documents are on their way.",
+      before: "Questions in the meantime? Email ",
+      after: ".",
+    },
+    search: {
+      label: "Search documents",
+      placeholder: "Search by title, description or category",
+      clear: "Clear search",
+      noMatch: (query: string) => `No documents match “${query}”.`,
+      results: (count: number) => (count === 1 ? "1 document" : `${count} documents`),
+    },
+    errors: {
+      gone: "This document is no longer available. The list has been refreshed.",
+      rateLimited: "Too many requests in a row. Wait a minute and try again.",
+      unavailable: "Documents are unavailable right now. Please try again later.",
+      blocked: "Your access has been paused.",
+      failed: "The document could not be opened. Please try again.",
+    },
   },
   contact: {
     helloEmail: HELLO_EMAIL,
@@ -125,14 +186,7 @@ export const strings = {
         updated: "Updated",
         actions: "Actions",
       },
-      kinds: {
-        pdf: "PDF",
-        video: "Video",
-        spreadsheet: "Spreadsheet",
-        slides: "Slides",
-        doc: "Document",
-        other: "Other",
-      },
+      kinds: KIND_LABELS,
       noFile: "No file yet",
       none: "—",
       pages: (count: number) => (count === 1 ? "1 page" : `${count} pages`),

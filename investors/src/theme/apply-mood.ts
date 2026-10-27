@@ -35,3 +35,16 @@ export function applyMood(): () => void {
     scheme?.removeEventListener("change", apply);
   };
 }
+
+/**
+ * The visitor's choice: shown at once and saved where the site keeps it, so
+ * automatos.app's pages (and the portal in other tabs) follow it.
+ */
+export function saveMood(mood: Mood): void {
+  document.body.setAttribute("data-mood", mood);
+  try {
+    window.localStorage.setItem(MOOD_STORAGE_KEY, mood);
+  } catch {
+    // Blocked storage: this page still switches; the choice is not kept.
+  }
+}

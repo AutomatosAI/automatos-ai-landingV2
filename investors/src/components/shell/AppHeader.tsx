@@ -1,12 +1,19 @@
+import type { ReactNode } from "react";
+
 import { AccountMenu } from "@/auth";
 import { Separator } from "@/components/ui/separator";
 import { strings } from "@/strings";
 
-/** The site's header, pared down: the wordmark (home), where you are, and the account menu once signed in. */
-export function AppHeader() {
+/**
+ * The site's header, pared down: the wordmark (home), where you are, and the
+ * account menu once signed in. `menu` is the phone menu's button, before the
+ * wordmark (the portal's layout passes it).
+ */
+export function AppHeader({ menu }: { readonly menu?: ReactNode }) {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
+        {menu}
         <a
           href="/"
           aria-label={strings.shell.homeLabel}

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { applyMood } from "../apply-mood";
+import { applyMood, saveMood } from "../apply-mood";
 import { MOOD_STORAGE_KEY } from "../mood";
 
 function stubScheme(dark: boolean) {
@@ -69,5 +69,33 @@ describe("applyMood", () => {
     window.localStorage.setItem(MOOD_STORAGE_KEY, "pitch");
     window.dispatchEvent(new StorageEvent("storage", { key: MOOD_STORAGE_KEY }));
     expect(document.body.dataset.mood).toBe("bone");
+  });
+});
+
+describe("saveMood", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    document.body.removeAttribute("data-mood");
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("shows the mood and saves it under the site's key", () => {
+    saveMood("pitch");
+    expect(document.body.dataset.mood).toBe("pitch");
+    expect(window.localStorage.getItem(MOOD_STORAGE_KEY)).toBe("pitch");
+    saveMood("bone");
+    expect(document.body.dataset.mood).toBe("bone");
+    expect(window.localStorage.getItem(MOOD_STORAGE_KEY)).toBe("bone");
+  });
+
+  it("still switches the page when storage is blocked", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    saveMood("pitch");
+    expect(document.body.dataset.mood).toBe("pitch");
   });
 });

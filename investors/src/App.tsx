@@ -3,9 +3,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AdminGate } from "@/admin/AdminGate";
 import { useClearCacheOnSignOut } from "@/api/query-client";
-import { AppShell } from "@/components/shell/AppShell";
 import { PortalGate } from "@/components/shell/PortalGate";
-import { ADMIN_DOCUMENTS_PATH } from "@/lib/paths";
+import { PortalLayout } from "@/layout/PortalLayout";
+import { ADMIN_DOCUMENTS_PATH, HOME_PATH } from "@/lib/paths";
+import { Documents } from "@/pages/Documents";
+import { Home } from "@/pages/Home";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 import { Profile } from "@/pages/Profile";
 
@@ -16,16 +18,19 @@ export function App() {
   useClearCacheOnSignOut();
   return (
     <Routes>
-      <Route element={<AppShell />}>
-        <Route element={<PortalGate />}>
+      <Route element={<PortalGate />}>
+        <Route element={<PortalLayout />}>
+          <Route index element={<Home />} />
+          <Route path="documents" element={<Documents />} />
+          {/* The PDF viewer (W1-13) replaces this. */}
+          <Route path="documents/:id" element={<PlaceholderPage />} />
           <Route path="profile" element={<Profile />} />
           <Route path="admin" element={<AdminGate />}>
             {/* The admin overview (W1-16) replaces this redirect. */}
             <Route index element={<Navigate to={ADMIN_DOCUMENTS_PATH} replace />} />
             <Route path="documents" element={<AdminDocuments />} />
           </Route>
-          {/* The portal's pages (W1-12) replace this. */}
-          <Route path="*" element={<PlaceholderPage />} />
+          <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
         </Route>
       </Route>
     </Routes>
