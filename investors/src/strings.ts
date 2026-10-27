@@ -75,7 +75,7 @@ export const strings = {
       failed: "The document could not be opened. Please try again.",
     },
   },
-  /** The PDF viewer (US-007) at /investors/documents/:id. */
+  /** The PDF viewer (US-007) and the video player (US-008) at /investors/documents/:id. */
   viewer: {
     back: "Back to documents",
     toolbarLabel: "Document pages",
@@ -96,6 +96,10 @@ export const strings = {
       body: "This document is no longer available. It may have been withdrawn or replaced.",
     },
     notViewable: "This document opens as a download.",
+    video: {
+      label: (title: string) => `${title}, video`,
+      failed: "Download it to watch it on your device, or try again.",
+    },
   },
   /**
    * The admins' markdown pages (US-009): the overview on the home page, and

@@ -1,10 +1,15 @@
 /**
  * The viewer's storage link, as pure steps. The link is a presigned GET that
  * lives 5 minutes (KP11): the viewer asks for one when it opens, and when
- * pdf.js reports that storage refused it as expired (HTTP 403) it asks for a
+ * pdf.js reports that storage refused it as expired (HTTP 403), or the video
+ * player that the browser could not fetch it (video-model.ts), it asks for a
  * new one ONCE. A second refusal, or any other failure, shows the error with
  * the Download fallback. "Try again" starts a fresh cycle (one more renewal).
+ * A video streams for longer than a link lives: once a link has played, its
+ * refusal is an expiry and earns a renewal of its own (afterLinkPlayed).
  */
+
+import { isRefusedMedia } from "./video-model";
 
 /** An expired link is renewed this many times per cycle. */
 export const LINK_RENEWALS = 1;
@@ -25,13 +30,18 @@ export const FIRST_CYCLE: LinkCycle = { generation: 0, renewals: 0, loadError: n
  * and its status (pdfjs-dist 4.8.69, shared/util.js); S3 refuses an expired
  * presigned URL with 403. Matched by shape: the class lives in the lazy chunk.
  */
-export function isExpiredLink(error: unknown): boolean {
+function isRefusedPdf(error: unknown): boolean {
   if (typeof error !== "object" || error === null) return false;
   const { name, status } = error as { readonly name?: unknown; readonly status?: unknown };
   return name === "UnexpectedResponseException" && status === 403;
 }
 
-/** pdf.js failed to load the link: renew it once when it expired, else stop with the error. */
+/** Storage refused the link: pdf.js's 403, or the video element's refused fetch. */
+export function isExpiredLink(error: unknown): boolean {
+  return isRefusedPdf(error) || isRefusedMedia(error);
+}
+
+/** pdf.js or the video element failed to load the link: renew it once when it expired, else stop with the error. */
 export function afterLoadError(cycle: LinkCycle, error: unknown): LinkCycle {
   if (isExpiredLink(error) && cycle.renewals < LINK_RENEWALS) {
     return { generation: cycle.generation + 1, renewals: cycle.renewals + 1, loadError: null };
@@ -42,6 +52,11 @@ export function afterLoadError(cycle: LinkCycle, error: unknown): LinkCycle {
 /** The reader asked to try again: a new link and a fresh renewal. */
 export function retryCycle(cycle: LinkCycle): LinkCycle {
   return { generation: cycle.generation + 1, renewals: 0, loadError: null };
+}
+
+/** The link played (the video player): a later refusal of it is an expiry, renewed once more. */
+export function afterLinkPlayed(cycle: LinkCycle): LinkCycle {
+  return cycle.renewals === 0 ? cycle : { ...cycle, renewals: 0 };
 }
 
 /** What the link request reported (react-query's status, narrowed). */

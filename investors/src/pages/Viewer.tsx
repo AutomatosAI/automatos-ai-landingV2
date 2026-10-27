@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { screenForError } from "@/api/errors";
@@ -8,16 +8,18 @@ import { PageLoading } from "@/components/shell/PageLoading";
 import { Button } from "@/components/ui/button";
 import { DownloadButton } from "@/documents/DocumentCard";
 import type { InvestorDocument } from "@/documents/documents-api";
-import { opensInViewer } from "@/documents/library-model";
-import { isGone, linkFailureMessage } from "@/documents/messages";
+import { viewerFor, type DocumentViewer } from "@/documents/library-model";
+import { isGone } from "@/documents/messages";
 import { useDocuments } from "@/documents/use-documents";
 import { useDownload } from "@/documents/use-download";
 import { DOCUMENTS_PATH } from "@/lib/paths";
 import { strings } from "@/strings";
 import { usePageViewFeed } from "@/tracking/use-page-view-feed";
-import type { ViewerPhase } from "@/viewer/link-model";
-import { useViewerLink } from "@/viewer/use-viewer-link";
-import { ViewerFailed, ViewerLoading } from "@/viewer/ViewerStates";
+import { useVideoProgressFeed } from "@/tracking/use-video-progress-feed";
+import { useViewerLink, type ViewerLink } from "@/viewer/use-viewer-link";
+import { START, type VideoFailure } from "@/viewer/video-model";
+import { VideoPlayer } from "@/viewer/VideoPlayer";
+import { ViewerFrame, ViewerLoading, ViewerPending } from "@/viewer/ViewerStates";
 
 import { ApiErrorPage } from "./ApiErrorPage";
 import { StatusPage } from "./StatusPage";
@@ -52,39 +54,75 @@ function MissingDocument() {
   );
 }
 
-interface ViewerBodyProps {
+interface BodyProps {
   readonly document: InvestorDocument;
-  readonly phase: ViewerPhase;
-  readonly onLoadError: (error: unknown) => void;
-  readonly onRetry: () => void;
+  readonly link: ViewerLink;
   readonly download: ReactNode;
 }
 
-function ViewerBody({ document, phase, onLoadError, onRetry, download }: ViewerBodyProps) {
+function PdfBody({ document, link, download }: BodyProps) {
   // Each page read becomes a page_view of this version (the tracker, US-010).
   const onPageVisible = usePageViewFeed(document.id, document.version);
-  const frame = (child: ReactNode) => <div className="rounded-lg border">{child}</div>;
-  switch (phase.kind) {
-    case "linking":
-      return frame(<ViewerLoading />);
-    case "link_failed":
-      return frame(<ViewerFailed message={linkFailureMessage(phase.error)} onRetry={onRetry} download={download} />);
-    case "load_failed":
-      return frame(<ViewerFailed onRetry={onRetry} download={download} />);
-    case "ready":
-      return (
-        <Suspense fallback={frame(<ViewerLoading />)}>
-          <PdfViewer
-            key={phase.url}
-            url={phase.url}
-            title={document.title}
-            onLoadError={onLoadError}
-            onPageVisible={onPageVisible}
-            actions={download}
-          />
-        </Suspense>
-      );
+  const { phase } = link;
+  if (phase.kind !== "ready") return <ViewerPending phase={phase} onRetry={link.retry} download={download} />;
+  const loading = (
+    <ViewerFrame>
+      <ViewerLoading />
+    </ViewerFrame>
+  );
+  return (
+    <Suspense fallback={loading}>
+      <PdfViewer
+        key={phase.url}
+        url={phase.url}
+        title={document.title}
+        onLoadError={link.onLoadError}
+        onPageVisible={onPageVisible}
+        actions={download}
+      />
+    </Suspense>
+  );
+}
+
+function VideoBody({ document, link, download }: BodyProps) {
+  // Each milestone watched becomes a video_progress, once per open (US-008).
+  const onProgress = useVideoProgressFeed(document.id);
+  // Where a refused link stopped: the next link's player picks up there.
+  const [resume, setResume] = useState(START);
+  const { phase, onLoadError } = link;
+  const onFailure = useCallback(
+    (failure: VideoFailure) => {
+      setResume(failure.at);
+      onLoadError(failure.error);
+    },
+    [onLoadError],
+  );
+  if (phase.kind !== "ready") {
+    return <ViewerPending phase={phase} onRetry={link.retry} download={download} loadFailedBody={copy.video.failed} />;
   }
+  return (
+    <VideoPlayer
+      key={phase.url}
+      url={phase.url}
+      title={document.title}
+      resume={resume}
+      onFailure={onFailure}
+      onPlaying={link.onPlayed}
+      onProgress={onProgress}
+      actions={download}
+    />
+  );
+}
+
+function DocumentBody({ viewer, ...body }: BodyProps & { readonly viewer: DocumentViewer | null }) {
+  if (viewer === "pdf") return <PdfBody {...body} />;
+  if (viewer === "video") return <VideoBody {...body} />;
+  return (
+    <div className="flex flex-wrap items-center gap-4 rounded-lg border p-5 sm:p-6">
+      <p className="text-muted-foreground">{copy.notViewable}</p>
+      {body.download}
+    </div>
+  );
 }
 
 interface DocumentViewProps {
@@ -95,8 +133,8 @@ interface DocumentViewProps {
 }
 
 function DocumentView({ userId, document, onGone }: DocumentViewProps) {
-  const viewable = opensInViewer(document.kind);
-  const link = useViewerLink(userId, document.id, viewable);
+  const viewer = viewerFor(document.kind);
+  const link = useViewerLink(userId, document.id, viewer !== null);
   const action = useDownload(document.id, onGone);
   const download = <DownloadButton document={document} action={action} />;
   const gone = link.phase.kind === "link_failed" && isGone(link.phase.error);
@@ -112,14 +150,7 @@ function DocumentView({ userId, document, onGone }: DocumentViewProps) {
       <h1 className="mb-6 mt-4 font-serif text-3xl font-normal leading-tight tracking-[-0.01em] sm:text-4xl">
         {document.title}
       </h1>
-      {viewable ? (
-        <ViewerBody document={document} phase={link.phase} onLoadError={link.onLoadError} onRetry={link.retry} download={download} />
-      ) : (
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border p-5 sm:p-6">
-          <p className="text-muted-foreground">{copy.notViewable}</p>
-          {download}
-        </div>
-      )}
+      <DocumentBody viewer={viewer} document={document} link={link} download={download} />
       {action.message && (
         <p role="alert" className="mt-4 text-sm text-destructive">
           {action.message}
@@ -137,10 +168,11 @@ function ViewerScreen({ userId, documentId }: { readonly userId: string; readonl
   if (documents.isPending) return <PageLoading />;
   const document = documents.data.find((candidate) => candidate.id === documentId);
   if (!document) return <MissingDocument />;
-  return <DocumentView userId={userId} document={document} onGone={onGone} />;
+  // Keyed: another document is another open, with its own link, position and milestones.
+  return <DocumentView key={document.id} userId={userId} document={document} onGone={onGone} />;
 }
 
-/** /investors/documents/:id: a published PDF, read page by page (US-007). */
+/** /investors/documents/:id: a published PDF, read page by page (US-007), or a video, watched (US-008). */
 export function Viewer() {
   const state = useAuthState();
   const { id = "" } = useParams();

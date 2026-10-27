@@ -8,7 +8,7 @@ import { strings } from "@/strings";
 
 import type { InvestorDocument } from "./documents-api";
 import { KindIcon } from "./KindIcon";
-import { documentFacts, opensInViewer } from "./library-model";
+import { documentFacts, viewerFor } from "./library-model";
 import { useDownload, type DownloadAction } from "./use-download";
 
 const copy = strings.library;
@@ -21,7 +21,7 @@ interface DocumentCardProps {
 
 function OpenButton({ document, action }: { readonly document: InvestorDocument; readonly action: DownloadAction }) {
   const label = copy.actionLabel(copy.open, document.title);
-  if (opensInViewer(document.kind)) {
+  if (viewerFor(document.kind) !== null) {
     return (
       <Button asChild size="sm">
         <Link to={documentPath(document.id)} aria-label={label}>
