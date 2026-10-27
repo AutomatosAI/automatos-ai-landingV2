@@ -23,3 +23,26 @@ export function formatDate(iso: string): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? "" : DATE.format(date);
 }
+
+const DATE_TIME = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** An ISO timestamp → "27 Oct, 14:05" in the reader's time zone; "" when it is not a date. */
+export function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : DATE_TIME.format(date);
+}
+
+const UTC_DAY = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+
+/** A calendar day as the server names it ("2026-10-27", a UTC day) → "27 Oct"; "" when it is not one. */
+export function formatDay(day: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return "";
+  const date = new Date(`${day}T00:00:00.000Z`);
+  return Number.isNaN(date.getTime()) ? "" : UTC_DAY.format(date);
+}

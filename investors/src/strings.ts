@@ -185,7 +185,49 @@ export const strings = {
   admin: {
     label: "Admin",
     navLabel: "Admin sections",
-    nav: { documents: "Documents" },
+    nav: { overview: "Overview", documents: "Documents" },
+    /** The admin overview (US-011): counts over a rolling 7 days, a chart of 30 UTC days. */
+    overview: {
+      title: "Overview",
+      intro: "Who signed up and who is reading. Counts cover the last 7 days unless marked otherwise.",
+      kpis: {
+        label: "Key numbers",
+        investors: "Investors",
+        newInLastWeek: (count: number) => `${count} new in the last 7 days`,
+        active: "Active investors",
+        deckOpens: "Deck opens",
+        deckOpensHint: "Opens of documents set to email the team",
+        downloads: "Downloads",
+        lastWeek: "Last 7 days",
+      },
+      chart: {
+        title: "Sign-ups and active investors",
+        caption: "Per day, last 30 days (UTC)",
+        legend: "Chart key",
+        signups: "Sign-ups",
+        activeInvestors: "Active investors",
+        empty: "No sign-ups or activity in the last 30 days.",
+        summary: (signups: number, peak: number) =>
+          `Last 30 days: ${signups} ${signups === 1 ? "sign-up" : "sign-ups"}; at most ${peak} active ${
+            peak === 1 ? "investor" : "investors"
+          } on one day.`,
+      },
+      latest: {
+        title: "Latest activity",
+        empty: "No activity yet. Events appear here once investors sign in.",
+        deletedDocument: "a deleted document",
+        events: {
+          signed_in: () => "Signed in",
+          profile_completed: () => "Completed the profile",
+          document_open: (title: string) => `Opened ${title}`,
+          document_download: (title: string) => `Downloaded ${title}`,
+          page_view: (title: string, page: number | null) => (page ? `Read page ${page} of ${title}` : `Read ${title}`),
+          section_view: (section: string | null) => (section ? `Viewed the ${section} section` : "Viewed a section"),
+          video_progress: (title: string, percent: number | null) =>
+            percent === null ? `Watched ${title}` : `Watched ${percent}% of ${title}`,
+        },
+      },
+    },
     documents: {
       title: "Documents",
       intro: "Create a document, upload its file, then publish it. Investors see published documents in this order.",

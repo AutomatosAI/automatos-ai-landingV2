@@ -6,7 +6,7 @@ import { DocumentDialog, type DocumentDialogMode } from "@/admin/DocumentDialog"
 import { DocumentsTable } from "@/admin/DocumentsTable";
 import type { AdminDocument } from "@/admin/documents-api";
 import { categoriesOf } from "@/admin/documents-model";
-import { listFailureMessage } from "@/admin/messages";
+import { LoadFailed } from "@/admin/LoadFailed";
 import { useAdminDocuments } from "@/admin/use-documents";
 import { useAuthState } from "@/auth";
 import { Button } from "@/components/ui/button";
@@ -34,19 +34,6 @@ function ListLoading() {
   );
 }
 
-function ListFailed({ error, onRetry }: { readonly error: unknown; readonly onRetry: () => void }) {
-  return (
-    <div className="grid justify-items-start gap-4">
-      <p role="alert" className="max-w-prose text-muted-foreground">
-        {listFailureMessage(error)}
-      </p>
-      <Button type="button" variant="outline" onClick={onRetry}>
-        {strings.status.error.retry}
-      </Button>
-    </div>
-  );
-}
-
 function DocumentsScreen({ userId }: { readonly userId: string }) {
   const documents = useAdminDocuments(userId);
   const [dialog, setDialog] = useState<Dialog>(CLOSED);
@@ -55,7 +42,7 @@ function DocumentsScreen({ userId }: { readonly userId: string }) {
 
   function body() {
     if (documents.isPending) return <ListLoading />;
-    if (documents.isError) return <ListFailed error={documents.error} onRetry={() => void documents.refetch()} />;
+    if (documents.isError) return <LoadFailed error={documents.error} onRetry={() => void documents.refetch()} />;
     if (list.length === 0) return <p className="max-w-prose text-muted-foreground">{copy.empty}</p>;
     return (
       <DocumentsTable

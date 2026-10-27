@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatBytes, formatDate } from "../format";
+import { formatBytes, formatDate, formatDateTime, formatDay } from "../format";
 
 describe("formatBytes", () => {
   it.each([
@@ -32,5 +32,29 @@ describe("formatDate", () => {
 
   it("gives nothing for a string that is not a date", () => {
     expect(formatDate("not a date")).toBe("");
+  });
+});
+
+describe("formatDateTime", () => {
+  it("shows day, short month and a 24-hour time", () => {
+    // Midday UTC: 27 Oct in every time zone from UTC-11 to UTC+11; the hour is the reader's.
+    expect(formatDateTime("2026-10-27T12:00:00.000Z")).toMatch(/^27 Oct, ([01]\d|2[0-3]):[0-5]\d$/);
+  });
+
+  it("gives nothing for a string that is not a date", () => {
+    expect(formatDateTime("not a date")).toBe("");
+  });
+});
+
+describe("formatDay", () => {
+  it("names a UTC calendar day whatever the reader's time zone", () => {
+    expect(formatDay("2026-10-27")).toBe("27 Oct");
+    expect(formatDay("2026-11-01")).toBe("1 Nov");
+  });
+
+  it("gives nothing for anything but a YYYY-MM-DD day", () => {
+    expect(formatDay("2026-10-27T00:00:00Z")).toBe("");
+    expect(formatDay("2026-13-45")).toBe("");
+    expect(formatDay("")).toBe("");
   });
 });

@@ -27,7 +27,8 @@ export const EVENT_COUNT_SQL = `
   SELECT (SELECT count(*) FROM investors.events WHERE investor_id = i.id) AS total
     FROM investors.investors i WHERE i.id = $1`;
 
-const EVENT_COLUMNS = `e.id, e.type, e.session_id, e.document_id, d.title AS document_title, e.document_version,
+/** An event as toEvent reads it; e is investors.events, d its LEFT JOINed document (overview.js reuses it). */
+export const EVENT_COLUMNS = `e.id, e.type, e.session_id, e.document_id, d.title AS document_title, e.document_version,
   e.page, e.duration_ms, e.data, e.created_at`;
 
 /** Newest first; $2 is the page size (investor-list.js PAGE_SIZE), $3 the offset. */

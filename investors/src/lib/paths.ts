@@ -9,7 +9,13 @@ export const HOME_PATH = "/";
 export const PROFILE_PATH = "/profile";
 export const ADMIN_PATH = "/admin";
 export const ADMIN_DOCUMENTS_PATH = "/admin/documents";
+export const ADMIN_INVESTORS_PATH = "/admin/investors";
 export const DOCUMENTS_PATH = "/documents";
+
+/** One investor's admin page (W1-17); the overview's latest events link here. */
+export function adminInvestorPath(id: string): string {
+  return `${ADMIN_INVESTORS_PATH}/${encodeURIComponent(id)}`;
+}
 
 /** A document's page: the PDF viewer (W1-13). */
 export function documentPath(id: string): string {

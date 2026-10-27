@@ -1,4 +1,5 @@
 import type { AdminDocument } from "@/admin/documents-api";
+import type { LatestEvent, Overview } from "@/admin/overview-api";
 import type { Me } from "@/api/me";
 import type { InvestorDocument } from "@/documents/documents-api";
 
@@ -77,6 +78,44 @@ export function investorDocument(overrides: Partial<InvestorDocument> = {}): Inv
     pageCount: 12,
     version: 1,
     updatedAt: "2026-10-21T12:00:00.000Z",
+    ...overrides,
+  };
+}
+
+/** An invented event as GET /admin/overview lists it: Ada opening the deck. */
+export function latestEvent(overrides: Partial<LatestEvent> = {}): LatestEvent {
+  return {
+    id: 1,
+    type: "document_open",
+    documentId: "00000000-0000-4000-8000-0000000000d1",
+    documentTitle: "Example deck",
+    page: null,
+    durationMs: null,
+    data: null,
+    createdAt: "2026-10-27T12:00:00.000Z",
+    investorId: NEW_ADA.investor.id,
+    investorName: "Ada Example",
+    investorFirm: "Example Ventures",
+    investorEmail: "ada@example.com",
+    ...overrides,
+  };
+}
+
+/** An invented GET /admin/overview answer: 30 zero days ending 27 Oct 2026, unless told otherwise. */
+export function overviewAnswer(overrides: Partial<Overview> = {}): Overview {
+  const series = Array.from({ length: 30 }, (_, i) => ({
+    date: new Date(Date.UTC(2026, 9, 27 - 29 + i)).toISOString().slice(0, 10),
+    signups: 0,
+    activeInvestors: 0,
+  }));
+  return {
+    investorsTotal: 0,
+    investorsNew7d: 0,
+    activeInvestors7d: 0,
+    deckOpens7d: 0,
+    downloads7d: 0,
+    series,
+    latestEvents: [],
     ...overrides,
   };
 }

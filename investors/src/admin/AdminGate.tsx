@@ -4,15 +4,21 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useMe } from "@/api/me";
 import { useAuthState } from "@/auth";
 import { PageLoading } from "@/components/shell/PageLoading";
-import { ADMIN_DOCUMENTS_PATH } from "@/lib/paths";
+import { ADMIN_DOCUMENTS_PATH, ADMIN_PATH } from "@/lib/paths";
 import { cn } from "@/lib/utils";
 import { ApiErrorPage } from "@/pages/ApiErrorPage";
 import { strings } from "@/strings";
 
 const copy = strings.admin;
 
-/** The admin sections, in nav order (the overview and investors join in W1-16 and W1-17). */
-const ADMIN_LINKS = [{ to: ADMIN_DOCUMENTS_PATH, label: copy.nav.documents }] as const;
+/**
+ * The admin sections, in nav order (investors join in W1-17). `end`: the
+ * overview is /admin itself, so it is not marked current on its sub-pages.
+ */
+const ADMIN_LINKS = [
+  { to: ADMIN_PATH, label: copy.nav.overview, end: true },
+  { to: ADMIN_DOCUMENTS_PATH, label: copy.nav.documents, end: false },
+] as const;
 
 function AdminLayout() {
   return (
@@ -26,6 +32,7 @@ function AdminLayout() {
           <NavLink
             key={link.to}
             to={link.to}
+            end={link.end}
             className={({ isActive }) =>
               cn("underline-offset-4 hover:underline", isActive ? "text-foreground underline" : "text-muted-foreground")
             }

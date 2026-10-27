@@ -7,7 +7,7 @@ import type { AdminDocument } from "@/admin/documents-api";
 import type { Me } from "@/api/me";
 import { setTokenSource } from "@/auth/token";
 import { strings } from "@/strings";
-import { ADA_ME, ADMIN_ME, adminDocument } from "@/test/fixtures";
+import { ADA_ME, ADMIN_ME, adminDocument, overviewAnswer } from "@/test/fixtures";
 import { ADA, renderWithProviders } from "@/test/providers";
 
 const copy = strings.admin;
@@ -131,9 +131,14 @@ describe("the admin area, for an investor who is not an admin", () => {
 });
 
 describe("the document manager", () => {
-  it("opens from /admin and lists every document with its facts", async () => {
-    serve(ADMIN_ME, { "GET /admin/documents": listOf([MODEL, DECK]) });
+  it("opens from the admin nav and lists every document with its facts", async () => {
+    serve(ADMIN_ME, {
+      "GET /admin/overview": () => json(200, overviewAnswer()),
+      "GET /admin/documents": listOf([MODEL, DECK]),
+    });
     renderAdmin("/admin");
+    const nav = await screen.findByRole("navigation", { name: copy.navLabel });
+    fireEvent.click(within(nav).getByRole("link", { name: copy.nav.documents }));
     expect(await screen.findByRole("heading", { level: 1, name: copy.documents.title })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent("/admin/documents"));
     const table = await screen.findByRole("table", { name: copy.documents.tableLabel });
