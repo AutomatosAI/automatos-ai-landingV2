@@ -1,4 +1,12 @@
 import type { AdminDocument } from "@/admin/documents-api";
+import type {
+  AdminInvestor,
+  DocumentSummary,
+  InvestorList,
+  InvestorRow,
+  Timeline,
+  TimelineEvent,
+} from "@/admin/investors-api";
 import type { LatestEvent, Overview } from "@/admin/overview-api";
 import type { Me } from "@/api/me";
 import type { InvestorDocument } from "@/documents/documents-api";
@@ -118,4 +126,92 @@ export function overviewAnswer(overrides: Partial<Overview> = {}): Overview {
     latestEvents: [],
     ...overrides,
   };
+}
+
+/** Ada as a row of GET /admin/investors: two visits, the deck read to page 9 of 12. */
+export function investorRow(overrides: Partial<InvestorRow> = {}): InvestorRow {
+  return {
+    id: NEW_ADA.investor.id,
+    name: "Ada Example",
+    email: "ada@example.com",
+    firm: "Example Ventures",
+    investorType: "vc",
+    chequeSize: "250k_1m",
+    source: "websummit",
+    createdAt: "2026-10-20T12:00:00.000Z",
+    lastSeenAt: "2026-10-27T12:00:00.000Z",
+    sessions: 2,
+    totalMs: 200_000,
+    docsOpened: 1,
+    downloads: 1,
+    deckProgress: { documentId: "00000000-0000-4000-8000-0000000000d1", maxPage: 9, pageCount: 12 },
+    blocked: false,
+    ...overrides,
+  };
+}
+
+/** A GET /admin/investors answer holding these rows. */
+export function investorList(investors: readonly InvestorRow[], overrides: Partial<InvestorList> = {}): InvestorList {
+  return { investors: [...investors], total: investors.length, page: 1, pageSize: 50, ...overrides };
+}
+
+/** Ada's whole row as GET /admin/investors/:id answers it. */
+export function adminInvestor(overrides: Partial<AdminInvestor> = {}): AdminInvestor {
+  return {
+    id: NEW_ADA.investor.id,
+    clerkUserId: "user_ada",
+    email: "ada@example.com",
+    name: "Ada Example",
+    firm: "Example Ventures",
+    title: "Partner",
+    investorType: "vc",
+    linkedinUrl: "https://www.linkedin.com/in/ada-example",
+    chequeSize: "250k_1m",
+    country: "Ireland",
+    source: "websummit",
+    marketingOptIn: true,
+    marketingOptInAt: "2026-10-20T12:05:00.000Z",
+    profileCompletedAt: "2026-10-20T12:05:00.000Z",
+    blocked: false,
+    createdAt: "2026-10-20T12:00:00.000Z",
+    lastSeenAt: "2026-10-27T12:00:00.000Z",
+    ...overrides,
+  };
+}
+
+/** Ada and the deck: opened twice, read to page 9 of 12, downloaded. */
+export function documentSummary(overrides: Partial<DocumentSummary> = {}): DocumentSummary {
+  return {
+    documentId: "00000000-0000-4000-8000-0000000000d1",
+    title: "Example deck",
+    kind: "pdf",
+    pageCount: 12,
+    opens: 2,
+    furthestPage: 9,
+    timeMs: 200_000,
+    downloaded: true,
+    ...overrides,
+  };
+}
+
+/** One of Ada's events: reading page 4 of the deck for 20 seconds. */
+export function timelineEvent(overrides: Partial<TimelineEvent> = {}): TimelineEvent {
+  return {
+    id: 1,
+    type: "page_view",
+    sessionId: "00000000-0000-4000-8000-00000000005e",
+    documentId: "00000000-0000-4000-8000-0000000000d1",
+    documentTitle: "Example deck",
+    documentVersion: 1,
+    page: 4,
+    durationMs: 20_000,
+    data: null,
+    createdAt: "2026-10-27T12:00:09.000Z",
+    ...overrides,
+  };
+}
+
+/** A GET /admin/investors/:id/events answer holding these events. */
+export function timelineAnswer(events: readonly TimelineEvent[], overrides: Partial<Timeline> = {}): Timeline {
+  return { events: [...events], total: events.length, page: 1, pageSize: 50, ...overrides };
 }

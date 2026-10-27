@@ -15,6 +15,10 @@ import { TrackingProvider } from "@/tracking/TrackingProvider";
 // Admin screens load on demand: investors never download them (nor the overview's chart library).
 const AdminOverview = lazy(() => import("@/pages/admin/Overview").then((module) => ({ default: module.AdminOverview })));
 const AdminDocuments = lazy(() => import("@/pages/admin/Documents").then((module) => ({ default: module.AdminDocuments })));
+const AdminInvestors = lazy(() => import("@/pages/admin/Investors").then((module) => ({ default: module.AdminInvestors })));
+const AdminInvestorDetail = lazy(() =>
+  import("@/pages/admin/InvestorDetail").then((module) => ({ default: module.AdminInvestorDetail })),
+);
 
 export function App() {
   useClearCacheOnSignOut();
@@ -30,6 +34,8 @@ export function App() {
             <Route path="admin" element={<AdminGate />}>
               <Route index element={<AdminOverview />} />
               <Route path="documents" element={<AdminDocuments />} />
+              <Route path="investors" element={<AdminInvestors />} />
+              <Route path="investors/:id" element={<AdminInvestorDetail />} />
             </Route>
             <Route path="*" element={<Navigate to={HOME_PATH} replace />} />
           </Route>

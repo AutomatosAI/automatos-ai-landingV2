@@ -85,6 +85,9 @@ export function investorLabel(event: LatestEvent): string {
   return event.investorName ?? event.investorEmail;
 }
 
+/** What eventText reads: the overview's latest events and an investor's timeline both carry it. */
+export type EventFacts = Pick<LatestEvent, "type" | "documentTitle" | "page" | "data">;
+
 function dataNumber(data: LatestEvent["data"], key: string): number | null {
   const value = data?.[key];
   return typeof value === "number" && Number.isFinite(value) ? value : null;
@@ -96,7 +99,7 @@ function dataText(data: LatestEvent["data"], key: string): string | null {
 }
 
 /** What happened, in words: "Read page 4 of Example deck". */
-export function eventText(event: LatestEvent): string {
+export function eventText(event: EventFacts): string {
   const words = copy.latest.events;
   const title = event.documentTitle ?? copy.latest.deletedDocument;
   switch (event.type) {

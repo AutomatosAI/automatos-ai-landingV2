@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatBytes, formatDate, formatDateTime, formatDay } from "../format";
+import { formatBytes, formatDate, formatDateTime, formatDay, formatFullDateTime } from "../format";
 
 describe("formatBytes", () => {
   it.each([
@@ -43,6 +43,16 @@ describe("formatDateTime", () => {
 
   it("gives nothing for a string that is not a date", () => {
     expect(formatDateTime("not a date")).toBe("");
+  });
+});
+
+describe("formatFullDateTime", () => {
+  it("shows the date with its year and a 24-hour time to the second", () => {
+    expect(formatFullDateTime("2026-10-27T12:00:09.000Z")).toMatch(/^27 Oct 2026, ([01]\d|2[0-3]):[0-5]\d:09$/);
+  });
+
+  it("gives nothing for a string that is not a date", () => {
+    expect(formatFullDateTime("not a date")).toBe("");
   });
 });
 

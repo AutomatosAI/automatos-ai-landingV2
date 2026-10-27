@@ -4,7 +4,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useMe } from "@/api/me";
 import { useAuthState } from "@/auth";
 import { PageLoading } from "@/components/shell/PageLoading";
-import { ADMIN_DOCUMENTS_PATH, ADMIN_PATH } from "@/lib/paths";
+import { ADMIN_DOCUMENTS_PATH, ADMIN_INVESTORS_PATH, ADMIN_PATH } from "@/lib/paths";
 import { cn } from "@/lib/utils";
 import { ApiErrorPage } from "@/pages/ApiErrorPage";
 import { strings } from "@/strings";
@@ -12,12 +12,14 @@ import { strings } from "@/strings";
 const copy = strings.admin;
 
 /**
- * The admin sections, in nav order (investors join in W1-17). `end`: the
- * overview is /admin itself, so it is not marked current on its sub-pages.
+ * The admin sections, in nav order. `end`: the overview is /admin itself, so
+ * it is not marked current on its sub-pages; Investors stays current on an
+ * investor's page.
  */
 const ADMIN_LINKS = [
   { to: ADMIN_PATH, label: copy.nav.overview, end: true },
   { to: ADMIN_DOCUMENTS_PATH, label: copy.nav.documents, end: false },
+  { to: ADMIN_INVESTORS_PATH, label: copy.nav.investors, end: false },
 ] as const;
 
 function AdminLayout() {

@@ -46,3 +46,19 @@ export function formatDay(day: string): string {
   const date = new Date(`${day}T00:00:00.000Z`);
   return Number.isNaN(date.getTime()) ? "" : UTC_DAY.format(date);
 }
+
+const FULL_DATE_TIME = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+});
+
+/** An ISO timestamp → "27 Oct 2026, 14:05:09" in the reader's time zone; "" when it is not a date. */
+export function formatFullDateTime(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : FULL_DATE_TIME.format(date);
+}
