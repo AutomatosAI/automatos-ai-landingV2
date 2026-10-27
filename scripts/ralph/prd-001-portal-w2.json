@@ -204,10 +204,10 @@
       "title": "Video player with progress events",
       "description": "As an investor, I want to watch the demo without downloading it.",
       "acceptanceCriteria": [
-        "investors/src/viewer/VideoPlayer.tsx: HTML5 <video controls playsInline preload='metadata'> with the inline link from wave 1's link route; on a storage 403 it requests one new link and resumes at the same time",
-        "Sends video_progress {documentId, percent} at 25, 50, 75 and 100 (each once per open) through wave 1's tracker; the milestone model is pure and unit-tested (seeking forward past a milestone counts it once; seeking back does not repeat it)",
-        "Home and Documents: Open on a video document goes to /investors/documents/:id, which picks the PDF viewer or the video player by kind",
-        "npm --prefix investors run typecheck, lint, test, build pass"
+        "investors/src/viewer/VideoPlayer.tsx: HTML5 <video controls playsInline preload='metadata'> with the inline link from wave 1's link route; on a storage 403 it requests one new link and resumes at the same time → DONE — viewer/VideoPlayer.tsx: <video src controls playsInline preload=metadata> on useViewerLink's inline link; a network or refused-source MediaError (video-model isRefusedMedia; browsers expose no media HTTP status) renews once via link-model, the new player seeks to the same time and plays on if it was playing (video-viewer.test: second link, currentTime 130, play called; video-player.test 9 tests)",
+        "Sends video_progress {documentId, percent} at 25, 50, 75 and 100 (each once per open) through wave 1's tracker; the milestone model is pure and unit-tested (seeking forward past a milestone counts it once; seeking back does not repeat it) → DONE — tracking/video-progress.ts passMilestones/percentAt (pure; video-progress.test: plays through, seek forward 5→60 gives 25,50 once, seek back repeats nothing); use-video-progress-feed.ts sends videoProgress(documentId, percent) through the tracker, once per open across a renewed link (video-viewer.test: pagehide POST /events = 25,50,75,100 once each)",
+        "Home and Documents: Open on a video document goes to /investors/documents/:id, which picks the PDF viewer or the video player by kind → DONE — library-model viewerFor(kind) pdf|video|null; DocumentCard's Open links /documents/:id for both; pages/Viewer.tsx DocumentBody picks PdfBody or VideoBody (video-viewer.test: from home and from documents, href and route, one inline link)",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — typecheck clean, lint clean, test 65 files / 734 passed, build passed (no E2E marker in dist); root npm test 19 files / 489 passed"
       ],
       "files": [
         "investors/src/viewer/**",
@@ -217,8 +217,8 @@
         "investors/src/strings.ts"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": " | DONE (b9d6695): no packages added. documents/library-model.ts viewerFor(kind) → 'pdf' | 'video' | null (DocumentViewer); opensInViewer is unchanged (PDF only: a wave-1 test pins it) and viewerFor calls it. Open on a video now goes to /documents/:id, no longer a download. viewer/: VideoPlayer {url, title, resume, onFailure, onPlaying, onProgress, actions} (the Download button sits under the video; no toolbar); video-model.ts MEDIA_ERR_* codes, mediaFailure/isRefusedMedia ({name:'MediaFailure', code 2|4} counts as a refused link; 3 decode never renews), ResumePoint/START, failurePoint, resumeTime, OnVideoProgress; link-model isExpiredLink matches pdf.js's 403 OR a refused MediaFailure, afterLinkPlayed resets the renewal once a link has played (useViewerLink returns onPlayed), so each expiry while watching renews again; ViewerStates gained ViewerFrame and ViewerPending (linking / link_failed / load_failed, shared by PdfBody and VideoBody in pages/Viewer.tsx). DocumentView is keyed by document.id. tracking/: video-progress.ts (VIDEO_MILESTONES, passMilestones, percentAt), events.ts videoProgress, use-video-progress-feed.ts (milestones held above the player: a renewed link sends none twice). Every renewal is another POST /link, so another server-written document_open row (as for PDFs). Main chunk 549 kB (the pre-existing 500 kB advisory). W2-05: video_progress rows carry data {percent} and the current document_version. W2-09 e2e: the video is labelled '<title>, video' (strings.viewer.video.label); the video page calls POST /documents/:id/link {mode:'inline'} once; a load failure reads strings.viewer.video.failed with the Download button and Try again; jsdom page tests stub HTMLMediaElement.prototype.play and set duration/currentTime/error on the element."
     },
     {
       "id": "W2-05",
