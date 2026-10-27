@@ -109,8 +109,12 @@ listening, and the API answers 503 until they finish.
 `.github/workflows/investors.yml` runs on every pull request and on pushes to
 `main`: **server** (`npm test` against a Postgres 16 service), **app**
 (typecheck, lint, unit tests and build in `investors/`; the production build
-must not contain the E2E fake-auth marker) and **docker** (the image build, no
-push).
+must not contain the E2E fake-auth marker), **e2e** (after app: Playwright,
+Chromium only, against `npm run build:e2e` served by `vite preview`, every API
+call mocked; full-page screenshots of each screen at 1280 and 390 px wide are
+uploaded as the `investors-e2e-screenshots` artifact, the HTML report as
+`investors-e2e-report`) and **docker** (the image build, no push). Playwright
+runs in CI only.
 
 ```sh
 npm test                                # server tests (vitest, in-process PGlite)

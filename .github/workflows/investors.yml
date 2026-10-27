@@ -75,6 +75,42 @@ jobs:
           fi
           echo "investors/dist: no E2E fake-auth marker"
 
+  # Playwright smoke and screenshots (W1-19): the E2E build (fake auth, KP10)
+  # served by vite preview, every API call mocked. CI only (KP6).
+  e2e:
+    needs: app
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: investors
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: investors/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build:e2e
+      - run: npx playwright test
+      # Upload paths are from the workspace root (defaults.run applies to run steps only).
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: investors-e2e-screenshots
+          path: investors/e2e/screenshots
+          if-no-files-found: warn
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: investors-e2e-report
+          path: investors/playwright-report
+          if-no-files-found: warn
+
   docker:
     runs-on: ubuntu-latest
     timeout-minutes: 20
