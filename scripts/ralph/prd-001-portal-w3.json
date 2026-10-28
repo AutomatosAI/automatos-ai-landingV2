@@ -253,6 +253,24 @@
       "priority": 6,
       "passes": true,
       "notes": " | DONE (ee78307): no packages added. Cause: VideoMedia (PitchFeature.tsx:52) rendered the Play button only while !started; the press unmounted it and moved focus nowhere, so it fell to <body>. Fix: VideoMedia = a stable frame (tabIndex -1, role group, aria-label = the document title) around VideoPoster / VideoStage (ViewerPending or VideoPlayer); Play AND Try again (ViewerPending onRetry, same unmount) call frame.focus({preventScroll}) before their action. FOCUS_RING (PitchCard.tsx) is shared by the poster and the frame. Deviation: the frame is named by the title, not strings.viewer.video.label(title), because the existing pitch tests query getByLabelText(videoLabel) exactly (the <video> alone, nothing before Play) and must stay unchanged. Not covered: a renewed link (afterLoadError) remounts the player, so focus on the <video> itself still drops then, as on the viewer page."
+    },
+    {
+      "id": "W3-RVW-3",
+      "prdStory": "review",
+      "title": "The present bar stays visible while keyboard focus is on one of its controls",
+      "description": "Review finding (MEDIUM, present mode). investors/src/viewer/bar-visibility.ts:3-4 and :18 say the bar is 'held while the investor's focus or pointer is on it'. Only the mouse is wired. PresentBar.tsx:42-44 and :52-53 call onHold from onPointerEnter (pointerType 'mouse' only) and onPointerLeave. Nothing calls onHold on focus. use-bar-visibility.ts:11 narrows the doc to 'The mouse rests on the bar'. Since W3-RVW-1, keyboard focus lives in the bar while presenting: use-focus-trap.ts:28-33 cycles Tab through the bar's controls only. After 3 s without a key, the bar goes 'pointer-events-none opacity-0' (PresentBar.tsx:50). The focused control and its focus ring then become invisible. Scenario: a keyboard investor presses Present, presses Tab (focus moves to Next, because Previous is disabled on slide 1), then waits on the slide. After 3 s the bar is gone, and focus sits on a button nobody can see (WCAG 2.2 SC 2.4.7 Focus Visible, 2.4.11 Focus Not Obscured). Their next Enter or Space shows the bar and presses the hidden control in the same keydown, for example Exit or Download.",
+      "acceptanceCriteria": [
+        "Cause recorded in the notes: the bar's model documents a focus hold (bar-visibility.ts:3-4, :18), but PresentBar wires only the mouse (PresentBar.tsx:42-44, :52-53). The focus trap keeps keyboard focus on the bar (use-focus-trap.ts:28-33), so the bar fades from under it (PresentBar.tsx:50).",
+        "Change: while keyboard focus is on a control inside the bar, the bar stays shown and does not fade. It fades 3 s after focus leaves the bar, or 3 s after the investor's next pointer input. Keyboard focus means focus that arrived by a key (the latest input before it was a keydown), not by a mouse click or a tap. A mouse click or tap on Previous or Next keeps today's 3 s fade. Do not tell the two apart with :focus-visible: jsdom 26 (nwsapi 2.2.28) treats :focus-visible as :focus, so a test could not separate them. Track the kind of input instead. The mouse hold keeps working. The focus hold and the mouse hold are separate sources: releasing one while the other still holds does not start the timer. The pure part stays in bar-visibility.ts, with injectable timers. The docs in bar-visibility.ts, use-bar-visibility.ts and PresentBar.tsx say what the code does. Nothing changes outside present mode. No new package (KP2).",
+        "Tests: bar-visibility.test.ts (fake timers) covers the two holds. While either holds, the bar stays shown. Releasing one while the other holds keeps it shown. Releasing both starts the 3 s again. present-mode.test.tsx gains four tests: (a) Tab (keyDown Tab) into the bar, then 3 s or more, and the bar shell is still opacity-100; (b) from (a), focus moves to the slideshow container or a pointerdown lands on the stage, then 3 s, and the bar is opacity-0; (c) a pointer press and click on Next (focus on the button), then 3 s, and the bar is opacity-0; (d) the mouse hold still works after (a)'s focus leaves the bar. With the focus hold removed, test (a) fails. The existing 'fades the bar after 3 s without input…' test and every other existing present-mode test stay unchanged and passing.",
+        "npm --prefix investors run typecheck, lint, test and build pass. bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci passes every check except 'every story passes'."
+      ],
+      "files": [
+        "investors/src/viewer/**"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
     }
   ]
 }
