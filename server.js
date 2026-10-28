@@ -302,6 +302,7 @@ const HTML_ONLY_PAGES = [
 ];
 const PUBLIC_ASSETS = [
   "llms.txt", "robots.txt",
+  "favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "site.webmanifest",
   "plates.css", "_responsive.css",
   "_config.js", // written by hydrateConfig() at startup; not in git
   "_theme.js", "_nav.js", "_footer.js", "_chat.js", "_analytics.js",
