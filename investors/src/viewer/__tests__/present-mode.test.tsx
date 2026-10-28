@@ -7,6 +7,7 @@ import { strings } from "@/strings";
 import { PdfViewer } from "../PdfViewer";
 import { SLIDE_FADE } from "../present-motion";
 import { useArrowKeys } from "../use-arrow-keys";
+import { useFocusTrap } from "../use-focus-trap";
 
 /**
  * react-pdf stands in (pdf.js needs a canvas and a worker jsdom lacks): the
@@ -306,6 +307,79 @@ describe("present mode", () => {
   it("shows a failed download's message in present mode, where the page's own is hidden", () => {
     renderViewer({ present: true, notice: "The download could not start." });
     expect(within(slideshow() as HTMLElement).getByRole("alert")).toHaveTextContent("The download could not start.");
+  });
+});
+
+const OUTSIDE_LINK = "Back to documents";
+const OUTSIDE_BUTTON = "Account";
+
+/** The slideshow over a page with a link before it and a button after it, as the header and Back are. */
+function renderOnPage() {
+  return render(
+    <>
+      <a href="/">{OUTSIDE_LINK}</a>
+      <PdfViewer url="https://storage.example.com/signed-get" title={TITLE} onLoadError={vi.fn()} actions={<button type="button">Download</button>} present />
+      <button type="button">{OUTSIDE_BUTTON}</button>
+    </>,
+  );
+}
+
+const tab = (target: Element, shiftKey = false) => fireEvent.keyDown(target, { key: "Tab", shiftKey });
+const outsideLink = () => screen.getByRole("link", { name: OUTSIDE_LINK });
+
+describe("present mode keeps focus inside the slideshow (W3-RVW-1)", () => {
+  it("Tab from Exit goes round to the first enabled control, past the disabled Previous", () => {
+    renderOnPage();
+    const exit = bar().getByRole("button", { name: present.exitLabel });
+    act(() => exit.focus());
+    expect(tab(exit)).toBe(false);
+    expect(bar().getByRole("button", { name: present.previous })).toBeDisabled();
+    expect(bar().getByRole("button", { name: present.next })).toHaveFocus();
+  });
+
+  it("Shift+Tab from the slideshow itself, focused on entry, goes to Exit", () => {
+    renderOnPage();
+    const frame = slideshow() as HTMLElement;
+    expect(frame).toHaveFocus();
+    tab(frame, true);
+    expect(bar().getByRole("button", { name: present.exitLabel })).toHaveFocus();
+  });
+
+  it("brings focus that lands on the page underneath back into the slideshow", () => {
+    renderOnPage();
+    act(() => outsideLink().focus());
+    expect(slideshow()).toHaveFocus();
+    act(() => screen.getByRole("button", { name: OUTSIDE_BUTTON }).focus());
+    expect(slideshow()).toHaveFocus();
+  });
+
+  it("lets go after Exit: the page's link keeps focus and Tab is the browser's again", () => {
+    renderOnPage();
+    fireEvent.click(bar().getByRole("button", { name: present.exitLabel }));
+    expect(screen.getByRole("button", { name: present.start })).toHaveFocus();
+    act(() => outsideLink().focus());
+    expect(outsideLink()).toHaveFocus();
+    expect(tab(outsideLink())).toBe(true);
+    expect(outsideLink()).toHaveFocus();
+  });
+
+  it("listens only while active, and stops on unmount", () => {
+    const inside = document.body.appendChild(document.createElement("div"));
+    const outside = document.body.appendChild(document.createElement("button"));
+    inside.tabIndex = -1;
+    const hook = renderHook(({ active }) => useFocusTrap(inside, active), { initialProps: { active: false } });
+    act(() => outside.focus());
+    expect(outside).toHaveFocus();
+    act(() => outside.blur());
+    hook.rerender({ active: true });
+    act(() => outside.focus());
+    expect(inside).toHaveFocus();
+    hook.unmount();
+    act(() => outside.focus());
+    expect(outside).toHaveFocus();
+    expect(tab(outside)).toBe(true);
+    inside.remove();
+    outside.remove();
   });
 });
 

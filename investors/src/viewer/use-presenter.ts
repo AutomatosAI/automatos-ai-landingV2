@@ -4,6 +4,7 @@ import type { Size } from "./fit-screen";
 import type { PresentAction, SlideMove } from "./present-keys";
 import { useBarVisibility, type BarState } from "./use-bar-visibility";
 import { useBoxSize } from "./use-box-size";
+import { useFocusTrap } from "./use-focus-trap";
 import { usePresentKeys } from "./use-present-keys";
 import { usePresentMode, type PresentMode } from "./use-present-mode";
 import { useSlideGestures, type SlideGestures } from "./use-slide-gestures";
@@ -28,7 +29,7 @@ interface PresenterOptions {
   readonly onMove: (move: SlideMove) => void;
 }
 
-/** Everything present mode needs (W3-02): the mode, its bar, the stage's size, keys, swipes and taps. */
+/** Everything present mode needs (W3-02): the mode, its bar, the stage's size, keys, swipes, taps and the focus it keeps. */
 export function usePresenter({ container, stage, initial, onExit, onMove }: PresenterOptions): Presenter {
   const mode = usePresentMode(container, initial, onExit);
   const bar = useBarVisibility(mode.presenting);
@@ -37,5 +38,7 @@ export function usePresenter({ container, stage, initial, onExit, onMove }: Pres
   const { exit } = mode;
   const onAction = useCallback((action: PresentAction) => (action === "exit" ? exit() : onMove(action)), [exit, onMove]);
   usePresentKeys(mode.presenting, onAction);
+  // The slideshow is modal (PdfViewer's role dialog, aria-modal): focus stays inside it (W3-RVW-1).
+  useFocusTrap(container, mode.presenting);
   return { ...mode, bar, box, gestures };
 }
