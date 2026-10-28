@@ -97,6 +97,7 @@
 
     const foot = el('div', { class: 'nav-drawer__foot' }, [
       el('a', { href: 'https://github.com/AutomatosAI/automatos-ai', target: '_blank', rel: 'noopener', text: 'GitHub' }),
+      el('a', { href: '/investors', text: 'Investors' }),
       (function () {
         const a = el('a', { class: 'solid', href: '/contact' });
         a.appendChild(document.createTextNode('Contact '));
