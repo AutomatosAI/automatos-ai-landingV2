@@ -14,7 +14,7 @@
 - [Automatos Academy](https://academy.automatos.app): Free certification prep with an AI tutor, powered by Automatos AI.
 - [Automatos Markets](https://markets.automatos.app): A read-only crypto market-intelligence product, powered by Automatos AI. Free during the pilot; not financial advice.
 - Editions: Local (open source, Apache 2.0, available today), SaaS (hosted beta opens November 2026), Enterprise (coming soon · contact Automatos; a CI-tested Helm chart exists, single sign-on next).
-- Languages: Auto answers in the language you write or speak. On Automatos Go (iPhone), talk to Auto in English or Portuguese (Portugal and Brazil), and switch with one tap. Auto's natural voice is self-hosted and open source (Kokoro). It speaks 9 languages: English (US and UK), Spanish, French, Italian, Portuguese (Brazil), Hindi, Japanese and Mandarin. Self-hosted installs include it. Coming: automatic language detection. Speak in any of about 100 languages without choosing first.
+- Languages: Auto answers in the language you write or speak. On Automatos Go (iPhone), talk to Auto in English and Portuguese (Brazil), and switch with one tap. Auto's natural voice is self-hosted and open source (Kokoro). It speaks 9 languages: English (US and UK), Spanish, French, Italian, Portuguese (Brazil), Hindi, Japanese and Mandarin. Self-hosted installs include it. Coming: automatic language detection. Speak in any of about 100 languages without choosing first.
 
 ## Compliance
 
