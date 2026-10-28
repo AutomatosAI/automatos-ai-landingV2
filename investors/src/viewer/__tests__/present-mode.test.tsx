@@ -383,6 +383,85 @@ describe("present mode keeps focus inside the slideshow (W3-RVW-1)", () => {
   });
 });
 
+const barShell = () => screen.getByRole("toolbar", { name: present.toolbarLabel }).parentElement as HTMLElement;
+const idle = (ms = 3000) => act(() => vi.advanceTimersByTime(ms));
+const focusSlideshow = () => act(() => (slideshow() as HTMLElement).focus());
+
+/** Present mode on fake timers, then Tab from the slideshow onto the bar's first enabled control. */
+function tabOntoBar() {
+  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+  renderViewer({ present: true });
+  tab(slideshow() as HTMLElement);
+  expect(bar().getByRole("button", { name: present.next })).toHaveFocus();
+}
+
+describe("keyboard focus keeps the present bar shown (W3-RVW-3)", () => {
+  it("stays shown while a key brought focus onto one of its controls", () => {
+    tabOntoBar();
+    idle(10_000);
+    expect(barShell()).toHaveClass("opacity-100");
+  });
+
+  it("fades 3 s after focus leaves the bar, or 3 s after the next pointer input", () => {
+    tabOntoBar();
+    focusSlideshow();
+    idle();
+    expect(barShell()).toHaveClass("opacity-0");
+    tab(slideshow() as HTMLElement);
+    idle(10_000);
+    expect(barShell()).toHaveClass("opacity-100");
+    fireEvent.pointerDown(page(), { clientX: 200, clientY: 400 });
+    idle(2999);
+    expect(barShell()).toHaveClass("opacity-100");
+    idle(1);
+    expect(barShell()).toHaveClass("opacity-0");
+    expect(bar().getByRole("button", { name: present.next })).toHaveFocus();
+  });
+
+  it("fades 3 s after the control with keyboard focus goes, as Full screen does once granted", () => {
+    fakeFullscreen();
+    tabOntoBar();
+    tab(bar().getByRole("button", { name: present.next }));
+    tab(bar().getByRole("button", { name: "Download" }));
+    const fullscreen = bar().getByRole("button", { name: present.fullscreen });
+    expect(fullscreen).toHaveFocus();
+    fireEvent.keyDown(fullscreen, { key: "Enter" });
+    fireEvent.click(fullscreen);
+    expect(fullscreen).not.toBeInTheDocument();
+    expect(document.body).toHaveFocus();
+    idle();
+    expect(barShell()).toHaveClass("opacity-0");
+  });
+
+  it("keeps the 3 s fade after a press and click on Next, though focus is on the button", () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    renderViewer({ present: true });
+    const next = bar().getByRole("button", { name: present.next });
+    fireEvent.pointerDown(next);
+    act(() => next.focus());
+    fireEvent.click(next);
+    expect(next).toHaveFocus();
+    expect(page()).toHaveAttribute("data-page", "2");
+    idle();
+    expect(barShell()).toHaveClass("opacity-0");
+  });
+
+  it("still holds for the mouse, apart from focus, after keyboard focus leaves the bar", () => {
+    tabOntoBar();
+    fireEvent.pointerEnter(barShell(), { pointerType: "mouse" });
+    focusSlideshow();
+    idle(10_000);
+    expect(barShell()).toHaveClass("opacity-100");
+    fireEvent.pointerLeave(barShell(), { pointerType: "mouse" });
+    idle();
+    expect(barShell()).toHaveClass("opacity-0");
+    fireEvent.pointerEnter(barShell(), { pointerType: "mouse" });
+    expect(barShell()).toHaveClass("opacity-100");
+    idle(10_000);
+    expect(barShell()).toHaveClass("opacity-100");
+  });
+});
+
 describe("the page's arrow keys", () => {
   it("stand down while present mode has the keys", () => {
     const onStep = vi.fn();

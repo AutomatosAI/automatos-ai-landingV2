@@ -93,6 +93,7 @@ export function PdfViewer(props: PdfViewerProps) {
           onFullscreen={presenter.enterFullscreen}
           onExit={presenter.exit}
           onHold={bar.hold}
+          onFocusWithin={bar.focusWithin}
           actions={actions}
           notice={notice}
         />

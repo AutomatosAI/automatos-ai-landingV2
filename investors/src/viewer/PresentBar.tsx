@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, Maximize, X } from "lucide-react";
-import type { PointerEvent, ReactNode } from "react";
+import { useEffect, useRef, type FocusEvent, type PointerEvent, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ interface PresentBarProps {
   readonly page: number;
   /** Null until the document has loaded. */
   readonly pageCount: number | null;
-  /** False after 3 s without input (use-bar-visibility.ts). */
+  /** False after 3 s without input, unless held (use-bar-visibility.ts). */
   readonly visible: boolean;
   /** Offer Full screen: the browser has it and the overlay is not full screen yet. */
   readonly offerFullscreen: boolean;
@@ -23,6 +23,8 @@ interface PresentBarProps {
   readonly onExit: () => void;
   /** The mouse rests on the bar (true) or left it (false): it stays while it rests. */
   readonly onHold: (held: boolean) => void;
+  /** Focus came onto one of the bar's controls (true) or left them all (false): it stays while that is keyboard focus. */
+  readonly onFocusWithin: (inside: boolean) => void;
   /** The Download button (the page owns the download), raised to 44 px here. */
   readonly actions?: ReactNode;
   /** Why the last download failed: the page's own message is behind the slideshow. */
@@ -34,16 +36,25 @@ const LABEL = "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-fore
 /**
  * Present mode's controls, over the foot of the slide: "Slide N of M",
  * previous and next, Download, Full screen and Exit, every target 44 px.
- * They fade after 3 s without input and come back on any.
+ * They fade after 3 s without input and come back on any; they stay while
+ * the mouse rests on them or keyboard focus is on one of them (W3-RVW-3).
  */
 export function PresentBar(props: PresentBarProps) {
-  const { page, pageCount, visible, offerFullscreen, onMove, onFullscreen, onExit, onHold, actions, notice } = props;
+  const { page, pageCount, visible, offerFullscreen, onMove, onFullscreen, onExit, onHold, onFocusWithin, actions, notice } = props;
   const loaded = pageCount !== null;
+  const shell = useRef<HTMLDivElement>(null);
+  // A focused control that goes (Full screen, once granted) drops focus to <body>, and no blur says so.
+  useEffect(() => {
+    if (!shell.current?.contains(document.activeElement)) onFocusWithin(false);
+  });
   const onPointerEnter = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse") onHold(true);
   };
+  // Focus moving between two of the bar's controls stays inside it.
+  const onBlur = (event: FocusEvent<HTMLDivElement>) => onFocusWithin(event.currentTarget.contains(event.relatedTarget));
   return (
     <div
+      ref={shell}
       className={cn(
         "absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]",
         BAR_FADE,
@@ -51,6 +62,8 @@ export function PresentBar(props: PresentBarProps) {
       )}
       onPointerEnter={onPointerEnter}
       onPointerLeave={() => onHold(false)}
+      onFocus={() => onFocusWithin(true)}
+      onBlur={onBlur}
     >
       {notice && (
         <p role="alert" className="max-w-prose rounded-md border bg-background px-3 py-2 text-sm text-destructive">
