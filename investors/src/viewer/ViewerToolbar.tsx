@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import { ChevronLeft, ChevronRight, Presentation } from "lucide-react";
+import type { ReactNode, Ref } from "react";
 
 import { Button } from "@/components/ui/button";
 import { strings } from "@/strings";
@@ -13,14 +13,18 @@ interface ViewerToolbarProps {
   readonly onStep: (delta: number) => void;
   /** The Download button (the page owns the download). */
   readonly actions?: ReactNode;
+  /** Starts present mode (W3-02); no Present button without it. */
+  readonly onPresent?: () => void;
+  /** The Present button: focus comes back to it when present mode ends. */
+  readonly presentRef?: Ref<HTMLButtonElement>;
 }
 
 /**
- * Previous and next, "Page N of M" and Download (ported from the reference
- * viewer's toolbar, KP12). Sticks under the site header, so the controls stay
+ * Previous and next, "Page N of M", Present and Download (ported from the
+ * reference viewer's toolbar, KP12). Sticks under the site header, so the controls stay
  * in reach on a phone while the page scrolls.
  */
-export function ViewerToolbar({ page, pageCount, onStep, actions }: ViewerToolbarProps) {
+export function ViewerToolbar({ page, pageCount, onStep, actions, onPresent, presentRef }: ViewerToolbarProps) {
   const loaded = pageCount !== null;
   return (
     <div
@@ -56,7 +60,15 @@ export function ViewerToolbar({ page, pageCount, onStep, actions }: ViewerToolba
           <ChevronRight aria-hidden="true" />
         </Button>
       </div>
-      {actions}
+      <div className="flex flex-wrap items-center gap-2">
+        {onPresent && (
+          <Button ref={presentRef} type="button" size="sm" variant="outline" onClick={onPresent} disabled={!loaded}>
+            <Presentation aria-hidden="true" />
+            {copy.present.start}
+          </Button>
+        )}
+        {actions}
+      </div>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { ArrowLeft } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 
-import { screenForError } from "@/api/errors";
+import { isStorageUnavailable, screenForError } from "@/api/errors";
 import { useAuthState } from "@/auth";
 import { PageLoading } from "@/components/shell/PageLoading";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,10 @@ import { strings } from "@/strings";
 import { usePageViewFeed } from "@/tracking/use-page-view-feed";
 import { useVideoProgressFeed } from "@/tracking/use-video-progress-feed";
 import { useViewerLink, type ViewerLink } from "@/viewer/use-viewer-link";
+import { isPresentRequested, withoutPresent } from "@/viewer/present-route";
 import { START, type VideoFailure } from "@/viewer/video-model";
 import { VideoPlayer } from "@/viewer/VideoPlayer";
-import { ViewerFrame, ViewerLoading, ViewerPending } from "@/viewer/ViewerStates";
+import { ViewerFrame, ViewerLoading, ViewerPending, ViewerStorageUnavailable } from "@/viewer/ViewerStates";
 
 import { ApiErrorPage } from "./ApiErrorPage";
 import { StatusPage } from "./StatusPage";
@@ -54,15 +55,40 @@ function MissingDocument() {
   );
 }
 
+/** The list could not be read because document storage is down: the viewer's error under the Back link. */
+function StorageUnavailable({ onRetry }: { readonly onRetry: () => void }) {
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
+      <BackLink />
+      <div className="mt-6">
+        <ViewerStorageUnavailable onRetry={onRetry} />
+      </div>
+    </section>
+  );
+}
+
 interface BodyProps {
   readonly document: InvestorDocument;
   readonly link: ViewerLink;
   readonly download: ReactNode;
+  /** Why the last download failed (the PDF's present mode repeats it). */
+  readonly notice: string | null;
 }
 
-function PdfBody({ document, link, download }: BodyProps) {
-  // Each page read becomes a page_view of this version (the tracker, US-010).
+/** ?present=1 starts the PDF in present mode; leaving present mode drops it (W3-02). */
+function usePresentParam() {
+  const [params, setParams] = useSearchParams();
+  const present = isPresentRequested(params);
+  const onPresentExit = useCallback(() => {
+    if (present) setParams(withoutPresent(params), { replace: true });
+  }, [params, present, setParams]);
+  return { present, onPresentExit };
+}
+
+function PdfBody({ document, link, download, notice }: BodyProps) {
+  // Each page read becomes a page_view of this version (the tracker, US-010), slides in present mode too.
   const onPageVisible = usePageViewFeed(document.id, document.version);
+  const { present, onPresentExit } = usePresentParam();
   const { phase } = link;
   if (phase.kind !== "ready") return <ViewerPending phase={phase} onRetry={link.retry} download={download} />;
   const loading = (
@@ -79,6 +105,9 @@ function PdfBody({ document, link, download }: BodyProps) {
         onLoadError={link.onLoadError}
         onPageVisible={onPageVisible}
         actions={download}
+        notice={notice}
+        present={present}
+        onPresentExit={onPresentExit}
       />
     </Suspense>
   );
@@ -150,7 +179,7 @@ function DocumentView({ userId, document, onGone }: DocumentViewProps) {
       <h1 className="mb-6 mt-4 font-serif text-3xl font-normal leading-tight tracking-[-0.01em] sm:text-4xl">
         {document.title}
       </h1>
-      <DocumentBody viewer={viewer} document={document} link={link} download={download} />
+      <DocumentBody viewer={viewer} document={document} link={link} download={download} notice={action.message} />
       {action.message && (
         <p role="alert" className="mt-4 text-sm text-destructive">
           {action.message}
@@ -164,6 +193,7 @@ function ViewerScreen({ userId, documentId }: { readonly userId: string; readonl
   const documents = useDocuments(userId);
   const { refetch } = documents;
   const onGone = useCallback(() => void refetch(), [refetch]);
+  if (documents.isError && isStorageUnavailable(documents.error)) return <StorageUnavailable onRetry={onGone} />;
   if (documents.isError) return <ApiErrorPage screen={screenForError(documents.error)} onRetry={onGone} />;
   if (documents.isPending) return <PageLoading />;
   const document = documents.data.find((candidate) => candidate.id === documentId);

@@ -1,0 +1,258 @@
+{
+  "project": "Automatos company site (automatos-ai-landingV2): investor portal",
+  "prd": "$RALPH_PRIVATE_PRD (private repo, READ ONLY: never copy its private sections into this public repo)",
+  "branchName": "feat/investor-portal-3",
+  "base": "origin/main (waves 1 and 2 merged)",
+  "worktree": "<workspace>/.worktrees/automatos-ai-landingV2/feat+investor-portal-3",
+  "description": "Wave 3 of the investor portal: a slideshow mode for the pitch deck, a featured pitch block (deck + video, each downloadable) at the top of the investor home page, and the fix that keeps a storage outage from blanking the portal.",
+  "decisions": [
+    {
+      "id": "KP1",
+      "text": "FILES. A story may create or change ONLY: investors/** (the React app: src, e2e, its tests) and this kit's files under scripts/ralph/. Everything else stays byte-identical to the base (origin/main, where waves 1 and 2 are merged): server.js, server/investors/**, Dockerfile, .dockerignore, the root package.json and package-lock.json, privacy.html, _footer.js, every other page and asset of the site, and investors/package.json and investors/package-lock.json (no new package in this wave). The gate diffs them."
+    },
+    {
+      "id": "KP2",
+      "text": "DEPENDENCIES: none added or changed in this wave. Use what wave 1 and 2 installed (react-pdf, lucide-react, the shadcn kit). Anything else: RALPH_BLOCKED with the reason."
+    },
+    {
+      "id": "KP3",
+      "text": "SERVER-SIDE ENFORCEMENT. Every /api/investors route except GET /api/investors/health goes through the auth middleware; identity (clerk user id, email, investor id) comes ONLY from the verified Clerk token, never from a body, query, header other than Authorization, or cookie; admin = the token's Clerk user id is in INVESTOR_ADMIN_CLERK_IDS (comma-separated), checked on the server for every /admin route. A blocked investor gets 403 on every investor route. Unpublished documents are 404 to investors. A test enumerates the router stack and fails if any route other than /health lacks the middleware."
+    },
+    {
+      "id": "KP4",
+      "text": "NEVER BREAK THE SITE. The portal is optional. Missing config (INVESTORS_DATABASE_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY, or the S3 variables for document routes) or a failed migration puts the portal in 'disabled' with a logged reason: /api/investors/* answers 503 {error:'portal_unavailable'} and /investors serves the app, which shows 'The investor portal is temporarily unavailable' and the contact link. Every other route of automatos.app behaves exactly as on the base. Startup never throws because of the portal; migrations run in the background after app.listen and the portal answers 503 'starting' until they finish."
+    },
+    {
+      "id": "KP5",
+      "text": "PUBLIC REPO. This repository is public. Never commit: env files (the secrets hook blocks *.env and *.env.* paths: document variable NAMES in README.md instead, never an .env.example), keys or tokens (sk_live_, sk_test_ with a real value, pk_live_, AKIA..., private keys), real documents, real investor names or emails, the names of the site's admins, or text from the private PRD's content plan or open questions. Test fixtures are invented (investor 'Ada Example' at 'Example Ventures', ada@example.com) and tiny (a generated one- or two-page PDF under 20 kB). No vendor branding from the reference portal (KP12)."
+    },
+    {
+      "id": "KP6",
+      "text": "LOCAL CHECKS ARE PURE NODE. Allowed on this machine: npm ci/install (KP2 rules), tsc, eslint, vitest (jsdom and PGlite run in-process), vite build, node --check, reading node_modules. NEVER on this machine: node server.js, vite dev, vite preview, any server or listening socket, Playwright, a browser, docker, gh workflow run, git push, opening a PR, git merge. Playwright and the docker build run in CI only (W1-05, W1-19)."
+    },
+    {
+      "id": "KP7",
+      "text": "TEST DATABASE. Server code talks to Postgres only through server/investors/db.js: createDb({connectionString}) over pg.Pool (max 5, idleTimeoutMillis 30000) exposing query(text, params) and tx(fn). Tests use the same interface over PGlite (@electric-sql/pglite, real Postgres in-process) via server/investors/__tests__/helpers/test-db.js, or over pg when INVESTORS_TEST_DATABASE_URL is set (CI's Postgres service). Every SQL statement is parameterized ($1..$n) and schema-qualified (investors.<table>); no string-built SQL with request data."
+    },
+    {
+      "id": "KP8",
+      "text": "MIGRATIONS (deviation from the PRD's node-pg-migrate, so tests run on PGlite): numbered plain SQL files server/investors/migrations/NNN_name.sql, applied in order by server/investors/migrate.js. The runner: creates schema 'investors' only when pg_namespace lacks it (in production the schema already exists, owned by the portal's role), creates investors.schema_migrations(name text primary key, applied_at timestamptz default now()), then applies each missing file in its own transaction after SELECT pg_advisory_xact_lock(724001) and records it. Re-running is a no-op. A failed file rolls back and disables the portal (KP4)."
+    },
+    {
+      "id": "KP9",
+      "text": "CLERK. App: @clerk/clerk-react@5 <ClerkProvider publishableKey={window.AUTOMATOS_CONFIG.clerkPublishableKey}> (runtime config, hydrated by server.js from CLERK_PUBLISHABLE_KEY; never a build-time env). API calls send 'Authorization: Bearer <await getToken()>'. Server: @clerk/backend verifyToken(token, {secretKey, authorizedParties}) with authorizedParties from INVESTORS_AUTHORIZED_PARTIES (comma-separated, default 'https://automatos.app'), behind an injectable verifier (academy server/spine/auth.js pattern) so tests use a fake. Investor email and name come from the Clerk user (createClerkClient({secretKey}).users.getUser, cached per process for 10 minutes) on first sight; later requests read the row. NO cookie auth anywhere (stricter than the PRD): the pagehide flush uses fetch(..., {keepalive: true}) with the last cached token."
+    },
+    {
+      "id": "KP10",
+      "text": "E2E FAKE AUTH SEAM. investors/src/auth/ has ONE module that wraps Clerk (useAuthState, SignedInGate, AccountMenu, getToken). When import.meta.env.VITE_INVESTORS_E2E === '1' (set ONLY by the e2e build script) it swaps to a fake provider whose code contains the marker string 'INVESTORS_E2E_FAKE_AUTH'. The production build (npm run build) must not contain that marker (vite dead-code-eliminates the branch; the gate greps investors/dist). The server has no fake verifier outside tests."
+    },
+    {
+      "id": "KP11",
+      "text": "S3. server/investors/s3.js (pattern: academy server/media/s3.js, lazy S3Client) with an injectable client; env INVESTOR_DOCS_BUCKET, INVESTOR_DOCS_REGION, INVESTOR_DOCS_ACCESS_KEY_ID, INVESTOR_DOCS_SECRET_ACCESS_KEY. Keys: documents/<documentId>/v<version>/<safeFileName> (safeFileName: [A-Za-z0-9._-] only, max 120 chars). Presigned PUT 15 minutes with ContentType fixed; presigned GET 5 minutes with ResponseContentDisposition (inline or attachment; filename*=UTF-8 encoded). Allowed content types: application/pdf, video/mp4, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.openxmlformats-officedocument.wordprocessingml.document. Max 262144000 bytes (250 MB). Never log a presigned URL."
+    },
+    {
+      "id": "KP12",
+      "text": "REFERENCE PORTAL (READ ONLY, never edit): the folder named by $RALPH_REFERENCE_PORTAL (set by the launcher; never write that path or the portal's name into this repo). Port its UI: src/components/ui/* (only the components a story uses), components.json, src/pages/Dashboard.tsx + src/components/investor/InvestorSidebar.tsx + InvestorHero.tsx (shell), src/components/investor/sections/DataRoom.tsx (library), src/components/marketplace/CoaPdfViewer.tsx (viewer), src/components/admin/AnalyticsManager.tsx (overview, table, timeline), src/components/admin/DocumentManager.tsx (upload UI), src/lib/activityTracker.ts (heartbeat idea), src/lib/csvExport.ts. Strip ALL of: its brand names, copy, colours, fonts, domains, tiers, wallet/NFT, NDA, CRM, Supabase client and calls, Lovable code. Its data-access and permission code is never ported: every data call goes to this kit's API."
+    },
+    {
+      "id": "KP13",
+      "text": "LOOK. The app looks like automatos.app: fonts Geist (sans), Instrument Serif (headings), Geist Mono (labels) from the same Google Fonts URL the site uses; colours as CSS variables mapped from the site's two moods: bone (--bg #F2EDE4, --bg-2 #ECE6DA, --fg #0F1411, --fg-2 #2C3531, --muted #6E6960, --rule-c rgba(15,20,17,0.14), --accent oklch(0.45 0.06 155), --accent-ink #F2EDE4) and pitch (--bg #0E1311, --bg-2 #161C19, --fg #EFE9DD, --fg-2 #C9C2B4, --muted #8A857C, --rule-c rgba(239,233,221,0.14), --accent oklch(0.78 0.10 95), --accent-ink #0E1311). The mood follows the site: localStorage 'automatos-mood' ('bone'|'pitch'), else prefers-color-scheme; set as data-mood on <body>; Tailwind darkMode ['class'] is NOT used: shadcn tokens read the CSS variables. Square-ish corners (radius 2px), thin rules, no gradients, no glow. Phone first: every investor page works at 390 px."
+    },
+    {
+      "id": "KP14",
+      "text": "COPY. Calm and factual; no 'exclusive', no hype. Tracking notice (teaser and profile form): 'When you sign in, we record which documents you open or download and how long you spend on each page, so the team can follow up with the right information. See our Privacy Policy (/privacy). Ask privacy@automatos.app to see or delete your data.' All UI strings in investors/src/strings.ts."
+    },
+    {
+      "id": "KP15",
+      "text": "CODE RULES. Immutability (new objects, never mutate inputs). Files 200-400 lines, never over 800; functions under 50 lines; React components under 150 lines; nesting under 4. zod at every API boundary (server bodies and queries; client parses responses). Errors: the server returns {error:'<code>'} with the right status, logs detail server-side, never leaks stack traces; the client shows a plain message. No console.log in committed code (console.warn/error with context in the server only). Server code is plain ESM JavaScript like server.js, with JSDoc types; the app is TypeScript strict."
+    },
+    {
+      "id": "KP16",
+      "text": "EVENTS. Types: signed_in, profile_completed, document_open, document_download, page_view, section_view, video_progress. document_open and document_download are written by the SERVER when it issues a link; the client may send only page_view, section_view, video_progress and heartbeats. duration_ms capped at 600000; page between 1 and the document's page_count (when known) else 1..2000; at most 50 events per batch; body at most 64 kB; 120 requests/minute/investor on /events, 30/minute on /link, 10/minute on PUT /me (express-rate-limit keyed by investor id)."
+    },
+    {
+      "id": "KP17",
+      "text": "WAVE 3 SCOPE (Gerard, 27 Oct: 'view slide show online and option to download it'). In: a storage outage shown as an inline note instead of the full-page 'unavailable' screen; a slideshow (present) mode in the PDF viewer; a featured pitch block at the top of the investor home page; screenshots of all three. Not in: server or schema changes, new packages, changes to tracking semantics, admin analytics."
+    },
+    {
+      "id": "KP18",
+      "text": "ONE PUSH, ONE PR, ONE CI RUN. Story commits end ' [skip ci]' and are never pushed by you (the runner pushes the branch as a backup). No story waits on CI and no AC says 'CI green'. When every W3 story passes, the last session runs the gate (--no-ci), then makes ONE empty signed commit without [skip ci]; the runner opens the wave's draft PR and that PR's run is the wave's CI. UI stories are verified by typecheck, lint, unit tests and, at the end, the Playwright screenshots of W3-04 in CI (no local browser: KP6)."
+    },
+    {
+      "id": "KP19",
+      "text": "BASE. The branch is cut from origin/main, where waves 1 and 2 are merged. Read scripts/ralph/prd-001-portal-w1.json and prd-001-portal-w2.json (their DONE notes say what exists and where) before anything else. Every existing test must keep passing; never weaken one. A story may edit an existing app file only where its ACs name it."
+    },
+    {
+      "id": "KP20",
+      "text": "TRACKING STAYS HONEST. document_open is written by the server when a link is issued, so nothing may request a link just because a page rendered: the featured block requests the deck link only when the investor presses 'View the deck' (or opens the viewer), and the video only when they press play. Slideshow mode keeps reporting page_view through the viewer's existing onPageVisible."
+    }
+  ],
+  "localChecks": [
+    "npm test (root: vitest run over server/investors/**/__tests__)",
+    "npm --prefix investors run typecheck",
+    "npm --prefix investors run lint",
+    "npm --prefix investors test",
+    "npm --prefix investors run build",
+    "bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci"
+  ],
+  "references": [
+    "The private PRD (path above): sections 4 to 12 are the spec this kit implements; section 6 is the data model, section 7 the API.",
+    "Academy (READ ONLY, via git -C $RALPH_ACADEMY_REPO show origin/main:<path>): server/spine/auth.js (Clerk verifier, authorized parties, injectable middleware), server/media/s3.js (lazy S3 client, presigned PUT), server/media/index.js and server/content/index.js (admin allowlist parse, fail-closed config).",
+    "This repo: server.js (hydrateConfig, the allow-list static middleware, the contact form's nodemailer transport), _config.js.template, Dockerfile, .dockerignore, index.html (the tokens and fonts KP13 lists), _theme.js (the mood switch).",
+    "Waves 1 and 2 on this branch: scripts/ralph/prd-001-portal-w1.json and prd-001-portal-w2.json (DONE notes) and the code under investors/."
+  ],
+  "ownerTest": [
+    {
+      "id": "OT-W3-1",
+      "what": "Upload the real deck as a PDF with category 'Pitch' and alert-on-first-open; check it tops the home page with 'View the deck' and 'Download PDF'."
+    },
+    {
+      "id": "OT-W3-2",
+      "what": "Present the deck full screen on a laptop (arrows, Esc) and on a phone (swipe, tap thirds); download from present mode."
+    },
+    {
+      "id": "OT-W3-3",
+      "what": "Upload a pitch video with category 'Pitch'; check it plays only after pressing play, and the admin investor detail shows the deck pages and video progress."
+    }
+  ],
+  "userStories": [
+    {
+      "id": "W3-01",
+      "prdStory": "bug",
+      "title": "A storage outage shows an inline note, not the full-page 'unavailable' screen",
+      "description": "As an investor, if document storage is briefly unavailable I still see the portal (overview, sections) with a short note where the documents would be; today any 503 blanks the page.",
+      "acceptanceCriteria": [
+        "investors/src/api/errors.ts: errorKindFor(503, 'storage_unavailable') returns a new kind 'storage_unavailable' (every other 503 stays 'unavailable'); SCREEN_FOR_KIND maps it to a new screen 'storage_unavailable'; the existing unit tests keep passing and new ones cover the mapping → DONE — errors.ts: kind and screen storage_unavailable, isStorageUnavailable(); errors.test.ts rows for 503 storage_unavailable/portal_unavailable/null/starting, 500 storage_unavailable, the screen, the predicate",
+        "Home and Documents: when the document list fails with kind 'storage_unavailable', the page renders normally (title, intro, overview block on Home) and, in place of the library, an inline note with strings.documents.unavailable ('Documents are unavailable right now. Please try again later.') and a Retry button that refetches; every other error keeps today's behaviour → DONE — Home.tsx and LibraryPage.tsx (the Documents page) render DocumentsUnavailable (LibraryStates.tsx) in place of the library; storage-outage.test.tsx Home + Documents",
+        "Viewer: a 'storage_unavailable' link error shows the viewer's own error state with the same sentence, a Back link and Retry, not the full-page unavailable screen → DONE — ViewerStorageUnavailable (ViewerStates.tsx) under the Back link for a storage_unavailable list (Viewer.tsx StorageUnavailable) or link (ViewerPending link_failed) error; no Download; 2 viewer tests",
+        "The admin documents screen keeps its existing storage_unavailable alert unchanged → DONE — admin keys on error.code (admin/messages.ts, upload-file.ts): untouched; admin-documents.test storage alert passes",
+        "Tests (vitest, jsdom, mocked fetch): Home with a 503 storage_unavailable shows the overview and the inline note and NOT the 'Temporarily unavailable' title; a plain 503 portal_unavailable still shows the full-page screen; Retry refetches → DONE — storage-outage.test.tsx 7 tests (5 fail with the old 503 mapping); library.test.tsx 503 row now portal_unavailable",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — c3865b2: typecheck 0, lint 0, test 72 files / 801 passed, build 0"
+      ],
+      "files": [
+        "investors/src/api/errors.ts",
+        "investors/src/api/__tests__/**",
+        "investors/src/pages/Home.tsx",
+        "investors/src/pages/Documents.tsx",
+        "investors/src/pages/Viewer.tsx",
+        "investors/src/documents/LibraryStates.tsx",
+        "investors/src/viewer/ViewerStates.tsx",
+        "investors/src/pages/__tests__/**",
+        "investors/src/strings.ts"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": " | DONE (c3865b2): no packages added. errors.ts: ApiErrorKind and ErrorScreen gain storage_unavailable (503 + code storage_unavailable only); isStorageUnavailable(error). Pages that list documents early-return ApiErrorPage only when !isStorageUnavailable, then a body component takes the whole query (ReturnType<typeof useDocuments>): isError → DocumentsUnavailable (LibraryStates.tsx, role status, sentence + Retry = strings.status.error.retry), isPending → skeleton, empty, list. W3-03 builds Home on that HomeDocuments (Home.tsx): put PitchFeature in the success branch. strings.documents.unavailable shares one constant with library.errors.unavailable. Files outside the AC list, edited because the AC needs them: documents/LibraryPage.tsx (IS the Documents page; Documents.tsx only wraps it), pages/ApiErrorPage.tsx (exhaustive switch: new case = title + sentence + Retry), documents/messages.ts (+ its test row: linkFailureMessage maps the new kind to the sentence, so a card download keeps saying it). W1 FIX: pages/__tests__/library.test.tsx row [503 storage_unavailable → Temporarily unavailable] pinned the bug; it is now [503 portal_unavailable → Temporarily unavailable]. W3-04 e2e: GET /documents 503 {error:storage_unavailable} on home shows the sentence in a role=status block below region Overview; the h1 is still \"Investor portal\"."
+    },
+    {
+      "id": "W3-02",
+      "prdStory": "slideshow",
+      "title": "Slideshow (present) mode in the PDF viewer",
+      "description": "As an investor, I want to watch the pitch deck as a slideshow, full screen, one slide at a time, on a laptop or a phone, with the download always one tap away.",
+      "acceptanceCriteria": [
+        "The viewer toolbar gains a 'Present' button (lucide icon + label from strings.ts). It enters present mode: the viewer container goes full screen with the Fullscreen API when document.fullscreenEnabled and the request succeeds; otherwise (iOS Safari, or a refused request) a fixed full-viewport overlay is used instead. Exiting full screen by any route (Esc, the browser UI) leaves present mode cleanly → DONE — PdfViewer.tsx + ViewerToolbar.tsx Present (lucide Presentation + strings.viewer.present.start); use-present-mode.ts requests full screen on the viewer's container when document.fullscreenEnabled, a refusal keeps the overlay (fixed inset-0 z-50); fullscreenchange away from it leaves present mode, focus back on Present; present-mode.test 'goes full screen…', 'stays in the overlay…', 'Exit leaves…'",
+        "In present mode one slide fills the screen: the page is scaled to fit BOTH width and height (contain), centred on the pitch-mood background; a small bar shows 'Slide N of M', Previous, Next, Download and Exit (44 px targets); the bar fades after 3 s without input and returns on any pointer, touch or key → DONE — fit-screen.ts slideWidth (contain, 16:9 until the page's own size loads) on the present-stage.css pitch stage; PresentBar.tsx Slide N of M, Previous, Next, Download ([&_button]:h-11), Full screen, Exit, all 44 px; bar-visibility.ts 3 s idle via use-bar-visibility.ts (pointermove/pointerdown/keydown on window; held while the mouse rests on it); present-mode.test data-width 666 for 800x600 in 1000x500, bar fade test",
+        "Keys: ArrowRight, PageDown, Space and Enter go next; ArrowLeft, PageUp and Backspace go back; Home and End jump; Esc exits. Touch: a horizontal swipe of at least 50 px goes next or back; a tap on the right or left third of the slide goes next or back → DONE — present-keys.ts presentAction (Enter/Space on a focused control stay the control's) via use-present-keys.ts, the page's arrow keys stand down (useArrowKeys enabled flag); swipe-model.ts gestureMove via use-slide-gestures.ts (primary pointer only, pointercancel drops it); present-mode.test keys once per key, swipes and thirds",
+        "Opening /investors/documents/:id?present=1 starts in present mode with the overlay (a browser only allows true full screen after a gesture; the first tap on the overlay's 'Full screen' button requests it) → DONE — present-route.ts presentPath/isPresentRequested/withoutPresent; pages/Viewer.tsx usePresentParam passes present and drops ?present=1 on exit (replace); PresentBar offers Full screen while not full screen; present-page.test 3 tests, present-mode.test 'starts in the overlay when asked by the address…'",
+        "Page tracking is unchanged: slides seen in present mode report page_view through the existing onPageVisible (KP20) → DONE — same stage element and the same usePageVisibility in both modes; present-mode.test 'reports each slide seen…' [1,2500],[2,1500]; the one Document mounts once across Present/Exit/Present",
+        "Pure modules, unit-tested without a DOM: present-keys.ts (key → action), swipe-model.ts (dx/dy → next|back|none with the 50 px threshold and a vertical-dominance guard), fit-screen.ts (page size + box size → scale for contain), bar-visibility model (3 s idle timer with fake timers) → DONE — present-keys.test (17), swipe-model.test (8), fit-screen.test (7), bar-visibility.test (7, vi.useFakeTimers), present-route.test (4)",
+        "Reduced motion: no slide transitions when prefers-reduced-motion is set; otherwise at most a 150 ms fade → DONE — present-motion.ts SLIDE_FADE (react-pdf mounts a canvas per slide) and BAR_FADE, every class motion-safe:, 150 ms; built CSS has .motion-safe\\:[&_canvas]\\:animate-in canvas{animation-duration:.15s} under prefers-reduced-motion:no-preference",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — b79e6b0: typecheck 0, lint 0, test 79 files / 861 passed, build 0; gate --no-ci all PASS but 'every story passes'"
+      ],
+      "files": [
+        "investors/src/viewer/**",
+        "investors/src/pages/Viewer.tsx",
+        "investors/src/strings.ts"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": " | DONE (b79e6b0): no packages added. viewer/present-route.ts exports presentPath(id) = documentPath(id) + '?present=1': W3-03's 'View the deck' navigates there. PdfViewer gains props notice (a failed download's message, shown as role alert in the bar: the page's own line is behind the overlay), present (initial mode) and onPresentExit; pages/Viewer.tsx passes notice={action.message} through BodyProps. Present mode is the PdfViewer container itself (role dialog '<title>, slideshow', aria-modal) with the bar role toolbar 'Slideshow', counter 'Slide N of M', buttons 'Previous slide', 'Next slide', 'Full screen' (only when document.fullscreenEnabled and not full screen), 'Exit slideshow', and the page Download. The normal toolbar's Present button is disabled until the document loads. present-stage.css re-declares tokens.css's pitch values and the --ui-* mapping on .present-stage (tokens.css is not this story's file: keep them in step, or fold into tokens.css later). W3-04 e2e: headless Chromium may grant full screen from Present; ?present=1 is the overlay path, Esc there leaves (no fullscreen involved); jsdom tests stub PointerEvent (MouseEvent subclass) and the Fullscreen API (present-mode.test.tsx fakeFullscreen)."
+    },
+    {
+      "id": "W3-03",
+      "prdStory": "featured pitch",
+      "title": "Featured pitch block at the top of the investor home page",
+      "description": "As an investor landing on the portal, I want the pitch first: the deck as a slideshow and the pitch video, each with a download.",
+      "acceptanceCriteria": [
+        "investors/src/documents/library-model.ts gains pickFeaturedPitch(documents) (pure): among published documents whose category, trimmed and lower-cased, starts with 'pitch', the first PDF by sort order is the deck and the first video by sort order is the video; either may be absent; unit-tested (case, whitespace, ordering, absence, non-pitch categories ignored) → DONE — library-model.ts isPitchCategory + pickFeaturedPitch (viewerFor pdf/video over the pitch documents, in list order; also hasFeaturedPitch, groupsBelowPitch); featured-pitch.test.ts 24 tests: case, whitespace, ordering, absence, other kinds, non-pitch categories, input untouched",
+        "Home renders a PitchFeature block between the overview and the library when a deck or a video exists: heading strings.home.pitchTitle ('The pitch'); for the deck: title, description, 'N slides' when page_count is known, a primary 'View the deck' button that navigates to /investors/documents/:id?present=1, and a secondary 'Download PDF' button using the existing download flow; for the video: the existing VideoPlayer, but its link is requested only after the investor presses a play button on a poster card (KP20), plus a 'Download video' button → DONE — Home.tsx HomeLibrary (the list's success branch) renders documents/PitchFeature.tsx + PitchCard.tsx: h2 strings.home.pitchTitle; deck card title, description, facts, 'N slides' on its cover when pageCount is known, link 'View the deck' to presentPath(id), 'Download PDF' = DownloadButton (label prop) over useDownload; video card poster 'Play' → use-pitch-video.ts → ViewerPending / the existing VideoPlayer (renewal, progress feed), 'Download video'; pitch-feature.test.tsx 16 tests",
+        "The featured deck and video are not repeated in the groups below (other 'Pitch' documents still are) → DONE — groupsBelowPitch groups the full list, then drops the featured two (the admin's category order holds; an emptied group goes); pitch-feature.test 'sits between the overview and the library…' (each title once, the other Pitch PDF under Pitch) + featured-pitch.test groupsBelowPitch (4)",
+        "Phone first: at 390 px the deck card and the video stack; at desktop width they sit side by side → DONE — ul grid gap-4 md:grid-cols-2: one column below 768 px, side by side from tablets up, as the library's cards; pitch-feature.test 'stacks the cards on a phone…'; W3-04 screenshots at 390 and 1280",
+        "No request for any document link happens on page render (test: render Home with a deck and a video, assert no POST /documents/:id/link until a button is pressed) → DONE — pitch-feature.test 'asks for no document link on render: only a press does (KP20)': no POST */link once the list, the session and the overview are in; Play then makes one inline POST for the video only; the deck's link is asked for by the viewer after View the deck (test 'View the deck opens the viewer in present mode…')",
+        "Admin documents screen: one hint line under the category field: strings.admin.documents.pitchHint = \"Category 'Pitch' puts a PDF and a video at the top of the investor home page.\" → DONE — strings.admin.documents.pitchHint; DocumentFields.tsx TextRow hint line under the category input, in its aria-describedby after any error; document-fields.test.tsx 3 tests",
+        "npm --prefix investors run typecheck, lint, test, build pass → DONE — dbd9264: typecheck 0, lint 0, test 82 files / 906 passed, build 0; gate --no-ci all PASS but 'every story passes'"
+      ],
+      "files": [
+        "investors/src/documents/**",
+        "investors/src/pages/Home.tsx",
+        "investors/src/sections/**",
+        "investors/src/viewer/VideoPlayer.tsx",
+        "investors/src/admin/**",
+        "investors/src/pages/admin/Documents.tsx",
+        "investors/src/strings.ts",
+        "investors/src/pages/__tests__/**"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": " | DONE (dbd9264): no packages added. library-model.ts: isPitchCategory, pickFeaturedPitch → {deck, video} (each null when absent), hasFeaturedPitch, groupsBelowPitch. Home.tsx HomeLibrary renders documents/PitchFeature then the groups; refresh is now useCallback'd (the video's 404 effect calls it). The block is a plain <section> under h2 'The pitch', NOT a region (section-pages.test asserts no region when the overview is out). Cards are li in a ul with h3 titles: deck = cover ('N slides'), link 'View the deck' (href presentPath(id)), button 'Download PDF: <title>'; video = poster button 'Play: <title>', then ViewerPending (download null: the card has its own) or VideoPlayer (resume playing: true, so it starts after the press), button 'Download video: <title>'. DownloadButton (DocumentCard.tsx) takes an optional label; aria-label is actionLabel(label, title). W1 FIX library.test.tsx: the home h2s now start with 'The pitch'; 'downloads', 'opens a PDF in the viewer's page' and 'too many links' render DOCUMENTS_PATH (on home the lone Pitch PDF is the featured deck, not a card). W3-04 e2e: e2e/fixtures/data.ts LIBRARY has no Pitch video (the demo is 'Product'): add one (category 'Pitch', kind video) for 'deck + video poster'; the existing home spec still finds every title as an h3; loading home must make no POST /documents/*/link."
+    },
+    {
+      "id": "W3-04",
+      "prdStory": "browser checks",
+      "title": "Playwright screenshots: pitch block, slideshow, storage note",
+      "description": "As the reviewer, I want screenshots of the new screens from CI.",
+      "acceptanceCriteria": [
+        "investors/e2e gains specs at 1280x800 and 390x844 (mocked API, invented data per KP5, the existing PDF fixture): home with the pitch block (deck + video poster); the viewer in present mode on slide 2 (overlay mode is fine in headless); home with a 503 storage_unavailable showing the inline note and the overview → DONE — e2e/pitch.spec.ts (home-pitch: deck card + video poster; present-slide-2: View the deck → ?present=1 overlay, slide 2 of the existing 2-page PDF fixture) and e2e/storage-outage.spec.ts (home-storage-unavailable: GET /documents 503 storage_unavailable, Overview region + note), both projects (desktop 1280x800, phone 390x844); every API call mocked, invented data (LIBRARY gains 'Example pitch video', category Pitch, d7)",
+        "Assertions: present mode shows 'Slide 2 of 2' after ArrowRight; Esc leaves present mode; no /link request is made by loading home; the storage note is visible and 'Temporarily unavailable' is not → DONE — pitch.spec: 'Slide 2 of 2' after ArrowRight (Next disabled, page 2 painted), Escape → dialog gone, ?present dropped, 'Page 2 of 2' in the page toolbar; after networkidle no POST /documents/*/link from loading home (mockPortal calls() + isLinkKey), Play then makes exactly one for the video; storage-outage.spec: the role=status note visible, getByText('Temporarily unavailable') count 0, Retry asks for the list once more",
+        "Screenshots saved under investors/e2e/screenshots/ (uploaded by the existing e2e job) → DONE — capture() → e2e/screenshots/<project>/{home-pitch,present-slide-2,home-storage-unavailable}.png, uploaded by the existing e2e job (investors.yml unchanged)",
+        "Locally: typecheck and lint cover the e2e files; Playwright is NOT run locally (KP6) → DONE — e2e/tsconfig.json and eslint . already cover e2e/**: typecheck 0, lint 0; Playwright not run locally; a throwaway jsdom check (not committed) parsed the fixtures and matched each selector once",
+        "npm --prefix investors run typecheck and lint pass → DONE — c406579: typecheck 0, lint 0 (app tests 82 files / 906 passed, build 0, root 23 files / 533 passed)"
+      ],
+      "files": [
+        "investors/e2e/**"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": " | DONE (c406579): no packages added. e2e/fixtures: LIBRARY gains PITCH_VIDEO_ID (d7, 'Example pitch video', Pitch, video) after the one-pager, so every home screenshot now shows the pitch block (deck + video poster) and the admin documents table one more row; its link answers VIDEO_PATH (routeVideo serves both videos). mockPortal(page, visitor, overrides) merges per-spec answers over the defaults; MockedApi.calls() lists every API call key (answered, missed or 401); isLinkKey(key) matches POST /documents/:id/link. First CI run of these specs is the wave PR run."
+    },
+    {
+      "id": "W3-RVW-1",
+      "prdStory": "review",
+      "title": "Present mode keeps keyboard focus inside the slideshow",
+      "description": "Review finding (MEDIUM, present mode). investors/src/viewer/PdfViewer.tsx:79 makes the presenting container role=dialog aria-modal=true, but nothing keeps focus inside it. investors/src/viewer/use-present-mode.ts:41-53 (useFocusHandoff) only moves focus in on start and back to Present on exit. There is no Tab handling, no focusin guard and no inert anywhere in investors/src. As a result, Tab from the bar's last control (Exit, PresentBar.tsx:88) or Shift+Tab from the focused container moves focus to elements hidden under the z-50 overlay, or outside the full-screen element: the page's Back link, and the header's home link to '/' and account menu (AppHeader.tsx). The investor cannot see where focus is. Enter or Space on one of those elements leaves the slideshow by navigating away, or opens the account menu behind it.",
+      "acceptanceCriteria": [
+        "Cause recorded in the notes: the slideshow is declared modal (PdfViewer.tsx:79) but focus is only handed in and out (use-present-mode.ts:41-53), never contained. → DONE — recorded in this story's notes and the commit body (bee3bde).",
+        "Change: while presenting, Tab and Shift+Tab cycle only through the enabled focusable elements inside the slideshow container. Tab from the last element goes to the first. Shift+Tab from the first element, or from the container itself (tabIndex -1, focused on entry), goes to the last. Focus that lands outside the container while presenting (a focusin on the document) is returned to the container. The pure part (the next target, given the ordered focusables, the current element's index or -1 for the container, and shift) is its own module under investors/src/viewer/, unit-tested without a DOM. A hook attaches the listeners only while presenting and removes them on exit and unmount. Nothing changes when not presenting. Focus still returns to the Present button on exit. → DONE — viewer/focus-cycle.ts nextFocusStop(stops, current, shift) (pure); viewer/use-focus-trap.ts (document keydown Tab and focusin, only while presenting, removed on exit and unmount); use-presenter.ts calls useFocusTrap(container, mode.presenting); useFocusHandoff unchanged, so focus still returns to Present (bee3bde).",
+        "No new package (KP2): no focus-trap library and no import of the transitive @radix-ui/react-focus-scope. Do not use Radix Dialog for this, because it portals its content out of the container that goes full screen. → DONE — investors/package.json and package-lock.json unchanged (gate: packages and majors match KP2); no focus-trap, react-focus-scope or Radix Dialog import.",
+        "Tests: the pure module covers forward wrap, backward wrap, the container as the start, a single focusable, none focusable, and disabled controls skipped. present-mode.test.tsx renders the viewer between an outside link and an outside button, then checks four things. Tab (keyDown Tab) on Exit focuses the first enabled bar control. Shift+Tab on the container focuses Exit. Focusing the outside link while presenting puts focus back inside the slideshow. After Exit, the outside link keeps focus when focused, and Tab is no longer intercepted. Every existing present-mode test keeps passing unchanged. → DONE — focus-cycle.test.ts 8 tests; present-mode.test.tsx gains 5 (the 4 asked plus the hook listening only while active and stopping on unmount); with the trap disabled the 3 trap tests fail; the 13 existing present-mode tests unchanged and passing.",
+        "npm --prefix investors run typecheck, lint, test and build pass; bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci passes except 'every story passes'. → DONE — typecheck, lint pass; test 83 files / 919 tests pass; build pass; root npm test 533 pass; gate --no-ci passes every check except 'kit json is valid and every story passes'."
+      ],
+      "files": [
+        "investors/src/viewer/**"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": " | DONE (bee3bde): no packages added. Cause: the slideshow is declared modal (PdfViewer.tsx:79 role dialog, aria-modal) but use-present-mode.ts:41-53 (useFocusHandoff) only hands focus in and out; nothing contained it. Fix: viewer/focus-cycle.ts nextFocusStop (pure: -1 = the container, or any index outside the list) + viewer/use-focus-trap.ts (Tab stops = a[href], button, input, select, textarea, [tabindex] inside the container with tabIndex >= 0; :disabled are skipped; document keydown takes every bare Tab and Shift+Tab while presenting, so focus lost to <body> (a button that turned disabled) goes back to the first or last stop; a document focusin outside the container calls container.focus). Wired in use-presenter.ts. Anything portalled out of the container (a Radix menu, a toast's button) cannot take focus while presenting: keep present-mode controls inside the container."
+    },
+    {
+      "id": "W3-RVW-2",
+      "prdStory": "review",
+      "title": "Pressing Play on the pitch video keeps keyboard focus in the video card",
+      "description": "Review finding (MEDIUM, featured block). investors/src/documents/PitchFeature.tsx:52 renders VideoPoster (the poster's button, PitchCard.tsx:34-52) only while !started. Pressing Play unmounts that button and renders ViewerPending, then VideoPlayer, in its place, and nothing receives focus, so focus falls to <body>. The video then starts playing at once (use-pitch-video.ts:10, PLAY_FROM_START playing: true). A keyboard or screen-reader investor's next Tab starts at the top of the page, and they must tab back past the header and the overview to reach the player's controls to pause it. The W3-03 notes record this as a 'Known gap' with the reason 'jsdom cannot focus a video'. A wrapper with tabIndex -1 is focusable in jsdom, so the fix can be tested.",
+      "acceptanceCriteria": [
+        "Cause recorded in the notes: the pressed control unmounts (PitchFeature.tsx:52, VideoMedia) and focus is moved nowhere. → DONE — recorded in this story's notes and the commit body (ee78307).",
+        "Change: VideoMedia (or the video card) keeps one stable media element across the poster, pending and player states (tabIndex -1, labelled by strings.viewer.video.label(title) or the existing pending label). It receives focus when started turns true after a press. Focus never moves on render or on mount (the page loads with focus where the browser puts it), and from that element Tab reaches the player's controls next. KP20 is unchanged: the link is still requested only after Play. → DONE — documents/PitchFeature.tsx VideoMedia is one frame (div tabIndex -1, role group, aria-label = the title: see notes for why not video.label) holding VideoPoster, then VideoStage (ViewerPending or VideoPlayer); Play and Try again focus it (preventScroll) before acting; no focus on render or mount; the video is the frame's first focusable; the link is still asked for only after Play (ee78307).",
+        "Tests (pitch-feature.test.tsx): after rendering home, document.activeElement is not inside the pitch block. After pressing Play, document.activeElement is inside the video's card (the media element), not document.body. It stays inside that card once the link is ready and the player has mounted. The existing 'asks for no document link on render' test keeps passing unchanged. Remove the 'Known gap' sentence from the W3-03 notes only once this passes. → DONE — pitch-feature.test.tsx +3: no focus in the block after render; focus on the frame (inside the video's li) right after Play while linking and after the player mounts; focus kept after Try again. With the focus call removed the 2 press tests fail; the 16 existing tests, KP20 one included, unchanged and passing. W3-03 Known gap sentence removed.",
+        "npm --prefix investors run typecheck, lint, test and build pass; bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci passes except 'every story passes'. → DONE — typecheck, lint pass; test 83 files / 922 tests pass; build pass; root npm test 533 pass; gate --no-ci passes every check except 'kit json is valid and every story passes'."
+      ],
+      "files": [
+        "investors/src/documents/**",
+        "investors/src/pages/__tests__/**",
+        "scripts/ralph/prd-001-portal-w3.json"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": " | DONE (ee78307): no packages added. Cause: VideoMedia (PitchFeature.tsx:52) rendered the Play button only while !started; the press unmounted it and moved focus nowhere, so it fell to <body>. Fix: VideoMedia = a stable frame (tabIndex -1, role group, aria-label = the document title) around VideoPoster / VideoStage (ViewerPending or VideoPlayer); Play AND Try again (ViewerPending onRetry, same unmount) call frame.focus({preventScroll}) before their action. FOCUS_RING (PitchCard.tsx) is shared by the poster and the frame. Deviation: the frame is named by the title, not strings.viewer.video.label(title), because the existing pitch tests query getByLabelText(videoLabel) exactly (the <video> alone, nothing before Play) and must stay unchanged. Not covered: a renewed link (afterLoadError) remounts the player, so focus on the <video> itself still drops then, as on the viewer page."
+    }
+  ]
+}

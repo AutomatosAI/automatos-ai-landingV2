@@ -6,6 +6,7 @@ import { App } from "@/App";
 import type { InvestorDocument } from "@/documents/documents-api";
 import { navigateTo } from "@/documents/navigate";
 import { setTokenSource } from "@/auth/token";
+import { DOCUMENTS_PATH } from "@/lib/paths";
 import { strings } from "@/strings";
 import { ADA_ME, investorDocument } from "@/test/fixtures";
 import { ADA, renderWithProviders } from "@/test/providers";
@@ -97,7 +98,12 @@ describe("the home page", () => {
     expect(await screen.findByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
     expect(screen.getByText(strings.home.intro)).toBeInTheDocument();
     await screen.findByRole("heading", { level: 3, name: DECK.title });
-    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual(["Pitch", "Business model"]);
+    // The first 'Pitch' PDF heads the page as the deck (W3-03, pitch-feature.test.tsx); the one-pager stays under Pitch.
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      strings.home.pitchTitle,
+      "Pitch",
+      "Business model",
+    ]);
     expect(screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([
       "Example deck",
       "One-pager",
@@ -140,7 +146,8 @@ describe("the home page", () => {
   });
 
   it.each([
-    [503, { error: "storage_unavailable" }, strings.status.unavailable.title],
+    // Storage down keeps the page up (storage-outage.test.tsx); the portal itself down still takes it over.
+    [503, { error: "portal_unavailable" }, strings.status.unavailable.title],
     [403, { error: "blocked" }, strings.status.blocked.title],
     [500, { error: "internal_error" }, strings.status.error.title],
   ])("maps a %i from the list to its screen", async (status, body, title) => {
@@ -150,13 +157,15 @@ describe("the home page", () => {
   });
 });
 
+// On the home page a lone 'Pitch' PDF is the pitch block's deck (W3-03, pitch-feature.test.tsx), not a card:
+// the deck's card is read on the Documents page, where every document is one.
 describe("opening and downloading", () => {
   it("downloads: asks for a download link, then goes to it", async () => {
     serve({
       "GET /documents": listOf([DECK]),
       [`POST ${linkPath(DECK)}`]: () => json(200, { url: SIGNED, expiresIn: 300 }),
     });
-    renderPage();
+    renderPage(DOCUMENTS_PATH);
     fireEvent.click(await screen.findByRole("button", { name: copy.actionLabel(copy.download, DECK.title) }));
     await waitFor(() => expect(navigateTo).toHaveBeenCalledWith(SIGNED));
     expect(calls("POST", linkPath(DECK))).toEqual([{ mode: "download" }]);
@@ -164,7 +173,7 @@ describe("opening and downloading", () => {
 
   it("opens a PDF in the viewer's page, where only the viewer asks for a link (inline, once)", async () => {
     serve({ "GET /documents": listOf([DECK]) });
-    renderPage();
+    renderPage(DOCUMENTS_PATH);
     const open = await screen.findByRole("link", { name: copy.actionLabel(copy.open, DECK.title) });
     expect(open).toHaveAttribute("href", `/documents/${DECK.id}`);
     expect(calls("POST", linkPath(DECK))).toEqual([]);
@@ -190,7 +199,7 @@ describe("opening and downloading", () => {
       "GET /documents": listOf([DECK]),
       [`POST ${linkPath(DECK)}`]: () => json(429, { error: "rate_limited" }),
     });
-    renderPage();
+    renderPage(DOCUMENTS_PATH);
     fireEvent.click(await screen.findByRole("button", { name: copy.actionLabel(copy.download, DECK.title) }));
     expect(await card(DECK.title).findByRole("alert")).toHaveTextContent(copy.errors.rateLimited);
     expect(navigateTo).not.toHaveBeenCalled();

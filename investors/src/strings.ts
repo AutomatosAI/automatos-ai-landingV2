@@ -4,6 +4,7 @@
 
 const HELLO_EMAIL = "hello@automatos.app";
 const PRIVACY_EMAIL = "privacy@automatos.app";
+const DOCUMENTS_UNAVAILABLE = "Documents are unavailable right now. Please try again later.";
 
 /** A document's kind (001_init.sql), as the library and the admin table name it. */
 const KIND_LABELS = {
@@ -44,6 +45,15 @@ export const strings = {
   home: {
     title: "Investor portal",
     intro: "Everything we share with investors, in one place. Read a document here or download it.",
+    /** The pitch block (W3-03): the 'Pitch' deck and video, above the documents. */
+    pitchTitle: "The pitch",
+    pitch: {
+      slides: (count: number) => (count === 1 ? "1 slide" : `${count} slides`),
+      viewDeck: "View the deck",
+      downloadDeck: "Download PDF",
+      play: "Play",
+      downloadVideo: "Download video",
+    },
   },
   /** The published documents (US-006): on the home page and, with search, on the Documents page. */
   library: {
@@ -70,10 +80,14 @@ export const strings = {
     errors: {
       gone: "This document is no longer available. The list has been refreshed.",
       rateLimited: "Too many requests in a row. Wait a minute and try again.",
-      unavailable: "Documents are unavailable right now. Please try again later.",
+      unavailable: DOCUMENTS_UNAVAILABLE,
       blocked: "Your access has been paused.",
       failed: "The document could not be opened. Please try again.",
     },
+  },
+  /** Document storage is down (503 storage_unavailable): the pages still show, with this where the documents would be. */
+  documents: {
+    unavailable: DOCUMENTS_UNAVAILABLE,
   },
   /** The PDF viewer (US-007) and the video player (US-008) at /investors/documents/:id. */
   viewer: {
@@ -99,6 +113,19 @@ export const strings = {
     video: {
       label: (title: string) => `${title}, video`,
       failed: "Download it to watch it on your device, or try again.",
+    },
+    /** Present mode: the PDF as a slideshow, full screen (W3-02). */
+    present: {
+      start: "Present",
+      label: (title: string) => `${title}, slideshow`,
+      toolbarLabel: "Slideshow",
+      slideOf: (page: number, count: number) => `Slide ${page} of ${count}`,
+      slideLabel: (title: string, page: number, count: number) => `${title}, slide ${page} of ${count}`,
+      previous: "Previous slide",
+      next: "Next slide",
+      fullscreen: "Full screen",
+      exit: "Exit",
+      exitLabel: "Exit slideshow",
     },
   },
   /**
@@ -253,6 +280,7 @@ export const strings = {
       newDocument: "New document",
       empty: "No documents yet. Create one, then upload its file.",
       storageUnavailable: "File storage is not set up yet, so documents cannot be managed.",
+      pitchHint: "Category 'Pitch' puts a PDF and a video at the top of the investor home page.",
       tableLabel: "Documents",
       columns: {
         title: "Title",

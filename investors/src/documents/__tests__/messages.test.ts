@@ -13,6 +13,7 @@ describe("linkFailureMessage", () => {
     ["not_found", errors.gone],
     ["rate_limited", errors.rateLimited],
     ["unavailable", errors.unavailable],
+    ["storage_unavailable", strings.documents.unavailable],
     ["unauthenticated", strings.status.signIn.body],
     ["blocked", errors.blocked],
     ["server", errors.failed],

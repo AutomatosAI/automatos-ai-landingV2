@@ -13,6 +13,7 @@ export type ApiErrorKind =
   | "invalid"
   | "rate_limited"
   | "unavailable"
+  | "storage_unavailable"
   | "server"
   | "network"
   | "bad_response";
@@ -55,11 +56,19 @@ export function errorKindFor(status: number, code: string | null): ApiErrorKind 
   if (status === 404) return "not_found";
   if (status === 400 || status === 413 || status === 422) return "invalid";
   if (status === 429) return "rate_limited";
-  if (status === 503) return "unavailable";
+  if (status === 503) return code === "storage_unavailable" ? "storage_unavailable" : "unavailable";
   return "server";
 }
 
-export type ErrorScreen = "sign_in" | "blocked" | "email_required" | "not_available" | "not_found" | "unavailable" | "error";
+export type ErrorScreen =
+  | "sign_in"
+  | "blocked"
+  | "email_required"
+  | "not_available"
+  | "not_found"
+  | "unavailable"
+  | "storage_unavailable"
+  | "error";
 
 const SCREEN_FOR_KIND: Readonly<Record<ApiErrorKind, ErrorScreen>> = {
   unauthenticated: "sign_in",
@@ -68,6 +77,7 @@ const SCREEN_FOR_KIND: Readonly<Record<ApiErrorKind, ErrorScreen>> = {
   forbidden: "not_available",
   not_found: "not_found",
   unavailable: "unavailable",
+  storage_unavailable: "storage_unavailable",
   invalid: "error",
   rate_limited: "error",
   server: "error",
@@ -75,7 +85,18 @@ const SCREEN_FOR_KIND: Readonly<Record<ApiErrorKind, ErrorScreen>> = {
   bad_response: "error",
 };
 
-/** 401 → sign in again, 403 blocked → the blocked screen, 503 → unavailable; anything unknown → error. */
+/**
+ * 401 → sign in again, 403 blocked → the blocked screen, 503 → unavailable
+ * (document storage down → storage_unavailable); anything unknown → error.
+ */
 export function screenForError(error: unknown): ErrorScreen {
   return error instanceof ApiError ? SCREEN_FOR_KIND[error.kind] : "error";
+}
+
+/**
+ * Document storage is down (503 storage_unavailable): the portal still works,
+ * so a page keeps its content and shows a note where the documents would be.
+ */
+export function isStorageUnavailable(error: unknown): boolean {
+  return error instanceof ApiError && error.kind === "storage_unavailable";
 }
