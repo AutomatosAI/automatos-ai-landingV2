@@ -787,7 +787,7 @@ Exits 0 on PASS, 1 on FAIL. Fix every error before shipping; warnings are adviso
 
 **MANDATORY: Before outputting, compare against existing templates.**
 
-Read the layout.json of the 2-3 most recent templates in `/Users/gkavanagh/Development/HealingBuds/templates/`
+Read the layout.json of the 2-3 most recent templates in your templates folder (`templates/`)
 and verify your new template is STRUCTURALLY DIFFERENT:
 
 - Different hero type from the last template?

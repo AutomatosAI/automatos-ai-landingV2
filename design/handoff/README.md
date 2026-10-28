@@ -115,7 +115,7 @@ These exist because they're the most-violated patterns today:
 </div>
 
 <!-- Buttons -->
-<button class="bs-btn bs-btn-green">Sync from Dr Green</button>
+<button class="bs-btn bs-btn-green">Sync from supplier</button>
 <button class="bs-btn bs-btn-ghost">Export records</button>
 <button class="bs-btn bs-btn-text">View →</button>
 <button class="bs-btn bs-btn-danger">Delete tenant</button>
