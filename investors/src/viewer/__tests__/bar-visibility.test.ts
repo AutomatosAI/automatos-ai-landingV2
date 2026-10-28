@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BAR_IDLE_MS, createBarVisibility } from "../bar-visibility";
+import { BAR_IDLE_MS, createBarVisibility, createKeyboardFocus } from "../bar-visibility";
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -79,5 +79,82 @@ describe("the present bar's visibility", () => {
     expect(timers.setTimeout).toHaveBeenCalledWith(expect.any(Function), 500);
     bar.poke();
     expect(timers.clearTimeout).toHaveBeenCalledWith(7);
+  });
+});
+
+describe("the present bar's two holds (W3-RVW-3)", () => {
+  it("stays while either holds, and the 3 s start only when both let go", () => {
+    const onChange = vi.fn();
+    const bar = createBarVisibility(onChange);
+    bar.hold(true, "focus");
+    bar.hold(true);
+    vi.advanceTimersByTime(60_000);
+    bar.hold(false, "focus");
+    vi.advanceTimersByTime(60_000);
+    expect(onChange).not.toHaveBeenCalled();
+    bar.hold(false);
+    vi.advanceTimersByTime(2999);
+    expect(onChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(onChange.mock.calls).toEqual([[false]]);
+  });
+
+  it("keeps the focus hold when the mouse lets go first", () => {
+    const onChange = vi.fn();
+    const bar = createBarVisibility(onChange);
+    bar.hold(true, "pointer");
+    bar.hold(true, "focus");
+    bar.hold(false, "pointer");
+    vi.advanceTimersByTime(60_000);
+    expect(onChange).not.toHaveBeenCalled();
+    bar.hold(false, "focus");
+    vi.advanceTimersByTime(3000);
+    expect(onChange.mock.calls).toEqual([[false]]);
+  });
+
+  it("is shown by the focus hold after it went, and input while held starts no timer", () => {
+    const onChange = vi.fn();
+    const bar = createBarVisibility(onChange);
+    vi.advanceTimersByTime(3000);
+    bar.hold(true, "focus");
+    expect(onChange.mock.calls).toEqual([[false], [true]]);
+    bar.poke();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe("keyboard focus on the present bar (W3-RVW-3)", () => {
+  it("holds while focus is on a control and the latest input was a key", () => {
+    const onHold = vi.fn();
+    const focus = createKeyboardFocus(onHold);
+    focus.key();
+    expect(onHold).not.toHaveBeenCalled();
+    focus.focus(true);
+    expect(onHold.mock.calls).toEqual([[true]]);
+    focus.focus(true);
+    focus.key();
+    expect(onHold).toHaveBeenCalledTimes(1);
+    focus.focus(false);
+    expect(onHold.mock.calls).toEqual([[true], [false]]);
+  });
+
+  it("does not hold for focus a click or a tap brought", () => {
+    const onHold = vi.fn();
+    const focus = createKeyboardFocus(onHold);
+    focus.pointer();
+    focus.focus(true);
+    expect(onHold).not.toHaveBeenCalled();
+  });
+
+  it("lets go on the next pointer input, and holds again on the next key", () => {
+    const onHold = vi.fn();
+    const focus = createKeyboardFocus(onHold);
+    focus.key();
+    focus.focus(true);
+    focus.pointer();
+    focus.pointer();
+    expect(onHold.mock.calls).toEqual([[true], [false]]);
+    focus.key();
+    expect(onHold.mock.calls).toEqual([[true], [false], [true]]);
   });
 });
