@@ -214,6 +214,45 @@
       "priority": 4,
       "passes": true,
       "notes": " | DONE (c406579): no packages added. e2e/fixtures: LIBRARY gains PITCH_VIDEO_ID (d7, 'Example pitch video', Pitch, video) after the one-pager, so every home screenshot now shows the pitch block (deck + video poster) and the admin documents table one more row; its link answers VIDEO_PATH (routeVideo serves both videos). mockPortal(page, visitor, overrides) merges per-spec answers over the defaults; MockedApi.calls() lists every API call key (answered, missed or 401); isLinkKey(key) matches POST /documents/:id/link. First CI run of these specs is the wave PR run."
+    },
+    {
+      "id": "W3-RVW-1",
+      "prdStory": "review",
+      "title": "Present mode keeps keyboard focus inside the slideshow",
+      "description": "Review finding (MEDIUM, present mode). investors/src/viewer/PdfViewer.tsx:79 makes the presenting container role=dialog aria-modal=true, but nothing keeps focus inside it. investors/src/viewer/use-present-mode.ts:41-53 (useFocusHandoff) only moves focus in on start and back to Present on exit. There is no Tab handling, no focusin guard and no inert anywhere in investors/src. As a result, Tab from the bar's last control (Exit, PresentBar.tsx:88) or Shift+Tab from the focused container moves focus to elements hidden under the z-50 overlay, or outside the full-screen element: the page's Back link, and the header's home link to '/' and account menu (AppHeader.tsx). The investor cannot see where focus is. Enter or Space on one of those elements leaves the slideshow by navigating away, or opens the account menu behind it.",
+      "acceptanceCriteria": [
+        "Cause recorded in the notes: the slideshow is declared modal (PdfViewer.tsx:79) but focus is only handed in and out (use-present-mode.ts:41-53), never contained.",
+        "Change: while presenting, Tab and Shift+Tab cycle only through the enabled focusable elements inside the slideshow container. Tab from the last element goes to the first. Shift+Tab from the first element, or from the container itself (tabIndex -1, focused on entry), goes to the last. Focus that lands outside the container while presenting (a focusin on the document) is returned to the container. The pure part (the next target, given the ordered focusables, the current element's index or -1 for the container, and shift) is its own module under investors/src/viewer/, unit-tested without a DOM. A hook attaches the listeners only while presenting and removes them on exit and unmount. Nothing changes when not presenting. Focus still returns to the Present button on exit.",
+        "No new package (KP2): no focus-trap library and no import of the transitive @radix-ui/react-focus-scope. Do not use Radix Dialog for this, because it portals its content out of the container that goes full screen.",
+        "Tests: the pure module covers forward wrap, backward wrap, the container as the start, a single focusable, none focusable, and disabled controls skipped. present-mode.test.tsx renders the viewer between an outside link and an outside button, then checks four things. Tab (keyDown Tab) on Exit focuses the first enabled bar control. Shift+Tab on the container focuses Exit. Focusing the outside link while presenting puts focus back inside the slideshow. After Exit, the outside link keeps focus when focused, and Tab is no longer intercepted. Every existing present-mode test keeps passing unchanged.",
+        "npm --prefix investors run typecheck, lint, test and build pass; bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci passes except 'every story passes'."
+      ],
+      "files": [
+        "investors/src/viewer/**"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "W3-RVW-2",
+      "prdStory": "review",
+      "title": "Pressing Play on the pitch video keeps keyboard focus in the video card",
+      "description": "Review finding (MEDIUM, featured block). investors/src/documents/PitchFeature.tsx:52 renders VideoPoster (the poster's button, PitchCard.tsx:34-52) only while !started. Pressing Play unmounts that button and renders ViewerPending, then VideoPlayer, in its place, and nothing receives focus, so focus falls to <body>. The video then starts playing at once (use-pitch-video.ts:10, PLAY_FROM_START playing: true). A keyboard or screen-reader investor's next Tab starts at the top of the page, and they must tab back past the header and the overview to reach the player's controls to pause it. The W3-03 notes record this as a 'Known gap' with the reason 'jsdom cannot focus a video'. A wrapper with tabIndex -1 is focusable in jsdom, so the fix can be tested.",
+      "acceptanceCriteria": [
+        "Cause recorded in the notes: the pressed control unmounts (PitchFeature.tsx:52, VideoMedia) and focus is moved nowhere.",
+        "Change: VideoMedia (or the video card) keeps one stable media element across the poster, pending and player states (tabIndex -1, labelled by strings.viewer.video.label(title) or the existing pending label). It receives focus when started turns true after a press. Focus never moves on render or on mount (the page loads with focus where the browser puts it), and from that element Tab reaches the player's controls next. KP20 is unchanged: the link is still requested only after Play.",
+        "Tests (pitch-feature.test.tsx): after rendering home, document.activeElement is not inside the pitch block. After pressing Play, document.activeElement is inside the video's card (the media element), not document.body. It stays inside that card once the link is ready and the player has mounted. The existing 'asks for no document link on render' test keeps passing unchanged. Remove the 'Known gap' sentence from the W3-03 notes only once this passes.",
+        "npm --prefix investors run typecheck, lint, test and build pass; bash scripts/ralph/acceptance-prd001-portal-w3.sh --no-ci passes except 'every story passes'."
+      ],
+      "files": [
+        "investors/src/documents/**",
+        "investors/src/pages/__tests__/**",
+        "scripts/ralph/prd-001-portal-w3.json"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
     }
   ]
 }
