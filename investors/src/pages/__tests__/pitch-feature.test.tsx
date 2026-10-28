@@ -331,3 +331,68 @@ describe("the pitch video", () => {
     expect(calls("POST", linkPath(VIDEO))).toEqual([{ mode: "inline" }]);
   });
 });
+
+describe("keyboard focus around the pitch video (W3-RVW-2)", () => {
+  /** The video's card: the list item under its title. */
+  async function videoItem() {
+    const item = within(await pitchBlock()).getByRole("heading", { level: 3, name: VIDEO.title }).closest("li");
+    if (!item) throw new Error("no pitch card for the video");
+    return item;
+  }
+
+  /** The frame that holds the poster, then the link's states, then the player. */
+  const mediaFrame = () => screen.getByRole("group", { name: VIDEO.title });
+
+  /** A keyboard press: focus is on the button when it is activated (fireEvent.click alone moves none). */
+  function press(button: HTMLElement) {
+    button.focus();
+    fireEvent.click(button);
+  }
+
+  it("moves no focus on render: the page keeps it where the browser put it", async () => {
+    serve([DECK, VIDEO]);
+    renderHome();
+    const block = await pitchBlock();
+    await waitFor(() => expect(calls("POST", "/sessions")).toHaveLength(1));
+    expect(block.contains(document.activeElement)).toBe(false);
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("keeps focus in the video's card when play is pressed, through the link and into the player", async () => {
+    serve([DECK, VIDEO], { [`POST ${linkPath(VIDEO)}`]: signedLink });
+    renderHome();
+    const item = await videoItem();
+    press(playButton());
+    // The poster went; focus did not fall to the page.
+    expect(screen.queryByRole("button", { name: library.actionLabel(copy.play, VIDEO.title) })).not.toBeInTheDocument();
+    expect(within(mediaFrame()).getByRole("status")).toHaveTextContent(strings.viewer.loading);
+    expect(document.activeElement).toBe(mediaFrame());
+    expect(item).toContainElement(mediaFrame());
+    expect(mediaFrame()).toHaveAttribute("tabindex", "-1");
+
+    await waitFor(() => expect(screen.getByLabelText(videoLabel)).toHaveAttribute("src", SIGNED));
+    const player = screen.getByLabelText(videoLabel);
+    expect(document.activeElement).toBe(mediaFrame());
+    expect(item).toContainElement(document.activeElement as HTMLElement);
+    // Tab from the frame: the player's controls are the first thing in it that takes focus.
+    expect(mediaFrame().querySelector("video, button, a[href], input, select, textarea, [tabindex]")).toBe(player);
+    expect(calls("POST", linkPath(VIDEO))).toEqual([{ mode: "inline" }]);
+  });
+
+  it("keeps focus in the card when Try again is pressed after a refused link", async () => {
+    let refused = true;
+    serve([VIDEO], {
+      [`POST ${linkPath(VIDEO)}`]: () => (refused ? json(503, { error: "storage_unavailable" }) : signedLink()),
+    });
+    renderHome();
+    const item = await videoItem();
+    press(playButton());
+    await within(item).findByRole("alert");
+    refused = false;
+    press(within(item).getByRole("button", { name: strings.viewer.retry }));
+    expect(within(item).queryByRole("button", { name: strings.viewer.retry })).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(mediaFrame());
+    await waitFor(() => expect(screen.getByLabelText(videoLabel)).toHaveAttribute("src", SIGNED));
+    expect(document.activeElement).toBe(mediaFrame());
+  });
+});

@@ -1,7 +1,9 @@
 import { Presentation } from "lucide-react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { strings } from "@/strings";
 import { presentPath } from "@/viewer/present-route";
 import { VideoPlayer } from "@/viewer/VideoPlayer";
@@ -10,7 +12,7 @@ import { ViewerPending } from "@/viewer/ViewerStates";
 import { DownloadButton } from "./DocumentCard";
 import type { InvestorDocument } from "./documents-api";
 import type { FeaturedPitch } from "./library-model";
-import { DeckCover, PitchCard, VideoPoster } from "./PitchCard";
+import { DeckCover, FOCUS_RING, PitchCard, VideoPoster } from "./PitchCard";
 import { useDownload } from "./use-download";
 import { usePitchVideo, type PitchVideo } from "./use-pitch-video";
 
@@ -46,14 +48,18 @@ function DeckCard({ document, onGone }: CardProps) {
   );
 }
 
-/** The poster until play is pressed; then the link's states and the player, as on the video's page. */
-function VideoMedia({ title, video }: { readonly title: string; readonly video: PitchVideo }) {
-  const { started, start, link, resume, onFailure, onProgress } = video;
-  if (!started) return <VideoPoster title={title} onPlay={start} />;
+interface VideoMediaProps {
+  readonly title: string;
+  readonly video: PitchVideo;
+}
+
+/** After play: the link's states and the player, as on the video's page. */
+function VideoStage({ title, video, onRetry }: VideoMediaProps & { readonly onRetry: () => void }) {
+  const { link, resume, onFailure, onProgress } = video;
   const { phase } = link;
   // The card's own Download sits under it, so the failure shows none of its own.
   if (phase.kind !== "ready") {
-    return <ViewerPending phase={phase} onRetry={link.retry} download={null} loadFailedBody={strings.viewer.video.failed} />;
+    return <ViewerPending phase={phase} onRetry={onRetry} download={null} loadFailedBody={strings.viewer.video.failed} />;
   }
   return (
     <VideoPlayer
@@ -65,6 +71,30 @@ function VideoMedia({ title, video }: { readonly title: string; readonly video: 
       onPlaying={link.onPlayed}
       onProgress={onProgress}
     />
+  );
+}
+
+/**
+ * The poster, then the link's states and the player, inside one frame that
+ * stays (W3-RVW-2). Play and Try again remove the button pressed, so each
+ * moves focus to the frame first: focus stays in the card, and Tab goes on
+ * to the player's controls. Nothing moves focus on render.
+ */
+function VideoMedia({ title, video }: VideoMediaProps) {
+  const frame = useRef<HTMLDivElement>(null);
+  const keepFocus = (action: () => void) => () => {
+    frame.current?.focus({ preventScroll: true });
+    action();
+  };
+  // The title names it, not the video's own label: the player inside carries that one.
+  return (
+    <div ref={frame} tabIndex={-1} role="group" aria-label={title} className={cn("rounded-lg", FOCUS_RING)}>
+      {video.started ? (
+        <VideoStage title={title} video={video} onRetry={keepFocus(video.link.retry)} />
+      ) : (
+        <VideoPoster title={title} onPlay={keepFocus(video.start)} />
+      )}
+    </div>
   );
 }
 

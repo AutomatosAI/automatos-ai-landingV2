@@ -14,6 +14,10 @@ const copy = strings.home.pitch;
 /** The 16:9 box the deck's cover and the video's poster share, so the two cards line up side by side. */
 const MEDIA_BOX = "aspect-video w-full rounded-lg border bg-secondary";
 
+/** The ring a keyboard investor sees on the poster, and on the video's frame once play is pressed. */
+export const FOCUS_RING =
+  "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
 /** The deck's cover: no page of it is drawn, since that would need a link, and a link is an open (KP20). */
 export function DeckCover({ pageCount }: { readonly pageCount: number | null }) {
   return (
@@ -35,10 +39,7 @@ export function VideoPoster({ title, onPlay }: { readonly title: string; readonl
       type="button"
       onClick={onPlay}
       aria-label={strings.library.actionLabel(copy.play, title)}
-      className={cn(
-        MEDIA_BOX,
-        "group grid place-items-center ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      )}
+      className={cn(MEDIA_BOX, "group grid place-items-center", FOCUS_RING)}
     >
       <span
         className={cn(
