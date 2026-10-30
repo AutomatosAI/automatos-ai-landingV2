@@ -11,11 +11,14 @@
     <!-- Runtime config from the site server (server.js hydrateConfig): the Clerk publishable key.
          A classic script, so it runs before the app bundle (a deferred module). -->
     <script src="/_config.js"></script>
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-</head>
+    <!-- The portal's tab icon: the anchor from the Automatos family kit (the site root serves the ship).
+         Paths into the app's source, like main.tsx's: the build emits each file hashed under
+         /investors/assets/, the one path server/investors/static.js serves from the build.
+         No manifest: the site root's site.webmanifest names the ship. -->
+    <link rel="icon" href="/src/assets/favicon/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/src/assets/favicon/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/src/assets/favicon/apple-touch-icon.png" />
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
