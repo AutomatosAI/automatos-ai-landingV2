@@ -2,7 +2,7 @@ import type { AuthStatus } from "@/auth";
 
 /**
  * What the teaser offers in place of sign-in:
- * - buttons: Create account and Sign in (disabled while the service loads)
+ * - buttons: Create an account (to read the deck) and Sign in (disabled while the service loads)
  * - signin_unavailable: the sign-in service failed to load ('Sign-in is unavailable right now')
  * - portal_unavailable: no key in the runtime config, the portal is off (KP4)
  */

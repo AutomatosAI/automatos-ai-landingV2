@@ -5,6 +5,16 @@
 const HELLO_EMAIL = "hello@automatos.app";
 const PRIVACY_EMAIL = "privacy@automatos.app";
 const DOCUMENTS_UNAVAILABLE = "Documents are unavailable right now. Please try again later.";
+const VIEW_THE_DECK = "View the deck";
+const BOOK_A_CALL = "Book a call";
+
+/**
+ * The spine sentence (MESSAGE-SHEET §1), the wording until the hosted flip is
+ * confirmed. Under the company's name on the teaser and on Home. At the flip
+ * its last two sentences become "Open source, on your server or ours."
+ */
+const SPINE =
+  "One assistant, Auto, runs a team of AI agents that finish a small business's work in its own brand. Open source, on your own server. Hosted beta opens November 2026.";
 
 /** A document's kind (001_init.sql), as the library and the admin table name it. */
 const KIND_LABELS = {
@@ -49,7 +59,7 @@ export const strings = {
     pitchTitle: "The pitch",
     pitch: {
       slides: (count: number) => (count === 1 ? "1 slide" : `${count} slides`),
-      viewDeck: "View the deck",
+      viewDeck: VIEW_THE_DECK,
       downloadDeck: "Download PDF",
       play: "Play",
       downloadVideo: "Download video",
@@ -144,19 +154,44 @@ export const strings = {
   },
   teaser: {
     title: "Investor portal",
-    pitch: "Automatos is an open-source operating system for AI agents.",
-    insideHeading: "What's inside",
+    pitch: SPINE,
+    insideHeading: "Inside the portal",
     inside: ["Pitch deck", "One-pager", "Product demo", "Business model", "Team", "FAQ"],
     signInHeading: "Access",
-    signInBody: "Create an account or sign in to read the documents.",
   },
-  /** The company and its founder, on the teaser and the home page. */
+  /**
+   * The company and its founder, on the teaser and the home page (PRD-003
+   * §5.1). The founder's name, role, line and email, the team and the product
+   * links are in company/company-data.ts. All of it is public: never a phone
+   * number here (company/__tests__/company-data.test.ts).
+   */
   company: {
+    name: "Automatos",
+    spine: SPINE,
     /** The founder's photo (company/FounderAvatar.tsx). */
     founderPhotoAlt: "Gerard Kavanagh",
+    /** Each card under "Inside the portal" on the teaser. */
+    signInToOpen: "Sign in to open",
+    /** The founder card's contact rows. */
+    rows: { work: "Work", linkedin: "LinkedIn" },
+    bookCall: BOOK_A_CALL,
+    team: "Team",
+    seeItWorking: "See it working",
+    alsoFromAutomatos: "Also from Automatos",
+    /** Home's tiles: each shows only when its content exists. */
+    quickAccess: {
+      heading: "Quick access",
+      deck: { label: VIEW_THE_DECK, hint: "Slideshow" },
+      demo: { label: "Play the demo", hint: "Video" },
+      documents: { label: "Documents", hint: "Library" },
+      team: { label: "Team", hint: "Page" },
+      faq: { label: "FAQ", hint: "Page" },
+      /** The booking page once its address is set; the Contact page until then. */
+      bookCall: { label: BOOK_A_CALL, hint: "Tappal ↗", contactHint: "Contact page" },
+    },
   },
   auth: {
-    createAccount: "Create account",
+    createAccount: "Create an account to read the deck",
     signIn: "Sign in",
     /** Clerk did not load: the teaser shows this instead of the buttons. */
     signInUnavailable: { before: "Sign-in is unavailable right now. Email ", after: "." },

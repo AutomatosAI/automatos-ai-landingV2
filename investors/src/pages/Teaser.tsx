@@ -54,8 +54,9 @@ export function Teaser() {
           <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             {teaser.signInHeading}
           </h2>
-          <p className="mb-5 mt-4 text-muted-foreground">{teaser.signInBody}</p>
-          <SignInPanel />
+          <div className="mt-4">
+            <SignInPanel />
+          </div>
           <TrackingNotice className="mt-8" />
         </div>
       </div>

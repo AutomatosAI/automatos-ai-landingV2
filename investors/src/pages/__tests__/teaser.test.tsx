@@ -26,7 +26,14 @@ describe("Teaser", () => {
   it("shows the pitch, what's inside and the tracking notice", () => {
     renderWithProviders(<Teaser />);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(strings.teaser.title);
-    expect(screen.getByText("Automatos is an open-source operating system for AI agents.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "One assistant, Auto, runs a team of AI agents that finish a small business's work in its own brand. Open source, on your own server. Hosted beta opens November 2026.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: "Inside the portal" })).toBeInTheDocument();
+    // The primary button says what signing up is for, so the old line under "Access" is gone.
+    expect(screen.queryByText(/Create an account or sign in/)).not.toBeInTheDocument();
     const items = screen.getAllByRole("listitem").map((li) => li.textContent);
     expect(items).toEqual(["Pitch deck", "One-pager", "Product demo", "Business model", "Team", "FAQ"]);
     const notice = screen.getByText(/we record which documents you open or download/);
@@ -43,7 +50,7 @@ describe("Teaser", () => {
   it("opens Clerk's sign-up and sign-in modals from its buttons", () => {
     const actions = fakeActions();
     renderWithProviders(<Teaser />, { actions });
-    fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+    fireEvent.click(screen.getByRole("button", { name: "Create an account to read the deck" }));
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
     expect(actions.openSignUp).toHaveBeenCalledTimes(1);
     expect(actions.openSignIn).toHaveBeenCalledTimes(1);
@@ -51,7 +58,7 @@ describe("Teaser", () => {
 
   it("disables the buttons while sign-in loads", () => {
     renderWithProviders(<Teaser />, { auth: { status: "loading" } });
-    expect(screen.getByRole("button", { name: "Create account" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Create an account to read the deck" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Sign in" })).toBeDisabled();
   });
 

@@ -3,7 +3,7 @@ import { strings } from "@/strings";
 
 import { useAuthActions } from "./context";
 
-/** Create account / Sign in: each opens the provider's form in a modal. */
+/** "Create an account to read the deck" / Sign in: each opens the provider's form in a modal. */
 export function AuthButtons({ disabled = false }: { disabled?: boolean }) {
   const { openSignIn, openSignUp } = useAuthActions();
   return (
