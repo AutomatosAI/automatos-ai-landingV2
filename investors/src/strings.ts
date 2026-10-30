@@ -146,7 +146,6 @@ export const strings = {
   sections: {
     titles: { team: "Team", faq: "FAQ", contact: "Contact" },
     comingSoon: "Coming soon.",
-    contactLine: { before: "You can also email ", after: "." },
   },
   contact: {
     helloEmail: HELLO_EMAIL,
@@ -509,7 +508,7 @@ export const strings = {
         overview: "Home page, above the documents",
         team: "Team page",
         faq: "FAQ page",
-        contact: "Contact page, above the team's email",
+        contact: "Contact page",
         founder_card: "Home page, in the founder card, signed-in investors only",
       },
       published: "Published",
