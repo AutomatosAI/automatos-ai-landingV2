@@ -174,8 +174,13 @@ export const strings = {
     signInToOpen: "Sign in to open",
     /** The founder card's contact rows. */
     rows: { work: "Work", linkedin: "LinkedIn" },
+    /** The founder's line on the signed-out card, in quotation marks. */
+    quoted: (line: string) => `“${line}”`,
     bookCall: BOOK_A_CALL,
     team: "Team",
+    /** Home's one-line team row: each member as "name, role", with this between two. */
+    teamEntry: (name: string, role: string) => `${name}, ${role}`,
+    teamSeparator: " · ",
     seeItWorking: "See it working",
     alsoFromAutomatos: "Also from Automatos",
     /** Home's tiles: each shows only when its content exists. */
