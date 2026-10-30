@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 import { screenForError } from "@/api/errors";
 import { useAuthState } from "@/auth";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +15,6 @@ const copy = strings.sections;
 
 interface SectionPageProps {
   readonly slug: PageSection;
-  /** Shown under the section's text, whatever its state (Contact's email line). */
-  readonly children?: ReactNode;
 }
 
 function SectionSkeleton() {
@@ -38,7 +34,7 @@ function SectionText({ sections, slug }: { readonly sections: readonly Section[]
   return <LazyMarkdown source={section.bodyMd} fallback={<SectionSkeleton />} />;
 }
 
-function SectionBody({ userId, slug, children }: SectionPageProps & { readonly userId: string }) {
+function SectionBody({ userId, slug }: SectionPageProps & { readonly userId: string }) {
   const sections = useSections(userId);
   useSectionTime(slug);
   if (sections.isError) {
@@ -48,7 +44,6 @@ function SectionBody({ userId, slug, children }: SectionPageProps & { readonly u
   return (
     <PageFrame title={published?.title ?? copy.titles[slug]}>
       {sections.isPending ? <SectionSkeleton /> : <SectionText sections={sections.data} slug={slug} />}
-      {children}
     </PageFrame>
   );
 }

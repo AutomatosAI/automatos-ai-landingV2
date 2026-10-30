@@ -1,7 +1,8 @@
 /**
  * Portal sections (W2-01) through the portal's own apiRouter, over the test
- * database: the four rows 002_sections_seed.sql seeds (and keeps on a
- * re-run), investors reading only the published ones, the admin's list,
+ * database: the four rows 002_sections_seed.sql seeds and the founder_card
+ * row 005_founder_card_section.sql seeds (PRD-003 US-305), each kept on a
+ * re-run, investors reading only the published ones, the admin's list,
  * read and save round-trip with updated_by from the token, validation, the
  * 404s and the admin gate. The route-coverage test walks these routes too.
  */
@@ -24,12 +25,16 @@ const ENV = Object.freeze({
 });
 
 const SEED_FILE = "002_sections_seed.sql";
+const FOUNDER_CARD_SEED_FILE = "005_founder_card_section.sql";
+/** Every file that seeds a section, in the order migrate.js applies them. */
+const SEED_FILES = Object.freeze([SEED_FILE, FOUNDER_CARD_SEED_FILE]);
 
 const SEEDED = Object.freeze([
   { slug: "overview", title: "Overview", body_md: "", sort_order: 1, published: false, updated_by: null },
   { slug: "team", title: "Team", body_md: "", sort_order: 2, published: false, updated_by: null },
   { slug: "faq", title: "FAQ", body_md: "", sort_order: 3, published: false, updated_by: null },
   { slug: "contact", title: "Contact", body_md: "", sort_order: 4, published: false, updated_by: null },
+  { slug: "founder_card", title: "Founder card", body_md: "", sort_order: 5, published: false, updated_by: null },
 ]);
 
 const TEAM = Object.freeze({
@@ -38,20 +43,32 @@ const TEAM = Object.freeze({
   published: true,
 });
 
+/** Signed-in-only rows for the founder card (KP5: an invented number from the UK's drama range). */
+const FOUNDER_CARD = Object.freeze({
+  title: "Founder card",
+  bodyMd: "- [+44 7700 900123](tel:+447700900123) Mobile\n- [example.com/someone](https://example.com/someone) Site\n",
+  published: true,
+});
+
 /** @type {import("../db.js").Db} */
 let db;
 let app;
+/** @type {Readonly<Record<string, string>>} each seed file's SQL, by file name */
 let seedSql;
 beforeAll(async () => {
   db = await createTestDb();
-  seedSql = await readFile(join(MIGRATIONS_DIR, SEED_FILE), "utf8");
+  const scripts = await Promise.all(SEED_FILES.map((name) => readFile(join(MIGRATIONS_DIR, name), "utf8")));
+  seedSql = Object.freeze(Object.fromEntries(SEED_FILES.map((name, i) => [name, scripts[i]])));
 });
 afterAll(() => db.end());
 
-/** Puts the four rows back as the migration seeds them. */
+/** Runs one seed file again, as a second migration run would if it were not recorded. */
+const runSeed = (name) => db.tx((client) => client.exec(seedSql[name]));
+
+/** Puts the five rows back as the migrations seed them. */
 async function reseed() {
   await db.query("DELETE FROM investors.sections");
-  await db.tx((client) => client.exec(seedSql));
+  for (const name of SEED_FILES) await runSeed(name);
 }
 
 beforeEach(async () => {
@@ -80,17 +97,31 @@ async function sectionRows() {
 /** @param {string} slug */
 const publish = (slug) => db.query("UPDATE investors.sections SET published = true WHERE slug = $1", [slug]);
 
-describe("the sections seed (002_sections_seed.sql)", () => {
-  it("is recorded as applied and leaves the four sections, empty and unpublished", async () => {
-    const { rows } = await db.query("SELECT 1 FROM investors.schema_migrations WHERE name = $1", [SEED_FILE]);
-    expect(rows).toHaveLength(1);
+describe("the sections seeds (002_sections_seed.sql, 005_founder_card_section.sql)", () => {
+  it("are recorded as applied and leave the five sections, empty and unpublished", async () => {
+    for (const name of SEED_FILES) {
+      const { rows } = await db.query("SELECT 1 FROM investors.schema_migrations WHERE name = $1", [name]);
+      expect(rows, name).toHaveLength(1);
+    }
     expect(await sectionRows()).toEqual(SEEDED);
   });
 
   it("keeps an edited section as it is when the seed runs again (ON CONFLICT DO NOTHING)", async () => {
     expect((await save("team", TEAM)).status).toBe(200);
     const edited = await sectionRows();
-    await db.tx((client) => client.exec(seedSql));
+    await runSeed(SEED_FILE);
+    expect(await sectionRows()).toEqual(edited);
+  });
+
+  it("keeps an edited founder card as it is when 005 runs again (ON CONFLICT DO NOTHING)", async () => {
+    expect((await save("founder_card", FOUNDER_CARD)).status).toBe(200);
+    const edited = await sectionRows();
+    expect(edited.find((row) => row.slug === "founder_card")).toMatchObject({
+      body_md: FOUNDER_CARD.bodyMd,
+      published: true,
+      updated_by: ADMIN.id,
+    });
+    await runSeed(FOUNDER_CARD_SEED_FILE);
     expect(await sectionRows()).toEqual(edited);
   });
 });
@@ -106,6 +137,18 @@ describe("GET /sections (investors)", () => {
       expect(Object.keys(section).sort()).toEqual(["bodyMd", "slug", "title", "updatedAt"]);
     }
     expect(res.body.sections[0]).toMatchObject({ slug: "team", title: "Team", bodyMd: "" });
+  });
+
+  it("leaves the founder card out while it is unpublished, as it ships, and lists it once published", async () => {
+    for (const slug of ["overview", "team", "faq", "contact"]) await publish(slug);
+    const before = await api("get", "/sections", ADA);
+    expect(before.status).toBe(200);
+    expect(before.body.sections.map((section) => section.slug)).toEqual(["overview", "team", "faq", "contact"]);
+
+    expect((await save("founder_card", FOUNDER_CARD)).status).toBe(200);
+    const after = await api("get", "/sections", ADA);
+    expect(after.body.sections.map((section) => section.slug)).toEqual(["overview", "team", "faq", "contact", "founder_card"]);
+    expect(after.body.sections.at(-1)).toMatchObject({ slug: "founder_card", bodyMd: FOUNDER_CARD.bodyMd });
   });
 
   it("answers an empty list while nothing is published", async () => {
@@ -134,6 +177,7 @@ describe("GET /admin/sections and /admin/sections/:slug", () => {
       { slug: "team", published: false, sortOrder: 2 },
       { slug: "faq", published: true, sortOrder: 3 },
       { slug: "contact", published: false, sortOrder: 4 },
+      { slug: "founder_card", published: false, sortOrder: 5 },
     ]);
     expect(Object.keys(res.body.sections[0]).sort()).toEqual(
       ["bodyMd", "published", "slug", "sortOrder", "title", "updatedAt", "updatedBy"].sort(),

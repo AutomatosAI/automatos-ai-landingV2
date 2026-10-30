@@ -125,7 +125,8 @@ interface PitchFeatureProps {
  * the library's cards. Nothing here asks for a link until a button is pressed.
  */
 export function PitchFeature({ userId, pitch, onGone }: PitchFeatureProps) {
-  // A headed section like the library's groups, not a landmark: the overview is the page's one region.
+  // A headed section like the library's groups, not a landmark: the page's regions are the overview and,
+  // above it, Quick access and the product groups (PRD-003 §3.2).
   return (
     <section>
       <h2 className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "@/App";
+import { FOUNDER } from "@/company/company-data";
 import type { InvestorDocument } from "@/documents/documents-api";
 import { navigateTo } from "@/documents/navigate";
 import { setTokenSource } from "@/auth/token";
@@ -98,8 +99,14 @@ describe("the home page", () => {
     expect(await screen.findByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
     expect(screen.getByText(strings.home.intro)).toBeInTheDocument();
     await screen.findByRole("heading", { level: 3, name: DECK.title });
-    // The first 'Pitch' PDF heads the page as the deck (W3-03, pitch-feature.test.tsx); the one-pager stays under Pitch.
+    // Under the header, Quick access and the product links (PRD-003 §3.2), the first 'Pitch' PDF heads the
+    // library as the deck (W3-03, pitch-feature.test.tsx); the one-pager stays under Pitch.
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      strings.company.name,
+      FOUNDER.name,
+      strings.company.quickAccess.heading,
+      strings.company.seeItWorking,
+      strings.company.alsoFromAutomatos,
       strings.home.pitchTitle,
       "Pitch",
       "Business model",

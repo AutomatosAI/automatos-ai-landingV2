@@ -88,7 +88,7 @@ export function SectionEditor({ userId, slug, section }: SectionEditorProps) {
   return (
     <form noValidate onSubmit={submit} className="grid gap-8">
       <div className="grid gap-8 lg:grid-cols-2">
-        <SectionFields form={{ draft: state.draft, errors, change }} />
+        <SectionFields slug={slug} form={{ draft: state.draft, errors, change }} />
         <SectionPreview slug={slug} draft={state.draft} />
       </div>
       <div className="flex flex-wrap items-center gap-4">

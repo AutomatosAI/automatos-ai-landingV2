@@ -10,6 +10,12 @@
   --sans: "Geist", -apple-system, "Helvetica Neue", sans-serif;
   --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --radius: 2px;
+  /*
+   * The one brand colour (site.webmanifest theme_color), the same in both
+   * moods: only behind the white ship mark, in the photo badge and in the
+   * product icon squares, never under body text.
+   */
+  --ship: #FF6A02;
 }
 
 /* bone: also the default until the mood is applied */
@@ -70,4 +76,5 @@ body {
   --ui-border: var(--rule-c);
   --ui-input: var(--rule-strong);
   --ui-ring: var(--accent);
+  --ui-ship: var(--ship);
 }

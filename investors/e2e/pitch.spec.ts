@@ -17,6 +17,7 @@ import { capture, waitForPdfPage } from "./fixtures/screens";
 
 const pitch = strings.home.pitch;
 const present = strings.viewer.present;
+const quickAccess = strings.company.quickAccess;
 
 function libraryDocument(id: string): InvestorDocument {
   const document = LIBRARY.find((each) => each.id === id);
@@ -53,6 +54,12 @@ test("home: the pitch block, the deck and the video's poster, no link asked for"
   await expect(actionButton(page, pitch.downloadDeck, deck.title)).toBeVisible();
   await expect(actionButton(page, pitch.play, video.title)).toBeVisible();
   await expect(actionButton(page, pitch.downloadVideo, video.title)).toBeVisible();
+  // Quick access (PRD-003 US-306) links the same deck and video, and asks for no link either.
+  const tiles = page.getByRole("list", { name: quickAccess.heading, exact: true });
+  const tile = ({ label, hint }: { readonly label: string; readonly hint: string }) =>
+    tiles.getByRole("link", { name: `${label} ${hint}`, exact: true });
+  await expect(tile(quickAccess.deck)).toHaveAttribute("href", `/investors/documents/${DECK_ID}?present=1`);
+  await expect(tile(quickAccess.demo)).toHaveAttribute("href", `/investors/documents/${PITCH_VIDEO_ID}`);
 
   await capture(page, testInfo, "home-pitch");
   // Rendering is not an open: once the page's own calls have settled, none of them asked for a link.

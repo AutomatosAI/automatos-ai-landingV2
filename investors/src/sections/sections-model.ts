@@ -1,9 +1,21 @@
 import type { Section } from "./sections-api";
 
-/** The four sections 002_sections_seed.sql creates; admins edit them, nobody adds or removes one. */
-export type SectionSlug = "overview" | "team" | "faq" | "contact";
+/**
+ * The sections the seed migrations create (002_sections_seed.sql, then
+ * 005_founder_card_section.sql); admins edit them, nobody adds or removes one.
+ */
+export type SectionSlug = "overview" | "team" | "faq" | "contact" | "founder_card";
 
-/** The sections with a page of their own, in the sidebar's order; the overview sits on the home page. */
+/**
+ * The founder card's signed-in-only rows (PRD-003 D5, US-305): one contact
+ * row per line, read by company/card-rows.ts, never a page or a nav link.
+ */
+export const FOUNDER_CARD_SECTION = "founder_card" as const satisfies SectionSlug;
+
+/**
+ * The sections with a page of their own, in the sidebar's order. The overview
+ * sits on the home page, and the founder card's rows in Home's founder card.
+ */
 export const PAGE_SECTIONS = ["team", "faq", "contact"] as const satisfies readonly SectionSlug[];
 
 export type PageSection = (typeof PAGE_SECTIONS)[number];

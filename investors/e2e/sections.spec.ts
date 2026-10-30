@@ -38,6 +38,11 @@ test("home: the overview above the documents, its raw HTML dropped", async ({ pa
   const overview = page.getByRole("region", { name: OVERVIEW_SECTION.title, exact: true });
   await expect(overview.getByText(OVERVIEW_POINT)).toBeVisible();
   await expectNoRawHtml(page, overview);
+  // Under the header, Quick access and the product links (PRD-003 §3.2), above the rule and the documents.
+  const products = page.getByRole("region", { name: strings.company.alsoFromAutomatos, exact: true });
+  await expect(products).toBeVisible();
+  const [productsBox, overviewBox] = await Promise.all([products.boundingBox(), overview.boundingBox()]);
+  expect(overviewBox?.y ?? 0).toBeGreaterThan(productsBox?.y ?? Number.POSITIVE_INFINITY);
 
   await capture(page, testInfo, "home-overview");
   expect(api.unmocked()).toEqual([]);
@@ -63,7 +68,7 @@ test("FAQ page", async ({ page }, testInfo) => {
   expect(api.unmocked()).toEqual([]);
 });
 
-test("contact page: the booking link in a new tab, then the team's email", async ({ page }, testInfo) => {
+test("contact page: the section only, its booking link in a new tab", async ({ page }, testInfo) => {
   const api = await mockPortal(page, "investor");
   await page.goto("contact");
 
@@ -72,8 +77,8 @@ test("contact page: the booking link in a new tab, then the team's email", async
   await expect(booking).toHaveAttribute("href", BOOKING.href);
   await expect(booking).toHaveAttribute("target", "_blank");
   await expect(booking).toHaveAttribute("rel", "noopener noreferrer");
-  const email = page.getByRole("link", { name: strings.contact.helloEmail, exact: true });
-  await expect(email).toHaveAttribute("href", `mailto:${strings.contact.helloEmail}`);
+  // PRD-003 US-307: no fixed second address under the section's text.
+  await expect(page.getByRole("link", { name: strings.contact.helloEmail, exact: true })).toHaveCount(0);
 
   await capture(page, testInfo, "contact");
   expect(api.unmocked()).toEqual([]);

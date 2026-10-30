@@ -91,7 +91,7 @@ describe("the home page's overview", () => {
   it("is left out when the sections cannot be read; the documents still show", async () => {
     renderPortal("/", FAILED);
     await screen.findByRole("heading", { level: 3, name: DECK.title });
-    expect(screen.queryByRole("region")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Overview" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
   });
 });
@@ -145,43 +145,52 @@ describe("the section pages", () => {
   });
 });
 
-describe("the contact page", () => {
-  const helloLink = () => screen.getByRole("link", { name: strings.contact.helloEmail });
+describe("the contact page (PRD-003 US-307: the section's text only)", () => {
+  const helloLink = () => screen.queryByRole("link", { name: strings.contact.helloEmail });
+  /** The fixed line the page used to add under the section. */
+  const OLD_LINE = /You can also email/;
 
-  it("renders the booking link from the markdown, then the fixed email line", async () => {
+  it("renders the booking link from the markdown, and no second address under it", async () => {
     renderPortal("/contact", [section("contact", { bodyMd: "[Book a call](https://booking.example.com/automatos)" })]);
     const booking = await screen.findByRole("link", { name: "Book a call" });
+    expect(booking).toHaveAttribute("href", "https://booking.example.com/automatos");
     expect(booking).toHaveAttribute("target", "_blank");
     expect(booking).toHaveAttribute("rel", "noopener noreferrer");
-    expect(helloLink()).toHaveAttribute("href", `mailto:${strings.contact.helloEmail}`);
-    expect(booking.compareDocumentPosition(helloLink()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(helloLink()).not.toBeInTheDocument();
+    expect(screen.queryByText(OLD_LINE)).not.toBeInTheDocument();
   });
 
-  it("keeps the email line while the section is coming soon", async () => {
+  it("says only Coming soon. while the section is unpublished", async () => {
     renderPortal("/contact", []);
     expect(await screen.findByText(copy.comingSoon)).toBeInTheDocument();
-    expect(helloLink().closest("p")).toHaveTextContent(`${copy.contactLine.before}${strings.contact.helloEmail}.`);
+    expect(screen.getByRole("heading", { level: 1, name: copy.titles.contact })).toBeInTheDocument();
+    expect(helloLink()).not.toBeInTheDocument();
+    expect(screen.queryByText(OLD_LINE)).not.toBeInTheDocument();
   });
 });
 
 describe("section time tracking", () => {
-  it("sends the visible time on the page as section_view when the tab hides", async () => {
-    let clock = 0;
-    let visibility: DocumentVisibilityState = "visible";
-    vi.spyOn(performance, "now").mockImplementation(() => clock);
-    vi.spyOn(document, "visibilityState", "get").mockImplementation(() => visibility);
-    renderPortal("/team", [section("team")]);
-    await screen.findByText("Example team text.");
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/investors/sessions", expect.anything()));
-    clock = 4500;
-    visibility = "hidden";
-    act(() => {
-      document.dispatchEvent(new Event("visibilitychange", { bubbles: true }));
-    });
-    const flush = fetchMock.mock.calls.find(([input]) => String(input) === "/api/investors/events");
-    expect(flush?.[1]?.keepalive).toBe(true);
-    expect(JSON.parse(String(flush?.[1]?.body)).events).toEqual([
-      { type: "section_view", section: "team", durationMs: 4500 },
-    ]);
-  });
+  // The contact page keeps its section_view after US-307 dropped its fixed line.
+  it.each(["team", "contact"] as const)(
+    "sends the visible time on the %s page as section_view when the tab hides",
+    async (slug) => {
+      let clock = 0;
+      let visibility: DocumentVisibilityState = "visible";
+      vi.spyOn(performance, "now").mockImplementation(() => clock);
+      vi.spyOn(document, "visibilityState", "get").mockImplementation(() => visibility);
+      renderPortal(`/${slug}`, [section(slug)]);
+      await screen.findByText(`Example ${slug} text.`);
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/investors/sessions", expect.anything()));
+      clock = 4500;
+      visibility = "hidden";
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange", { bubbles: true }));
+      });
+      const flush = fetchMock.mock.calls.find(([input]) => String(input) === "/api/investors/events");
+      expect(flush?.[1]?.keepalive).toBe(true);
+      expect(JSON.parse(String(flush?.[1]?.body)).events).toEqual([
+        { type: "section_view", section: slug, durationMs: 4500 },
+      ]);
+    },
+  );
 });

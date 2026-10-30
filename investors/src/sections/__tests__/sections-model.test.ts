@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findSection, PAGE_SECTIONS, publishedPages, readableSection } from "../sections-model";
+import { findSection, FOUNDER_CARD_SECTION, PAGE_SECTIONS, publishedPages, readableSection } from "../sections-model";
 
 import { section } from "./fixtures";
 
@@ -31,5 +31,11 @@ describe("publishedPages", () => {
   it("never lists the overview, which lives on the home page", () => {
     expect(publishedPages([section("overview")])).toEqual([]);
     expect(PAGE_SECTIONS).toEqual(["team", "faq", "contact"]);
+  });
+
+  it("never lists the founder card, whose rows live in Home's founder card (no page, no nav link)", () => {
+    expect(FOUNDER_CARD_SECTION).toBe("founder_card");
+    expect(publishedPages([section("founder_card"), section("faq")])).toEqual(["faq"]);
+    expect(PAGE_SECTIONS).not.toContain(FOUNDER_CARD_SECTION);
   });
 });

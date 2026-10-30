@@ -5,7 +5,8 @@
  * save one. Mounted behind requireInvestor, and the /admin paths behind the
  * admin gate (KP3).
  *
- * The rows are seeded by 002_sections_seed.sql; there is no create or
+ * The rows are seeded by 002_sections_seed.sql and, for the founder card's
+ * signed-in-only rows, 005_founder_card_section.sql; there is no create or
  * delete, so a slug without a row is a 404. A save records the admin's Clerk
  * id (from the verified token) in updated_by. The markdown is stored as sent:
  * the app renders it without raw HTML.
