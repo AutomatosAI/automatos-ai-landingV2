@@ -33,28 +33,30 @@ describe("CompanyCard", () => {
     expect(screen.getByText(SPINE)).toBeInTheDocument();
   });
 
-  it("shows the bundled cover as decoration, fetched first, and the ship tile hidden from assistive tech", () => {
+  it("shows the bundled cover as decoration, fetched first, and the ship's family tile hidden from assistive tech", () => {
     const { container } = render(<CompanyCard />);
     const cover = container.querySelector("img");
     expect(cover).toHaveAttribute("src", COVER_IMAGE.src);
     expect(cover).toHaveAttribute("alt", "");
     expect(cover).toHaveAttribute("fetchpriority", "high");
     expect(screen.queryByRole("img")).toBeNull();
-    const tile = container.querySelector(".bg-ship");
-    expect(tile).toHaveAttribute("aria-hidden", "true");
-    expect(tile).toHaveClass("text-white");
+    const tiles = container.querySelectorAll("[data-mark]");
+    expect(tiles).toHaveLength(1);
+    expect(tiles[0]).toHaveAttribute("data-mark", "ai");
+    expect(tiles[0]).toHaveAttribute("aria-hidden", "true");
+    for (const svg of container.querySelectorAll("svg")) expect(svg.closest('[aria-hidden="true"]')).not.toBeNull();
   });
 
   it("is centred signed out, and left-aligned with a shorter band and a smaller tile when compact", () => {
     const { container, unmount } = render(<CompanyCard />);
     expect(screen.getByRole("heading", { name: "Automatos" }).parentElement).toHaveClass("text-center");
-    expect(container.querySelector(".bg-ship")).toHaveClass("sm:size-[76px]");
+    expect(container.querySelector('[data-mark="ai"]')).toHaveClass("size-16", "sm:size-[76px]");
     expect(container.querySelector("img")?.parentElement).toHaveClass("sm:h-64");
     unmount();
 
     const compact = render(<CompanyCard compact />).container;
     expect(screen.getByRole("heading", { name: "Automatos" }).parentElement).not.toHaveClass("text-center");
-    expect(compact.querySelector(".bg-ship")).toHaveClass("size-14");
+    expect(compact.querySelector('[data-mark="ai"]')).toHaveClass("size-14");
     expect(compact.querySelector("img")?.parentElement).toHaveClass("md:h-[136px]");
   });
 

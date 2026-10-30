@@ -5,7 +5,12 @@ import { ProductLinks } from "../ProductLinks";
 import { STATUS_DOT_SHAPES, STATUS_LABELS, type StatusDotShape, type StatusLabel } from "../status";
 import { StatusChip } from "../StatusChip";
 
-/* PRD-003 §5.2, written out here so a change to company-data.ts has to change this too. */
+/*
+ * PRD-003 §5.2, written out here so a change to company-data.ts has to change
+ * this too. Each mark is the product's folder in the family icon kit: Studio
+ * the navigator (os), Go the wheel, Academy the chart room, Markets the
+ * weather vane; GitHub has no family icon and keeps its own mark.
+ */
 const SEE_IT_WORKING = [
   {
     name: "Studio",
@@ -13,6 +18,7 @@ const SEE_IT_WORKING = [
     chip: "BUILDING NOW",
     line: "Hosted beta opens November 2026 · join the waitlist",
     address: "studio.automatos.app",
+    mark: "os",
   },
   {
     name: "Automatos Go",
@@ -20,6 +26,7 @@ const SEE_IT_WORKING = [
     chip: "IN BETA",
     line: "The iPhone app · TestFlight beta, by invite",
     address: "github.com/AutomatosAI/automatos-go",
+    mark: "go",
   },
   {
     name: "GitHub",
@@ -27,6 +34,7 @@ const SEE_IT_WORKING = [
     chip: "LIVE",
     line: "Open source, Apache-2.0",
     address: "github.com/AutomatosAI/automatos-ai",
+    mark: "github",
   },
 ] as const;
 
@@ -37,6 +45,7 @@ const ALSO_FROM_AUTOMATOS = [
     chip: "LIVE",
     line: "Free certification prep, with an AI tutor",
     address: "academy.automatos.app",
+    mark: "academy",
   },
   {
     name: "Markets",
@@ -44,6 +53,7 @@ const ALSO_FROM_AUTOMATOS = [
     chip: null,
     line: "Read-only crypto research, free",
     address: "markets.automatos.app",
+    mark: "markets",
   },
 ] as const;
 
@@ -162,20 +172,36 @@ describe("ProductLinks", () => {
     expect(cardFor(also, "Academy").querySelectorAll("wbr")).toHaveLength(0);
   });
 
-  it("puts each product's glyph white on an orange square, hidden from assistive tech, smaller in the second group", () => {
+  it("puts each product's family tile on its card, hidden from assistive tech, smaller in the second group", () => {
     const { seeItWorking, also } = renderLinks();
-    for (const [group, size] of [
-      [seeItWorking, "size-11"],
-      [also, "size-8"],
-    ] as const) {
-      for (const card of within(group).getAllByRole("link")) {
-        const tile = card.querySelector(".bg-ship");
-        expect(tile).toHaveAttribute("aria-hidden", "true");
-        expect(tile).toHaveClass("text-white", size);
+    const groups = [
+      [seeItWorking, SEE_IT_WORKING, "size-11"],
+      [also, ALSO_FROM_AUTOMATOS, "size-8"],
+    ] as const;
+    for (const [group, links, size] of groups) {
+      for (const expected of links) {
+        const card = cardFor(group, expected.name);
+        const tiles = card.querySelectorAll("[data-mark]");
+        expect(tiles, expected.name).toHaveLength(1);
+        const tile = tiles[0];
+        expect(tile, expected.name).toHaveAttribute("data-mark", expected.mark);
+        expect(tile, expected.name).toHaveAttribute("aria-hidden", "true");
+        expect(tile, expected.name).toHaveClass(size);
         expect(tile?.querySelectorAll("svg")).toHaveLength(1);
-        // The orange is the tile's alone on the card.
-        expect(card.querySelectorAll('[class*="ship"]')).toHaveLength(1);
+        // Every svg on the card (the tile, the address's arrow) is hidden from assistive tech.
+        for (const svg of card.querySelectorAll("svg")) expect(svg.closest('[aria-hidden="true"]')).not.toBeNull();
+        // The orange is the tile's alone on the card: no flat brand colour beside it.
+        expect(card.querySelector('[class*="ship"]'), expected.name).toBeNull();
       }
     }
+  });
+
+  it("gives every tile on the page its own gradient", () => {
+    const { container } = render(<ProductLinks />);
+    const ids = [...container.querySelectorAll("[data-mark]")].map(
+      (tile) => tile.getElementsByTagName("linearGradient")[0]?.id ?? "",
+    );
+    expect(ids).toHaveLength(SEE_IT_WORKING.length + ALSO_FROM_AUTOMATOS.length);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
