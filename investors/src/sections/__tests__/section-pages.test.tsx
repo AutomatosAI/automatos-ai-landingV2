@@ -91,7 +91,7 @@ describe("the home page's overview", () => {
   it("is left out when the sections cannot be read; the documents still show", async () => {
     renderPortal("/", FAILED);
     await screen.findByRole("heading", { level: 3, name: DECK.title });
-    expect(screen.queryByRole("region")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Overview" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: strings.home.title })).toBeInTheDocument();
   });
 });

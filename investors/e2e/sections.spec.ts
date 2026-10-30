@@ -38,6 +38,11 @@ test("home: the overview above the documents, its raw HTML dropped", async ({ pa
   const overview = page.getByRole("region", { name: OVERVIEW_SECTION.title, exact: true });
   await expect(overview.getByText(OVERVIEW_POINT)).toBeVisible();
   await expectNoRawHtml(page, overview);
+  // Under the header, Quick access and the product links (PRD-003 §3.2), above the rule and the documents.
+  const products = page.getByRole("region", { name: strings.company.alsoFromAutomatos, exact: true });
+  await expect(products).toBeVisible();
+  const [productsBox, overviewBox] = await Promise.all([products.boundingBox(), overview.boundingBox()]);
+  expect(overviewBox?.y ?? 0).toBeGreaterThan(productsBox?.y ?? Number.POSITIVE_INFINITY);
 
   await capture(page, testInfo, "home-overview");
   expect(api.unmocked()).toEqual([]);

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "@/App";
 import { setTokenSource } from "@/auth/token";
+import { FOUNDER } from "@/company/company-data";
 import type { InvestorDocument } from "@/documents/documents-api";
 import { navigateTo } from "@/documents/navigate";
 import { section } from "@/sections/__tests__/fixtures";
@@ -22,6 +23,14 @@ vi.mock("@/viewer/PdfViewer", () => ({
 
 const copy = strings.home.pitch;
 const library = strings.library;
+/** The h2s above the rule (PRD-003 §3.2): the header, Quick access and the product links, before the pitch block's. */
+const LEAD_HEADINGS = [
+  strings.company.name,
+  FOUNDER.name,
+  strings.company.quickAccess.heading,
+  strings.company.seeItWorking,
+  strings.company.alsoFromAutomatos,
+];
 const DECK = investorDocument({ id: "00000000-0000-4000-8000-0000000000d1", title: "Example deck", category: "Pitch" });
 const VIDEO = investorDocument({
   id: "00000000-0000-4000-8000-0000000000d7",
@@ -142,6 +151,7 @@ describe("the pitch block on the home page", () => {
     expect(overview.compareDocumentPosition(block) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(block).getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([DECK.title, VIDEO.title]);
     expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      ...LEAD_HEADINGS,
       strings.home.pitchTitle,
       "Business model",
       "Pitch",
@@ -188,7 +198,12 @@ describe("the pitch block on the home page", () => {
     renderHome();
     await screen.findByRole("heading", { level: 3, name: MODEL.title });
     expect(screen.queryByRole("heading", { name: strings.home.pitchTitle })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual(["Business model", "Product", "Pitch"]);
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      ...LEAD_HEADINGS,
+      "Business model",
+      "Product",
+      "Pitch",
+    ]);
   });
 
   it("shows only the pitch when the deck and the video are all there is", async () => {
@@ -197,7 +212,10 @@ describe("the pitch block on the home page", () => {
     const block = await pitchBlock();
     // The deck comes first, whatever the admin's order between the two.
     expect(within(block).getAllByRole("heading", { level: 3 }).map((h) => h.textContent)).toEqual([DECK.title, VIDEO.title]);
-    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([strings.home.pitchTitle]);
+    expect(screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)).toEqual([
+      ...LEAD_HEADINGS,
+      strings.home.pitchTitle,
+    ]);
     expect(screen.queryByText(library.empty.title)).not.toBeInTheDocument();
   });
 });

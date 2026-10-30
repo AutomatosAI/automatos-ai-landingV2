@@ -10,7 +10,8 @@ import { OVERVIEW_POINT, OVERVIEW_SECTION } from "./fixtures/sections";
  * Document storage down (W3-01): GET /documents answers 503
  * storage_unavailable, so the home page stays up, overview included, with a
  * note where the documents would be, not the full-page 'Temporarily
- * unavailable' screen. Saved as a screenshot.
+ * unavailable' screen, and the quick-access tiles that need no list.
+ * Saved as a screenshot.
  */
 
 const DOCUMENTS = "GET /documents";
@@ -28,6 +29,14 @@ test("home: storage down, the overview and the note in place of the documents", 
   await expect(note).toBeVisible();
   await expect(page.getByText(strings.status.unavailable.title)).toHaveCount(0);
   await expect(page.getByRole("heading", { name: strings.home.pitchTitle })).toHaveCount(0);
+  // Quick access (PRD-003 US-306): no deck, video or Documents tile without the list; Team, FAQ and Book a call stay.
+  const tiles = page.getByRole("list", { name: strings.company.quickAccess.heading, exact: true }).getByRole("link");
+  await expect(tiles).toHaveCount(3);
+  expect(await tiles.evaluateAll((links) => links.map((link) => link.getAttribute("href")))).toEqual([
+    "/investors/team",
+    "/investors/faq",
+    "/investors/contact",
+  ]);
 
   await capture(page, testInfo, "home-storage-unavailable");
 
