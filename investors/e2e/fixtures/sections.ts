@@ -1,11 +1,15 @@
 import type { AdminSection } from "../../src/admin/sections-api";
+import type { ContactRow } from "../../src/company/contact-rows";
 import { section } from "../../src/sections/__tests__/fixtures";
 import type { Section } from "../../src/sections/sections-api";
 
 /*
- * The four sections as the mocked API answers them (KP5: every word is
- * invented for these checks). The overview carries raw HTML that would run
- * if the renderer ever let HTML through: the specs check that it never does.
+ * The five sections as the mocked API answers them (KP5: every word and
+ * number is invented for these checks). The overview carries raw HTML that
+ * would run if the renderer ever let HTML through: the specs check that it
+ * never does. The founder card holds a phone row and one more link, and is
+ * published here, so the teaser's checks prove that no number and no tel:
+ * link reaches the signed-out page whatever the section holds (PRD-003 D5).
  */
 
 /** The global the hostile HTML would set: undefined while the renderer drops it. */
@@ -50,10 +54,25 @@ const CONTACT = section("contact", {
   bodyMd: `The team answers within two working days. [${BOOKING.label}](${BOOKING.href}) to talk it through.`,
 });
 
-/** GET /sections: all four published, in the admins' order. */
-export const SECTIONS: readonly Section[] = [OVERVIEW_SECTION, TEAM, FAQ, CONTACT];
+/** The founder card's phone row, as the card shows it: an invented number from the UK's drama range. */
+export const FOUNDER_CARD_PHONE: ContactRow = { text: "+44 7700 900987", href: "tel:+447700900987", label: "Mobile" };
 
-/** GET /admin/sections: the same four, as the editor sees them. */
+/** The founder card's other row: an invented page on another origin, so it opens in a new tab. */
+export const FOUNDER_CARD_LINK: ContactRow = {
+  text: "example.com/e2e-founder",
+  href: "https://example.com/e2e-founder",
+  label: "Site",
+};
+
+/** The founder_card section (PRD-003 US-305): one row per line, "- [text](address) label". */
+export const FOUNDER_CARD: Section = section("founder_card", {
+  bodyMd: [FOUNDER_CARD_PHONE, FOUNDER_CARD_LINK].map((row) => `- [${row.text}](${row.href}) ${row.label}`).join("\n"),
+});
+
+/** GET /sections: all five published, in the admins' order. */
+export const SECTIONS: readonly Section[] = [OVERVIEW_SECTION, TEAM, FAQ, CONTACT, FOUNDER_CARD];
+
+/** GET /admin/sections: the same five, as the editor sees them. */
 export const ADMIN_SECTIONS: readonly AdminSection[] = SECTIONS.map((each, sortOrder) => ({
   ...each,
   sortOrder,

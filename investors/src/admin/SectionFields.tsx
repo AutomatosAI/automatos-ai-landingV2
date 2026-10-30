@@ -1,7 +1,9 @@
+import { CARD_ROW_LIMITS } from "@/company/card-rows";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/profile/FormField";
+import { FOUNDER_CARD_SECTION, type SectionSlug } from "@/sections/sections-model";
 import { strings } from "@/strings";
 
 import {
@@ -20,6 +22,11 @@ export interface SectionFieldsBinding {
   readonly draft: SectionDraft;
   readonly errors: SectionFieldErrors;
   readonly change: (change: Partial<SectionDraft>) => void;
+}
+
+/** The text field's hint: markdown, or for the founder_card section its row format (company/card-rows.ts). */
+function bodyHint(slug: SectionSlug): string {
+  return slug === FOUNDER_CARD_SECTION ? strings.admin.sections.founderCard.bodyHint(CARD_ROW_LIMITS) : fields.body.hint;
 }
 
 function errorFor(form: SectionFieldsBinding, field: SectionField): string | undefined {
@@ -64,7 +71,7 @@ function PublishedRow({ form }: { readonly form: SectionFieldsBinding }) {
   );
 }
 
-function BodyRow({ form }: { readonly form: SectionFieldsBinding }) {
+function BodyRow({ form, hint }: { readonly form: SectionFieldsBinding; readonly hint: string }) {
   const id = sectionFieldId("bodyMd");
   const hintId = `${id}-hint`;
   const used = form.draft.bodyMd.length;
@@ -73,7 +80,7 @@ function BodyRow({ form }: { readonly form: SectionFieldsBinding }) {
       {(control) => (
         <>
           <p id={hintId} className="text-sm text-muted-foreground">
-            {fields.body.hint}
+            {hint}
           </p>
           <Textarea
             {...control}
@@ -93,13 +100,19 @@ function BodyRow({ form }: { readonly form: SectionFieldsBinding }) {
   );
 }
 
+interface SectionFieldsProps {
+  /** The section being edited: the founder_card section's text field explains its row format. */
+  readonly slug: SectionSlug;
+  readonly form: SectionFieldsBinding;
+}
+
 /** The editor's fields, one column: the title, the published switch, the markdown. */
-export function SectionFields({ form }: { readonly form: SectionFieldsBinding }) {
+export function SectionFields({ slug, form }: SectionFieldsProps) {
   return (
     <div className="grid content-start gap-6">
       <TitleRow form={form} />
       <PublishedRow form={form} />
-      <BodyRow form={form} />
+      <BodyRow form={form} hint={bodyHint(slug)} />
     </div>
   );
 }

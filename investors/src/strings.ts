@@ -510,6 +510,7 @@ export const strings = {
         team: "Team page",
         faq: "FAQ page",
         contact: "Contact page, above the team's email",
+        founder_card: "Home page, in the founder card, signed-in investors only",
       },
       published: "Published",
       notPublished: "Not published",
@@ -538,6 +539,22 @@ export const strings = {
       preview: {
         label: "Preview",
         hint: "As investors will see it once saved and published.",
+      },
+      /**
+       * The founder_card section (PRD-003 US-305): contact rows under the work
+       * email on Home's founder card, not free text. The example number is
+       * invented.
+       */
+      founderCard: {
+        bodyHint: (limits: { readonly rows: number; readonly text: number; readonly label: number }) =>
+          `One row per line: - [shown text](address) label. For example: - [+00 0000 000000](tel:+0000000000) Mobile. ` +
+          `The address starts https:, mailto: or tel: (digits, + and spaces). ` +
+          `Up to ${limits.rows} rows; shown text up to ${limits.text} characters, label up to ${limits.label}.`,
+        /** Lines the card leaves out: not in the row format, or past the last row it shows. */
+        skipped: (count: number) =>
+          count === 1
+            ? "1 line is not on the card. Check it against the row format and the limits under Text."
+            : `${count} lines are not on the card. Check them against the row format and the limits under Text.`,
       },
       save: "Save",
       saving: "Saving…",

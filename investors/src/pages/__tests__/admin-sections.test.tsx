@@ -6,6 +6,8 @@ import { App } from "@/App";
 import { adminSection, adminSections } from "@/admin/__tests__/section-fixtures";
 import type { AdminSection } from "@/admin/sections-api";
 import { setTokenSource } from "@/auth/token";
+import { CARD_ROW_LIMITS } from "@/company/card-rows";
+import { FOUNDER } from "@/company/company-data";
 import { strings } from "@/strings";
 import { ADMIN_ME } from "@/test/fixtures";
 import { ADA, renderWithProviders } from "@/test/providers";
@@ -35,7 +37,7 @@ function serve(routes: Readonly<Record<string, Handler>>) {
 const listOf = (sections: readonly AdminSection[]) => () => json(200, { sections });
 
 /** PUT answers what was sent, stamped by the admin, as the server does. */
-const echoSave = (slug: "team" | "overview") => (body: unknown) =>
+const echoSave = (slug: "team" | "overview" | "founder_card") => (body: unknown) =>
   json(200, { section: adminSection(slug, { ...(body as Partial<AdminSection>), updatedAt: "2026-10-27T10:00:00.000Z" }) });
 
 const calls = (method: string, path: string) =>
@@ -60,7 +62,20 @@ function renderAdmin(path: string) {
 const SECTIONS = adminSections({
   overview: { bodyMd: "Example overview text.", published: true },
   team: { bodyMd: "Example team text.", published: false, updatedBy: null },
+  // As 005_founder_card_section.sql ships it: empty and unpublished.
+  founder_card: { bodyMd: "", published: false, updatedBy: null },
 });
+
+/* The founder card's rows (KP5: an invented number from the UK's drama range, an example address). */
+const PHONE = { text: "+44 7700 900123", href: "tel:+447700900123", label: "Mobile" } as const;
+const SITE = { text: "example.com/someone", href: "https://example.com/someone", label: "Site" } as const;
+const CARD_ROWS = [
+  `- [${PHONE.text}](tel:+44 7700 900123) ${PHONE.label}`,
+  `- [${SITE.text}](${SITE.href}) ${SITE.label}`,
+  "A line that is not a row.",
+  "- [Old site](http://example.com/old) Site",
+  "- [Run](javascript:alert(1)) Script",
+].join("\n");
 
 const textArea = () => screen.findByLabelText(copy.fields.body.label);
 const preview = () => within(screen.getByRole("region", { name: copy.preview.label }));
@@ -86,19 +101,26 @@ afterEach(() => {
 });
 
 describe("the sections list", () => {
-  it("lists the four sections with where each shows and whether investors see it", async () => {
+  it("lists the five sections with where each shows and whether investors see it", async () => {
     serve({ "GET /admin/sections": listOf(SECTIONS) });
     renderAdmin("/admin/sections");
 
     const list = await screen.findByRole("list", { name: copy.listLabel });
     const rows = within(list).getAllByRole("listitem");
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(5);
     expect(within(rows[0]!).getByText("Overview")).toBeInTheDocument();
     expect(within(rows[0]!).getByText(copy.places.overview)).toBeInTheDocument();
     expect(within(rows[0]!).getByText(copy.published)).toBeInTheDocument();
     expect(within(rows[1]!).getByText(copy.notPublished)).toBeInTheDocument();
     expect(within(rows[1]!).getByText(copy.neverSaved)).toBeInTheDocument();
     expect(within(rows[1]!).getByRole("link", { name: copy.editLabel("Team") })).toHaveAttribute("href", "/admin/sections/team");
+    expect(within(rows[4]!).getByText("Founder card")).toBeInTheDocument();
+    expect(within(rows[4]!).getByText(copy.places.founder_card)).toBeInTheDocument();
+    expect(within(rows[4]!).getByText(copy.notPublished)).toBeInTheDocument();
+    expect(within(rows[4]!).getByRole("link", { name: copy.editLabel("Founder card") })).toHaveAttribute(
+      "href",
+      "/admin/sections/founder_card",
+    );
 
     const nav = screen.getByRole("navigation", { name: admin.navLabel });
     expect(within(nav).getByRole("link", { name: admin.nav.sections })).toHaveAttribute("aria-current", "page");
@@ -194,6 +216,15 @@ describe("the section editor", () => {
     expect(calls("PUT", "/admin/sections/team")).toHaveLength(1);
   });
 
+  it("explains markdown in a page section's text hint, not the founder card's row format", async () => {
+    serve({ "GET /admin/sections": listOf(SECTIONS) });
+    renderAdmin("/admin/sections/team");
+
+    await textArea();
+    expect(screen.getByText(copy.fields.body.hint)).toBeInTheDocument();
+    expect(screen.queryByText(copy.founderCard.bodyHint(CARD_ROW_LIMITS))).toBeNull();
+  });
+
   it("says when the address names no section", async () => {
     serve({ "GET /admin/sections": listOf(SECTIONS) });
     renderAdmin("/admin/sections/pricing");
@@ -250,5 +281,62 @@ describe("unsaved changes", () => {
     fireEvent.click(screen.getByRole("link", { name: copy.back }));
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(/^\/admin\/sections$/));
     expect(screen.queryByRole("alertdialog")).toBeNull();
+  });
+});
+
+describe("the founder card's editor (PRD-003 US-305)", () => {
+  it("opens with the row format in the text hint, and previews the card with the work email alone while empty", async () => {
+    serve({ "GET /admin/sections": listOf(SECTIONS) });
+    renderAdmin("/admin/sections/founder_card");
+
+    expect(await screen.findByRole("heading", { level: 1, name: copy.editTitle("Founder card") })).toBeInTheDocument();
+    expect(screen.getByText(copy.places.founder_card)).toBeInTheDocument();
+    expect(screen.getByText(copy.founderCard.bodyHint(CARD_ROW_LIMITS))).toBeInTheDocument();
+    expect(screen.queryByText(copy.fields.body.hint)).toBeNull();
+    await textArea();
+
+    expect(preview().getByRole("heading", { level: 2, name: FOUNDER.name })).toBeInTheDocument();
+    const links = preview().getAllByRole("link");
+    expect(links.map((link) => link.getAttribute("href"))).toEqual([`mailto:${FOUNDER.email}`]);
+    expect(preview().queryByText(strings.sections.comingSoon)).toBeNull();
+    expect(screen.queryByText(/not on the card/)).toBeNull();
+  });
+
+  it("shows the rows as the card shows them, after the work email, and says how many lines are skipped", async () => {
+    serve({ "GET /admin/sections": listOf(SECTIONS) });
+    renderAdmin("/admin/sections/founder_card");
+
+    await type(CARD_ROWS);
+    const phone = await preview().findByRole("link", { name: new RegExp(PHONE.label) });
+    expect(phone).toHaveAttribute("href", PHONE.href);
+    expect(phone).toHaveTextContent(PHONE.text);
+    const site = preview().getByRole("link", { name: new RegExp(SITE.label) });
+    expect(site).toHaveAttribute("href", SITE.href);
+    expect(site).toHaveAttribute("target", "_blank");
+    expect(site).toHaveAttribute("rel", "noopener noreferrer");
+
+    const hrefs = preview()
+      .getAllByRole("link")
+      .map((link) => link.getAttribute("href"));
+    expect(hrefs).toEqual([`mailto:${FOUNDER.email}`, PHONE.href, SITE.href]);
+    expect(preview().queryByText("A line that is not a row.")).toBeNull();
+    expect(screen.getByText(copy.founderCard.skipped(3))).toBeInTheDocument();
+
+    await type(`- [${PHONE.text}](${PHONE.href}) ${PHONE.label}\nNot a row`);
+    expect(await screen.findByText(copy.founderCard.skipped(1))).toBeInTheDocument();
+    await type(`- [${PHONE.text}](${PHONE.href}) ${PHONE.label}`);
+    await waitFor(() => expect(screen.queryByText(/not on the card/)).toBeNull());
+  });
+
+  it("saves the rows as typed, like any section", async () => {
+    serve({ "GET /admin/sections": listOf(SECTIONS), "PUT /admin/sections/founder_card": echoSave("founder_card") });
+    renderAdmin("/admin/sections/founder_card");
+
+    await type(CARD_ROWS);
+    fireEvent.click(screen.getByRole("switch", { name: copy.fields.published.label }));
+    fireEvent.click(screen.getByRole("button", { name: copy.save }));
+
+    expect(await screen.findByText(copy.saved("Founder card", true))).toBeInTheDocument();
+    expect(calls("PUT", "/admin/sections/founder_card")).toEqual([{ title: "Founder card", bodyMd: CARD_ROWS, published: true }]);
   });
 });

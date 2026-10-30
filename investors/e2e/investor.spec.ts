@@ -6,6 +6,7 @@ import { MOOD_STORAGE_KEY } from "../src/theme/mood";
 
 import { mockPortal, signIn } from "./fixtures/api";
 import { DECK_ID, LIBRARY } from "./fixtures/data";
+import { FOUNDER_CARD_PHONE } from "./fixtures/sections";
 import { capture, waitForImages, waitForPdfPage } from "./fixtures/screens";
 
 /*
@@ -55,6 +56,8 @@ async function expectTeaser(page: Page): Promise<void> {
   }
 
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  // The mocked founder_card section is published with this row; signed out, it never shows.
+  await expect(page.getByText(FOUNDER_CARD_PHONE.text)).toHaveCount(0);
   expect(await page.locator("body").innerText()).not.toMatch(PHONE_LIKE);
   await waitForImages(page);
 }
