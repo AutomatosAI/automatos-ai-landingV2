@@ -146,7 +146,10 @@ describe("FamilyTile", () => {
     expect(new Set(ids).size).toBe(tiles.length);
     for (const id of ids) expect(id).toMatch(/^[\w-]+$/);
     tiles.forEach((tile, index) => {
-      const filled = [...tile.querySelectorAll('[fill^="url("]')].map((shape) => shape.getAttribute("fill"));
+      // Read off every shape: jsdom's selector engine does not match [fill^="url("].
+      const filled = [...tile.querySelectorAll("*")]
+        .map((shape) => shape.getAttribute("fill"))
+        .filter((fill) => fill?.startsWith("url("));
       // The square, then the cut-out the kit fills url(#g): the compass's centre, the chart room's star.
       expect(filled).toEqual([`url(#${ids[index]})`, `url(#${ids[index]})`]);
     });
