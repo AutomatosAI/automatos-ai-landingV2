@@ -1,10 +1,12 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
+import { FOUNDER, PRODUCT_LINKS } from "../src/company/company-data";
 import { strings } from "../src/strings";
+import { MOOD_STORAGE_KEY } from "../src/theme/mood";
 
 import { mockPortal, signIn } from "./fixtures/api";
 import { DECK_ID, LIBRARY } from "./fixtures/data";
-import { capture, waitForPdfPage } from "./fixtures/screens";
+import { capture, waitForImages, waitForPdfPage } from "./fixtures/screens";
 
 /*
  * The investor's screens (US-004 to US-007) at the project's width, each
@@ -12,12 +14,21 @@ import { capture, waitForPdfPage } from "./fixtures/screens";
  * no route answers fails the test.
  */
 
-test("teaser: signed out, with the tracking notice", async ({ page }, testInfo) => {
-  const api = await mockPortal(page, "investor");
-  await page.goto("./");
+/** A phone number however it is written (PRD-003 US-302's check, on the rendered page). */
+const PHONE_LIKE = /\+?\d[\d ()-]{7,}\d/;
 
+/**
+ * The signed-out page (PRD-003 §3.1): the company first, the one primary
+ * action, the Inside the portal cards, the founder and the team, the
+ * product links. It shows no phone number and no tel: link, whatever a
+ * section holds (D5); each spec also checks it never asked for /sections.
+ */
+async function expectTeaser(page: Page): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: strings.teaser.title })).toBeVisible();
-  await expect(page.getByRole("button", { name: strings.auth.signIn })).toBeEnabled();
+  await expect(page.getByRole("heading", { level: 2, name: strings.company.name, exact: true })).toBeVisible();
+  await expect(page.getByText(strings.company.spine, { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: strings.auth.createAccount, exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: strings.auth.signIn, exact: true })).toBeEnabled();
   const notice = page.getByText(strings.trackingNotice.before.trim());
   await expect(notice).toBeVisible();
   await expect(notice.getByRole("link", { name: strings.trackingNotice.policyLink })).toHaveAttribute(
@@ -26,7 +37,53 @@ test("teaser: signed out, with the tracking notice", async ({ page }, testInfo) 
   );
   await expect(notice).toContainText(strings.contact.privacyEmail);
 
+  const inside = page.getByRole("list", { name: strings.teaser.insideHeading });
+  await expect(inside.getByRole("button")).toHaveCount(strings.teaser.inside.length);
+  for (const item of strings.teaser.inside) {
+    await expect(inside.getByRole("button", { name: item, exact: true })).toBeEnabled();
+  }
+
+  await expect(page.getByRole("heading", { level: 2, name: FOUNDER.name, exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: strings.company.founderPhotoAlt })).toBeVisible();
+  await expect(page.getByRole("link", { name: new RegExp(FOUNDER.email) })).toHaveAttribute(
+    "href",
+    `mailto:${FOUNDER.email}`,
+  );
+  await expect(page.getByRole("link", { name: strings.company.bookCall })).toHaveCount(0);
+  for (const link of [...PRODUCT_LINKS.seeItWorking, ...PRODUCT_LINKS.alsoFromAutomatos]) {
+    await expect(page.locator(`a[href="${link.href}"]`)).toBeVisible();
+  }
+
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  expect(await page.locator("body").innerText()).not.toMatch(PHONE_LIKE);
+  await waitForImages(page);
+}
+
+test("teaser: signed out, the company first, with the tracking notice", async ({ page }, testInfo) => {
+  const api = await mockPortal(page, "investor");
+  await page.goto("./");
+
+  await expect(page.locator("body")).toHaveAttribute("data-mood", "bone");
+  await expectTeaser(page);
+
   await capture(page, testInfo, "teaser");
+  expect(api.calls()).not.toContain("GET /sections");
+  expect(api.unmocked()).toEqual([]);
+});
+
+test("teaser: the pitch mood", async ({ page }, testInfo) => {
+  await page.addInitScript(
+    ({ key, mood }) => window.localStorage.setItem(key, mood),
+    { key: MOOD_STORAGE_KEY, mood: "pitch" },
+  );
+  const api = await mockPortal(page, "investor");
+  await page.goto("./");
+
+  await expect(page.locator("body")).toHaveAttribute("data-mood", "pitch");
+  await expectTeaser(page);
+
+  await capture(page, testInfo, "teaser-mood-pitch");
+  expect(api.calls()).not.toContain("GET /sections");
   expect(api.unmocked()).toEqual([]);
 });
 

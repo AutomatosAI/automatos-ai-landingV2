@@ -17,6 +17,17 @@ export async function capture(page: Page, testInfo: TestInfo, name: string): Pro
 }
 
 /**
+ * Waits until every picture on the page has loaded (the bundled cover and
+ * the founder's photo, PRD-003 US-301), so a screenshot shows them and a
+ * picture Vite failed to emit fails the spec rather than the eye.
+ */
+export async function waitForImages(page: Page): Promise<void> {
+  await page.waitForFunction(() =>
+    Array.from(document.images).every((image) => image.complete && image.naturalWidth > 0),
+  );
+}
+
+/**
  * Height of the fixture's dark bar on each page, as a fraction from the top
  * (pdf.ts: y 300 to 312 of 540, measured from the bottom).
  */
