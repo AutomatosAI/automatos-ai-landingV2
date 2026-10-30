@@ -150,6 +150,11 @@ export const strings = {
     signInHeading: "Access",
     signInBody: "Create an account or sign in to read the documents.",
   },
+  /** The company and its founder, on the teaser and the home page. */
+  company: {
+    /** The founder's photo (company/FounderAvatar.tsx). */
+    founderPhotoAlt: "Gerard Kavanagh",
+  },
   auth: {
     createAccount: "Create account",
     signIn: "Sign in",
