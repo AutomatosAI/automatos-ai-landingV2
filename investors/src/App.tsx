@@ -11,6 +11,7 @@ import { Documents } from "@/pages/Documents";
 import { Faq } from "@/pages/Faq";
 import { Home } from "@/pages/Home";
 import { Profile } from "@/pages/Profile";
+import { Story } from "@/pages/Story";
 import { Team } from "@/pages/Team";
 import { Viewer } from "@/pages/Viewer";
 import { TrackingProvider } from "@/tracking/TrackingProvider";
@@ -41,6 +42,7 @@ export function App() {
             <Route path="documents" element={<Documents />} />
             <Route path="documents/:id" element={<Viewer />} />
             <Route path="team" element={<Team />} />
+            <Route path="story" element={<Story />} />
             <Route path="faq" element={<Faq />} />
             <Route path="contact" element={<Contact />} />
             <Route path="profile" element={<Profile />} />

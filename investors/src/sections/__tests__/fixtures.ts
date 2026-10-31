@@ -7,6 +7,7 @@ const TITLES: Readonly<Record<SectionSlug, string>> = {
   faq: "FAQ",
   contact: "Contact",
   founder_card: "Founder card",
+  story: "Story",
 };
 
 /** A published section as GET /sections answers it (KP5: invented text). */

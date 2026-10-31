@@ -1,18 +1,25 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import type { SectionSlug } from "../src/sections/sections-model";
 import { strings } from "../src/strings";
 
-import { mockPortal, signIn } from "./fixtures/api";
+import { mockPortal, signIn, type ApiRoutes } from "./fixtures/api";
 import { expectNoRawHtml } from "./fixtures/markdown";
 import { capture } from "./fixtures/screens";
 import { BOOKING, OVERVIEW_POINT, OVERVIEW_SECTION, SECTIONS } from "./fixtures/sections";
 
 /*
  * The admins' sections as investors read them (US-009): the overview on
- * the home page, then the Team, FAQ and Contact pages, each saved as a
- * screenshot. Every API call is mocked (fixtures/api.ts).
+ * the home page, then the Team, Story, FAQ and Contact pages, each saved as
+ * a screenshot. Every API call is mocked (fixtures/api.ts).
  */
+
+const nav = strings.nav;
+
+/** GET /sections without the story: unpublished, as 006_story_section.sql ships it. */
+const STORY_UNPUBLISHED: ApiRoutes = {
+  "GET /sections": { status: 200, body: { sections: SECTIONS.filter((section) => section.slug !== "story") } },
+};
 
 test.beforeEach(async ({ page }) => {
   await signIn(page);
@@ -55,6 +62,42 @@ test("team page", async ({ page }, testInfo) => {
   await expectSectionPage(page, "team", 2);
 
   await capture(page, testInfo, "team");
+  expect(api.unmocked()).toEqual([]);
+});
+
+/**
+ * The portal's links: the sidebar on desktop; on a phone the sidebar is
+ * hidden, so the header's menu is opened first and its sheet holds them.
+ */
+async function portalLinks(page: Page, isMobile: boolean | undefined): Promise<Locator> {
+  if (isMobile) await page.getByRole("button", { name: nav.openMenu, exact: true }).click();
+  return page.getByRole("navigation", { name: nav.label, exact: true }).getByRole("link");
+}
+
+test("story page: the published section, its link between Team and FAQ", async ({ page, isMobile }, testInfo) => {
+  const api = await mockPortal(page, "investor");
+  await page.goto("story");
+
+  await expectSectionPage(page, "story", 2);
+  await capture(page, testInfo, "story");
+
+  const links = await portalLinks(page, isMobile);
+  await expect(links).toHaveText([nav.home, nav.documents, nav.team, nav.story, nav.faq, nav.contact, nav.profile]);
+  await expect(links.filter({ hasText: nav.story })).toHaveAttribute("aria-current", "page");
+  expect(api.unmocked()).toEqual([]);
+});
+
+test("story page: unpublished, no link and Coming soon.", async ({ page, isMobile }, testInfo) => {
+  const api = await mockPortal(page, "investor", STORY_UNPUBLISHED);
+  await page.goto("story");
+
+  await expect(page.getByRole("heading", { level: 1, name: strings.sections.titles.story, exact: true })).toBeVisible();
+  await expect(page.getByText(strings.sections.comingSoon, { exact: true })).toBeVisible();
+  await capture(page, testInfo, "story-unpublished");
+
+  const links = await portalLinks(page, isMobile);
+  await expect(links).toHaveText([nav.home, nav.documents, nav.team, nav.faq, nav.contact, nav.profile]);
+  await expect(page.getByRole("link", { name: nav.story, exact: true })).toHaveCount(0);
   expect(api.unmocked()).toEqual([]);
 });
 

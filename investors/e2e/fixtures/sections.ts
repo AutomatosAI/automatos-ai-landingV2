@@ -4,7 +4,7 @@ import { section } from "../../src/sections/__tests__/fixtures";
 import type { Section } from "../../src/sections/sections-api";
 
 /*
- * The five sections as the mocked API answers them (KP5: every word and
+ * The six sections as the mocked API answers them (KP5: every word and
  * number is invented for these checks). The overview carries raw HTML that
  * would run if the renderer ever let HTML through: the specs check that it
  * never does. The founder card holds a phone row and one more link, and is
@@ -50,6 +50,14 @@ const FAQ = section("faq", {
   ].join("\n\n"),
 });
 
+/** The Story page's text: two chapters, each under a ## heading (an h3 on the page). */
+const STORY = section("story", {
+  bodyMd: [
+    "## How it began\n\nAn invented first chapter. It stands in for the company's story and says nothing true.",
+    "## Where it is going\n\nAn invented second chapter, as short as the first.",
+  ].join("\n\n"),
+});
+
 const CONTACT = section("contact", {
   bodyMd: `The team answers within two working days. [${BOOKING.label}](${BOOKING.href}) to talk it through.`,
 });
@@ -69,10 +77,10 @@ export const FOUNDER_CARD: Section = section("founder_card", {
   bodyMd: [FOUNDER_CARD_PHONE, FOUNDER_CARD_LINK].map((row) => `- [${row.text}](${row.href}) ${row.label}`).join("\n"),
 });
 
-/** GET /sections: all five published, in the admins' order. */
-export const SECTIONS: readonly Section[] = [OVERVIEW_SECTION, TEAM, FAQ, CONTACT, FOUNDER_CARD];
+/** GET /sections: all six published, in the admins' order (006 seeds the story last). */
+export const SECTIONS: readonly Section[] = [OVERVIEW_SECTION, TEAM, FAQ, CONTACT, FOUNDER_CARD, STORY];
 
-/** GET /admin/sections: the same five, as the editor sees them. */
+/** GET /admin/sections: the same six, as the editor sees them. */
 export const ADMIN_SECTIONS: readonly AdminSection[] = SECTIONS.map((each, sortOrder) => ({
   ...each,
   sortOrder,

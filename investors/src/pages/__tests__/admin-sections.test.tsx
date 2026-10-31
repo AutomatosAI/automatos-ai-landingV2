@@ -37,7 +37,7 @@ function serve(routes: Readonly<Record<string, Handler>>) {
 const listOf = (sections: readonly AdminSection[]) => () => json(200, { sections });
 
 /** PUT answers what was sent, stamped by the admin, as the server does. */
-const echoSave = (slug: "team" | "overview" | "founder_card") => (body: unknown) =>
+const echoSave = (slug: "team" | "overview" | "founder_card" | "story") => (body: unknown) =>
   json(200, { section: adminSection(slug, { ...(body as Partial<AdminSection>), updatedAt: "2026-10-27T10:00:00.000Z" }) });
 
 const calls = (method: string, path: string) =>
@@ -64,6 +64,8 @@ const SECTIONS = adminSections({
   team: { bodyMd: "Example team text.", published: false, updatedBy: null },
   // As 005_founder_card_section.sql ships it: empty and unpublished.
   founder_card: { bodyMd: "", published: false, updatedBy: null },
+  // As 006_story_section.sql ships it: empty and unpublished.
+  story: { bodyMd: "", published: false, updatedBy: null },
 });
 
 /* The founder card's rows (KP5: an invented number from the UK's drama range, an example address). */
@@ -101,13 +103,13 @@ afterEach(() => {
 });
 
 describe("the sections list", () => {
-  it("lists the five sections with where each shows and whether investors see it", async () => {
+  it("lists the six sections with where each shows and whether investors see it", async () => {
     serve({ "GET /admin/sections": listOf(SECTIONS) });
     renderAdmin("/admin/sections");
 
     const list = await screen.findByRole("list", { name: copy.listLabel });
     const rows = within(list).getAllByRole("listitem");
-    expect(rows).toHaveLength(5);
+    expect(rows).toHaveLength(6);
     expect(within(rows[0]!).getByText("Overview")).toBeInTheDocument();
     expect(within(rows[0]!).getByText(copy.places.overview)).toBeInTheDocument();
     expect(within(rows[0]!).getByText(copy.published)).toBeInTheDocument();
@@ -120,6 +122,14 @@ describe("the sections list", () => {
     expect(within(rows[4]!).getByRole("link", { name: copy.editLabel("Founder card") })).toHaveAttribute(
       "href",
       "/admin/sections/founder_card",
+    );
+    expect(within(rows[5]!).getByText("Story")).toBeInTheDocument();
+    expect(within(rows[5]!).getByText(copy.places.story)).toBeInTheDocument();
+    expect(within(rows[5]!).getByText(copy.notPublished)).toBeInTheDocument();
+    expect(within(rows[5]!).getByText(copy.neverSaved)).toBeInTheDocument();
+    expect(within(rows[5]!).getByRole("link", { name: copy.editLabel("Story") })).toHaveAttribute(
+      "href",
+      "/admin/sections/story",
     );
 
     const nav = screen.getByRole("navigation", { name: admin.navLabel });
@@ -338,5 +348,28 @@ describe("the founder card's editor (PRD-003 US-305)", () => {
 
     expect(await screen.findByText(copy.saved("Founder card", true))).toBeInTheDocument();
     expect(calls("PUT", "/admin/sections/founder_card")).toEqual([{ title: "Founder card", bodyMd: CARD_ROWS, published: true }]);
+  });
+});
+
+describe("the Story page's editor", () => {
+  it("opens empty and unpublished, as it ships, with the markdown hint, and publishes with PUT", async () => {
+    serve({ "GET /admin/sections": listOf(SECTIONS), "PUT /admin/sections/story": echoSave("story") });
+    renderAdmin("/admin/sections/story");
+
+    expect(await screen.findByRole("heading", { level: 1, name: copy.editTitle("Story") })).toBeInTheDocument();
+    expect(screen.getByText(copy.places.story)).toBeInTheDocument();
+    expect(screen.getByText(copy.fields.body.hint)).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: copy.fields.published.label })).toHaveAttribute("aria-checked", "false");
+    expect(await textArea()).toHaveValue("");
+
+    await type("## How it began\n\nAn invented first chapter.");
+    expect(await preview().findByRole("heading", { name: "How it began" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("switch", { name: copy.fields.published.label }));
+    fireEvent.click(screen.getByRole("button", { name: copy.save }));
+
+    expect(await screen.findByText(copy.saved("Story", true))).toBeInTheDocument();
+    expect(calls("PUT", "/admin/sections/story")).toEqual([
+      { title: "Story", bodyMd: "## How it began\n\nAn invented first chapter.", published: true },
+    ]);
   });
 });

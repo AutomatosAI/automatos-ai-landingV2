@@ -74,7 +74,7 @@ const INVESTOR_ROUTES: ApiRoutes = {
   "POST /sessions": { status: 201, body: { sessionId: SESSION_ID } },
   "POST /events": { status: 204 },
   "GET /documents": ok({ documents: LIBRARY }),
-  // Every page past the profile asks for them (the sidebar's Team, FAQ and Contact links).
+  // Every page past the profile asks for them (the sidebar's Team, Story, FAQ and Contact links).
   "GET /sections": ok({ sections: SECTIONS }),
   [linkKey(DECK_ID)]: storageLink(PDF_PATH),
   [linkKey(DEMO_ID)]: storageLink(VIDEO_PATH),

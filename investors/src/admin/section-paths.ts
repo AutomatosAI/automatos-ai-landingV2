@@ -8,11 +8,11 @@ export function adminSectionPath(slug: SectionSlug): string {
   return `${ADMIN_SECTIONS_PATH}/${encodeURIComponent(slug)}`;
 }
 
-const SLUGS: readonly string[] = ["overview", "team", "faq", "contact", "founder_card"] satisfies readonly SectionSlug[];
+const SLUGS: readonly string[] = ["overview", "team", "faq", "contact", "founder_card", "story"] satisfies readonly SectionSlug[];
 
 const isSectionSlug = (value: string): value is SectionSlug => SLUGS.includes(value);
 
-/** A slug from the address: one of the five seeded sections, else null. */
+/** A slug from the address: one of the six seeded sections, else null. */
 export function sectionSlugOf(value: string | undefined): SectionSlug | null {
   return value !== undefined && isSectionSlug(value) ? value : null;
 }
