@@ -106,14 +106,14 @@ describe("the product links", () => {
         href: "https://studio.automatos.app",
         chip: "BUILDING NOW",
         line: "Hosted beta opens November 2026 · join the waitlist",
-        icon: "compass",
+        icon: "os",
       },
       {
         name: "Automatos Go",
         href: "https://github.com/AutomatosAI/automatos-go",
         chip: "IN BETA",
         line: "The iPhone app · TestFlight beta, by invite",
-        icon: "smartphone",
+        icon: "go",
       },
       {
         name: "GitHub",
@@ -129,15 +129,25 @@ describe("the product links", () => {
         href: "https://academy.automatos.app",
         chip: "LIVE",
         line: "Free certification prep, with an AI tutor",
-        icon: "graduation-cap",
+        icon: "academy",
       },
       {
         name: "Markets",
         href: "https://markets.automatos.app",
         chip: null,
         line: "Read-only crypto research, free",
-        icon: "chart-candlestick",
+        icon: "markets",
       },
+    ]);
+  });
+
+  it("give each product its family mark from the kit: the navigator, the wheel, the chart room, the weather; GitHub its own", () => {
+    expect(ALL_LINKS.map((link) => [link.name, link.icon])).toEqual([
+      ["Studio", "os"],
+      ["Automatos Go", "go"],
+      ["GitHub", "github"],
+      ["Academy", "academy"],
+      ["Markets", "markets"],
     ]);
   });
 

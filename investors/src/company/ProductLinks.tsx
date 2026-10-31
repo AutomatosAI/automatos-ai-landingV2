@@ -7,9 +7,8 @@ import { linkAttributes } from "@/sections/markdown-links";
 import { strings } from "@/strings";
 
 import { PRODUCT_LINKS, type ProductLink, type ProductLinks as ProductLinkGroups } from "./company-data";
+import { FamilyTile } from "./FamilyTile";
 import { addressSegments, displayAddress } from "./link-address";
-import { ProductIcon } from "./ProductIcon";
-import { ShipTile } from "./ShipMark";
 import { StatusChip } from "./StatusChip";
 
 const copy = strings.company;
@@ -76,9 +75,7 @@ function ProductCard({ link, size }: { readonly link: ProductLink; readonly size
         sizes.card,
       )}
     >
-      <ShipTile size={sizes.tile}>
-        <ProductIcon icon={link.icon} />
-      </ShipTile>
+      <FamilyTile mark={link.icon} size={sizes.tile} />
       <span className="flex min-w-0 flex-1 flex-col self-stretch">
         <span className="flex min-h-[22px] flex-wrap items-center gap-x-2.5 gap-y-1.5">
           <span className={cn("mr-auto font-medium", sizes.name, "leading-snug")}>{link.name}</span>
@@ -124,9 +121,10 @@ interface ProductLinksProps {
 /**
  * The product links (PRD-003 §5.2), the same on the signed-out page and on
  * Home: "See it working" in full cards, then "Also from Automatos" in
- * smaller ones; three a row from md, one a row below it. Each card is an
- * orange icon square (the brand colour, under a white glyph), the name, the
- * register's chip where there is one, the line and the address.
+ * smaller ones; three a row from md, one a row below it. Each card is the
+ * product's tile from the family icon kit (its white mark on the kit's
+ * orange), the name, the register's chip where there is one, the line and
+ * the address.
  */
 export function ProductLinks({ links = PRODUCT_LINKS, className }: ProductLinksProps) {
   return (

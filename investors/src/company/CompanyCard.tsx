@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { strings } from "@/strings";
 
 import { COVER_IMAGE } from "./brand-images";
-import { ShipTile } from "./ShipMark";
+import { FamilyTile } from "./FamilyTile";
 
 const copy = strings.company;
 
@@ -70,10 +70,10 @@ interface CompanyCardProps {
 }
 
 /**
- * The company first (PRD-003 D1): the cover band, our ship mark overlapping
- * its lower edge, Automatos (h2) and the spine sentence. Centred on the
- * signed-out page; `compact` on Home, where the founder sits beside it and
- * the team runs along its foot.
+ * The company first (PRD-003 D1): the cover band, our ship's tile from the
+ * family icon kit overlapping its lower edge, Automatos (h2) and the spine
+ * sentence. Centred on the signed-out page; `compact` on Home, where the
+ * founder sits beside it and the team runs along its foot.
  */
 export function CompanyCard({ compact = false, aside, footer, className }: CompanyCardProps) {
   const hasAside = aside !== undefined && aside !== null;
@@ -84,7 +84,7 @@ export function CompanyCard({ compact = false, aside, footer, className }: Compa
       <div className={cn(hasAside && "md:grid md:grid-cols-[minmax(0,1fr)_296px]")}>
         {compact ? (
           <div className="px-[18px] pb-[18px] md:px-6 md:pb-[22px]">
-            <ShipTile size="header" className="relative z-[2] -mt-7 ring-[3px] ring-background" />
+            <FamilyTile mark="ai" size="header" className="relative z-[2] -mt-7 ring-[3px] ring-background" />
             <h2 className="mt-3 font-serif text-[32px] font-normal leading-[1.05] tracking-[-0.01em] md:text-4xl md:leading-[1.05]">
               {copy.name}
             </h2>
@@ -92,9 +92,10 @@ export function CompanyCard({ compact = false, aside, footer, className }: Compa
           </div>
         ) : (
           <div className="px-5 pb-[22px] text-center sm:px-7 sm:pb-[30px]">
-            <ShipTile
+            <FamilyTile
+              mark="ai"
               size="company"
-              className="relative z-[2] mx-auto -mt-8 size-16 ring-4 ring-background sm:-mt-[38px] sm:size-[76px] [&>svg]:size-[47px] sm:[&>svg]:size-14"
+              className="relative z-[2] mx-auto -mt-8 size-16 ring-4 ring-background sm:-mt-[38px] sm:size-[76px]"
             />
             <h2 className="mt-3 font-serif text-[42px] font-normal leading-[1.02] tracking-[-0.015em] sm:mt-4 sm:text-[52px] sm:leading-[1.02]">
               {copy.name}

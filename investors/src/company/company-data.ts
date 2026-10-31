@@ -35,8 +35,13 @@ export interface TeamMember {
   readonly role: string;
 }
 
-/** A product card's icon; the product cards map each key to its glyph. */
-export type ProductIconKey = "compass" | "smartphone" | "github" | "graduation-cap" | "chart-candlestick";
+/**
+ * A product card's icon: its folder in the Automatos family icon kit
+ * (automatos-os, the navigator's compass; -go, the wheel; -academy, the chart
+ * room's map; -markets, the weather vane), or "github", which has no family
+ * icon and keeps its own mark on the kit's tile (FamilyTile.tsx).
+ */
+export type ProductIconKey = "os" | "go" | "github" | "academy" | "markets";
 
 export interface ProductLink {
   readonly name: string;
@@ -92,14 +97,14 @@ export const PRODUCT_LINKS: ProductLinks = Object.freeze({
       href: "https://studio.automatos.app",
       chip: "BUILDING NOW",
       line: "Hosted beta opens November 2026 · join the waitlist",
-      icon: "compass",
+      icon: "os",
     },
     {
       name: "Automatos Go",
       href: "https://github.com/AutomatosAI/automatos-go",
       chip: "IN BETA",
       line: "The iPhone app · TestFlight beta, by invite",
-      icon: "smartphone",
+      icon: "go",
     },
     {
       name: "GitHub",
@@ -115,14 +120,14 @@ export const PRODUCT_LINKS: ProductLinks = Object.freeze({
       href: "https://academy.automatos.app",
       chip: "LIVE",
       line: "Free certification prep, with an AI tutor",
-      icon: "graduation-cap",
+      icon: "academy",
     },
     {
       name: "Markets",
       href: "https://markets.automatos.app",
       chip: null,
       line: "Read-only crypto research, free",
-      icon: "chart-candlestick",
+      icon: "markets",
     },
   ]),
 });

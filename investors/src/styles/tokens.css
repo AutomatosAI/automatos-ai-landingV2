@@ -12,8 +12,9 @@
   --radius: 2px;
   /*
    * The one brand colour (site.webmanifest theme_color), the same in both
-   * moods: only behind the white ship mark, in the photo badge and in the
-   * product icon squares, never under body text.
+   * moods: only behind the white ship mark on the founder photo's badge,
+   * never under body text. The tiles (company/FamilyTile.tsx) draw the
+   * family icon kit's own gradient, which ends in this orange.
    */
   --ship: #FF6A02;
 }

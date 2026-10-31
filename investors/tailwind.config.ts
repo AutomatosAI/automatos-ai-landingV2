@@ -39,7 +39,7 @@ export default {
         brand: pair("brand"),
         popover: pair("popover"),
         card: pair("card"),
-        // The brand orange (tokens.css --ship): the ship mark, the photo badge and the product icon squares only.
+        // The brand orange (tokens.css --ship): the photo badge's ship only; the tiles draw the kit's gradient.
         ship: token("ship"),
       },
       borderRadius: {
