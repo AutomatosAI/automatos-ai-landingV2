@@ -153,7 +153,7 @@ In detail, from the code (`server/investors/auth.js`, `server/investors/routes/`
 **What the server records**
 
 - **Your account**: your sign-in account's ID, its verified email address and its name, the first time you sign in.
-- **Your profile**: the answers you save, and the time you first ticked the investor-updates box.
+- **Your profile**: the answers you save, and when you last turned on the investor-updates box (unticking it keeps that time).
 - **When you were last seen**: updated at most once a minute while you use the portal.
 - **Sign-ins**: one the first time you sign in, and one each time you come back after more than 30 minutes away.
 - **Profile completed**: once, on your first save.
@@ -190,7 +190,7 @@ The portal sends no email to investors. The only emails it sends are alerts to t
 
 ### Your data
 
-The portal keeps what it records about you for 6 months after your last visit, then deletes it automatically (`server/investors/retention.js`; the privacy policy says the same). To get a copy of what it holds, or to have it deleted sooner, email privacy@automatos.app.
+The portal keeps what it records about you for 6 months after your last visit, then deletes it automatically (`server/investors/retention.js`; the privacy policy says the same). If your access has been paused, it keeps only what is needed to keep it paused: your sign-in account's ID and the block. To get a copy of what it holds, or to have it deleted sooner, email privacy@automatos.app.
 
 ---
 
@@ -252,7 +252,7 @@ The row then shows "Preparing the upload…", a progress bar with "Uploading… 
 
 #### Replace and versions
 
-Once a document has a file, the button reads "Replace". A replacement goes through the same steps and becomes the next version (v2, v3 and so on). The previous file is then deleted from storage. The document keeps its published state, so investors get the new file at once. Reading history stays attached to the version it was recorded against, and [Document stats](#document-stats) can show each version. If two uploads to the same document race, the second to finish is refused with "Another upload of this document finished first."
+Once a document has a file, the button reads "Replace". A replacement goes through the same steps and becomes the next version (v2, v3 and so on). The previous file is then deleted from storage (if that fails, the old file stays in the bucket and the server logs it). The document keeps its published state, so investors get the new file at once. Reading history stays attached to the version it was recorded against, and [Document stats](#document-stats) can show each version. If two uploads to the same document race, the second to finish is refused with "Another upload of this document finished first."
 
 #### Publish and unpublish
 
@@ -318,7 +318,7 @@ The page lists these counting rules under "How it is counted".
 Clicking an investor opens their page (`/investors/admin/investors/<id>`):
 
 - **Profile**: email, firm, title, investor type, typical cheque size, LinkedIn, country, where they heard about you, whether they want investor updates (and since when), signed up, last seen, when they completed the profile, and their Clerk user ID.
-- **Documents**: each document they opened, with opens, furthest page, time and whether they downloaded it, counted over every version.
+- **Documents**: each existing document they have any recorded activity on (opened, read, watched or downloaded), with opens, furthest page, time and whether they downloaded it, counted over every version.
 - **Timeline**: every recorded event, newest first, 50 to a page, each with its details (time, document, version, page, duration, session, data).
 - **Block** or **Unblock**, **"Export data (JSON)"** and **"Delete investor"** at the top.
 
