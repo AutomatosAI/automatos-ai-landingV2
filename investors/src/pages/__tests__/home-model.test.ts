@@ -149,6 +149,13 @@ describe("quickAccessTiles: all six", () => {
     expect(list.filter((tile) => tile.external)).toEqual([]);
   });
 
+  it("stays at six with the Story published: the Story is a sidebar link, not a tile", () => {
+    const sections = [section("contact"), section("faq"), section("team"), section("story")];
+    const list = tiles({ documents: [DECK, VIDEO, MODEL], sections });
+    expect(keys(list)).toEqual(["deck", "demo", "documents", "team", "faq", "bookCall"]);
+    expect(list.map((tile) => tile.href)).not.toContain("/story");
+  });
+
   it("returns a frozen list of frozen tiles", () => {
     const list = tiles({ documents: [DECK], sections: PAGES, bookingUrl: BOOKING });
     expect(Object.isFrozen(list)).toBe(true);

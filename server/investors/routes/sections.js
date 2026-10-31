@@ -1,15 +1,16 @@
 /**
- * Portal sections (US-009, US-016): the overview, team, FAQ and contact
- * pages, markdown the admins edit without a deploy. GET /sections gives an
- * investor the published ones; the /admin routes read every section and
- * save one. Mounted behind requireInvestor, and the /admin paths behind the
- * admin gate (KP3).
+ * Portal sections (US-009, US-016): the overview, team, story, FAQ and
+ * contact pages, markdown the admins edit without a deploy. GET /sections
+ * gives an investor the published ones; the /admin routes read every section
+ * and save one. Mounted behind requireInvestor, and the /admin paths behind
+ * the admin gate (KP3).
  *
- * The rows are seeded by 002_sections_seed.sql and, for the founder card's
- * signed-in-only rows, 005_founder_card_section.sql; there is no create or
- * delete, so a slug without a row is a 404. A save records the admin's Clerk
- * id (from the verified token) in updated_by. The markdown is stored as sent:
- * the app renders it without raw HTML.
+ * The rows are seeded by 002_sections_seed.sql, then, for the founder card's
+ * signed-in-only rows, 005_founder_card_section.sql and, for the Story page,
+ * 006_story_section.sql; there is no create or delete, so a slug without a
+ * row is a 404. A save records the admin's Clerk id (from the verified token)
+ * in updated_by. The markdown is stored as sent: the app renders it without
+ * raw HTML.
  */
 import express from "express";
 import { z } from "zod";

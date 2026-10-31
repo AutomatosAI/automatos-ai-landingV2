@@ -1,4 +1,4 @@
-import { CircleHelp, FolderOpen, House, Mail, Shield, UserRound, Users, type LucideIcon } from "lucide-react";
+import { BookOpen, CircleHelp, FolderOpen, House, Mail, Shield, UserRound, Users, type LucideIcon } from "lucide-react";
 
 import type { Me } from "@/api/me";
 import { ADMIN_PATH, DOCUMENTS_PATH, HOME_PATH, PROFILE_PATH } from "@/lib/paths";
@@ -27,6 +27,7 @@ const ADMIN_ITEM: NavItem = Object.freeze({ to: ADMIN_PATH, label: strings.nav.a
 
 const SECTION_ICONS: Readonly<Record<PageSection, LucideIcon>> = Object.freeze({
   team: Users,
+  story: BookOpen,
   faq: CircleHelp,
   contact: Mail,
 });
@@ -36,8 +37,9 @@ const sectionItem = (slug: PageSection): NavItem =>
 
 /**
  * The links an investor sees: none until the profile is done (every page
- * leads to the form until then); Team, FAQ and Contact only once an admin
- * has published them (US-009), always in that order; Admin only for admins.
+ * leads to the form until then); Team, Story, FAQ and Contact only once an
+ * admin has published them (US-009), always in that order; Admin only for
+ * admins.
  * Showing Admin is manners: the server checks the allowlist on every /admin
  * call (KP3).
  */

@@ -89,7 +89,7 @@ function EditorScreen({ userId, slug }: { readonly userId: string; readonly slug
   );
 }
 
-/** /investors/admin/sections (US-016): the overview, team, FAQ and contact sections, and where each shows. */
+/** /investors/admin/sections (US-016): the overview, team, story, FAQ and contact sections, and where each shows. */
 export function AdminSections() {
   const state = useAuthState();
   // The admin gate renders this only when signed in; the check narrows the type.

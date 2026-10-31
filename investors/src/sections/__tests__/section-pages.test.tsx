@@ -16,7 +16,7 @@ const nav = strings.nav;
 const copy = strings.sections;
 const SESSION = "00000000-0000-4000-8000-00000000005e";
 const DECK = investorDocument({ id: "00000000-0000-4000-8000-0000000000d1", title: "Example deck", category: "Pitch" });
-const ALL = [section("overview"), section("team"), section("faq"), section("contact")];
+const ALL = [section("overview"), section("team"), section("faq"), section("contact"), section("story")];
 
 const fetchMock = vi.fn<typeof fetch>();
 const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status });
@@ -97,16 +97,33 @@ describe("the home page's overview", () => {
 });
 
 describe("the sidebar's section links", () => {
-  it("links only the published section pages, in the order Team, FAQ, Contact", async () => {
+  it("links only the published section pages, in the order Team, Story, FAQ, Contact", async () => {
     renderPortal("/", [section("contact"), section("team", { bodyMd: "" })]);
     await waitFor(() => expect(sidebarLinks()).toEqual([nav.home, nav.documents, nav.team, nav.contact, nav.profile]));
   });
 
-  it("puts all three before Profile, and Admin last for an admin", async () => {
+  it("puts all four before Profile, Story after Team, and Admin last for an admin", async () => {
     renderPortal("/", ALL, ADMIN_ME);
     await waitFor(() =>
-      expect(sidebarLinks()).toEqual([nav.home, nav.documents, nav.team, nav.faq, nav.contact, nav.profile, nav.admin]),
+      expect(sidebarLinks()).toEqual([
+        nav.home,
+        nav.documents,
+        nav.team,
+        nav.story,
+        nav.faq,
+        nav.contact,
+        nav.profile,
+        nav.admin,
+      ]),
     );
+  });
+
+  it("gives the Story no link while it is unpublished, as it ships", async () => {
+    renderPortal("/", [section("team"), section("faq"), section("contact")]);
+    await waitFor(() =>
+      expect(sidebarLinks()).toEqual([nav.home, nav.documents, nav.team, nav.faq, nav.contact, nav.profile]),
+    );
+    expect(sidebar().queryByRole("link", { name: nav.story })).not.toBeInTheDocument();
   });
 
   it("shows no section links when the sections cannot be read", async () => {
@@ -122,6 +139,20 @@ describe("the section pages", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "The team" })).toBeInTheDocument();
     expect((await screen.findAllByRole("listitem")).map((item) => item.textContent)).toContain("Ada Example, founder");
     await waitFor(() => expect(sidebar().getByRole("link", { name: nav.team })).toHaveAttribute("aria-current", "page"));
+  });
+
+  it("renders the story's markdown under its title and marks its link", async () => {
+    renderPortal("/story", [section("story", { bodyMd: "## How it began\n\nAn invented first chapter." })]);
+    expect(await screen.findByRole("heading", { level: 1, name: "Story" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 3, name: "How it began" })).toBeInTheDocument();
+    expect(screen.getByText("An invented first chapter.")).toBeInTheDocument();
+    await waitFor(() => expect(sidebar().getByRole("link", { name: nav.story })).toHaveAttribute("aria-current", "page"));
+  });
+
+  it("says Coming soon. on the Story page while it is unpublished, under the stand-in title", async () => {
+    renderPortal("/story", [section("team")]);
+    expect(await screen.findByText(copy.comingSoon)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: copy.titles.story })).toBeInTheDocument();
   });
 
   it("renders the FAQ's markdown", async () => {
@@ -171,7 +202,7 @@ describe("the contact page (PRD-003 US-307: the section's text only)", () => {
 
 describe("section time tracking", () => {
   // The contact page keeps its section_view after US-307 dropped its fixed line.
-  it.each(["team", "contact"] as const)(
+  it.each(["team", "story", "contact"] as const)(
     "sends the visible time on the %s page as section_view when the tab hides",
     async (slug) => {
       let clock = 0;

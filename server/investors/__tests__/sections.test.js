@@ -1,10 +1,10 @@
 /**
  * Portal sections (W2-01) through the portal's own apiRouter, over the test
- * database: the four rows 002_sections_seed.sql seeds and the founder_card
- * row 005_founder_card_section.sql seeds (PRD-003 US-305), each kept on a
- * re-run, investors reading only the published ones, the admin's list,
- * read and save round-trip with updated_by from the token, validation, the
- * 404s and the admin gate. The route-coverage test walks these routes too.
+ * database: the four rows 002_sections_seed.sql seeds, the founder_card
+ * row 005_founder_card_section.sql seeds (PRD-003 US-305) and the story row
+ * 006_story_section.sql seeds, each kept on a re-run, investors reading
+ * only the published ones, the admin's list, read and save round-trip
+ * with updated_by from the token, validation, the 404s and the admin gate. The route-coverage test walks these routes too.
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -26,8 +26,9 @@ const ENV = Object.freeze({
 
 const SEED_FILE = "002_sections_seed.sql";
 const FOUNDER_CARD_SEED_FILE = "005_founder_card_section.sql";
+const STORY_SEED_FILE = "006_story_section.sql";
 /** Every file that seeds a section, in the order migrate.js applies them. */
-const SEED_FILES = Object.freeze([SEED_FILE, FOUNDER_CARD_SEED_FILE]);
+const SEED_FILES = Object.freeze([SEED_FILE, FOUNDER_CARD_SEED_FILE, STORY_SEED_FILE]);
 
 const SEEDED = Object.freeze([
   { slug: "overview", title: "Overview", body_md: "", sort_order: 1, published: false, updated_by: null },
@@ -35,6 +36,7 @@ const SEEDED = Object.freeze([
   { slug: "faq", title: "FAQ", body_md: "", sort_order: 3, published: false, updated_by: null },
   { slug: "contact", title: "Contact", body_md: "", sort_order: 4, published: false, updated_by: null },
   { slug: "founder_card", title: "Founder card", body_md: "", sort_order: 5, published: false, updated_by: null },
+  { slug: "story", title: "Story", body_md: "", sort_order: 6, published: false, updated_by: null },
 ]);
 
 const TEAM = Object.freeze({
@@ -47,6 +49,13 @@ const TEAM = Object.freeze({
 const FOUNDER_CARD = Object.freeze({
   title: "Founder card",
   bodyMd: "- [+44 7700 900123](tel:+447700900123) Mobile\n- [example.com/someone](https://example.com/someone) Site\n",
+  published: true,
+});
+
+/** The Story page's text (KP5: invented). */
+const STORY = Object.freeze({
+  title: "Story",
+  bodyMd: "## Why we started\n\nAn invented paragraph about how the company began.\n",
   published: true,
 });
 
@@ -65,7 +74,7 @@ afterAll(() => db.end());
 /** Runs one seed file again, as a second migration run would if it were not recorded. */
 const runSeed = (name) => db.tx((client) => client.exec(seedSql[name]));
 
-/** Puts the five rows back as the migrations seed them. */
+/** Puts the six rows back as the migrations seed them. */
 async function reseed() {
   await db.query("DELETE FROM investors.sections");
   for (const name of SEED_FILES) await runSeed(name);
@@ -97,8 +106,8 @@ async function sectionRows() {
 /** @param {string} slug */
 const publish = (slug) => db.query("UPDATE investors.sections SET published = true WHERE slug = $1", [slug]);
 
-describe("the sections seeds (002_sections_seed.sql, 005_founder_card_section.sql)", () => {
-  it("are recorded as applied and leave the five sections, empty and unpublished", async () => {
+describe("the sections seeds (002_sections_seed.sql, 005_founder_card_section.sql, 006_story_section.sql)", () => {
+  it("are recorded as applied and leave the six sections, empty and unpublished", async () => {
     for (const name of SEED_FILES) {
       const { rows } = await db.query("SELECT 1 FROM investors.schema_migrations WHERE name = $1", [name]);
       expect(rows, name).toHaveLength(1);
@@ -122,6 +131,18 @@ describe("the sections seeds (002_sections_seed.sql, 005_founder_card_section.sq
       updated_by: ADMIN.id,
     });
     await runSeed(FOUNDER_CARD_SEED_FILE);
+    expect(await sectionRows()).toEqual(edited);
+  });
+
+  it("keeps an edited story as it is when 006 runs again (ON CONFLICT DO NOTHING)", async () => {
+    expect((await save("story", STORY)).status).toBe(200);
+    const edited = await sectionRows();
+    expect(edited.find((row) => row.slug === "story")).toMatchObject({
+      body_md: STORY.bodyMd,
+      published: true,
+      updated_by: ADMIN.id,
+    });
+    await runSeed(STORY_SEED_FILE);
     expect(await sectionRows()).toEqual(edited);
   });
 });
@@ -151,6 +172,18 @@ describe("GET /sections (investors)", () => {
     expect(after.body.sections.at(-1)).toMatchObject({ slug: "founder_card", bodyMd: FOUNDER_CARD.bodyMd });
   });
 
+  it("leaves the story out while it is unpublished, as it ships, and lists it once published", async () => {
+    await publish("team");
+    const before = await api("get", "/sections", ADA);
+    expect(before.status).toBe(200);
+    expect(before.body.sections.map((section) => section.slug)).toEqual(["team"]);
+
+    expect((await save("story", STORY)).status).toBe(200);
+    const after = await api("get", "/sections", ADA);
+    expect(after.body.sections.map((section) => section.slug)).toEqual(["team", "story"]);
+    expect(after.body.sections.at(-1)).toMatchObject({ slug: "story", title: "Story", bodyMd: STORY.bodyMd });
+  });
+
   it("answers an empty list while nothing is published", async () => {
     const res = await api("get", "/sections", ADA);
     expect(res.status).toBe(200);
@@ -178,6 +211,7 @@ describe("GET /admin/sections and /admin/sections/:slug", () => {
       { slug: "faq", published: true, sortOrder: 3 },
       { slug: "contact", published: false, sortOrder: 4 },
       { slug: "founder_card", published: false, sortOrder: 5 },
+      { slug: "story", published: false, sortOrder: 6 },
     ]);
     expect(Object.keys(res.body.sections[0]).sort()).toEqual(
       ["bodyMd", "published", "slug", "sortOrder", "title", "updatedAt", "updatedBy"].sort(),

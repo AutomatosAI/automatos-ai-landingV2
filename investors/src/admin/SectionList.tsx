@@ -27,7 +27,7 @@ function PublishedState({ published }: { readonly published: boolean }) {
 
 function SectionRow({ section }: { readonly section: AdminSection }) {
   const slug = sectionSlugOf(section.slug);
-  // The five seeded slugs only; a row the app does not know has nowhere to show.
+  // The six seeded slugs only; a row the app does not know has nowhere to show.
   if (slug === null) return null;
   return (
     <li className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-border py-5 first:border-t">
@@ -51,7 +51,7 @@ function SectionRow({ section }: { readonly section: AdminSection }) {
   );
 }
 
-/** The five sections, in the admins' order, with where each shows and whether investors see it. */
+/** The six sections, in the admins' order, with where each shows and whether investors see it. */
 export function SectionList({ sections }: { readonly sections: readonly AdminSection[] }) {
   return (
     <ul aria-label={copy.listLabel} className="grid">

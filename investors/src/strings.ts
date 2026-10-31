@@ -38,6 +38,7 @@ export const strings = {
     home: "Home",
     documents: "Documents",
     team: "Team",
+    story: "Story",
     faq: "FAQ",
     contact: "Contact",
     profile: "Profile",
@@ -140,11 +141,11 @@ export const strings = {
   },
   /**
    * The admins' markdown pages (US-009): the overview on the home page, and
-   * Team, FAQ and Contact. A page shows the section's own title once it is
-   * published; these titles stand in until then.
+   * Team, Story, FAQ and Contact. A page shows the section's own title once
+   * it is published; these titles stand in until then.
    */
   sections: {
-    titles: { team: "Team", faq: "FAQ", contact: "Contact" },
+    titles: { team: "Team", story: "Story", faq: "FAQ", contact: "Contact" },
     comingSoon: "Coming soon.",
   },
   contact: {
@@ -499,10 +500,10 @@ export const strings = {
       cancel: "Cancel",
       failed: "The document could not be deleted. Please try again.",
     },
-    /** The section editor (US-016): the overview, team, FAQ and contact text, in markdown. */
+    /** The section editor (US-016): the overview, team, story, FAQ and contact text, in markdown. */
     sections: {
       title: "Sections",
-      intro: "The text investors read on the home page and the Team, FAQ and Contact pages. Investors see a section only once it is published.",
+      intro: "The text investors read on the home page and the Team, Story, FAQ and Contact pages. Investors see a section only once it is published.",
       listLabel: "Sections",
       places: {
         overview: "Home page, above the documents",
@@ -510,6 +511,7 @@ export const strings = {
         faq: "FAQ page",
         contact: "Contact page",
         founder_card: "Home page, in the founder card, signed-in investors only",
+        story: "Story page",
       },
       published: "Published",
       notPublished: "Not published",
