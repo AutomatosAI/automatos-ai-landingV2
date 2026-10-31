@@ -72,7 +72,9 @@ stay hidden.
 
 `/investors` is a signed-in area for investors: a document library with a PDF
 viewer and downloads, and an admin area to upload documents and see who opened
-what. Two parts:
+what. The user guide (investors and admins) and the technical guide (routes,
+auth, data, storage, config, CI, deploy) start at
+[docs/investors/README.md](docs/investors/README.md). Two parts:
 
 - **App**: `investors/`, a Vite + React + TypeScript project with its own
   `package.json`. The Dockerfile builds it in its own stage; the runtime image
